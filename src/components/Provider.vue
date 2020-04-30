@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
-    <button @click="set('ipfs')" :class="{active:current=='ipfs'}" :disabled="current=='ipfs'">Real-time</button>
-    <button @click="set('chain')" :class="{active:current=='chain'}" disabled>History</button>
+    <button @click="set('ipfs')" :class="{active:current=='ipfs'}" :disabled="current=='ipfs'">Real-time over IPFS pubsub</button>
+    <button @click="set('chain')" :class="{active:current=='chain'}" disabled>History from DAO IPCI Blockchain</button>
   </div>
 </template>
 
