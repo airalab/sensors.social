@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
-    <button @click="set('ipfs')" :class="{active:current=='ipfs'}" :disabled="current=='ipfs'">ipfs</button>
-    <button @click="set('chain')" :class="{active:current=='chain'}" disabled>chain</button>
+    <button @click="set('ipfs')" :class="{active:current=='ipfs'}" :disabled="current=='ipfs'">Real-time</button>
+    <button @click="set('chain')" :class="{active:current=='chain'}" disabled>History</button>
   </div>
 </template>
 
