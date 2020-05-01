@@ -1,28 +1,92 @@
 <template>
   <div class="panel">
-    <button @click="set('ipfs')" :class="{active:current=='ipfs'}" :disabled="current=='ipfs'">Real-time over IPFS pubsub</button>
-    <button @click="set('chain')" :class="{active:current=='chain'}" disabled>History from DAO IPCI Blockchain</button>
+    <button
+      @click="set('ipfs')"
+      :class="{ active: current == 'ipfs' }"
+      :disabled="current == 'ipfs'"
+    >
+      Real-time over IPFS pubsub
+    </button>
+    <button
+      v-if="settingsType != 'remote'"
+      @click="viewSettings('remote')"
+      :class="{
+        active: current == 'remote',
+        error: isConnectionRemote === false,
+      }"
+    >
+      History from DAO IPCI Blockchain
+    </button>
+    <div v-else class="settings">
+      <input v-model="settings.remote.url" placeholder="https://url" />
+      <button
+        @click="setSetting('remote')"
+        :class="{ active: current == 'remote' }"
+      >
+        подключиться
+      </button>
+      <button @click="viewSettings(null)">&Cross;</button>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: ["current"],
-  methods: {
-    set(type) {
-      this.$router.push({
-        name: "main",
-        params: {
-          provider: type,
-          type: this.$route.params.type,
-          zoom: this.$route.params.zoom,
-          lat: this.$route.params.lat,
-          lng: this.$route.params.lng
-        }
-      });
-      window.location.reload(false);
+  data() {
+    return {
+      isConnectionRemote: null,
+      settingsType: null,
+      settings: {
+        remote: {
+          url: "",
+        },
+      },
+    };
+  },
+  created() {
+    const settings = localStorage.getItem("settings") || null;
+    if (settings) {
+      try {
+        this.settings = JSON.parse(settings);
+      } catch (_) {
+        console.warn("error", settings);
+      }
     }
-  }
+    if (this.current == "remote") {
+      setInterval(() => {
+        if (this.$provider) {
+          this.isConnectionRemote = this.$provider.connection;
+        }
+      }, 1000);
+    }
+  },
+  methods: {
+    viewSettings(type) {
+      this.settingsType = type;
+    },
+    setSetting(type) {
+      if (type === "remote") {
+        localStorage.setItem("settings", JSON.stringify(this.settings));
+        this.set(type);
+      }
+    },
+    set(type) {
+      this.$router
+        .push({
+          name: "main",
+          params: {
+            provider: type,
+            type: this.$route.params.type,
+            zoom: this.$route.params.zoom,
+            lat: this.$route.params.lat,
+            lng: this.$route.params.lng,
+          },
+        })
+        .catch(() => {});
+      window.location.reload(false);
+    },
+  },
 };
 </script>
 
@@ -52,6 +116,10 @@ button.active {
   color: black;
   cursor: pointer;
 }
+button.error {
+  background-color: #ffc2c2;
+  border-color: #b34848;
+}
 button:hover {
   background-color: #eee;
 }
@@ -60,5 +128,18 @@ button:not(:first-child) {
 }
 button:disabled {
   cursor: not-allowed;
+}
+.settings {
+  display: inline-block;
+  margin-left: -2px;
+}
+.settings input {
+  padding: 11px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #fff;
+  border: 1px solid #a2a2a2;
+  border-radius: 2px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 </style>
