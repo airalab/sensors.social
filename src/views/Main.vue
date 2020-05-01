@@ -26,13 +26,13 @@ export default {
       default: "pm10"
     },
     zoom: {
-      default: "5"
+      default: "12"
     },
     lat: {
-      default: "56.4625"
+      default: "53.5364"
     },
     lng: {
-      default: "43.2422"
+      default: "49.3139"
     }
   },
   data() {
