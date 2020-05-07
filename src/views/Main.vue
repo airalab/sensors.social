@@ -82,7 +82,7 @@ export default {
   },
   methods: {
     handlerNewPoint(point) {
-      console.log("new", point);
+      // console.log("new", point);
       if (
         !Object.prototype.hasOwnProperty.call(
           point.data,

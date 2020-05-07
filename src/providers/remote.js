@@ -48,7 +48,7 @@ class Provider {
 
   getSensors() {
     return axios
-      .get(`${this.url}/sensor/all`)
+      .get(`${this.url}/api/sensor/all`)
       .then((result) => {
         return result.data.result;
       })
@@ -59,7 +59,7 @@ class Provider {
 
   getHistoryBySender(sender) {
     return axios
-      .get(`${this.url}/sensor/${sender}`)
+      .get(`${this.url}/api/sensor/${sender}`)
       .then((result) => {
         return result.data.result;
       })
