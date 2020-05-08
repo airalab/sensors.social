@@ -4,16 +4,19 @@
     <Types :current="type.toLowerCase()" />
     <Color />
     <Details v-if="point" :point="point" @close="handlerClose" />
+    <Export v-else-if="providerReady && $provider.canExport()" />
     <Map ref="map" @clickMarker="handlerClick" :zoom="zoom" :lat="lat" :lng="lng" />
   </div>
 </template>
 
 <script>
+import Vue from "vue";
 import Map from "../components/Map.vue";
 import Types from "../components/Types.vue";
 import Color from "../components/Color.vue";
 import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
+import Export from "../components/Export.vue";
 import * as providers from "../providers";
 import config from "../config";
 
@@ -37,8 +40,8 @@ export default {
   },
   data() {
     return {
-      point: null,
-      log: {}
+      providerReady: false,
+      point: null
     };
   },
   components: {
@@ -46,18 +49,40 @@ export default {
     Types,
     Color,
     Details,
-    Provider
+    Provider,
+    Export
   },
   mounted() {
     if (this.provider === "ipfs") {
-      const provider = new providers.Ipfs(config.IPFS);
-      provider.ready().then(() => {
-        provider.watch(this.handlerNewPoint);
-      });
+      Vue.prototype.$provider = new providers.Ipfs(config.IPFS);
+    } else if (this.provider === "remote") {
+      let url;
+      const settings = localStorage.getItem("settings") || null;
+      if (settings) {
+        try {
+          url = JSON.parse(settings).remote.url;
+        } catch (_) {
+          console.warn("error", settings);
+        }
+      }
+      Vue.prototype.$provider = new providers.Remote(url);
     }
+    this.$provider
+      .ready()
+      .then(() => {
+        this.providerReady = true;
+        return this.$provider.getSensors();
+      })
+      .then(points => {
+        points.forEach(point => {
+          this.handlerNewPoint(point);
+        });
+        this.$provider.watch(this.handlerNewPoint);
+      });
   },
   methods: {
     handlerNewPoint(point) {
+      // console.log("new", point);
       if (
         !Object.prototype.hasOwnProperty.call(
           point.data,
@@ -70,20 +95,18 @@ export default {
         ...point,
         value: point.data[this.type.toUpperCase()]
       });
-      if (!Object.prototype.hasOwnProperty.call(this.log, point.sender)) {
-        this.$set(this.log, point.sender, []);
+      if (this.point && this.point.sender === point.sender) {
+        this.point.log.push({
+          data: point.data,
+          timestamp: point.timestamp
+        });
       }
-      this.log[point.sender].push({
-        data: point.data,
-        timestamp: point.timestamp
-      });
     },
-    handlerClick(point) {
+    async handlerClick(point) {
+      const log = await this.$provider.getHistoryBySender(point.sender);
       this.point = {
         ...point,
-        log: Object.prototype.hasOwnProperty.call(this.log, point.sender)
-          ? this.log[point.sender]
-          : []
+        log
       };
     },
     handlerClose() {

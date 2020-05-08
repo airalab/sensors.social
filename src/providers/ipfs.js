@@ -3,11 +3,12 @@ import moment from "moment";
 import { init as initIpfs } from "../utils/ipfs";
 import { parseResult, getAgents } from "../utils/utils";
 
-class IpfsProvider {
+class Provider {
   constructor(config) {
     this.isReady = false;
     this.whiteListAccounts = [];
     this.messenger = null;
+    this.history = {};
     this.init(config).then(() => {
       this.isReady = true;
     });
@@ -43,8 +44,12 @@ class IpfsProvider {
     return false;
   }
 
-  getHistory() {
-    return [];
+  getSensors() {
+    return Promise.resolve([]);
+  }
+
+  getHistoryBySender(sender) {
+    return Promise.resolve(this.history[sender]);
   }
 
   watch(cb) {
@@ -55,16 +60,31 @@ class IpfsProvider {
       }
       if (msg.liability === "0x0000000000000000000000000000000000000000") {
         const sender = Account.recoveryMessage(msg);
-        if (this.whiteListAccounts.includes(sender.toLowerCase())) {
+        if (
+          this.whiteListAccounts.includes(sender.toLowerCase()) &&
+          (!Object.prototype.hasOwnProperty.call(this.history, sender) ||
+            this.history[sender].find((item) => {
+              return item.hash === msg.result;
+            }) === undefined)
+        ) {
           // console.log(`new msg from ${sender}`);
           parseResult(msg.result).then((result) => {
             if (result["/geo"]) {
-              cb({
+              const point = {
                 sender,
                 data: result["/data"],
                 geo: result["/geo"],
                 timestamp: moment().format("x"),
+              };
+              if (!Object.prototype.hasOwnProperty.call(this.history, sender)) {
+                this.history[sender] = [];
+              }
+              this.history[sender].push({
+                hash: msg.result,
+                data: point.data,
+                timestamp: point.timestamp,
               });
+              cb(point);
             } else {
               console.log(`skip ${msg.result} from ${sender}`);
             }
@@ -75,4 +95,4 @@ class IpfsProvider {
   }
 }
 
-export default IpfsProvider;
+export default Provider;
