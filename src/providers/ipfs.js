@@ -60,7 +60,13 @@ class Provider {
       }
       if (msg.liability === "0x0000000000000000000000000000000000000000") {
         const sender = Account.recoveryMessage(msg);
-        if (this.whiteListAccounts.includes(sender.toLowerCase())) {
+        if (
+          this.whiteListAccounts.includes(sender.toLowerCase()) &&
+          (!Object.prototype.hasOwnProperty.call(this.history, sender) ||
+            this.history[sender].find((item) => {
+              return item.hash === msg.result;
+            }) === undefined)
+        ) {
           // console.log(`new msg from ${sender}`);
           parseResult(msg.result).then((result) => {
             if (result["/geo"]) {
@@ -74,6 +80,7 @@ class Provider {
                 this.history[sender] = [];
               }
               this.history[sender].push({
+                hash: msg.result,
                 data: point.data,
                 timestamp: point.timestamp,
               });
