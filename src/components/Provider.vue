@@ -23,7 +23,7 @@
         @click="setSetting('remote')"
         :class="{ active: current == 'remote' }"
       >
-        подключиться
+        continue
       </button>
       <button @click="viewSettings(null)">&Cross;</button>
     </div>
