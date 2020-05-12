@@ -70,11 +70,23 @@ class Provider {
           // console.log(`new msg from ${sender}`);
           parseResult(msg.result).then((result) => {
             if (result["/geo"]) {
+              let timestamp;
+              if (
+                Object.prototype.hasOwnProperty.call(
+                  result["/data"],
+                  "timestamp"
+                )
+              ) {
+                timestamp = result["/data"].timestamp + "000";
+                delete result["/data"].timestamp;
+              } else {
+                timestamp = moment().format("x");
+              }
               const point = {
                 sender,
                 data: result["/data"],
                 geo: result["/geo"],
-                timestamp: moment().format("x"),
+                timestamp,
               };
               if (!Object.prototype.hasOwnProperty.call(this.history, sender)) {
                 this.history[sender] = [];
