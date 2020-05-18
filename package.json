@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "chroma-js": "^2.1.0",
     "core-js": "^3.6.4",
+    "ethereum-blockies-base64": "^1.0.2",
     "highcharts": "^8.0.4",
     "leaflet": "^1.6.0",
     "leaflet.markercluster": "^1.4.1",

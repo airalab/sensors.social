@@ -36,6 +36,8 @@ export default {
       })
       .addTo(map);
 
+    map.zoomControl.setPosition("bottomright");
+
     map.on("zoomend", (e) => {
       const pos = e.target.getCenter();
       this.$router.replace({

@@ -5,7 +5,14 @@
     <Color />
     <Details v-if="point" :point="point" @close="handlerClose" />
     <Export v-else-if="providerReady && $provider.canExport()" />
-    <Map ref="map" @clickMarker="handlerClick" :zoom="zoom" :lat="lat" :lng="lng" />
+    <Header :points="points" />
+    <Map
+      ref="map"
+      @clickMarker="handlerClick"
+      :zoom="zoom"
+      :lat="lat"
+      :lng="lng"
+    />
   </div>
 </template>
 
@@ -17,31 +24,33 @@ import Color from "../components/Color.vue";
 import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
 import Export from "../components/Export.vue";
+import Header from "../components/Header.vue";
 import * as providers from "../providers";
 import config from "../config";
 
 export default {
   props: {
     provider: {
-      default: "ipfs"
+      default: "ipfs",
     },
     type: {
-      default: "pm10"
+      default: "pm10",
     },
     zoom: {
-      default: "12"
+      default: "12",
     },
     lat: {
-      default: "53.5364"
+      default: "53.5364",
     },
     lng: {
-      default: "49.3139"
-    }
+      default: "49.3139",
+    },
   },
   data() {
     return {
       providerReady: false,
-      point: null
+      point: null,
+      points: {},
     };
   },
   components: {
@@ -50,7 +59,8 @@ export default {
     Color,
     Details,
     Provider,
-    Export
+    Export,
+    Header,
   },
   mounted() {
     if (this.provider === "ipfs") {
@@ -73,8 +83,8 @@ export default {
         this.providerReady = true;
         return this.$provider.getSensors();
       })
-      .then(points => {
-        points.forEach(point => {
+      .then((points) => {
+        points.forEach((point) => {
           this.handlerNewPoint(point);
         });
         this.$provider.watch(this.handlerNewPoint);
@@ -93,25 +103,27 @@ export default {
       }
       this.$refs.map.addPoint({
         ...point,
-        value: point.data[this.type.toUpperCase()]
+        value: point.data[this.type.toUpperCase()],
       });
       if (this.point && this.point.sender === point.sender) {
         this.point.log.push({
           data: point.data,
-          timestamp: point.timestamp
+          timestamp: point.timestamp,
         });
       }
+
+      this.$set(this.points, point.sender, point.data);
     },
     async handlerClick(point) {
       const log = await this.$provider.getHistoryBySender(point.sender);
       this.point = {
         ...point,
-        log
+        log,
       };
     },
     handlerClose() {
       this.point = null;
-    }
-  }
+    },
+  },
 };
 </script>

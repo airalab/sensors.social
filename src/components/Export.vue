@@ -15,7 +15,7 @@ export default {};
 .panel {
   overflow: hidden;
   position: absolute;
-  top: 0;
+  top: 29px;
   right: 0;
   z-index: 10000000;
   background: rgba(255, 255, 255, 0.9);
