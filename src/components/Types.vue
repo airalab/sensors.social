@@ -12,11 +12,11 @@ export default {
   props: ["current"],
   data() {
     return {
-      type: this.current
+      type: this.current,
     };
   },
   watch: {
-    type: function() {
+    type: function () {
       this.$router.push({
         name: "main",
         params: {
@@ -24,12 +24,12 @@ export default {
           type: this.type,
           zoom: this.$route.params.zoom,
           lat: this.$route.params.lat,
-          lng: this.$route.params.lng
-        }
+          lng: this.$route.params.lng,
+        },
       });
       window.location.reload(false);
-    }
-  }
+    },
+  },
 };
 </script>
 

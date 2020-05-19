@@ -8,13 +8,13 @@ import makeBlockie from "ethereum-blockies-base64";
 export default {
   props: {
     address: {
-      type: String
-    }
+      type: String,
+    },
   },
   computed: {
-    src: function() {
+    src: function () {
       return this.address ? makeBlockie(this.address) : "";
-    }
-  }
+    },
+  },
 };
 </script>

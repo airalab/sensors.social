@@ -11,10 +11,10 @@ function rosBag(data, cb, options = {}) {
 
 export function parseResult(result, options = { topics: ["/data", "/geo"] }) {
   let message = {};
-  return ipfsCat(result).then(function(r) {
+  return ipfsCat(result).then(function (r) {
     return rosBag(
       new Blob([r]),
-      function(bag) {
+      function (bag) {
         try {
           message[bag.topic] = JSON.parse(bag.message.data);
         } catch (error) {
@@ -22,7 +22,7 @@ export function parseResult(result, options = { topics: ["/data", "/geo"] }) {
         }
       },
       options
-    ).then(function() {
+    ).then(function () {
       return message;
     });
   });

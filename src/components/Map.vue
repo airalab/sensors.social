@@ -67,7 +67,7 @@ export default {
         .catch(() => {});
     });
 
-    const iconCreateFunction = function(cluster) {
+    const iconCreateFunction = function (cluster) {
       const markers = cluster.getAllChildMarkers();
       const childCount = cluster.getChildCount();
       let sum = 0;

@@ -21,7 +21,7 @@ export default {
         xAxis: {
           type: "datetime",
           labels: {
-            formatter: function() {
+            formatter: function () {
               return moment(this.value, "x").format("HH:mm");
             },
           },
@@ -34,7 +34,7 @@ export default {
         tooltip: {
           shared: true,
           crosshairs: true,
-          formatter: function() {
+          formatter: function () {
             let data = "";
             this.points.forEach((d) => {
               data += "<b>" + d.series.name + "</b> = " + d.y + "<br />";
@@ -55,7 +55,7 @@ export default {
     this.fillData();
   },
   watch: {
-    log: function() {
+    log: function () {
       this.fillData();
     },
   },

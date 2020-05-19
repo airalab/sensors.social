@@ -36,7 +36,7 @@ export default {
   },
   watch: {
     point: {
-      handler: function(newValue, oldValue) {
+      handler: function (newValue, oldValue) {
         if (newValue.sender !== oldValue.sender) {
           this.points = [...this.point.log];
         } else {
@@ -54,10 +54,10 @@ export default {
     },
   },
   computed: {
-    last: function() {
+    last: function () {
       return this.point.log[this.point.log.length - 1];
     },
-    date: function() {
+    date: function () {
       return moment(this.last.timestamp, "x").format("DD.MM.YYYY HH:mm:ss");
     },
   },

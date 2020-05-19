@@ -10,13 +10,13 @@ function getIpfs() {
 }
 
 function initFallback(config) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const node = new window.Ipfs(config);
-    node.on("error", function(error) {
+    node.on("error", function (error) {
       console.log(error.message);
     });
     node.once("ready", () =>
-      node.id(function(err, info) {
+      node.id(function (err, info) {
         if (err) {
           return reject(err);
         }
@@ -30,7 +30,7 @@ function initFallback(config) {
 }
 
 function loadScript(src) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     const script = document.createElement("script");
     script.src = src;
     script.onload = resolve;

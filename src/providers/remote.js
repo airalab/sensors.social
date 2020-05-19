@@ -10,7 +10,7 @@ class Provider {
     this.socket.on("connect_error", () => {
       this.connection = false;
     });
-    this.socket.on("error", function(error) {
+    this.socket.on("error", function (error) {
       console.warn(error);
     });
     this.init().then(() => {
