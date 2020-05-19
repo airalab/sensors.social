@@ -42,7 +42,7 @@ export default {
       settingsType: null,
       settings: {
         remote: {
-          url: "",
+          url: "https://roseman.airalab.org/",
         },
       },
     };
