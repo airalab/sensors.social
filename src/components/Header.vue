@@ -1,18 +1,17 @@
 <template>
-  <marquee
-    class="panel"
-    @mouseover="paused = true"
-    @mouseleave="paused = false"
-  >
-    <div class="item" v-for="sender in Object.keys(this.points)" :key="sender">
-      <span class="sender"
-        ><Avatar :address="sender" class="icon" />{{
-          sender.slice(0, 6) + "..." + sender.slice(-4)
-        }}</span
+  <div class="marquee">
+    <div class="marquee-content">
+      <div
+        class="item"
+        v-for="sender in Object.keys(this.points)"
+        :key="sender"
       >
-      > pm2,5: {{ points[sender]["PM2.5"] }} , pm10: {{ points[sender].PM10 }}
+        <Avatar :address="sender" class="icon" />
+        {{ sender.slice(0, 6) + "..." + sender.slice(-4) }}
+        > pm2,5: {{ points[sender]["PM2.5"] }} , pm10: {{ points[sender].PM10 }}
+      </div>
     </div>
-  </marquee>
+  </div>
 </template>
 
 <script>
@@ -21,28 +20,10 @@ import Avatar from "./Avatar.vue";
 export default {
   props: ["points"],
   components: { Avatar },
-  data() {
-    return {
-      paused: false,
-    };
-  },
 };
 </script>
 
 <style scoped>
-.panel {
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10000000;
-  background: rgba(255, 255, 255, 0.9);
-  border: 5px solid #e0e0e0;
-  height: 14px;
-  width: 100%;
-  padding: 5px;
-  font-size: 12px;
-}
 .item {
   display: inline;
   padding: 0 10px;
@@ -55,5 +36,111 @@ export default {
   border-radius: 50%;
   vertical-align: bottom;
   margin-right: 4px;
+}
+@-webkit-keyframes marquee {
+  0% {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+  }
+  100% {
+    -webkit-transform: translate(-100%, 0);
+    transform: translate(-100%, 0);
+  }
+}
+@keyframes marquee {
+  0% {
+    -webkit-transform: translate(0, 0);
+    transform: translate(0, 0);
+  }
+  100% {
+    -webkit-transform: translate(-100%, 0);
+    transform: translate(-100%, 0);
+  }
+}
+
+.marquee {
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10000000;
+  background: rgba(255, 255, 255, 0.9);
+  border: 5px solid #e0e0e0;
+  height: 34px;
+  width: 100%;
+  padding: 5px;
+  font-size: 12px;
+}
+
+.marquee > ul {
+  list-style: none;
+}
+
+.marquee > ul > li {
+  display: inline-block;
+}
+
+.marquee:hover .marquee-content {
+  -webkit-animation-play-state: paused;
+  animation-play-state: paused;
+}
+
+.marquee-content {
+  display: inline-block;
+  -webkit-animation-name: marquee;
+  animation-name: marquee;
+  -webkit-animation-duration: 30s;
+  animation-duration: 30s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  padding-left: 100%;
+}
+
+.marquee-reverse .marquee-content {
+  animation-direction: reverse;
+}
+
+.marquee-speed-sx2 .marquee-content {
+  -webkit-animation-duration: 30s;
+  animation-duration: 30s;
+}
+
+.marquee-speed-fx2 .marquee-content {
+  -webkit-animation-duration: 7.5s;
+  animation-duration: 7.5s;
+}
+
+.marquee-speed-sx3 .marquee-content {
+  -webkit-animation-duration: 45s;
+  animation-duration: 45s;
+}
+
+.marquee-speed-fx3 .marquee-content {
+  -webkit-animation-duration: 5s;
+  animation-duration: 5s;
+}
+
+.marquee-speed-sx4 .marquee-content {
+  -webkit-animation-duration: 60s;
+  animation-duration: 60s;
+}
+
+.marquee-speed-fx4 .marquee-content {
+  -webkit-animation-duration: 3.75s;
+  animation-duration: 3.75s;
+}
+
+.marquee-speed-sx5 .marquee-content {
+  -webkit-animation-duration: 75s;
+  animation-duration: 75s;
+}
+
+.marquee-speed-fx5 .marquee-content {
+  -webkit-animation-duration: 3s;
+  animation-duration: 3s;
 }
 </style>
