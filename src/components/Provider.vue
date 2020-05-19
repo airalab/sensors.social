@@ -18,7 +18,10 @@
       History from DAO IPCI Blockchain
     </button>
     <div v-else class="settings">
-      <input v-model="settings.remote.url" placeholder="https://url" />
+      <input
+        v-model="settings.remote.url"
+        placeholder="https://roseman.airalab.org/"
+      />
       <button
         @click="setSetting('remote')"
         :class="{ active: current == 'remote' }"
