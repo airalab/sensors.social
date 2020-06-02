@@ -47,6 +47,11 @@ export async function init(config) {
       });
       await node.id();
       ipfs = node;
+      ipfs.id((_, r) => {
+        if (/go/i.test(r.agentVersion)) {
+          ipfs.swarm.connect("/dnsaddr/bootstrap.aira.life", console.log);
+        }
+      });
       return ipfs;
     } catch (e) {
       console.warn(e);

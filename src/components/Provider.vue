@@ -114,6 +114,9 @@ button {
   border-radius: 2px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
+button:focus {
+  outline: 0;
+}
 button.active {
   background-color: #eee;
   color: black;
@@ -144,5 +147,8 @@ button:disabled {
   border: 1px solid #a2a2a2;
   border-radius: 2px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+.settings input:focus {
+  outline: 0;
 }
 </style>

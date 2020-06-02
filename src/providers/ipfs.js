@@ -1,13 +1,11 @@
-import { MessageProviderIpfs, Messenger, Account } from "robonomics-js";
-import moment from "moment";
 import { init as initIpfs } from "../utils/ipfs";
-import { parseResult, getAgents } from "../utils/utils";
+import { getAgents } from "../utils/utils";
 
 class Provider {
   constructor(config) {
+    this.ipfs = null;
     this.isReady = false;
     this.whiteListAccounts = [];
-    this.messenger = null;
     this.history = {};
     this.init(config).then(() => {
       this.isReady = true;
@@ -15,18 +13,8 @@ class Provider {
   }
 
   async init(config) {
-    const ipfs = await initIpfs(config);
-    ipfs.id((_, r) => {
-      if (/go/i.test(r.agentVersion)) {
-        ipfs.swarm.connect("/dnsaddr/bootstrap.aira.life", console.log);
-      }
-    });
+    this.ipfs = await initIpfs(config);
     this.whiteListAccounts = getAgents();
-    const messageProvider = new MessageProviderIpfs(ipfs);
-    await messageProvider.ready();
-    this.messenger = new Messenger(
-      messageProvider.createChannel("airalab.lighthouse.5.robonomics.eth")
-    );
   }
 
   ready() {
@@ -48,62 +36,62 @@ class Provider {
     return Promise.resolve([]);
   }
 
-  getHistoryBySender(sender) {
-    return Promise.resolve(this.history[sender]);
+  getHistoryBySensor(sensor) {
+    return Promise.resolve(this.history[sensor]);
   }
 
   watch(cb) {
-    this.messenger.onResult((err, msg) => {
-      if (err) {
-        console.error(err.message);
-        return;
-      }
-      if (msg.liability === "0x0000000000000000000000000000000000000000") {
-        const sender = Account.recoveryMessage(msg);
-        if (
-          this.whiteListAccounts.includes(sender.toLowerCase()) &&
-          (!Object.prototype.hasOwnProperty.call(this.history, sender) ||
-            this.history[sender].find((item) => {
-              return item.hash === msg.result;
-            }) === undefined)
-        ) {
-          // console.log(`new msg from ${sender}`);
-          parseResult(msg.result).then((result) => {
-            if (result["/geo"]) {
-              let timestamp;
-              if (
-                Object.prototype.hasOwnProperty.call(
-                  result["/data"],
-                  "timestamp"
-                )
-              ) {
-                timestamp = result["/data"].timestamp + "000";
-                delete result["/data"].timestamp;
-              } else {
-                timestamp = moment().format("x");
-              }
-              const point = {
-                sender,
-                data: result["/data"],
-                geo: result["/geo"],
-                timestamp,
-              };
-              if (!Object.prototype.hasOwnProperty.call(this.history, sender)) {
-                this.history[sender] = [];
-              }
-              this.history[sender].push({
-                hash: msg.result,
-                data: point.data,
-                timestamp: point.timestamp,
-              });
-              cb(point);
-            } else {
-              console.log(`skip ${msg.result} from ${sender}`);
-            }
-          });
+    this.ipfs.pubsub.subscribe(
+      "airalab.lighthouse.5.robonomics.eth",
+      (r) => {
+        const sender = r.from;
+        if (!this.whiteListAccounts.includes(sender)) {
+          // console.log(`skip from ${sender}`);
+          return;
         }
-      }
-    });
+
+        let json;
+        try {
+          json = JSON.parse(Buffer.from(r.data).toString("utf8"));
+        } catch (e) {
+          console.error(e.message);
+          return;
+        }
+
+        for (const sensor_id in json) {
+          const data = json[sensor_id];
+          if (
+            Object.prototype.hasOwnProperty.call(data, "model") &&
+            (!Object.prototype.hasOwnProperty.call(this.history, sensor_id) ||
+              this.history[sensor_id].find((item) => {
+                return item.timestamp === data.timestamp;
+              }) === undefined)
+          ) {
+            const { geo, ...measurement } = data.measurement;
+            const point = {
+              sensor_id,
+              sender,
+              geo,
+              data: measurement,
+              timestamp: data.timestamp,
+            };
+
+            if (
+              !Object.prototype.hasOwnProperty.call(this.history, sensor_id)
+            ) {
+              this.history[sensor_id] = [];
+            }
+            this.history[sensor_id].push({
+              data: point.data,
+              timestamp: point.timestamp,
+            });
+
+            cb(point);
+          }
+        }
+      },
+      { discover: true }
+    );
   }
 }
 

@@ -6,6 +6,17 @@ import router from "./router";
 Vue.config.productionTip = false;
 Vue.use(VueHighcharts);
 
+Vue.filter("measurement", function (value) {
+  const types = {
+    pm10: "PM10",
+    pm25: "PM2.5",
+  };
+  return types[value] || "";
+});
+Vue.filter("collapse", function (value) {
+  return value.slice(0, 6) + "..." + value.slice(-4);
+});
+
 new Vue({
   router,
   render: (h) => h(App),

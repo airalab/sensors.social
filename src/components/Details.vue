@@ -1,13 +1,15 @@
 <template>
   <div class="panel">
     <button class="close" @click="$emit('close')">&Cross;</button>
-    <h2 class="title">{{ point.sender }}</h2>
+    <h2 class="title">
+      {{ point.sender | collapse }} | {{ point.sensor_id | collapse }}
+    </h2>
     <div v-if="last" style="text-align: left;">
       <p>
         <b>{{ date }}</b>
       </p>
       <p v-for="(param, k) in Object.keys(last.data)" :key="k">
-        <b>{{ param }}</b>
+        <b>{{ param | measurement }}</b>
         = {{ last.data[param] }}
       </p>
     </div>
@@ -37,11 +39,11 @@ export default {
   watch: {
     point: {
       handler: function (newValue, oldValue) {
-        if (newValue.sender !== oldValue.sender) {
+        if (newValue.sensor_id !== oldValue.sensor_id) {
           this.points = [...this.point.log];
         } else {
           const newPoint = this.point.log[this.point.log.length - 1];
-          const series = ["PM10", "PM2.5"];
+          const series = ["pm10", "pm25"];
           for (const i in series) {
             this.$refs.chart.addPoint(i, [
               Number(newPoint.timestamp),
@@ -58,7 +60,7 @@ export default {
       return this.point.log[this.point.log.length - 1];
     },
     date: function () {
-      return moment(this.last.timestamp, "x").format("DD.MM.YYYY HH:mm:ss");
+      return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
     },
   },
 };
@@ -74,6 +76,7 @@ export default {
   background: rgba(255, 255, 255, 0.9);
   padding: 10px;
   border: 5px solid #e0e0e0;
+  width: 400px;
 }
 .title {
   font-size: 15px;

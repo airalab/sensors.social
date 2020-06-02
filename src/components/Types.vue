@@ -1,8 +1,8 @@
 <template>
   <div class="panel">
     <select v-model="type">
-      <option value="pm10">pm10</option>
-      <option value="pm2.5">pm2.5</option>
+      <option value="pm10">PM10</option>
+      <option value="pm25">PM2.5</option>
     </select>
   </div>
 </template>

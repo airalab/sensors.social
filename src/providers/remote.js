@@ -4,7 +4,7 @@ import io from "socket.io-client";
 class Provider {
   constructor(url) {
     this.isReady = false;
-    this.url = url;
+    this.url = url.replace(/\/$/, "");
     this.connection = false;
     this.socket = io(url);
     this.socket.on("connect_error", () => {
@@ -57,9 +57,9 @@ class Provider {
       });
   }
 
-  getHistoryBySender(sender) {
+  getHistoryBySensor(sensor) {
     return axios
-      .get(`${this.url}/api/sensor/${sender}`)
+      .get(`${this.url}/api/sensor/${sensor}`)
       .then((result) => {
         return result.data.result;
       })

@@ -106,10 +106,10 @@ export default {
     map.addLayer(markers);
   },
   methods: {
-    findMarker(sender, markers) {
+    findMarker(sensor_id, markers) {
       return new Promise((resolve) => {
         markers.eachLayer((m) => {
-          if (m.options.data.sender === sender) {
+          if (m.options.data.sensor_id === sensor_id) {
             resolve(m);
           }
         });
@@ -120,7 +120,7 @@ export default {
       const coord = point.geo.split(",");
       const color = getColor(scale, point.value);
 
-      const m = await this.findMarker(point.sender, markers);
+      const m = await this.findMarker(point.sensor_id, markers);
       if (m) {
         m.setStyle({
           fillColor: color,

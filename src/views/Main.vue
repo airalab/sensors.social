@@ -96,26 +96,26 @@ export default {
       if (
         !Object.prototype.hasOwnProperty.call(
           point.data,
-          this.type.toUpperCase()
+          this.type.toLowerCase()
         )
       ) {
         return;
       }
       this.$refs.map.addPoint({
         ...point,
-        value: point.data[this.type.toUpperCase()],
+        value: point.data[this.type.toLowerCase()],
       });
-      if (this.point && this.point.sender === point.sender) {
+      if (this.point && this.point.sensor_id === point.sensor_id) {
         this.point.log.push({
           data: point.data,
           timestamp: point.timestamp,
         });
       }
 
-      this.$set(this.points, point.sender, point.data);
+      this.$set(this.points, point.sensor_id, point.data);
     },
     async handlerClick(point) {
-      const log = await this.$provider.getHistoryBySender(point.sender);
+      const log = await this.$provider.getHistoryBySensor(point.sensor_id);
       this.point = {
         ...point,
         log,

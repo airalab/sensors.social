@@ -3,12 +3,13 @@
     <div class="marquee-content">
       <div
         class="item"
-        v-for="sender in Object.keys(this.points)"
-        :key="sender"
+        v-for="sensor_id in Object.keys(this.points)"
+        :key="sensor_id"
       >
-        <Avatar :address="sender" class="icon" />
-        {{ sender.slice(0, 6) + "..." + sender.slice(-4) }}
-        > pm2,5: {{ points[sender]["PM2.5"] }} , pm10: {{ points[sender].PM10 }}
+        <Avatar :address="sensor_id" class="icon" />
+        {{ sensor_id | collapse }}
+        > pm2,5: {{ points[sensor_id].pm25 }} , pm10:
+        {{ points[sensor_id].pm10 }}
       </div>
     </div>
   </div>

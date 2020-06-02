@@ -22,7 +22,7 @@ export default {
           type: "datetime",
           labels: {
             formatter: function () {
-              return moment(this.value, "x").format("HH:mm");
+              return moment(this.value, "X").format("HH:mm");
             },
           },
           title: false,
@@ -41,7 +41,7 @@ export default {
             });
             return (
               "<span>" +
-              moment(this.x, "x").format("DD.MM.YYYY HH:mm:ss") +
+              moment(this.x, "X").format("DD.MM.YYYY HH:mm:ss") +
               "</span><br />" +
               data
             );
@@ -67,17 +67,23 @@ export default {
           color: "#e8b738",
           lineWidth: 1,
           data: [],
+          options: {
+            name: "pm10",
+          },
         },
         {
           name: "PM2.5",
           color: "#89b268",
           lineWidth: 1,
           data: [],
+          options: {
+            name: "pm25",
+          },
         },
       ];
       for (const i in series) {
         series[i].data = this.log.map((item) => {
-          return [Number(item.timestamp), item.data[series[i].name]];
+          return [Number(item.timestamp), item.data[series[i].options.name]];
         });
       }
       this.options.series = series;
