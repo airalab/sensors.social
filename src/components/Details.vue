@@ -2,7 +2,15 @@
   <div class="panel">
     <button class="close" @click="$emit('close')">&Cross;</button>
     <h2 class="title">
-      {{ point.sender | collapse }} | {{ point.sensor_id | collapse }}
+      <Avatar :address="point.sender" class="icon" />
+      <Copy :msg="point.sender" :title="`Address: ${point.sender}`">{{
+        point.sender | collapse
+      }}</Copy>
+      |
+      <Avatar :address="point.sensor_id" class="icon" />
+      <Copy :msg="point.sensor_id" :title="`Sensor id: ${point.sensor_id}`">{{
+        point.sensor_id | collapse
+      }}</Copy>
     </h2>
     <div v-if="last" style="text-align: left;">
       <p>
@@ -22,11 +30,15 @@
 <script>
 import moment from "moment";
 import Chart from "./Chart.vue";
+import Avatar from "./Avatar.vue";
+import Copy from "./Copy.vue";
 
 export default {
   props: ["point"],
   components: {
     Chart,
+    Avatar,
+    Copy,
   },
   data() {
     return {
@@ -72,11 +84,17 @@ export default {
   position: absolute;
   top: 29px;
   right: 0;
-  z-index: 10000000;
+  z-index: 1000;
   background: rgba(255, 255, 255, 0.9);
   padding: 10px;
   border: 5px solid #e0e0e0;
   width: 400px;
+}
+.icon {
+  width: 14px;
+  border-radius: 50%;
+  vertical-align: bottom;
+  margin-right: 4px;
 }
 .title {
   font-size: 15px;

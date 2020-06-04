@@ -1,10 +1,15 @@
 import Vue from "vue";
 import VueHighcharts from "vue-highcharts";
+import VueClipboard from "vue-clipboard2";
+import Notifications from "vue-notification";
 import App from "./App.vue";
 import router from "./router";
 
 Vue.config.productionTip = false;
 Vue.use(VueHighcharts);
+VueClipboard.config.autoSetContainer = true;
+Vue.use(VueClipboard);
+Vue.use(Notifications);
 
 Vue.filter("measurement", function (value) {
   const types = {

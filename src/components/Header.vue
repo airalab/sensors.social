@@ -7,7 +7,9 @@
         :key="sensor_id"
       >
         <Avatar :address="sensor_id" class="icon" />
-        {{ sensor_id | collapse }}
+        <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">{{
+          sensor_id | collapse
+        }}</Copy>
         > pm2,5: {{ points[sensor_id].pm25 }} , pm10:
         {{ points[sensor_id].pm10 }}
       </div>
@@ -17,10 +19,11 @@
 
 <script>
 import Avatar from "./Avatar.vue";
+import Copy from "./Copy.vue";
 
 export default {
   props: ["points"],
-  components: { Avatar },
+  components: { Avatar, Copy },
 };
 </script>
 
@@ -66,7 +69,7 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 10000000;
+  z-index: 1000;
   background: rgba(255, 255, 255, 0.9);
   border: 5px solid #e0e0e0;
   height: 34px;
