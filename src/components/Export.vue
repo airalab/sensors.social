@@ -17,7 +17,7 @@ export default {};
   position: absolute;
   top: 29px;
   right: 0;
-  z-index: 10000000;
+  z-index: 1000;
   background: rgba(255, 255, 255, 0.9);
   padding: 10px;
   border: 5px solid #e0e0e0;
