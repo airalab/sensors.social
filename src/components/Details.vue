@@ -46,14 +46,20 @@ export default {
     };
   },
   mounted() {
-    this.points = [...this.point.log];
+    if (this.point.model !== 1) {
+      this.points = [...this.point.log];
+    }
   },
   watch: {
     point: {
       handler: function (newValue, oldValue) {
         if (newValue.sensor_id !== oldValue.sensor_id) {
-          this.points = [...this.point.log];
-        } else {
+          if (this.point.model !== 1) {
+            this.points = [...this.point.log];
+          } else {
+            this.points = [];
+          }
+        } else if (this.$refs.chart) {
           const newPoint = this.point.log[this.point.log.length - 1];
           const series = ["pm10", "pm25"];
           for (const i in series) {

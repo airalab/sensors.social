@@ -94,6 +94,7 @@ export default {
     handlerNewPoint(point) {
       // console.log("new", point);
       if (
+        point.model !== 1 &&
         !Object.prototype.hasOwnProperty.call(
           point.data,
           this.type.toLowerCase()
@@ -112,7 +113,14 @@ export default {
         });
       }
 
-      this.$set(this.points, point.sensor_id, point.data);
+      if (
+        Object.prototype.hasOwnProperty.call(
+          point.data,
+          this.type.toLowerCase()
+        )
+      ) {
+        this.$set(this.points, point.sensor_id, point.data);
+      }
     },
     async handlerClick(point) {
       const log = await this.$provider.getHistoryBySensor(point.sensor_id);
