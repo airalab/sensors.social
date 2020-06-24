@@ -71,6 +71,7 @@ class Provider {
             const point = {
               sensor_id,
               sender,
+              model: data.model,
               geo,
               data: measurement,
               timestamp: data.timestamp,
