@@ -1,68 +1,50 @@
 <template>
-  <div class="marquee">
-    <div class="marquee-content">
-      <div
-        class="item"
-        v-for="sensor_id in Object.keys(this.points)"
-        :key="sensor_id"
+  <div class="header">
+    <div class="header-content">
+      <HeaderTitle v-if="title" />
+      <HeaderMarquee v-else :points="points" />
+    </div>
+    <div class="nav">
+      <a
+        href="https://wiki.robonomics.network/docs/iot-sensors-connectivity/"
+        target="_blank"
+        >How to connect</a
+      >&nbsp;
+      <a
+        href="https://github.com/airalab/sensors.robonomics.network"
+        target="_blank"
+        >Fork me</a
       >
-        <Avatar :address="sensor_id" class="icon" />
-        <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">{{
-          sensor_id | collapse
-        }}</Copy>
-        > pm2,5: {{ points[sensor_id].pm25 }} , pm10:
-        {{ points[sensor_id].pm10 }}
-      </div>
+      <button @click="toggle" :disabled="Object.keys(points).length === 0">
+        <template v-if="title">data ticker</template>
+        <template v-else>toggle</template>
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import Avatar from "./Avatar.vue";
-import Copy from "./Copy.vue";
+import HeaderTitle from "./HeaderTitle.vue";
+import HeaderMarquee from "./HeaderMarquee.vue";
 
 export default {
   props: ["points"],
-  components: { Avatar, Copy },
+  components: { HeaderTitle, HeaderMarquee },
+  data() {
+    return {
+      title: true,
+    };
+  },
+  methods: {
+    toggle() {
+      this.title = !this.title;
+    },
+  },
 };
 </script>
 
 <style scoped>
-.item {
-  display: inline;
-  padding: 0 10px;
-}
-.item:not(:first-child) {
-  border-left: 1px solid #9e9e9e;
-}
-.icon {
-  width: 14px;
-  border-radius: 50%;
-  vertical-align: bottom;
-  margin-right: 4px;
-}
-@-webkit-keyframes marquee {
-  0% {
-    -webkit-transform: translate(0, 0);
-    transform: translate(0, 0);
-  }
-  100% {
-    -webkit-transform: translate(-100%, 0);
-    transform: translate(-100%, 0);
-  }
-}
-@keyframes marquee {
-  0% {
-    -webkit-transform: translate(0, 0);
-    transform: translate(0, 0);
-  }
-  100% {
-    -webkit-transform: translate(-100%, 0);
-    transform: translate(-100%, 0);
-  }
-}
-
-.marquee {
+.header {
   overflow: hidden;
   white-space: nowrap;
   box-sizing: border-box;
@@ -76,75 +58,36 @@ export default {
   width: 100%;
   padding: 5px;
   font-size: 12px;
+  display: flex;
 }
-
-.marquee > ul {
-  list-style: none;
+.header-content {
+  flex: 1 1 auto;
 }
-
-.marquee > ul > li {
-  display: inline-block;
+.header .nav {
+  margin: -2px 0px 0 10px;
 }
-
-.marquee:hover .marquee-content {
-  -webkit-animation-play-state: paused;
-  animation-play-state: paused;
+.header a {
+  color: #5343ff;
+  text-decoration: underline;
+  margin-right: 10px;
 }
-
-.marquee-content {
-  display: inline-block;
-  -webkit-animation-name: marquee;
-  animation-name: marquee;
-  -webkit-animation-duration: 30s;
-  animation-duration: 30s;
-  -webkit-animation-timing-function: linear;
-  animation-timing-function: linear;
-  -webkit-animation-iteration-count: infinite;
-  animation-iteration-count: infinite;
-  padding-left: 100%;
+.header button {
+  padding: 2px 10px;
+  margin: 0 5px;
+  font-size: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #a2a2a2;
+  border-radius: 2px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
-
-.marquee-reverse .marquee-content {
-  animation-direction: reverse;
+.header button:hover {
+  background-color: #eee;
 }
-
-.marquee-speed-sx2 .marquee-content {
-  -webkit-animation-duration: 30s;
-  animation-duration: 30s;
+.header button:focus {
+  outline: 0;
 }
-
-.marquee-speed-fx2 .marquee-content {
-  -webkit-animation-duration: 7.5s;
-  animation-duration: 7.5s;
-}
-
-.marquee-speed-sx3 .marquee-content {
-  -webkit-animation-duration: 45s;
-  animation-duration: 45s;
-}
-
-.marquee-speed-fx3 .marquee-content {
-  -webkit-animation-duration: 5s;
-  animation-duration: 5s;
-}
-
-.marquee-speed-sx4 .marquee-content {
-  -webkit-animation-duration: 60s;
-  animation-duration: 60s;
-}
-
-.marquee-speed-fx4 .marquee-content {
-  -webkit-animation-duration: 3.75s;
-  animation-duration: 3.75s;
-}
-
-.marquee-speed-sx5 .marquee-content {
-  -webkit-animation-duration: 75s;
-  animation-duration: 75s;
-}
-
-.marquee-speed-fx5 .marquee-content {
-  -webkit-animation-duration: 3s;
-  animation-duration: 3s;
+.header button:disabled {
+  cursor: not-allowed;
 }
 </style>
