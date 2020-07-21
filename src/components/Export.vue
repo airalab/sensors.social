@@ -1,9 +1,9 @@
 <template>
   <div class="panel">
-    <h4 class="title">Скачать данные в csv формате</h4>
-    <a class="link" :href="$provider.exportUrl(30)">30 дней</a>&nbsp;|&nbsp;
-    <a class="link" :href="$provider.exportUrl(7)">7 дней</a>&nbsp;|&nbsp;
-    <a class="link" :href="$provider.exportUrl(1)">1 день</a>
+    <h4 class="title">Download data in csv format</h4>
+    <a class="link" :href="$provider.exportUrl(30)">30 days</a>&nbsp;|&nbsp;
+    <a class="link" :href="$provider.exportUrl(7)">7 days</a>&nbsp;|&nbsp;
+    <a class="link" :href="$provider.exportUrl(1)">1 day</a>
   </div>
 </template>
 

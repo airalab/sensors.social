@@ -40,6 +40,10 @@ class Provider {
     return Promise.resolve(this.history[sensor]);
   }
 
+  getCountTxBySender() {
+    return false;
+  }
+
   watch(cb) {
     this.ipfs.pubsub.subscribe(
       "airalab.lighthouse.5.robonomics.eth",

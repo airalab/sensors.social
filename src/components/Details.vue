@@ -5,8 +5,8 @@
       <Avatar :address="point.sender" class="icon" />
       <Copy :msg="point.sender" :title="`Address: ${point.sender}`">{{
         point.sender | collapse
-      }}</Copy>
-      |
+      }}</Copy
+      >|
       <Avatar :address="point.sensor_id" class="icon" />
       <Copy :msg="point.sensor_id" :title="`Sensor id: ${point.sensor_id}`">{{
         point.sensor_id | collapse
@@ -19,6 +19,10 @@
       <p v-for="(param, k) in Object.keys(last.data)" :key="k">
         <b>{{ param | measurement }}</b>
         = {{ last.data[param] }}
+      </p>
+      <p v-if="countTx !== false">
+        <b>Datalog</b>
+        = {{ countTx }} tx
       </p>
     </div>
     <div v-if="points.length > 0">
@@ -74,6 +78,9 @@ export default {
     },
   },
   computed: {
+    countTx: function () {
+      return this.point.count;
+    },
     last: function () {
       return this.point.log[this.point.log.length - 1];
     },

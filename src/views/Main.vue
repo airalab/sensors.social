@@ -124,8 +124,10 @@ export default {
     },
     async handlerClick(point) {
       const log = await this.$provider.getHistoryBySensor(point.sensor_id);
+      const count = await this.$provider.getCountTxBySender(point.sender);
       this.point = {
         ...point,
+        count,
         log,
       };
     },

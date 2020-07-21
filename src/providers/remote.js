@@ -43,7 +43,7 @@ class Provider {
   }
 
   exportUrl(days = 1, sensor = "all") {
-    return `${this.url}/csv/${sensor}/${days}`;
+    return `${this.url}/api/sensor/csv/${sensor}/${days}`;
   }
 
   getSensors() {
@@ -60,6 +60,17 @@ class Provider {
   getHistoryBySensor(sensor) {
     return axios
       .get(`${this.url}/api/sensor/${sensor}`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return [];
+      });
+  }
+
+  getCountTxBySender(sender) {
+    return axios
+      .get(`${this.url}/api/sensor/count/${sender}`)
       .then((result) => {
         return result.data.result;
       })
