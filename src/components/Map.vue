@@ -130,7 +130,7 @@ export default {
     },
     async addPointPing(point) {
       const coord = point.geo.split(",");
-      const color = "#eeeeee";
+      const color = "#56ce78";
       leaflet
         .circleMarker(new leaflet.LatLng(coord[0], coord[1]), {
           radius: 7,
