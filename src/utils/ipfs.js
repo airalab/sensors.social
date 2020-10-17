@@ -9,24 +9,13 @@ function getIpfs() {
   return ipfs;
 }
 
-function initFallback(config) {
-  return new Promise(function (resolve, reject) {
-    const node = new window.Ipfs(config);
-    node.on("error", function (error) {
-      console.log(error.message);
-    });
-    node.once("ready", () =>
-      node.id(function (err, info) {
-        if (err) {
-          return reject(err);
-        }
-        console.log("ipfs id " + info.id);
-        ipfs = node;
-        window.ipfs = ipfs;
-        resolve(ipfs);
-      })
-    );
-  });
+async function initFallback(config) {
+  const node = await window.Ipfs.create(config);
+  const info = await node.id();
+  console.log("ipfs id " + info.id);
+  window.ipfs = node;
+  ipfs = node;
+  return node;
 }
 
 function loadScript(src) {
@@ -47,11 +36,6 @@ export async function init(config) {
       });
       await node.id();
       ipfs = node;
-      ipfs.id((_, r) => {
-        if (/go/i.test(r.agentVersion)) {
-          ipfs.swarm.connect("/dnsaddr/bootstrap.aira.life", console.log);
-        }
-      });
       return ipfs;
     } catch (e) {
       console.warn(e);
@@ -73,5 +57,24 @@ export function cat(hash) {
       }),
   ]);
 }
+
+export const tools = {
+  async cat(hash) {
+    const node = getIpfs();
+    let bufs = [];
+    for await (const buf of node.cat(hash)) {
+      bufs.push(buf);
+    }
+    return Buffer.concat(bufs);
+  },
+  async add(data) {
+    const node = getIpfs();
+    // const { cid } = await node.add(data);
+    // return cid;
+    for await (const { cid } of node.add(data)) {
+      return cid.toString();
+    }
+  },
+};
 
 export default getIpfs;
