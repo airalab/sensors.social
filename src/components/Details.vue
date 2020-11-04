@@ -13,13 +13,19 @@
       }}</Copy>
     </h2>
     <div v-if="last" style="text-align: left;">
-      <p>
+      <p style="text-align: center;">
         <b>{{ date }}</b>
       </p>
-      <p v-for="(param, k) in Object.keys(last.data)" :key="k">
-        <b>{{ param | measurement }}</b>
-        = {{ last.data[param] }}
-      </p>
+      <div style="overflow: hidden; margin: 10px; font-size: 14px;">
+        <p
+          v-for="(param, k) in Object.keys(last.data)"
+          :key="k"
+          style="float: left; margin: 10px 10px 0 0;"
+        >
+          <b>{{ param | measurement }}</b>
+          = {{ last.data[param] | measurementFormat(param) }}
+        </p>
+      </div>
       <p v-if="countTx !== false">
         <b>Datalog</b>
         = {{ countTx }} tx

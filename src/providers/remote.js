@@ -75,7 +75,18 @@ class Provider {
         return result.data.result;
       })
       .catch(() => {
-        return [];
+        return 0;
+      });
+  }
+
+  getCountTxAll() {
+    return axios
+      .get(`${this.url}/api/sensor/count`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return 0;
       });
   }
 
