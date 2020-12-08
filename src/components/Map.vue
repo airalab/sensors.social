@@ -129,6 +129,9 @@ export default {
       return false;
     },
     async addPointPing(point) {
+      if (!point.geo) {
+        return;
+      }
       const coord = point.geo.split(",");
       const color = "#56ce78";
       leaflet
@@ -147,6 +150,9 @@ export default {
         .addTo(map);
     },
     async addPointStatic(point) {
+      if (!point.geo) {
+        return;
+      }
       const coord = point.geo.split(",");
       const color = getColor(scale, point.value);
 
@@ -174,6 +180,9 @@ export default {
       }
     },
     async addPointPath(point) {
+      if (!point.geo) {
+        return;
+      }
       const coord = point.geo.split(",");
       const color = getColor(scale, point.value);
       if (Object.prototype.hasOwnProperty.call(paths, point.sensor_id)) {
