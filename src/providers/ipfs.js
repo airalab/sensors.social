@@ -71,13 +71,12 @@ class Provider {
                 return item.timestamp === data.timestamp;
               }) === undefined)
           ) {
-            const { geo, ...measurement } = data.measurement;
             const point = {
               sensor_id,
               sender,
               model: data.model,
-              geo,
-              data: measurement,
+              geo: data.geo,
+              data: data.measurement,
               timestamp: data.timestamp,
             };
 
