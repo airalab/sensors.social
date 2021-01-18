@@ -4,8 +4,15 @@
     <Types :current="type.toLowerCase()" />
     <Color />
     <Details v-if="point" :point="point" @close="handlerClose" />
-    <Export v-else-if="providerReady && $provider.canExport()" />
     <Header :points="points" />
+    <Emulator
+      v-if="emulator"
+      :time="emulator.time"
+      @start="handlerStartEmulate"
+      @stop="handlerStopEmulate"
+      @play="handlerPlayEmulate"
+      @pause="handlerPauseEmulate"
+    />
     <Map
       ref="map"
       @clickMarker="handlerClick"
@@ -23,10 +30,11 @@ import Types from "../components/Types.vue";
 import Color from "../components/Color.vue";
 import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
-import Export from "../components/Export.vue";
 import Header from "../components/Header.vue";
+import Emulator from "../components/Emulator.vue";
 import * as providers from "../providers";
 import config from "../config";
+import EmulatorLib from "../providers/emulator";
 
 export default {
   props: {
@@ -51,6 +59,8 @@ export default {
       providerReady: false,
       point: null,
       points: {},
+      status: "online",
+      emulator: null,
     };
   },
   components: {
@@ -59,8 +69,8 @@ export default {
     Color,
     Details,
     Provider,
-    Export,
     Header,
+    Emulator,
   },
   mounted() {
     if (this.provider === "ipfs") {
@@ -89,10 +99,54 @@ export default {
         });
         this.$provider.watch(this.handlerNewPoint);
       });
+    if (this.provider === "remote") {
+      const iRemote = setInterval(() => {
+        if (this.$provider && this.$provider.connection) {
+          clearInterval(iRemote);
+          this.emulator = new EmulatorLib(this.$provider);
+        }
+      }, 1000);
+    }
   },
   methods: {
+    handlerStartEmulate({ start, end, speed, interval }) {
+      this.status = "emulator";
+      this.$provider.watch(null);
+      this.handlerClose();
+      this.$refs.map.clear();
+
+      this.emulator.emulate(
+        start,
+        end,
+        speed,
+        interval,
+        (point) => {
+          this.handlerNewPoint(point);
+        },
+        () => {
+          // console.log("stop");
+        }
+      );
+    },
+    handlerStopEmulate() {
+      this.emulator.stop();
+      this.status = "online";
+      this.handlerClose();
+      this.$refs.map.clear();
+      this.$provider.getSensors().then((points) => {
+        points.forEach((point) => {
+          this.handlerNewPoint(point);
+        });
+        this.$provider.watch(this.handlerNewPoint);
+      });
+    },
+    handlerPauseEmulate() {
+      this.emulator.pause();
+    },
+    handlerPlayEmulate() {
+      this.emulator.play();
+    },
     handlerNewPoint(point) {
-      // console.log("new", point);
       if (
         point.model !== 1 &&
         !Object.prototype.hasOwnProperty.call(
@@ -123,8 +177,15 @@ export default {
       }
     },
     async handlerClick(point) {
-      const log = await this.$provider.getHistoryBySensor(point.sensor_id);
-      const count = await this.$provider.getCountTxBySender(point.sender);
+      let log;
+      let count;
+      if (this.status === "emulator") {
+        log = await this.emulator.getHistoryBySensor(point.sensor_id);
+        count = await this.emulator.getCountTxBySender(point.sender);
+      } else {
+        log = await this.$provider.getHistoryBySensor(point.sensor_id);
+        count = await this.$provider.getCountTxBySender(point.sender);
+      }
       this.point = {
         ...point,
         count,

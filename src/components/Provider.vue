@@ -57,6 +57,7 @@ export default {
       }
     }
     if (this.current == "remote") {
+      this.viewSettings("remote");
       setInterval(() => {
         if (this.$provider) {
           this.isConnectionRemote = this.$provider.connection;

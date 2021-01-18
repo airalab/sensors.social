@@ -36,6 +36,16 @@ class Provider {
     return Promise.resolve([]);
   }
 
+  getHistoryByDate(start, end) {
+    const history = this.history;
+    for (const sensor in history) {
+      history[sensor] = history[sensor].filter((point) => {
+        return point.timestamp >= start && point.timestamp <= end;
+      });
+    }
+    return Promise.resolve(history);
+  }
+
   getHistoryBySensor(sensor) {
     return Promise.resolve(this.history[sensor]);
   }
@@ -86,10 +96,7 @@ class Provider {
             ) {
               this.history[sensor_id] = [];
             }
-            this.history[sensor_id].push({
-              data: point.data,
-              timestamp: point.timestamp,
-            });
+            this.history[sensor_id].push(point);
 
             cb(point);
           }

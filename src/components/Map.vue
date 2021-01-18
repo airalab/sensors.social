@@ -10,6 +10,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import generate, { getColor, getColorRGB } from "../utils/color";
 import "leaflet-arrowheads";
+import Queue from "js-queue";
 
 delete leaflet.Icon.Default.prototype._getIconUrl;
 leaflet.Icon.Default.mergeOptions({
@@ -26,6 +27,8 @@ const scale = generate(
 let map;
 let markers;
 let paths = {};
+
+const queue = new Queue();
 
 export default {
   props: ["zoom", "lat", "lng"],
@@ -118,15 +121,22 @@ export default {
         resolve(false);
       });
     },
-    async addPoint(point) {
-      if (point.model === 1) {
-        return this.addPointPing(point);
-      } else if (point.model === 2) {
-        return this.addPointStatic(point);
-      } else if (point.model === 3) {
-        return this.addPointPath(point);
+    clear() {
+      markers.clearLayers();
+    },
+    addPoint(point) {
+      queue.add(makeRequest.bind(queue, this, point));
+
+      async function makeRequest(component, point) {
+        if (point.model === 1) {
+          await component.addPointPing(point);
+        } else if (point.model === 2) {
+          await component.addPointStatic(point);
+        } else if (point.model === 3) {
+          await component.addPointPath(point);
+        }
+        this.next();
       }
-      return false;
     },
     async addPointPing(point) {
       if (!point.geo) {

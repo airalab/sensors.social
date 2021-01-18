@@ -42,13 +42,24 @@ class Provider {
     return true;
   }
 
-  exportUrl(days = 1, sensor = "all") {
-    return `${this.url}/api/sensor/csv/${sensor}/${days}`;
+  exportUrl(start, end) {
+    return `${this.url}/api/sensor/csv/${start}/${end}`;
   }
 
   getSensors() {
     return axios
       .get(`${this.url}/api/sensor/all`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return [];
+      });
+  }
+
+  getHistoryByDate(start, end) {
+    return axios
+      .get(`${this.url}/api/sensor/history/${start}/${end}`)
       .then((result) => {
         return result.data.result;
       })

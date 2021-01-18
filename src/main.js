@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueHighcharts from "vue-highcharts";
 import VueClipboard from "vue-clipboard2";
 import Notifications from "vue-notification";
+import VCalendar from "v-calendar";
 import App from "./App.vue";
 import router from "./router";
 
@@ -10,6 +11,7 @@ Vue.use(VueHighcharts);
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(Notifications);
+Vue.use(VCalendar, {});
 
 Vue.filter("measurement", function (value) {
   const types = {
