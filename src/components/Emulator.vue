@@ -14,11 +14,14 @@
             mode="dateTime"
             :model-config="modelConfig"
           >
-            <template v-slot="{ inputValue, togglePopover }">
+            <template v-slot="{ inputValue, inputEvents, togglePopover }">
               <div class="field-calendar">
                 <input
                   class="input-calendar"
                   :value="inputValue"
+                  @input="inputEvents.input"
+                  @change="inputEvents.change"
+                  @keyup="inputEvents.keyup"
                   :disabled="status > 0"
                 />
                 <button
@@ -48,11 +51,14 @@
             mode="dateTime"
             :model-config="modelConfig"
           >
-            <template v-slot="{ inputValue, togglePopover }">
+            <template v-slot="{ inputValue, inputEvents, togglePopover }">
               <div class="field-calendar">
                 <input
                   class="input-calendar"
                   :value="inputValue"
+                  @input="inputEvents.input"
+                  @change="inputEvents.change"
+                  @keyup="inputEvents.keyup"
                   :disabled="status > 0"
                 />
                 <button
@@ -87,13 +93,16 @@
       </div>
       <div style="margin: 10px 0;">
         <button class="btn" @click="run" v-if="status === 0">Start</button>
+        <button class="btn" v-else-if="status === 3" disabled>Load...</button>
         <template v-else>
           <button class="btn" @click="play" v-if="status === 2">Play</button>
           <button class="btn" @click="pause" v-if="status === 1">Pause</button>
           <button class="btn" @click="stop">Stop</button>
         </template>
       </div>
-      <div v-if="status > 0" class="time">{{ timeFormat }}</div>
+      <div v-if="(status == 1 || status == 2) && time > 0" class="time">
+        {{ timeFormat }}
+      </div>
       <a class="link" :href="$provider.exportUrl(startTimestamp, endTimestamp)">
         Download data in csv format
       </a>
@@ -105,18 +114,17 @@
 import moment from "moment";
 
 export default {
-  props: ["time"],
+  props: ["time", "status"],
   data() {
     return {
       modelConfig: {
         type: "string",
         mask: "DD.MM.YYYY HH:mm:00",
       },
-      start: moment().subtract(7, "day").format("DD.MM.YYYY HH:mm:00"),
+      start: moment().subtract(1, "day").format("DD.MM.YYYY HH:mm:00"),
       end: moment().format("DD.MM.YYYY HH:mm:00"),
       speed: 3600,
       interval: 1000,
-      status: 0,
       win: true,
     };
   },
@@ -133,7 +141,6 @@ export default {
   },
   methods: {
     run() {
-      this.status = 1;
       this.$emit("start", {
         start: this.startTimestamp,
         end: this.endTimestamp,
@@ -142,15 +149,12 @@ export default {
       });
     },
     stop() {
-      this.status = 0;
       this.$emit("stop");
     },
     pause() {
-      this.status = 2;
       this.$emit("pause");
     },
     play() {
-      this.status = 1;
       this.$emit("play");
     },
     minimize() {

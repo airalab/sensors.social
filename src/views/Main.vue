@@ -8,6 +8,7 @@
     <Emulator
       v-if="emulator"
       :time="emulator.time"
+      :status="emulator.status"
       @start="handlerStartEmulate"
       @stop="handlerStopEmulate"
       @play="handlerPlayEmulate"

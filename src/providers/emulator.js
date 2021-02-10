@@ -34,10 +34,16 @@ class Emulator {
     this.status = 2;
   }
 
+  load() {
+    this.status = 3;
+  }
+
   async emulate(start, end, speed, stepInterval = 1000, cb, cbEnd) {
-    this.play();
+    this.time = 0;
+    this.load();
     this.history = {};
     let history = { ...(await this.provider.getHistoryByDate(start, end)) };
+    this.play();
 
     let isWork = false;
 
