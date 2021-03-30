@@ -45,4 +45,11 @@ export default {
       "swarm.connect",
     ],
   },
+  MAP: {
+    zoom: "3",
+    position: {
+      lat: "48.9802",
+      lng: "15.1172",
+    },
+  },
 };

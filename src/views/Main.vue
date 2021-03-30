@@ -46,13 +46,13 @@ export default {
       default: "pm10",
     },
     zoom: {
-      default: "12",
+      default: config.MAP.zoom,
     },
     lat: {
-      default: "53.5364",
+      default: config.MAP.position.lat,
     },
     lng: {
-      default: "49.3139",
+      default: config.MAP.position.lng,
     },
   },
   data() {
