@@ -3,7 +3,15 @@
     <Provider :current="provider" />
     <Types :current="type.toLowerCase()" />
     <Color />
-    <Details v-if="point" :point="point" @close="handlerClose" />
+    <Details
+      v-if="point"
+      :sender="point.sender"
+      :sensor_id="point.sensor_id"
+      :log="point.log"
+      :model="point.model"
+      :count="point.count"
+      @close="handlerClose"
+    />
     <Header :points="points" />
     <Emulator
       v-if="emulator"
@@ -162,10 +170,13 @@ export default {
         value: point.data[this.type.toLowerCase()],
       });
       if (this.point && this.point.sensor_id === point.sensor_id) {
-        this.point.log.push({
-          data: point.data,
-          timestamp: point.timestamp,
-        });
+        this.$set(this.point, "log", [
+          ...this.point.log,
+          {
+            data: point.data,
+            timestamp: point.timestamp,
+          },
+        ]);
       }
 
       if (

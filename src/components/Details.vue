@@ -2,15 +2,15 @@
   <div class="panel">
     <button class="close" @click="$emit('close')">&Cross;</button>
     <h2 class="title">
-      <Avatar :address="point.sender" class="icon" />
-      <Copy :msg="point.sender" :title="`Address: ${point.sender}`">{{
-        point.sender | collapse
-      }}</Copy
-      >|
-      <Avatar :address="point.sensor_id" class="icon" />
-      <Copy :msg="point.sensor_id" :title="`Sensor id: ${point.sensor_id}`">{{
-        point.sensor_id | collapse
-      }}</Copy>
+      <Avatar :address="sender" class="icon" />
+      <Copy :msg="sender" :title="`Address: ${sender}`">
+        {{ sender | collapse }}
+      </Copy>
+      |
+      <Avatar :address="sensor_id" class="icon" />
+      <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">
+        {{ sensor_id | collapse }}
+      </Copy>
     </h2>
     <div v-if="last" style="text-align: left;">
       <p style="text-align: center;">
@@ -44,7 +44,7 @@ import Avatar from "./Avatar.vue";
 import Copy from "./Copy.vue";
 
 export default {
-  props: ["point"],
+  props: ["sender", "sensor_id", "log", "model", "count"],
   components: {
     Chart,
     Avatar,
@@ -55,40 +55,50 @@ export default {
       points: [],
     };
   },
-  mounted() {
-    if (this.point.model !== 1) {
-      this.points = [...this.point.log];
-    }
-  },
   watch: {
-    point: {
+    sensor_id: {
+      immediate: true,
       handler: function (newValue, oldValue) {
-        if (newValue.sensor_id !== oldValue.sensor_id) {
-          if (this.point.model !== 1) {
-            this.points = [...this.point.log];
+        if (newValue !== oldValue) {
+          if (this.model !== 1) {
+            this.points = [...this.log];
           } else {
             this.points = [];
           }
-        } else if (this.$refs.chart) {
-          const newPoint = this.point.log[this.point.log.length - 1];
-          const series = ["pm10", "pm25"];
-          for (const i in series) {
-            this.$refs.chart.addPoint(i, [
-              Number(newPoint.timestamp),
-              newPoint.data[series[i]],
-            ]);
-          }
         }
       },
-      deep: true,
+    },
+    log: {
+      immediate: false,
+      handler: function (newValue) {
+        this.$nextTick(() => {
+          if (this.$refs.chart) {
+            const count =
+              this.$refs.chart.$refs.chart.chart.series[0].points.length -
+              newValue.length;
+            if (count < 0) {
+              const series = ["pm10", "pm25"];
+              const newPoints = newValue.slice(count);
+              for (const i in series) {
+                for (let point of newPoints) {
+                  this.$refs.chart.addPoint(i, [
+                    Number(point.timestamp),
+                    point.data[series[i]],
+                  ]);
+                }
+              }
+            }
+          }
+        });
+      },
     },
   },
   computed: {
     countTx: function () {
-      return this.point.count;
+      return this.count;
     },
     last: function () {
-      return this.point.log[this.point.log.length - 1];
+      return this.log[this.log.length - 1];
     },
     date: function () {
       return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
