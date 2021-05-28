@@ -8,9 +8,6 @@ export default {
           enabled: true,
         },
       },
-      // EXPERIMENTAL: {
-      //   pubsub: true,
-      // },
       config: {
         Addresses: {
           Swarm: [
@@ -32,7 +29,6 @@ export default {
         ],
       },
     },
-    // cdn: "https://unpkg.com/ipfs@0.46.0/dist/index.min.js",
     cdn: "https://unpkg.com/ipfs@0.52.2/dist/index.min.js",
     permission: [
       "id",
