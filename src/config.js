@@ -45,6 +45,7 @@ export default {
       "swarm.connect",
     ],
   },
+  REMOTE_PROVIDER: "https://roseman.airalab.org/",
   MAP: {
     zoom: "3",
     position: {

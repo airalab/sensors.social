@@ -18,10 +18,7 @@
       History from DAO IPCI Blockchain
     </button>
     <div v-else class="settings">
-      <input
-        v-model="settings.remote.url"
-        placeholder="https://roseman.airalab.org/"
-      />
+      <input v-model="settings.remote.url" :placeholder="remote_placeholder" />
       <button
         @click="setSetting('remote')"
         :class="{ active: current == 'remote' }"
@@ -34,15 +31,17 @@
 </template>
 
 <script>
+import config from "../config";
 export default {
   props: ["current"],
   data() {
     return {
       isConnectionRemote: null,
       settingsType: null,
+      remote_placeholder: config.REMOTE_PROVIDER,
       settings: {
         remote: {
-          url: "https://roseman.airalab.org/",
+          url: config.REMOTE_PROVIDER,
         },
       },
     };
