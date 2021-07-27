@@ -20,8 +20,11 @@ Vue.filter("measurement", function (value) {
     temperature: "Tmp",
     pressure: "Pr",
     humidity: "Hm",
+    co: "CO",
+    nh3: "NH3",
+    no2: "NO2",
   };
-  return types[value] || "";
+  return types[value] || value;
 });
 Vue.filter("measurementFormat", function (value, type) {
   const types = {

@@ -3,6 +3,9 @@
     <select v-model="type">
       <option value="pm10">PM10</option>
       <option value="pm25">PM2.5</option>
+      <option value="co">CO</option>
+      <option value="nh3">NH3</option>
+      <option value="no2">NO2</option>
     </select>
   </div>
 </template>

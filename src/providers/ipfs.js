@@ -82,12 +82,16 @@ class Provider {
               }) === undefined)
           ) {
             const { timestamp, ...measurement } = data.measurement;
+            const measurementLowerCase = {};
+            for (var key in measurement) {
+              measurementLowerCase[key.toLowerCase()] = measurement[key];
+            }
             const point = {
               sensor_id,
               sender,
               model: data.model,
               geo: data.geo,
-              data: measurement,
+              data: measurementLowerCase,
               timestamp,
             };
 
