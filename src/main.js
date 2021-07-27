@@ -31,6 +31,9 @@ Vue.filter("measurementFormat", function (value, type) {
     temperature: "℃",
     pressure: "mmHg",
     humidity: "%",
+    co: "mg/m3",
+    nh3: "mg/m3",
+    no2: "mg/m3",
   };
   return types[type] ? `${value} ${types[type]}` : value;
 });
