@@ -2,7 +2,7 @@
   <div>
     <Provider :current="provider" />
     <Types :current="type.toLowerCase()" />
-    <Color />
+    <Color :type="type.toLowerCase()" />
     <Details
       v-if="point"
       :sender="point.sender"
@@ -24,6 +24,7 @@
     />
     <Map
       ref="map"
+      :type="type.toLowerCase()"
       @clickMarker="handlerClick"
       :zoom="zoom"
       :lat="lat"

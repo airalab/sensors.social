@@ -15,36 +15,37 @@
         margin-top: 12px;
       "
     >
-      <div style="position: absolute; bottom: 100%;">500</div>
-      <div style="position: absolute; bottom: 80%;">100</div>
-      <div style="position: absolute; bottom: 60%;">75</div>
-      <div style="position: absolute; bottom: 40%;">50</div>
-      <div style="position: absolute; bottom: 20%;">25</div>
-      <div style="position: absolute; bottom: 0%;">0</div>
+      <div
+        v-for="(item, k) in range"
+        :key="k"
+        :style="`position: absolute; bottom: ${item[0]}%;`"
+      >
+        {{ item[1] }}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import generate, { getGradient } from "../utils/color";
+import measurement from "../utils/measurement";
 
 export default {
+  props: ["type"],
   data() {
     return {
       grad: "",
+      range: "",
     };
   },
   mounted() {
-    const scaleGrad = generate([
-      "#00796b",
-      "#00796b",
-      "#f9a825",
-      "#e65100",
-      "#dd2c00",
-      "#dd2c00",
-      "#8c0084",
+    const scaleParams = measurement(this.type);
+    const scaleGrad = generate(scaleParams.colors, [
+      scaleParams.range[0],
+      scaleParams.range[scaleParams.range.length - 1],
     ]);
-    this.grad = getGradient(scaleGrad, 7);
+    this.range = scaleParams.rangeView;
+    this.grad = getGradient(scaleGrad, scaleParams.colors.length);
   },
 };
 </script>

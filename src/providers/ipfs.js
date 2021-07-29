@@ -1,5 +1,6 @@
 import { init as initIpfs } from "../utils/ipfs";
 import { getAgents } from "../utils/utils";
+import { measurements as converter } from "../utils/measurement";
 
 class Provider {
   constructor(config) {
@@ -84,7 +85,10 @@ class Provider {
             const { timestamp, ...measurement } = data.measurement;
             const measurementLowerCase = {};
             for (var key in measurement) {
-              measurementLowerCase[key.toLowerCase()] = measurement[key];
+              const name = key.toLowerCase();
+              measurementLowerCase[name] = converter[name]
+                ? converter[name].calc(measurement[key])
+                : measurement[key];
             }
             const point = {
               sensor_id,

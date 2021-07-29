@@ -9,6 +9,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import generate, { getColor, getColorRGB } from "../utils/color";
+import measurement from "../utils/measurement";
 import "leaflet-arrowheads";
 import Queue from "js-queue";
 
@@ -19,11 +20,6 @@ leaflet.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-const scale = generate(
-  ["#00796b", "#00796b", "#f9a825", "#e65100", "#dd2c00", "#dd2c00", "#8c0084"],
-  [0, 25, 50, 75, 100, 500]
-);
-
 let map;
 let markers;
 let paths = {};
@@ -31,8 +27,16 @@ let paths = {};
 const queue = new Queue();
 
 export default {
-  props: ["zoom", "lat", "lng"],
+  props: ["zoom", "lat", "lng", "type"],
+  data() {
+    return {
+      scale: null,
+    };
+  },
   mounted() {
+    const scaleParams = measurement(this.type);
+    this.scale = generate(scaleParams.colors, scaleParams.range);
+
     map = leaflet.map("map").setView([this.lat, this.lng], this.zoom);
     leaflet
       .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -72,7 +76,7 @@ export default {
         .catch(() => {});
     });
 
-    const iconCreateFunction = function (cluster) {
+    const iconCreateFunction = (cluster) => {
       const markers = cluster.getAllChildMarkers();
       const childCount = cluster.getChildCount();
       let sum = 0;
@@ -82,8 +86,8 @@ export default {
       if (childCount > 0) {
         sum = sum / childCount;
       }
-      const color = getColorRGB(scale, sum);
-      const isDark = scale(sum).luminance() < 0.4;
+      const color = getColorRGB(this.scale, sum);
+      const isDark = this.scale(sum).luminance() < 0.4;
 
       return new leaflet.DivIcon({
         html:
@@ -164,7 +168,7 @@ export default {
         return;
       }
       const coord = point.geo.split(",");
-      const color = getColor(scale, point.value);
+      const color = getColor(this.scale, point.value);
 
       const m = await this.findMarker(point.sensor_id, markers);
       if (m) {
@@ -194,7 +198,7 @@ export default {
         return;
       }
       const coord = point.geo.split(",");
-      const color = getColor(scale, point.value);
+      const color = getColor(this.scale, point.value);
       if (Object.prototype.hasOwnProperty.call(paths, point.sensor_id)) {
         if (paths[point.sensor_id].getLatLngs().length === 1) {
           paths[point.sensor_id]
