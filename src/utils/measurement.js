@@ -23,7 +23,7 @@ export const measurements = {
       [0, 0],
     ],
     calc: function (v) {
-      return v;
+      return Number(v);
     },
   },
   pm25: {
@@ -46,7 +46,7 @@ export const measurements = {
       [0, 0],
     ],
     calc: function (v) {
-      return v;
+      return Number(v);
     },
   },
   co: {
@@ -138,7 +138,7 @@ export const measurements = {
       [0, -50],
     ],
     calc: function (v) {
-      return v;
+      return Number(v);
     },
   },
 };
