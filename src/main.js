@@ -23,6 +23,7 @@ Vue.filter("measurement", function (value) {
     co: "CO",
     nh3: "NH3",
     no2: "NO2",
+    pm1: "PM1",
   };
   return types[value] || value;
 });

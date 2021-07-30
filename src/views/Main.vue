@@ -10,6 +10,7 @@
       :log="point.log"
       :model="point.model"
       :count="point.count"
+      :type="type.toLowerCase()"
       @close="handlerClose"
     />
     <Header :points="points" />

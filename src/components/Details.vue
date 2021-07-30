@@ -32,7 +32,7 @@
       </p>
     </div>
     <div v-if="points.length > 0">
-      <Chart ref="chart" :log="points" />
+      <Chart ref="chart" :log="points" :series="series" :type="type" />
     </div>
   </div>
 </template>
@@ -44,7 +44,7 @@ import Avatar from "./Avatar.vue";
 import Copy from "./Copy.vue";
 
 export default {
-  props: ["sender", "sensor_id", "log", "model", "count"],
+  props: ["sender", "sensor_id", "log", "model", "count", "type"],
   components: {
     Chart,
     Avatar,
@@ -77,7 +77,10 @@ export default {
               this.$refs.chart.$refs.chart.chart.series[0].points.length -
               newValue.length;
             if (count < 0) {
-              const series = ["pm10", "pm25"];
+              let series = [this.type];
+              if (this.type === "pm10" || this.type === "pm25") {
+                series = ["pm10", "pm25"];
+              }
               const newPoints = newValue.slice(count);
               for (const i in series) {
                 for (let point of newPoints) {
@@ -102,6 +105,41 @@ export default {
     },
     date: function () {
       return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
+    },
+    series: function () {
+      if (this.type === "pm10" || this.type === "pm25") {
+        return [
+          {
+            name: "PM10",
+            color: "#e8b738",
+            lineWidth: 1,
+            data: [],
+            options: {
+              name: "pm10",
+            },
+          },
+          {
+            name: "PM2.5",
+            color: "#89b268",
+            lineWidth: 1,
+            data: [],
+            options: {
+              name: "pm25",
+            },
+          },
+        ];
+      }
+      return [
+        {
+          name: this.type,
+          color: "#e8b738",
+          lineWidth: 1,
+          data: [],
+          options: {
+            name: this.type,
+          },
+        },
+      ];
     },
   },
 };

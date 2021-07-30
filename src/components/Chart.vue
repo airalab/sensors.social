@@ -8,7 +8,7 @@
 import moment from "moment";
 
 export default {
-  props: ["log"],
+  props: ["log", "series", "type"],
   data() {
     return {
       datacollection: null,
@@ -52,35 +52,23 @@ export default {
     };
   },
   mounted() {
+    this.options.yAxis.min = this.getMinY();
     this.fillData();
   },
   watch: {
     log: function () {
       this.fillData();
     },
+    type: function () {
+      this.options.yAxis.min = this.getMinY();
+    },
   },
   methods: {
+    getMinY() {
+      return this.type === "temperature" ? -50 : 0;
+    },
     fillData() {
-      const series = [
-        {
-          name: "PM10",
-          color: "#e8b738",
-          lineWidth: 1,
-          data: [],
-          options: {
-            name: "pm10",
-          },
-        },
-        {
-          name: "PM2.5",
-          color: "#89b268",
-          lineWidth: 1,
-          data: [],
-          options: {
-            name: "pm25",
-          },
-        },
-      ];
+      const series = this.series;
       for (const i in series) {
         series[i].data = this.log.map((item) => {
           return [Number(item.timestamp), item.data[series[i].options.name]];

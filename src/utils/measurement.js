@@ -118,6 +118,29 @@ export const measurements = {
       return converterPpmToMgm3(v, 46.01);
     },
   },
+  temperature: {
+    colors: [
+      "#313695",
+      "#313695",
+      "#7fb6d6",
+      "#f7f7f7",
+      "#fa9b58",
+      "#eb5b3b",
+      "#a50026",
+    ],
+    range: [-50, -25, -10, 10, 25, 50],
+    rangeView: [
+      [100, 50],
+      [80, 25],
+      [60, 10],
+      [40, -10],
+      [20, -25],
+      [0, -50],
+    ],
+    calc: function (v) {
+      return v;
+    },
+  },
 };
 
 export default function (param) {
