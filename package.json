@@ -9,6 +9,7 @@
     "pretty": "prettier --write \"./src/**/*.{js,vue,ts,jsx,json}\""
   },
   "dependencies": {
+    "@polkadot/api": "^5.4.1",
     "axios": "^0.19.2",
     "chroma-js": "^2.1.0",
     "core-js": "^3.6.4",

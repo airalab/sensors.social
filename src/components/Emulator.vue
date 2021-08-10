@@ -169,7 +169,7 @@ export default {
   /* overflow: hidden; */
   width: 230px;
   position: absolute;
-  top: 29px;
+  top: 108px;
   left: 0;
   z-index: 10000000;
   background: rgba(255, 255, 255, 0.9);

@@ -14,6 +14,7 @@
       @close="handlerClose"
     />
     <Header :points="points" />
+    <ChainInfo v-if="provider === 'remote'" />
     <Emulator
       v-if="emulator"
       :time="emulator.time"
@@ -43,6 +44,7 @@ import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
 import Emulator from "../components/Emulator.vue";
+import ChainInfo from "../components/ChainInfo.vue";
 import * as providers from "../providers";
 import config from "../config";
 import EmulatorLib from "../providers/emulator";
@@ -82,6 +84,7 @@ export default {
     Provider,
     Header,
     Emulator,
+    ChainInfo,
   },
   mounted() {
     if (this.provider === "ipfs") {
