@@ -39,6 +39,9 @@ Vue.filter("measurementFormat", function (value, type) {
   return types[type] ? `${value} ${types[type]}` : value;
 });
 Vue.filter("collapse", function (value) {
+  if (!value) {
+    return "";
+  }
   return value.slice(0, 6) + "..." + value.slice(-4);
 });
 

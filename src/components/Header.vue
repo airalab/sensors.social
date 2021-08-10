@@ -1,7 +1,10 @@
 <template>
   <div class="header">
     <div class="header-content">
-      <HeaderTitle v-if="title" />
+      <template v-if="title">
+        <HeaderTitle />
+        <HeaderBanner />
+      </template>
       <HeaderMarquee v-else :points="points" />
     </div>
     <div class="nav">
@@ -25,11 +28,12 @@
 
 <script>
 import HeaderTitle from "./HeaderTitle.vue";
+import HeaderBanner from "./HeaderBanner.vue";
 import HeaderMarquee from "./HeaderMarquee.vue";
 
 export default {
   props: ["points"],
-  components: { HeaderTitle, HeaderMarquee },
+  components: { HeaderTitle, HeaderBanner, HeaderMarquee },
   data() {
     return {
       title: true,
@@ -62,6 +66,7 @@ export default {
 }
 .header-content {
   flex: 1 1 auto;
+  display: flex;
 }
 .header .nav {
   margin: -2px 0px 0 10px;
