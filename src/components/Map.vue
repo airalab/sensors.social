@@ -22,7 +22,7 @@ leaflet.Icon.Default.mergeOptions({
 
 let map;
 let markers;
-let paths = {};
+// let paths = {};
 
 const queue = new Queue();
 
@@ -137,8 +137,7 @@ export default {
         } else if (point.model === 2) {
           await component.addPointStatic(point);
         } else if (point.model === 3) {
-          // await component.addPointPath(point);
-          await component.addPointStatic(point);
+          await component.addPointPath(point);
         }
         this.next();
       }
@@ -200,41 +199,71 @@ export default {
       }
       const coord = point.geo.split(",");
       const color = getColor(this.scale, point.value);
-      if (Object.prototype.hasOwnProperty.call(paths, point.sensor_id)) {
-        if (paths[point.sensor_id].getLatLngs().length === 1) {
-          paths[point.sensor_id]
-            .arrowheads({
-              yawn: 40,
-              fill: true,
-              frequency: "endonly",
-            })
-            .setStyle({
-              color: color,
-            })
-            .addLatLng(coord);
-        } else {
-          paths[point.sensor_id]
-            .setStyle({
-              color: color,
-            })
-            .addLatLng(coord);
-        }
+
+      const m = await this.findMarker(point.sensor_id, markers);
+      if (m) {
+        m.setLatLng(new leaflet.LatLng(coord[0], coord[1])).setStyle({
+          fillColor: color,
+          color: color,
+        });
       } else {
-        const polyline = leaflet
-          .polyline([coord], {
+        const marker = leaflet
+          .circleMarker(new leaflet.LatLng(coord[0], coord[1]), {
+            radius: 15,
+            fillColor: color,
             color: color,
-            // dashArray: "10",
-            weight: 5,
+            weight: 2,
             opacity: 0.7,
+            fillOpacity: 0.7,
             data: point,
           })
           .on("click", (e) => {
             this.$emit("clickMarker", e.target.options.data);
-          })
-          .addTo(map);
-        paths[point.sensor_id] = polyline;
+          });
+        markers.addLayer(marker);
       }
     },
+    // async addPointPath(point) {
+    //   if (!point.geo) {
+    //     return;
+    //   }
+    //   const coord = point.geo.split(",");
+    //   const color = getColor(this.scale, point.value);
+    //   if (Object.prototype.hasOwnProperty.call(paths, point.sensor_id)) {
+    //     if (paths[point.sensor_id].getLatLngs().length === 1) {
+    //       paths[point.sensor_id]
+    //         .arrowheads({
+    //           yawn: 40,
+    //           fill: true,
+    //           frequency: "endonly",
+    //         })
+    //         .setStyle({
+    //           color: color,
+    //         })
+    //         .addLatLng(coord);
+    //     } else {
+    //       paths[point.sensor_id]
+    //         .setStyle({
+    //           color: color,
+    //         })
+    //         .addLatLng(coord);
+    //     }
+    //   } else {
+    //     const polyline = leaflet
+    //       .polyline([coord], {
+    //         color: color,
+    //         // dashArray: "10",
+    //         weight: 5,
+    //         opacity: 0.7,
+    //         data: point,
+    //       })
+    //       .on("click", (e) => {
+    //         this.$emit("clickMarker", e.target.options.data);
+    //       })
+    //       .addTo(map);
+    //     paths[point.sensor_id] = polyline;
+    //   }
+    // },
   },
 };
 </script>
