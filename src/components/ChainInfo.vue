@@ -9,7 +9,7 @@
         Block: <b>{{ block }}</b>
       </div>
       <div :class="[status ? 'green' : 'red']">
-        Date: <b>{{ time }}</b>
+        Date: <b>{{ timeFormat }}</b>
       </div>
     </template>
   </div>
@@ -36,16 +36,29 @@ export default {
     });
 
     await substrate.api.rpc.chain.subscribeNewHeads(async (header) => {
-      const time = (await substrate.api.query.timestamp.now()).toNumber();
+      this.time = (await substrate.api.query.timestamp.now()).toNumber();
+      this.block = header.number;
+    });
+
+    this.upStatus();
+  },
+  computed: {
+    timeFormat: function () {
+      return new Date(this.time).toLocaleString();
+    },
+  },
+  methods: {
+    upStatus() {
       const currentTime = Date.now();
-      if (time + 15000 < currentTime) {
+      if (this.time + 15000 < currentTime) {
         this.status = false;
       } else {
         this.status = true;
       }
-      this.block = header.number;
-      this.time = new Date(time).toLocaleString();
-    });
+      setTimeout(() => {
+        this.upStatus();
+      }, 1000);
+    },
   },
 };
 </script>
