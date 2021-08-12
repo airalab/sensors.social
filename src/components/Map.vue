@@ -137,7 +137,8 @@ export default {
         } else if (point.model === 2) {
           await component.addPointStatic(point);
         } else if (point.model === 3) {
-          await component.addPointPath(point);
+          // await component.addPointPath(point);
+          await component.addPointStatic(point);
         }
         this.next();
       }
