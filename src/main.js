@@ -5,6 +5,7 @@ import Notifications from "vue-notification";
 import VCalendar from "v-calendar";
 import App from "./App.vue";
 import router from "./router";
+import { toFixed } from "./utils/measurement";
 
 Vue.config.productionTip = false;
 Vue.use(VueHighcharts);
@@ -36,7 +37,7 @@ Vue.filter("measurementFormat", function (value, type) {
     nh3: "mg/m3",
     no2: "mg/m3",
   };
-  return types[type] ? `${value} ${types[type]}` : value;
+  return types[type] ? `${toFixed(value)} ${types[type]}` : toFixed(value);
 });
 Vue.filter("collapse", function (value) {
   if (!value) {

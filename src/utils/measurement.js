@@ -1,5 +1,8 @@
+export function toFixed(num, dec = 4) {
+  return +Number(num).toFixed(dec);
+}
 function converterPpmToMgm3(v, molecularWeight) {
-  return Number(+((v * molecularWeight) / 24.05526).toFixed(4));
+  return toFixed((v * molecularWeight) / 24.05526);
 }
 
 export const measurements = {
@@ -23,7 +26,7 @@ export const measurements = {
       [0, 0],
     ],
     calc: function (v) {
-      return Number(v);
+      return toFixed(Number(v));
     },
   },
   pm25: {
@@ -46,7 +49,7 @@ export const measurements = {
       [0, 0],
     ],
     calc: function (v) {
-      return Number(v);
+      return toFixed(Number(v));
     },
   },
   co: {
@@ -138,7 +141,7 @@ export const measurements = {
       [0, -50],
     ],
     calc: function (v) {
-      return Number(v);
+      return toFixed(Number(v));
     },
   },
 };
