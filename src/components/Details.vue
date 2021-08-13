@@ -34,6 +34,9 @@
     <div v-if="points.length > 0">
       <Chart ref="chart" :log="points" :series="series" :type="type" />
     </div>
+    <div v-if="link">
+      <a :href="link" target="_blank">{{ link }}</a>
+    </div>
   </div>
 </template>
 
@@ -42,6 +45,7 @@ import moment from "moment";
 import Chart from "./Chart.vue";
 import Avatar from "./Avatar.vue";
 import Copy from "./Copy.vue";
+import sensors from "../sensors";
 
 export default {
   props: ["sender", "sensor_id", "log", "model", "count", "type"],
@@ -97,6 +101,9 @@ export default {
     },
   },
   computed: {
+    link: function () {
+      return sensors[this.sensor_id] ? sensors[this.sensor_id].link : "";
+    },
     countTx: function () {
       return this.count;
     },

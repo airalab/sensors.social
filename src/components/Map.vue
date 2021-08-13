@@ -12,6 +12,7 @@ import generate, { getColor, getColorRGB } from "../utils/color";
 import measurement from "../utils/measurement";
 import "leaflet-arrowheads";
 import Queue from "js-queue";
+import sensors from "../sensors";
 
 delete leaflet.Icon.Default.prototype._getIconUrl;
 leaflet.Icon.Default.mergeOptions({
@@ -199,27 +200,55 @@ export default {
       }
       const coord = point.geo.split(",");
       const color = getColor(this.scale, point.value);
+      const colorRgb = getColorRGB(this.scale, point.value);
+
+      function getIcon(sensor_id) {
+        if (sensors[sensor_id]) {
+          return leaflet.divIcon({
+            html: `<img src="${sensors[sensor_id].icon}" alt="" style="border: 3px solid rgba(${colorRgb}, 0.7);width: 40px; height: 40px; border-radius: 50%;">`,
+            iconSize: [40, 40],
+            className: "marker-icon",
+          });
+        }
+        return false;
+      }
 
       const m = await this.findMarker(point.sensor_id, markers);
+      const icon = getIcon(point.sensor_id);
       if (m) {
-        m.setLatLng(new leaflet.LatLng(coord[0], coord[1])).setStyle({
-          fillColor: color,
-          color: color,
-        });
-      } else {
-        const marker = leaflet
-          .circleMarker(new leaflet.LatLng(coord[0], coord[1]), {
-            radius: 15,
+        m.setLatLng(new leaflet.LatLng(coord[0], coord[1]));
+        if (icon) {
+          m.setIcon(icon);
+        } else {
+          m.setStyle({
             fillColor: color,
             color: color,
-            weight: 2,
-            opacity: 0.7,
-            fillOpacity: 0.7,
-            data: point,
-          })
-          .on("click", (e) => {
-            this.$emit("clickMarker", e.target.options.data);
           });
+        }
+      } else {
+        let marker;
+        if (icon) {
+          marker = leaflet.marker(new leaflet.LatLng(coord[0], coord[1]), {
+            icon: icon,
+            data: point,
+          });
+        } else {
+          marker = leaflet.circleMarker(
+            new leaflet.LatLng(coord[0], coord[1]),
+            {
+              radius: 15,
+              fillColor: color,
+              color: color,
+              weight: 2,
+              opacity: 0.7,
+              fillOpacity: 0.7,
+              data: point,
+            }
+          );
+        }
+        marker.on("click", (e) => {
+          this.$emit("clickMarker", e.target.options.data);
+        });
         markers.addLayer(marker);
       }
     },
@@ -272,5 +301,10 @@ export default {
 #map {
   width: 100vw;
   height: 100vh;
+}
+</style>
+<style>
+.marker-icon {
+  border-radius: 50%;
 }
 </style>
