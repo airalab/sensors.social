@@ -1,7 +1,12 @@
 <template>
   <div class="banner">
-    Ведутся технические работы! Обо всех ошибках, пожалуйста, создавайте issue
-    на
+    Technical work in progress! Found a bug? - please create a issue on
+    <a
+      href="https://github.com/airalab/sensors.robonomics.network/issues/new"
+      target="_blank"
+      >github</a
+    >. Ведутся технические работы! Обо всех ошибках, пожалуйста, создавайте
+    issue на
     <a
       href="https://github.com/airalab/sensors.robonomics.network/issues/new"
       target="_blank"
