@@ -103,6 +103,7 @@ export default {
     }
     this.$provider.ready().then(() => {
       this.providerReady = true;
+      this.$provider.watch(this.handlerNewPoint);
     });
     if (this.provider === "remote") {
       const iRemote = setInterval(() => {
