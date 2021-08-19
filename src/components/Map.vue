@@ -82,7 +82,7 @@ export default {
       const childCount = cluster.getChildCount();
       let sum = 0;
       markers.forEach((marker) => {
-        sum += marker.options.data.value;
+        sum += Number(marker.options.data.value);
       });
       if (childCount > 0) {
         sum = sum / childCount;
