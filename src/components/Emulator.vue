@@ -5,7 +5,7 @@
     </button>
     <h4 class="title">History</h4>
     <div v-show="win">
-      <div style="text-align: left; margin-bottom: 10px;">
+      <div style="text-align: left; margin-bottom: 10px">
         <div class="field">
           Start:
           <v-date-picker
@@ -91,7 +91,7 @@
           </select>
         </div>
       </div>
-      <div style="margin: 10px 0;">
+      <div style="margin: 10px 0">
         <button class="btn" @click="run" v-if="status === 0">Start</button>
         <button class="btn" v-else-if="status === 3" disabled>Load...</button>
         <template v-else>
@@ -121,7 +121,7 @@ export default {
         type: "string",
         mask: "DD.MM.YYYY HH:mm:00",
       },
-      start: moment().subtract(1, "day").format("DD.MM.YYYY HH:mm:00"),
+      start: moment().subtract(6, "hour").format("DD.MM.YYYY HH:mm:00"),
       end: moment().format("DD.MM.YYYY HH:mm:00"),
       speed: 3600,
       interval: 1000,

@@ -71,7 +71,10 @@ export default {
       const series = this.series;
       for (const i in series) {
         series[i].data = this.log.map((item) => {
-          return [Number(item.timestamp), item.data[series[i].options.name]];
+          return [
+            Number(item.timestamp),
+            Number(item.data[series[i].options.name]),
+          ];
         });
       }
       this.options.series = series;

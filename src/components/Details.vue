@@ -12,15 +12,15 @@
         {{ sensor_id | collapse }}
       </Copy>
     </h2>
-    <div v-if="last" style="text-align: left;">
-      <p style="text-align: center;">
+    <div v-if="last" style="text-align: left">
+      <p style="text-align: center">
         <b>{{ date }}</b>
       </p>
-      <div style="overflow: hidden; margin: 10px; font-size: 14px;">
+      <div style="overflow: hidden; margin: 10px; font-size: 14px">
         <p
           v-for="(param, k) in Object.keys(last.data)"
           :key="k"
-          style="float: left; margin: 10px 10px 0 0;"
+          style="float: left; margin: 10px 10px 0 0"
         >
           <b>{{ param | measurement }}</b>
           = {{ last.data[param] | measurementFormat(param) }}
@@ -90,7 +90,7 @@ export default {
                 for (let point of newPoints) {
                   this.$refs.chart.addPoint(i, [
                     Number(point.timestamp),
-                    point.data[series[i]],
+                    Number(point.data[series[i]]),
                   ]);
                 }
               }

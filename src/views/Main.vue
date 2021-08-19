@@ -101,18 +101,9 @@ export default {
       }
       Vue.prototype.$provider = new providers.Remote(url);
     }
-    this.$provider
-      .ready()
-      .then(() => {
-        this.providerReady = true;
-        return this.$provider.getSensors();
-      })
-      .then((points) => {
-        points.forEach((point) => {
-          this.handlerNewPoint(point);
-        });
-        this.$provider.watch(this.handlerNewPoint);
-      });
+    this.$provider.ready().then(() => {
+      this.providerReady = true;
+    });
     if (this.provider === "remote") {
       const iRemote = setInterval(() => {
         if (this.$provider && this.$provider.connection) {
@@ -147,12 +138,6 @@ export default {
       this.status = "online";
       this.handlerClose();
       this.$refs.map.clear();
-      this.$provider.getSensors().then((points) => {
-        points.forEach((point) => {
-          this.handlerNewPoint(point);
-        });
-        this.$provider.watch(this.handlerNewPoint);
-      });
     },
     handlerPauseEmulate() {
       this.emulator.pause();
