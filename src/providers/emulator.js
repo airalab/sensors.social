@@ -38,11 +38,21 @@ class Emulator {
     this.status = 3;
   }
 
-  async emulate(start, end, speed, stepInterval = 1000, cb, cbEnd) {
+  async emulate(
+    start,
+    end,
+    speed,
+    stepInterval = 1000,
+    sensor_ids = "",
+    cb,
+    cbEnd
+  ) {
     this.time = 0;
     this.load();
     this.history = {};
-    let history = { ...(await this.provider.getHistoryByDate(start, end)) };
+    let history = {
+      ...(await this.provider.getHistoryByDate(start, end, sensor_ids)),
+    };
     this.play();
 
     let isWork = false;

@@ -7,7 +7,8 @@ class Provider {
     this.url = url.replace(/\/$/, "");
     this.connection = false;
     this.socket = io(url);
-    this.socket.on("connect_error", () => {
+    this.socket.on("connect_error", (e) => {
+      console.log("connect error", e);
       this.connection = false;
     });
     this.socket.on("error", function (error) {
@@ -57,11 +58,24 @@ class Provider {
       });
   }
 
-  getHistoryByDate(start, end) {
+  getHistoryByDate(start, end, sensor_ids = "") {
+    sensor_ids = sensor_ids
+      .trim()
+      .split(",")
+      .filter((item) => {
+        return item;
+      });
     return axios
       .get(`${this.url}/api/sensor/history/${start}/${end}`)
       .then((result) => {
-        return result.data.result;
+        if (sensor_ids.length === 0) {
+          return result.data.result;
+        }
+        const list = {};
+        for (const sensor_id of sensor_ids) {
+          list[sensor_id.trim()] = result.data.result[sensor_id.trim()];
+        }
+        return list;
       })
       .catch(() => {
         return [];

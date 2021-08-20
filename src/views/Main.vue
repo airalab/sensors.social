@@ -115,7 +115,7 @@ export default {
     }
   },
   methods: {
-    handlerStartEmulate({ start, end, speed, interval }) {
+    handlerStartEmulate({ start, end, speed, interval, sensors }) {
       this.status = "emulator";
       this.$provider.watch(null);
       this.handlerClose();
@@ -126,6 +126,7 @@ export default {
         end,
         speed,
         interval,
+        sensors,
         (point) => {
           this.handlerNewPoint(point);
         },

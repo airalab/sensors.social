@@ -90,6 +90,15 @@
             <option value="86400">1 сутки/сек</option>
           </select>
         </div>
+        <div class="field">
+          Sensors:<br />
+          <input
+            type="text"
+            v-model="sensors"
+            placeholder="Sensor id (comma separated)"
+            style="box-sizing: border-box"
+          />
+        </div>
       </div>
       <div style="margin: 10px 0">
         <button class="btn" @click="run" v-if="status === 0">Start</button>
@@ -125,6 +134,7 @@ export default {
       end: moment().format("DD.MM.YYYY HH:mm:00"),
       speed: 3600,
       interval: 1000,
+      sensors: "",
       win: true,
     };
   },
@@ -146,6 +156,7 @@ export default {
         end: this.endTimestamp,
         speed: Number(this.speed),
         interval: Number(this.interval),
+        sensors: this.sensors,
       });
     },
     stop() {
