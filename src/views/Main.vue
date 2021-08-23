@@ -24,6 +24,7 @@
       @play="handlerPlayEmulate"
       @pause="handlerPauseEmulate"
     />
+    <Loader v-if="isLoader" />
     <Map
       ref="map"
       :type="type.toLowerCase()"
@@ -45,6 +46,7 @@ import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
 import Emulator from "../components/Emulator.vue";
 import ChainInfo from "../components/ChainInfo.vue";
+import Loader from "../components/Loader.vue";
 import * as providers from "../providers";
 import config from "../config";
 import EmulatorLib from "../providers/emulator";
@@ -85,6 +87,12 @@ export default {
     Header,
     Emulator,
     ChainInfo,
+    Loader,
+  },
+  computed: {
+    isLoader: function () {
+      return this.provider === "ipfs" && Object.keys(this.points).length === 0;
+    },
   },
   mounted() {
     if (this.provider === "ipfs") {
