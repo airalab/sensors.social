@@ -2,15 +2,11 @@
   <div class="panel">
     <button class="close" @click="$emit('close')">&Cross;</button>
     <h2 class="title">
-      <Avatar :address="sender" class="icon" />
-      <Copy :msg="sender" :title="`Address: ${sender}`">
-        {{ sender | collapse }}
-      </Copy>
-      |
+      Sensor id:
       <Avatar :address="sensor_id" class="icon" />
-      <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">
-        {{ sensor_id | collapse }}
-      </Copy>
+      <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">{{
+        sensor_id | collapse
+      }}</Copy>
     </h2>
     <div v-if="last" style="text-align: left">
       <p style="text-align: center">
@@ -167,7 +163,7 @@ export default {
 .icon {
   width: 14px;
   border-radius: 50%;
-  vertical-align: bottom;
+  vertical-align: baseline;
   margin-right: 4px;
 }
 .title {
