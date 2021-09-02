@@ -15,7 +15,7 @@
         error: isConnectionRemote === false,
       }"
     >
-      History from DAO IPCI Blockchain
+      Robonomics parachain
     </button>
     <div v-else class="settings">
       <input v-model="settings.remote.url" :placeholder="remote_placeholder" />
