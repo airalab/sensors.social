@@ -1,9 +1,7 @@
 <template>
   <div class="panel">
     <h4>Chain Info</h4>
-    <div v-if="status === null" class="red">
-      No connection
-    </div>
+    <div v-if="status === null" class="red">No connection</div>
     <template v-else>
       <div :class="[status ? 'green' : 'red']">
         Block: <b>{{ block }}</b>
@@ -28,7 +26,7 @@ export default {
   },
   async mounted() {
     await substrate.init({
-      endpoint: "wss://ipci.rpc.robonomics.network",
+      endpoint: "wss://main.frontier.rpc.robonomics.network/",
       types: {
         EverUSDBalance: "u64",
         BondPeriod: "u64",
