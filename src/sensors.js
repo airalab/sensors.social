@@ -21,6 +21,6 @@ export default {
   },
   f5cf0ec44b696400af9b280cb5bedc9e10893f5f961159658a218286f8e97372: {
     icon: require("./assets/dolinatlt.jpg"),
-    link: "http://dolinatlt.ru/",
+    link: "https://dolinatlt.ru/",
   },
 };
