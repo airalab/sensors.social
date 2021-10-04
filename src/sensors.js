@@ -11,4 +11,12 @@ export default {
     icon: require("./assets/atc.png"),
     link: "http://atcgaz.ru/главная/",
   },
+  "7cdeafa03331cb330c3993ff0381457f0713a8fd6d0b3dbe93ea24affe5676ac": {
+    icon: require("./assets/artesiantlt.jpg"),
+    link: "https://www.artesiantlt.ru/",
+  },
+  "217a9ae639e48a9b99de7895c496b224ad6a80f9b679d516557561aedd47c58b": {
+    icon: require("./assets/qvantorium.jpg"),
+    link: "https://vk.com/kvantoriumtlt",
+  },
 };
