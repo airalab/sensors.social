@@ -79,7 +79,7 @@ class Provider {
             Object.prototype.hasOwnProperty.call(data, "model") &&
             (!Object.prototype.hasOwnProperty.call(this.history, sensor_id) ||
               this.history[sensor_id].find((item) => {
-                return item.timestamp === data.timestamp;
+                return item.timestamp === data.measurement.timestamp;
               }) === undefined)
           ) {
             const { timestamp, ...measurement } = data.measurement;
