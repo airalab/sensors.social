@@ -43,10 +43,10 @@ export default {
   },
   REMOTE_PROVIDER: "https://roseman.airalab.org/",
   MAP: {
-    zoom: "3",
+    zoom: "13",
     position: {
-      lat: "48.9802",
-      lng: "15.1172",
+      lat: "53.5197",
+      lng: "49.3647",
     },
   },
 };
