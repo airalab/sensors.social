@@ -7,6 +7,8 @@ function converterPpmToMgm3(v, molecularWeight) {
 
 export const measurements = {
   pm10: {
+    label: "PM10",
+    unit: "",
     colors: [
       "#00796b",
       "#00796b",
@@ -30,6 +32,8 @@ export const measurements = {
     },
   },
   pm25: {
+    label: "PM2.5",
+    unit: "",
     colors: [
       "#00796b",
       "#00796b",
@@ -53,6 +57,8 @@ export const measurements = {
     },
   },
   co: {
+    label: "CO",
+    unit: "mg/m3",
     colors: [
       "#00796b",
       "#00796b",
@@ -76,6 +82,8 @@ export const measurements = {
     },
   },
   nh3: {
+    label: "NH3",
+    unit: "mg/m3",
     colors: [
       "#00796b",
       "#00796b",
@@ -99,6 +107,8 @@ export const measurements = {
     },
   },
   no2: {
+    label: "NO2",
+    unit: "mg/m3",
     colors: [
       "#00796b",
       "#00796b",
@@ -122,6 +132,8 @@ export const measurements = {
     },
   },
   temperature: {
+    label: "Tmp",
+    unit: "℃",
     colors: [
       "#313695",
       "#313695",
@@ -143,6 +155,22 @@ export const measurements = {
     calc: function (v) {
       return toFixed(Number(v));
     },
+  },
+  airtemp: {
+    label: "Airtemp",
+    unit: "℃",
+  },
+  pm1: {
+    label: "PM1",
+    unit: "PM1",
+  },
+  pressure: {
+    label: "Pr",
+    unit: "mmHg",
+  },
+  humidity: {
+    label: "Hm",
+    unit: "mmHg",
   },
 };
 

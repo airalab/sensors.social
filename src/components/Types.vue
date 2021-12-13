@@ -1,21 +1,30 @@
 <template>
   <div class="panel">
     <select v-model="type">
-      <option value="pm10">PM10</option>
-      <option value="pm25">PM2.5</option>
-      <option value="co">CO</option>
-      <option value="nh3">NH3</option>
-      <option value="no2">NO2</option>
+      <option
+        v-for="(measurement, k) in measurements"
+        :key="k"
+        :value="measurement[0]"
+      >
+        {{ measurement[1] }}
+      </option>
     </select>
   </div>
 </template>
 
 <script>
+import { measurements } from "../utils/measurement";
+
 export default {
   props: ["current"],
   data() {
     return {
       type: this.current,
+      measurements: Object.entries(measurements)
+        .map((item) => {
+          return item[1].colors ? [item[0], item[1].label] : null;
+        })
+        .filter((item) => item),
     };
   },
   watch: {

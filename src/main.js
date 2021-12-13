@@ -5,7 +5,7 @@ import Notifications from "vue-notification";
 import VCalendar from "v-calendar";
 import App from "./App.vue";
 import router from "./router";
-import { toFixed } from "./utils/measurement";
+import { toFixed, measurements } from "./utils/measurement";
 
 Vue.config.productionTip = false;
 Vue.use(VueHighcharts);
@@ -15,29 +15,12 @@ Vue.use(Notifications);
 Vue.use(VCalendar, {});
 
 Vue.filter("measurement", function (value) {
-  const types = {
-    pm10: "PM10",
-    pm25: "PM2.5",
-    temperature: "Tmp",
-    pressure: "Pr",
-    humidity: "Hm",
-    co: "CO",
-    nh3: "NH3",
-    no2: "NO2",
-    pm1: "PM1",
-  };
-  return types[value] || value;
+  return measurements[value]?.label || value;
 });
 Vue.filter("measurementFormat", function (value, type) {
-  const types = {
-    temperature: "℃",
-    pressure: "mmHg",
-    humidity: "%",
-    co: "mg/m3",
-    nh3: "mg/m3",
-    no2: "mg/m3",
-  };
-  return types[type] ? `${toFixed(value)} ${types[type]}` : toFixed(value);
+  return measurements[type]
+    ? `${toFixed(value)} ${measurements[type].unit}`
+    : toFixed(value);
 });
 Vue.filter("collapse", function (value) {
   if (!value) {

@@ -86,7 +86,7 @@ class Provider {
             const measurementLowerCase = {};
             for (var key in measurement) {
               const name = key.toLowerCase();
-              measurementLowerCase[name] = converter[name]
+              measurementLowerCase[name] = converter[name]?.calc
                 ? converter[name].calc(measurement[key])
                 : measurement[key];
             }
