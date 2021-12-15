@@ -160,15 +160,15 @@ export const measurements = {
     label: "Airtemp",
     unit: "℃",
   },
-  airTempMin: {
+  airtempmin: {
     label: "MinAirtemp",
     unit: "℃",
   },
-  airTempAvg: {
+  airtempavg: {
     label: "AvgAirtemp",
     unit: "℃",
   },
-  airTempMax: {
+  airtempmax: {
     label: "MaxAirtemp",
     unit: "℃",
   },
