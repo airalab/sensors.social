@@ -160,6 +160,46 @@ export const measurements = {
     label: "Airtemp",
     unit: "℃",
   },
+  airtempmin: {
+    label: "MinAirtemp",
+    unit: "℃",
+  },
+  airtempavg: {
+    label: "AvgAirtemp",
+    unit: "℃",
+  },
+  airtempmax: {
+    label: "MaxAirtemp",
+    unit: "℃",
+  },
+  soiltemp: {
+    label: "Soiltemp",
+    unit: "℃",
+  },
+  rainfall: {
+    label: "Rainfall",
+    unit: "mm",
+  },
+  sat5: {
+    label: "Sat5",
+    unit: "",
+  },
+  sat10: {
+    label: "Sat10",
+    unit: "",
+  },
+  windang: {
+    label: "Windang",
+    unit: "°",
+  },
+  windspeed: {
+    label: "Windspeed",
+    unit: "m/s",
+  },
+  windspeedmax: {
+    label: "Windspeedmax",
+    unit: "m/s",
+  },
   pm1: {
     label: "PM1",
     unit: "PM1",
