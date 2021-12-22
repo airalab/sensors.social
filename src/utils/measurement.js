@@ -210,7 +210,7 @@ export const measurements = {
   },
   humidity: {
     label: "Hm",
-    unit: "mmHg",
+    unit: "%",
   },
 };
 
