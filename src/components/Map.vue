@@ -180,8 +180,12 @@ export default {
         return;
       }
       const coord = point.geo.split(",");
-      const color = getColor(this.scale, point.value);
-      const colorRgb = getColorRGB(this.scale, point.value);
+      let color = "#a1a1a1";
+      let colorRgb = [161, 161, 161];
+      if (!point.isEmpty) {
+        color = getColor(this.scale, point.value);
+        colorRgb = getColorRGB(this.scale, point.value);
+      }
 
       const m = await this.findMarker(point.sensor_id, markers);
       const icon = getIcon(point.sensor_id, colorRgb);
@@ -226,8 +230,12 @@ export default {
         return;
       }
       const coord = point.geo.split(",");
-      const color = getColor(this.scale, point.value);
-      const colorRgb = getColorRGB(this.scale, point.value);
+      let color = "#a1a1a1";
+      let colorRgb = [161, 161, 161];
+      if (!point.isEmpty) {
+        color = getColor(this.scale, point.value);
+        colorRgb = getColorRGB(this.scale, point.value);
+      }
 
       const m = await this.findMarker(point.sensor_id, markers);
       const icon = getIcon(point.sensor_id, colorRgb);
@@ -268,47 +276,6 @@ export default {
         markers.addLayer(marker);
       }
     },
-    // async addPointPath(point) {
-    //   if (!point.geo) {
-    //     return;
-    //   }
-    //   const coord = point.geo.split(",");
-    //   const color = getColor(this.scale, point.value);
-    //   if (Object.prototype.hasOwnProperty.call(paths, point.sensor_id)) {
-    //     if (paths[point.sensor_id].getLatLngs().length === 1) {
-    //       paths[point.sensor_id]
-    //         .arrowheads({
-    //           yawn: 40,
-    //           fill: true,
-    //           frequency: "endonly",
-    //         })
-    //         .setStyle({
-    //           color: color,
-    //         })
-    //         .addLatLng(coord);
-    //     } else {
-    //       paths[point.sensor_id]
-    //         .setStyle({
-    //           color: color,
-    //         })
-    //         .addLatLng(coord);
-    //     }
-    //   } else {
-    //     const polyline = leaflet
-    //       .polyline([coord], {
-    //         color: color,
-    //         // dashArray: "10",
-    //         weight: 5,
-    //         opacity: 0.7,
-    //         data: point,
-    //       })
-    //       .on("click", (e) => {
-    //         this.$emit("clickMarker", e.target.options.data);
-    //       })
-    //       .addTo(map);
-    //     paths[point.sensor_id] = polyline;
-    //   }
-    // },
   },
 };
 </script>

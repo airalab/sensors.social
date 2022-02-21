@@ -156,17 +156,12 @@ export default {
       this.emulator.play();
     },
     handlerNewPoint(point) {
-      if (
-        point.model !== 1 &&
-        !Object.prototype.hasOwnProperty.call(
-          point.data,
-          this.type.toLowerCase()
-        )
-      ) {
+      if (!point.model) {
         return;
       }
       this.$refs.map.addPoint({
         ...point,
+        isEmpty: !point.data[this.type.toLowerCase()],
         value: point.data[this.type.toLowerCase()],
       });
       if (this.point && this.point.sensor_id === point.sensor_id) {

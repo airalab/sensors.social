@@ -60,7 +60,16 @@ export default {
       immediate: true,
       handler: function (newValue, oldValue) {
         if (newValue !== oldValue) {
-          if (this.model !== 1) {
+          let isData = false;
+          for (const item of this.log) {
+            for (const type of this.series) {
+              if (item.data[type.options.name]) {
+                isData = true;
+                break;
+              }
+            }
+          }
+          if (this.model !== 1 && isData) {
             this.points = [...this.log];
           } else {
             this.points = [];
