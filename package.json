@@ -9,7 +9,7 @@
     "pretty": "prettier --write \"./src/**/*.{js,vue,ts,jsx,json}\""
   },
   "dependencies": {
-    "@polkadot/api": "^5.5.1",
+    "@polkadot/api": "^7.9.1",
     "axios": "^0.21.1",
     "chroma-js": "^2.1.2",
     "core-js": "^3.16.1",
@@ -17,6 +17,7 @@
     "highcharts": "^9.1.2",
     "leaflet": "^1.7.1",
     "leaflet-arrowheads": "^1.2.3",
+    "leaflet-velocity": "^2.1.0",
     "leaflet.markercluster": "^1.5.0",
     "moment": "^2.29.1",
     "socket.io-client": "^2.3.0",
@@ -28,6 +29,7 @@
     "vue-router": "^3.5.2"
   },
   "devDependencies": {
+    "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
     "@vue/cli-plugin-router": "^4.5.13",

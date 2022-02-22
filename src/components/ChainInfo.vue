@@ -26,11 +26,8 @@ export default {
   },
   async mounted() {
     await substrate.init({
-      endpoint: "wss://main.frontier.rpc.robonomics.network/",
-      types: {
-        EverUSDBalance: "u64",
-        BondPeriod: "u64",
-      },
+      endpoint: "wss://kusama.rpc.robonomics.network/",
+      types: {},
     });
 
     await substrate.api.rpc.chain.subscribeNewHeads(async (header) => {
