@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@polkadot/api": "^7.9.1",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "chroma-js": "^2.1.2",
     "core-js": "^3.16.1",
     "ethereum-blockies-base64": "^1.0.2",
