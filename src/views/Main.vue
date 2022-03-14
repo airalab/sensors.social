@@ -32,6 +32,7 @@
       :zoom="zoom"
       :lat="lat"
       :lng="lng"
+      :availableWind="emulator ? false : true"
     />
   </div>
 </template>
@@ -196,7 +197,7 @@ export default {
       this.point = {
         ...point,
         count,
-        log,
+        log: [...log],
       };
     },
     handlerClose() {

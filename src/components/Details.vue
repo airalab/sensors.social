@@ -16,10 +16,12 @@
         <p
           v-for="(param, k) in Object.keys(last.data)"
           :key="k"
-          style="float: left; margin: 10px 10px 0 0"
+          style="float: left; margin-top: 0px"
         >
-          <b>{{ param | measurement }}</b>
-          = {{ last.data[param] | measurementFormat(param) }}
+          <button class="btn" @click="measurement = param">
+            <b>{{ param | measurement }}</b> =
+            {{ last.data[param] | measurementFormat(param) }}
+          </button>
         </p>
       </div>
       <p v-if="countTx !== false">
@@ -27,8 +29,8 @@
         = {{ countTx }} tx
       </p>
     </div>
-    <div v-if="points.length > 0">
-      <Chart ref="chart" :log="points" :series="series" :type="type" />
+    <div v-if="log.length > 0">
+      <Chart :log="log" :measurement="measurement" :sensor_id="sensor_id" />
     </div>
     <div v-if="link">
       <a :href="link" target="_blank">{{ link }}</a>
@@ -52,58 +54,8 @@ export default {
   },
   data() {
     return {
-      points: [],
+      measurement: this.type,
     };
-  },
-  watch: {
-    sensor_id: {
-      immediate: true,
-      handler: function (newValue, oldValue) {
-        if (newValue !== oldValue) {
-          let isData = false;
-          for (const item of this.log) {
-            for (const type of this.series) {
-              if (item.data[type.options.name]) {
-                isData = true;
-                break;
-              }
-            }
-          }
-          if (this.model !== 1 && isData) {
-            this.points = [...this.log];
-          } else {
-            this.points = [];
-          }
-        }
-      },
-    },
-    log: {
-      immediate: false,
-      handler: function (newValue) {
-        this.$nextTick(() => {
-          if (this.$refs.chart) {
-            const count =
-              this.$refs.chart.$refs.chart.chart.series[0].points.length -
-              newValue.length;
-            if (count < 0) {
-              let series = [this.type];
-              if (this.type === "pm10" || this.type === "pm25") {
-                series = ["pm10", "pm25"];
-              }
-              const newPoints = newValue.slice(count);
-              for (const i in series) {
-                for (let point of newPoints) {
-                  this.$refs.chart.addPoint(i, [
-                    Number(point.timestamp),
-                    Number(point.data[series[i]]),
-                  ]);
-                }
-              }
-            }
-          }
-        });
-      },
-    },
   },
   computed: {
     link: function () {
@@ -117,41 +69,6 @@ export default {
     },
     date: function () {
       return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
-    },
-    series: function () {
-      if (this.type === "pm10" || this.type === "pm25") {
-        return [
-          {
-            name: "PM10",
-            color: "#e8b738",
-            lineWidth: 1,
-            data: [],
-            options: {
-              name: "pm10",
-            },
-          },
-          {
-            name: "PM2.5",
-            color: "#89b268",
-            lineWidth: 1,
-            data: [],
-            options: {
-              name: "pm25",
-            },
-          },
-        ];
-      }
-      return [
-        {
-          name: this.type,
-          color: "#e8b738",
-          lineWidth: 1,
-          data: [],
-          options: {
-            name: this.type,
-          },
-        },
-      ];
     },
   },
 };
@@ -189,6 +106,13 @@ export default {
   color: #fff;
 }
 .close:hover {
+  cursor: pointer;
+}
+.btn {
+  background: none;
+  border: none;
+}
+.btn:hover {
   cursor: pointer;
 }
 </style>

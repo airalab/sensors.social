@@ -8,8 +8,16 @@ export function getColor(scale, value) {
   return scale(value).hex();
 }
 
+export function getColorDarken(scale, value) {
+  return scale(value).darken(1).hex();
+}
+
 export function getColorRGB(scale, value) {
   return scale(value).rgb();
+}
+
+export function getColorDarkenRGB(scale, value) {
+  return scale(value).darken(1).rgb();
 }
 
 export function getGradient(scale, value = 8) {

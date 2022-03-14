@@ -8,7 +8,7 @@
 import moment from "moment";
 
 export default {
-  props: ["log", "series", "type"],
+  props: ["log", "measurement", "sensor_id"],
   data() {
     return {
       datacollection: null,
@@ -51,21 +51,84 @@ export default {
       },
     };
   },
+  computed: {
+    series: function () {
+      if (this.measurement === "pm10" || this.measurement === "pm25") {
+        return [
+          {
+            name: "PM10",
+            color: "#e8b738",
+            lineWidth: 1,
+            data: [],
+            options: {
+              name: "pm10",
+            },
+          },
+          {
+            name: "PM2.5",
+            color: "#89b268",
+            lineWidth: 1,
+            data: [],
+            options: {
+              name: "pm25",
+            },
+          },
+        ];
+      }
+      return [
+        {
+          name: this.measurement,
+          color: "#e8b738",
+          lineWidth: 1,
+          data: [],
+          options: {
+            name: this.measurement,
+          },
+        },
+      ];
+    },
+  },
   mounted() {
     this.options.yAxis.min = this.getMinY();
     this.fillData();
   },
   watch: {
-    log: function () {
+    sensor_id: function () {
       this.fillData();
     },
-    type: function () {
+    measurement: function () {
       this.options.yAxis.min = this.getMinY();
+      this.fillData();
+    },
+    log: {
+      immediate: false,
+      handler: function (newValue) {
+        // $nextTick для случая если полностью обновился график
+        this.$nextTick(() => {
+          const count =
+            this.$refs.chart.chart.series[0].points.length - newValue.length;
+          if (count < 0) {
+            let series = [this.measurement];
+            if (this.measurement === "pm10" || this.measurement === "pm25") {
+              series = ["pm10", "pm25"];
+            }
+            const newPoints = newValue.slice(count);
+            for (const i in series) {
+              for (let point of newPoints) {
+                this.addPoint(i, [
+                  Number(point.timestamp),
+                  Number(point.data[series[i]]),
+                ]);
+              }
+            }
+          }
+        });
+      },
     },
   },
   methods: {
     getMinY() {
-      return this.type === "temperature" ? -50 : 0;
+      return this.measurement === "temperature" ? -50 : 0;
     },
     fillData() {
       const series = this.series;

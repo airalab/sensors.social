@@ -8,11 +8,20 @@ import "leaflet.markercluster";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import generate, { getColor, getColorRGB } from "../utils/color";
+import generate, {
+  getColor,
+  getColorRGB,
+  getColorDarken,
+  getColorDarkenRGB,
+} from "../utils/color";
 import measurement from "../utils/measurement";
 import "leaflet-arrowheads";
 import Queue from "js-queue";
 import sensors from "../sensors";
+import config from "../config";
+import axios from "axios";
+import "leaflet-velocity";
+import "leaflet-velocity/dist/leaflet-velocity.css";
 
 delete leaflet.Icon.Default.prototype._getIconUrl;
 leaflet.Icon.Default.mergeOptions({
@@ -31,18 +40,33 @@ function getIcon(sensor_id, colorRgb) {
   }
   return false;
 }
+function getIconArrow(dir, speed, color) {
+  return leaflet.divIcon({
+    className: "",
+    html: `<div class="icon-arrow-container" style="transform: rotate(${
+      dir + 90
+    }deg);">
+      <div class="icon-arrow" style="border-color: ${color} ${color} transparent transparent;">
+        <div style="background-color: ${color};"></div>
+      </div>
+      <div class="label-arrow"">${speed} m/s</div>
+    </div>`,
+    iconSize: new leaflet.Point(40, 40),
+  });
+}
 
 let map;
 let markers;
-// let paths = {};
-
+const windStart = false;
 const queue = new Queue();
 
 export default {
-  props: ["zoom", "lat", "lng", "type"],
+  props: ["zoom", "lat", "lng", "type", "availableWind"],
   data() {
     return {
       scale: null,
+      windLayer: null,
+      windControl: null,
     };
   },
   mounted() {
@@ -99,17 +123,18 @@ export default {
         sum = sum / childCount;
       }
       const color = getColorRGB(this.scale, sum);
+      const colorBorder = getColorDarkenRGB(this.scale, sum);
       const isDark = this.scale(sum).luminance() < 0.4;
 
       return new leaflet.DivIcon({
         html:
           "<div style='font-weight: bold;color:" +
-          (isDark ? "white" : "black") +
+          (isDark ? "#eee" : "#333") +
           ";background-color: rgba(" +
           color +
           ", 0.7);border-color: rgba(" +
-          color +
-          ", 0.5);border-width: 3px;border-style: solid;border-radius: 18px;'><span>" +
+          colorBorder +
+          ", 1);border-width: 2px;border-style: solid;border-radius: 18px;'><span>" +
           childCount +
           "</span></div>",
         className: "marker-cluster",
@@ -125,6 +150,82 @@ export default {
     });
 
     map.addLayer(markers);
+
+    const WindControl = leaflet.Control.extend({
+      initialize: function (layer) {
+        this.layer = layer;
+      },
+      options: {
+        position: "topleft",
+      },
+      onAdd: function (map) {
+        var container = leaflet.DomUtil.create(
+          "button",
+          "leaflet-control-button"
+        );
+        container.textContent = "Wind";
+        container.style.padding = "11px";
+        container.style.backgroundColor = windStart ? "#eee" : "#fff";
+        container.style.border = "1px solid #a2a2a2";
+        container.style.borderRadius = "2px";
+        container.style.cursor = "pointer";
+        container.style.boxShadow = "0 1px 5px rgb(0 0 0 / 20%)";
+        container.style.fontWeight = "bold";
+        container.onclick = () => {
+          if (map.hasLayer(this.layer)) {
+            map.removeLayer(this.layer);
+            container.style.backgroundColor = "#fff";
+          } else {
+            map.addLayer(this.layer);
+            container.style.backgroundColor = "#eee";
+          }
+        };
+        return container;
+      },
+    });
+
+    axios.get(config.WIND_PROVIDER).then((r) => {
+      this.windLayer = leaflet.velocityLayer({
+        displayValues: false,
+        data: r.data,
+        maxVelocity: 15,
+        velocityScale: 0.01,
+        colorScale: [
+          "rgb(60,157,194)",
+          "rgb(128,205,193)",
+          "rgb(250,112,52)",
+          "rgb(245,64,32)",
+        ],
+      });
+      if (windStart) {
+        map.addLayer(this.windLayer);
+      }
+      this.windControl = new WindControl(this.windLayer).setPosition(
+        "bottomright"
+      );
+      if (this.availableWind) {
+        map.addControl(this.windControl);
+      }
+    });
+  },
+  watch: {
+    availableWind() {
+      if (this.availableWind) {
+        if (this.windLayer) {
+          map.addLayer(this.windLayer);
+        }
+        if (this.windControl) {
+          map.addControl(this.windControl);
+        }
+      } else {
+        if (this.windLayer) {
+          map.removeLayer(this.windLayer);
+        }
+        if (this.windControl) {
+          map.removeControl(this.windControl);
+        }
+      }
+    },
   },
   methods: {
     findMarker(sensor_id, markers) {
@@ -180,10 +281,12 @@ export default {
         return;
       }
       const coord = point.geo.split(",");
+      let colorBorder = "#999";
       let color = "#a1a1a1";
       let colorRgb = [161, 161, 161];
       if (!point.isEmpty) {
         color = getColor(this.scale, point.value);
+        colorBorder = getColorDarken(this.scale, point.value);
         colorRgb = getColorRGB(this.scale, point.value);
       }
 
@@ -192,10 +295,18 @@ export default {
       if (m) {
         if (icon) {
           m.setIcon(icon);
+        } else if (
+          m.options.typeIcon &&
+          m.options.typeIcon === "arrow" &&
+          Object.prototype.hasOwnProperty.call(point.data, "windang")
+        ) {
+          m.setIcon(
+            getIconArrow(point.data.windang, point.data.windspeed, color)
+          );
         } else {
           m.setStyle({
             fillColor: color,
-            color: color,
+            color: colorBorder,
           });
         }
       } else {
@@ -205,15 +316,23 @@ export default {
             icon: icon,
             data: point,
           });
+        } else if (
+          Object.prototype.hasOwnProperty.call(point.data, "windang")
+        ) {
+          marker = leaflet.marker([coord[0], coord[1]], {
+            icon: getIconArrow(point.data.windang, point.data.windspeed, color),
+            data: point,
+            typeIcon: "arrow",
+          });
         } else {
           marker = leaflet.circleMarker(
             new leaflet.LatLng(coord[0], coord[1]),
             {
               radius: 15,
               fillColor: color,
-              color: color,
+              color: colorBorder,
               weight: 2,
-              opacity: 0.7,
+              // opacity: 0.7,
               fillOpacity: 0.7,
               data: point,
             }
@@ -230,10 +349,12 @@ export default {
         return;
       }
       const coord = point.geo.split(",");
+      let colorBorder = "#999";
       let color = "#a1a1a1";
       let colorRgb = [161, 161, 161];
       if (!point.isEmpty) {
         color = getColor(this.scale, point.value);
+        colorBorder = getColorDarken(this.scale, point.value);
         colorRgb = getColorRGB(this.scale, point.value);
       }
 
@@ -246,7 +367,7 @@ export default {
         } else {
           m.setStyle({
             fillColor: color,
-            color: color,
+            color: colorBorder,
           });
         }
       } else {
@@ -262,9 +383,9 @@ export default {
             {
               radius: 15,
               fillColor: color,
-              color: color,
+              color: colorBorder,
               weight: 2,
-              opacity: 0.7,
+              // opacity: 0.7,
               fillOpacity: 0.7,
               data: point,
             }
@@ -289,5 +410,38 @@ export default {
 <style>
 .marker-icon {
   border-radius: 50%;
+}
+
+.icon-arrow {
+  /* more triangle */
+  position: relative;
+  height: 0px;
+  width: 0px;
+  border: 18px solid;
+  border-color: darkcyan darkcyan transparent transparent;
+  transform: rotate(45deg);
+}
+.icon-arrow div {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  display: block;
+  height: 25px;
+  width: 40px;
+  background-color: darkcyan;
+  transform: rotate(-45deg) translate(4px, 6px);
+}
+.label-arrow {
+  position: absolute;
+  top: 8px;
+  left: 1px;
+  font-size: 12px;
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  transform: rotate(180deg) translate(14px, -1px);
+}
+.icon-arrow-container {
+  position: relative;
 }
 </style>
