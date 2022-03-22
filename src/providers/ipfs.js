@@ -20,8 +20,8 @@ class Provider {
         "airalab.lighthouse.5.robonomics.eth"
       );
       const robonomicsPeers = {
-        // QmdfQmbmXt6sqjZyowxPUsmvBsgSGQjm4VXrV7WGy62dv8:
-        //   "/dns4/1.pubsub.aira.life/tcp/443/wss/ipfs/QmdfQmbmXt6sqjZyowxPUsmvBsgSGQjm4VXrV7WGy62dv8",
+        QmdfQmbmXt6sqjZyowxPUsmvBsgSGQjm4VXrV7WGy62dv8:
+          "/dns4/1.pubsub.aira.life/tcp/443/wss/ipfs/QmdfQmbmXt6sqjZyowxPUsmvBsgSGQjm4VXrV7WGy62dv8",
         QmPTFt7GJ2MfDuVYwJJTULr6EnsQtGVp8ahYn9NSyoxmd9:
           "/dns4/2.pubsub.aira.life/tcp/443/wss/ipfs/QmPTFt7GJ2MfDuVYwJJTULr6EnsQtGVp8ahYn9NSyoxmd9",
         QmWZSKTEQQ985mnNzMqhGCrwQ1aTA6sxVsorsycQz9cQrw:
