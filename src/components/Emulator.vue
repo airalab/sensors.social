@@ -13,6 +13,7 @@
             is24hr
             mode="dateTime"
             :model-config="modelConfig"
+            :max-date="new Date()"
           >
             <template v-slot="{ inputValue, inputEvents, togglePopover }">
               <div class="field-calendar">
@@ -50,6 +51,7 @@
             is24hr
             mode="dateTime"
             :model-config="modelConfig"
+            :max-date="new Date()"
           >
             <template v-slot="{ inputValue, inputEvents, togglePopover }">
               <div class="field-calendar">
@@ -80,6 +82,7 @@
             </template>
           </v-date-picker>
         </div>
+        <div class="field">Max period {{ maxPeriod }} day</div>
         <div class="field">
           Speed:<br />
           <select v-model="speed">
@@ -136,6 +139,7 @@ export default {
       interval: 1000,
       sensors: "",
       win: true,
+      maxPeriod: 1,
     };
   },
   computed: {
@@ -147,6 +151,38 @@ export default {
     },
     endTimestamp: function () {
       return Number(moment(this.end, "DD.MM.YYYY HH:mm:ss").format("X"));
+    },
+    // maxEnd: function () {
+    //   const end = moment(this.start, "DD.MM.YYYY HH:mm:ss").add(1, "day");
+    //   const today = moment();
+    //   if (end > today) {
+    //     return Number(today.format("x"));
+    //   }
+    //   return Number(end.format("x"));
+    // },
+  },
+  watch: {
+    start() {
+      const start = moment(this.start, "DD.MM.YYYY HH:mm:ss");
+      const end = moment(this.end, "DD.MM.YYYY HH:mm:ss");
+      if (start > end) {
+        this.end = start.add(1, "hour").format("DD.MM.YYYY HH:mm:00");
+      } else if (end.diff(start, "days") > this.maxPeriod) {
+        this.end = start
+          .add(this.maxPeriod, "day")
+          .format("DD.MM.YYYY HH:mm:00");
+      }
+    },
+    end() {
+      const start = moment(this.start, "DD.MM.YYYY HH:mm:ss");
+      const end = moment(this.end, "DD.MM.YYYY HH:mm:ss");
+      if (end < start) {
+        this.start = end.subtract(1, "hour").format("DD.MM.YYYY HH:mm:00");
+      } else if (end.diff(start, "days") > this.maxPeriod) {
+        this.start = end
+          .subtract(this.maxPeriod, "day")
+          .format("DD.MM.YYYY HH:mm:00");
+      }
     },
   },
   methods: {

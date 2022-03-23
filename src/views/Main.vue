@@ -26,7 +26,6 @@
     />
     <Loader v-if="isLoader" />
     <Map
-      ref="map"
       :type="type.toLowerCase()"
       @clickMarker="handlerClick"
       :zoom="zoom"
@@ -51,6 +50,7 @@ import Loader from "../components/Loader.vue";
 import * as providers from "../providers";
 import config from "../config";
 import EmulatorLib from "../providers/emulator";
+import * as markers from "../utils/map/marker";
 
 export default {
   props: {
@@ -128,7 +128,7 @@ export default {
       this.status = "emulator";
       this.$provider.watch(null);
       this.handlerClose();
-      this.$refs.map.clear();
+      markers.clear();
 
       this.emulator.emulate(
         start,
@@ -148,7 +148,7 @@ export default {
       this.emulator.stop();
       this.status = "online";
       this.handlerClose();
-      this.$refs.map.clear();
+      markers.clear();
     },
     handlerPauseEmulate() {
       this.emulator.pause();
@@ -160,7 +160,7 @@ export default {
       if (!point.model) {
         return;
       }
-      this.$refs.map.addPoint({
+      markers.addPoint({
         ...point,
         isEmpty: !point.data[this.type.toLowerCase()],
         value: point.data[this.type.toLowerCase()],

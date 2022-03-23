@@ -45,7 +45,7 @@ export default {
   methods: {
     upStatus() {
       const currentTime = Date.now();
-      if (this.time + 15000 < currentTime) {
+      if (this.time + 60000 < currentTime) {
         this.status = false;
       } else {
         this.status = true;
