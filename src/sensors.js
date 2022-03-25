@@ -19,8 +19,12 @@ export default {
     icon: require("./assets/qvantorium.jpg"),
     link: "https://vk.com/kvantoriumtlt",
   },
-  f5cf0ec44b696400af9b280cb5bedc9e10893f5f961159658a218286f8e97372: {
+  "f5cf0ec44b696400af9b280cb5bedc9e10893f5f961159658a218286f8e97372": {
     icon: require("./assets/dolinatlt.jpg"),
     link: "https://dolinatlt.ru/",
+  },
+  "5bd528a4d708304254d2417b83f8b5c997ed08ccf956fa4e538fc6cfa40f86c0": {
+    icon: require("./assets/panorama.png"),
+    link: "https://panorama-park63.ru/",
   },
 };
