@@ -98,7 +98,7 @@ export default {
   overflow: hidden;
   position: absolute;
   bottom: 0;
-  left: 193px;
+  left: 255px;
   z-index: 10000000;
   background: rgba(255, 255, 255, 0.9);
   padding: 10px;

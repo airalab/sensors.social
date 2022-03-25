@@ -9,6 +9,7 @@
         {{ measurement[1] }}
       </option>
     </select>
+    <span class="unit">{{ unit }}</span>
   </div>
 </template>
 
@@ -26,6 +27,11 @@ export default {
         })
         .filter((item) => item),
     };
+  },
+  computed: {
+    unit() {
+      return measurements[this.current].unit;
+    },
   },
   watch: {
     type: function () {
@@ -65,5 +71,10 @@ select {
   border: 1px solid #a2a2a2;
   border-radius: 2px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+.unit {
+  display: inline-block;
+  margin-left: 12px;
+  width: 50px;
 }
 </style>

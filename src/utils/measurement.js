@@ -8,7 +8,7 @@ function converterPpmToMgm3(v, molecularWeight) {
 export const measurements = {
   pm10: {
     label: "PM10",
-    unit: "",
+    unit: "μg/m3",
     colors: [
       "#00796b",
       "#00796b",
@@ -33,7 +33,7 @@ export const measurements = {
   },
   pm25: {
     label: "PM2.5",
-    unit: "",
+    unit: "μg/m3",
     colors: [
       "#00796b",
       "#00796b",
