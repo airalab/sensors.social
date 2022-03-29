@@ -4,7 +4,7 @@ import "leaflet-velocity/dist/leaflet-velocity.css";
 import axios from "axios";
 import config from "../../config";
 
-export const immediate = true;
+export const immediate = false;
 
 const WindControl = L.Control.extend({
   initialize: function (layer) {
