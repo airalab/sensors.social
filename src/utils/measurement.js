@@ -212,6 +212,10 @@ export const measurements = {
     label: "Hm",
     unit: "%",
   },
+  gc: {
+    label: "GC",
+    unit: "μR/h",
+  },
 };
 
 export default function (param) {
