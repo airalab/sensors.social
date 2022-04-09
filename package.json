@@ -19,7 +19,7 @@
     "leaflet-arrowheads": "^1.2.3",
     "leaflet-velocity": "^2.1.0",
     "leaflet.markercluster": "^1.5.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "socket.io-client": "^2.3.0",
     "v-calendar": "^2.3.2",
     "vue": "^2.6.14",
