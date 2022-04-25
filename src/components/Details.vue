@@ -9,7 +9,7 @@
       }}</Copy>
     </h2>
     <div v-if="last" style="text-align: left">
-      <p style="text-align: center">
+      <p style="text-align: center; margin: 10px">
         <b>{{ date }}</b>
       </p>
       <div style="overflow: hidden; margin: 10px; font-size: 14px">
@@ -22,12 +22,9 @@
             <b>{{ param | measurement }}</b> =
             {{ last.data[param] | measurementFormat(param) }}
           </button>
+          &nbsp;
         </p>
       </div>
-      <p v-if="countTx !== false">
-        <b>Datalog</b>
-        = {{ countTx }} tx
-      </p>
     </div>
     <div v-if="log.length > 0">
       <Chart :log="log" :measurement="measurement" :sensor_id="sensor_id" />
@@ -46,7 +43,7 @@ import Copy from "./Copy.vue";
 import sensors from "../sensors";
 
 export default {
-  props: ["sender", "sensor_id", "log", "model", "count", "type"],
+  props: ["sender", "sensor_id", "log", "model", "type"],
   components: {
     Chart,
     Avatar,
@@ -60,9 +57,6 @@ export default {
   computed: {
     link: function () {
       return sensors[this.sensor_id] ? sensors[this.sensor_id].link : "";
-    },
-    countTx: function () {
-      return this.count;
     },
     last: function () {
       return this.log[this.log.length - 1];
@@ -78,7 +72,7 @@ export default {
 .panel {
   overflow: hidden;
   position: absolute;
-  top: 29px;
+  top: 41px;
   right: 0;
   z-index: 1000;
   background: rgba(255, 255, 255, 0.9);
@@ -95,6 +89,7 @@ export default {
 .title {
   font-size: 15px;
   margin-top: 30px;
+  text-align: center;
 }
 .close {
   position: absolute;

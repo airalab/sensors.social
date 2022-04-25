@@ -1,10 +1,10 @@
 <template>
-  <div id="map"></div>
+  <div id="map" class="map"></div>
 </template>
 
 <script>
-import { init, instanceMap } from "../utils/map/instance";
-import { init as initWind, switchWind, switchControl } from "../utils/map/wind";
+import { init } from "../utils/map/instance";
+import { init as initWind } from "../utils/map/wind";
 import { init as initMarkers } from "../utils/map/marker";
 
 export default {
@@ -44,13 +44,9 @@ export default {
       this.$emit("clickMarker", data);
     });
 
-    await initWind();
-    switchControl(instanceMap(), this.availableWind);
-  },
-  watch: {
-    availableWind() {
-      switchWind(instanceMap(), this.availableWind);
-    },
+    if (this.availableWind) {
+      await initWind();
+    }
   },
 };
 </script>

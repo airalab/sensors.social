@@ -1,98 +1,85 @@
 <template>
-  <div class="header">
-    <div class="header-content">
-      <template v-if="title">
-        <HeaderTitle />
-        <HeaderBanner />
-      </template>
-      <HeaderMarquee v-else :points="points" />
+  <div class="sensors-panel sensors-panel--top">
+    <div class="sensors-panel-section">
+      <h1 class="sensors-panel-title">{{ $t("header.title") }}</h1>
+
+      <!-- если город один -->
+      <div class="sensors-panel-title green">
+        {{ $t("header.city.togliatti") }}
+      </div>
+
+      <!-- <div class="sensors-select green">
+          <select>
+            <option>Тольятти</option>
+            <option>Киров</option>
+          </select>
+          <i class="fa-solid fa-sort-down"></i>
+        </div> -->
     </div>
-    <div class="nav">
-      <a
-        href="https://wiki.robonomics.network/docs/iot-sensors-connectivity/"
-        target="_blank"
-        >How to connect</a
-      >&nbsp;
-      <a
-        href="https://github.com/airalab/sensors.robonomics.network"
-        target="_blank"
-        >Fork me</a
-      >
-      <button @click="toggle" :disabled="Object.keys(points).length === 0">
-        <template v-if="title">data ticker</template>
-        <template v-else>toggle</template>
-      </button>
+
+    <div class="sensors-panel-section">
+      <a href="#nav" class="sensors-panel-top-nav-selector"
+        ><i class="fa-solid fa-bars"></i
+      ></a>
+
+      <nav id="nav" class="sensors-panel-top-nav">
+        <div class="sensors-panel-top-nav-content">
+          <ul>
+            <li>
+              <a
+                href="https://wiki.robonomics.network/docs/en/sensors-network-introduction/"
+                target="_blank"
+                rel="noreferrer noopener"
+                >{{ $t("header.connect") }}</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/airalab/sensors.robonomics.network/issues"
+                target="_blank"
+                rel="noreferrer noopener"
+                >{{ $t("header.issue") }}</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/airalab/sensors.robonomics.network"
+                target="_blank"
+                rel="noreferrer noopener"
+                >{{ $t("header.fork") }}</a
+              >
+            </li>
+          </ul>
+          <a class="sensors-panel-top-nav--close" href="#"
+            ><i class="fa-solid fa-circle-xmark"></i
+          ></a>
+        </div>
+      </nav>
+
+      <div class="sensors-select blue">
+        <select v-model="locale">
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+        </select>
+        <i class="fa-solid fa-sort-down"></i>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import HeaderTitle from "./HeaderTitle.vue";
-import HeaderBanner from "./HeaderBanner.vue";
-import HeaderMarquee from "./HeaderMarquee.vue";
-
 export default {
-  props: ["points"],
-  components: { HeaderTitle, HeaderBanner, HeaderMarquee },
+  props: ["localeCurrent"],
   data() {
     return {
-      title: true,
+      locale: this.localeCurrent,
     };
   },
-  methods: {
-    toggle() {
-      this.title = !this.title;
+  watch: {
+    locale(newValue) {
+      this.$i18n.locale = newValue;
+      localStorage.setItem("locale", newValue);
     },
   },
 };
 </script>
-
-<style scoped>
-.header {
-  overflow: hidden;
-  white-space: nowrap;
-  box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
-  border: 5px solid #e0e0e0;
-  height: 34px;
-  width: 100%;
-  padding: 5px;
-  font-size: 12px;
-  display: flex;
-}
-.header-content {
-  flex: 1 1 auto;
-  display: flex;
-}
-.header .nav {
-  margin: -2px 0px 0 10px;
-}
-.header a {
-  color: #5343ff;
-  text-decoration: underline;
-  margin-right: 10px;
-}
-.header button {
-  padding: 2px 10px;
-  margin: 0 5px;
-  font-size: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border: 1px solid #a2a2a2;
-  border-radius: 2px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-}
-.header button:hover {
-  background-color: #eee;
-}
-.header button:focus {
-  outline: 0;
-}
-.header button:disabled {
-  cursor: not-allowed;
-}
-</style>

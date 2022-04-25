@@ -16,6 +16,7 @@ export function init(position, zoom) {
     attribution:
       '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
-  map.zoomControl.setPosition("bottomright");
+  // map.zoomControl.setPosition("bottomright");
+  map.zoomControl.remove();
   return map;
 }

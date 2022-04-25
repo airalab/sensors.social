@@ -6,6 +6,8 @@ import VCalendar from "v-calendar";
 import App from "./App.vue";
 import router from "./router";
 import { toFixed, measurements } from "./utils/measurement";
+import VueI18n from "vue-i18n";
+import messages from "./translate";
 
 Vue.config.productionTip = false;
 Vue.use(VueHighcharts);
@@ -13,6 +15,11 @@ VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 Vue.use(Notifications);
 Vue.use(VCalendar, {});
+Vue.use(VueI18n);
+const i18n = new VueI18n({
+  locale: localStorage.getItem("locale") || "en",
+  messages,
+});
 
 Vue.filter("measurement", function (value) {
   return measurements[value]?.label || value;
@@ -31,5 +38,6 @@ Vue.filter("collapse", function (value) {
 
 new Vue({
   router,
+  i18n,
   render: (h) => h(App),
 }).$mount("#app");

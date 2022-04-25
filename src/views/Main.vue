@@ -1,8 +1,17 @@
 <template>
-  <div>
-    <Provider :current="provider" />
-    <Types :current="type.toLowerCase()" />
-    <Color :type="type.toLowerCase()" />
+  <div class="sensors-screen" :class="{ loading: isLoader }">
+    <Header :localeCurrent="$i18n.locale" />
+
+    <div class="sensors-panel sensors-panel--bottom">
+      <Types :current="type.toLowerCase()" />
+      <Provider
+        :current="provider"
+        :canHistory="canHistory"
+        @history="handlerHistory"
+      />
+      <Wind :disabled="provider !== 'ipfs'" />
+    </div>
+
     <Details
       v-if="point"
       :sender="point.sender"
@@ -13,26 +22,17 @@
       :type="type.toLowerCase()"
       @close="handlerClose"
     />
-    <Header :points="points" />
-    <ChainInfo v-if="provider === 'remote'" />
-    <Emulator
-      v-if="emulator"
-      :time="emulator.time"
-      :status="emulator.status"
-      @start="handlerStartEmulate"
-      @stop="handlerStopEmulate"
-      @play="handlerPlayEmulate"
-      @pause="handlerPauseEmulate"
-    />
-    <Loader v-if="isLoader" />
+
     <Map
       :type="type.toLowerCase()"
       @clickMarker="handlerClick"
       :zoom="zoom"
       :lat="lat"
       :lng="lng"
-      :availableWind="emulator ? false : true"
+      :availableWind="provider === 'ipfs'"
     />
+
+    <i class="fa-solid fa-compass fa-spin"></i>
   </div>
 </template>
 
@@ -40,22 +40,18 @@
 import Vue from "vue";
 import Map from "../components/Map.vue";
 import Types from "../components/Types.vue";
-import Color from "../components/Color.vue";
 import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
-import Emulator from "../components/Emulator.vue";
-import ChainInfo from "../components/ChainInfo.vue";
-import Loader from "../components/Loader.vue";
+import Wind from "../components/Wind.vue";
 import * as providers from "../providers";
 import config from "../config";
-import EmulatorLib from "../providers/emulator";
 import * as markers from "../utils/map/marker";
 
 export default {
   props: {
     provider: {
-      default: "ipfs",
+      default: "remote",
     },
     type: {
       default: "pm10",
@@ -76,22 +72,19 @@ export default {
       point: null,
       points: {},
       status: "online",
-      emulator: null,
+      canHistory: false,
     };
   },
   components: {
     Map,
     Types,
-    Color,
     Details,
     Provider,
     Header,
-    Emulator,
-    ChainInfo,
-    Loader,
+    Wind,
   },
   computed: {
-    isLoader: function () {
+    isLoader() {
       return this.provider === "ipfs" && Object.keys(this.points).length === 0;
     },
   },
@@ -99,16 +92,7 @@ export default {
     if (this.provider === "ipfs") {
       Vue.prototype.$provider = new providers.Ipfs(config.IPFS);
     } else if (this.provider === "remote") {
-      let url;
-      const settings = localStorage.getItem("settings") || null;
-      if (settings) {
-        try {
-          url = JSON.parse(settings).remote.url;
-        } catch (_) {
-          console.warn("error", settings);
-        }
-      }
-      Vue.prototype.$provider = new providers.Remote(url);
+      Vue.prototype.$provider = new providers.Remote(config.REMOTE_PROVIDER);
     }
     this.$provider.ready().then(() => {
       this.providerReady = true;
@@ -118,43 +102,23 @@ export default {
       const iRemote = setInterval(() => {
         if (this.$provider && this.$provider.connection) {
           clearInterval(iRemote);
-          this.emulator = new EmulatorLib(this.$provider);
+          this.canHistory = true;
         }
       }, 1000);
     }
   },
   methods: {
-    handlerStartEmulate({ start, end, speed, interval, sensors }) {
-      this.status = "emulator";
+    async handlerHistory({ start, end }) {
+      this.status = "history";
       this.$provider.watch(null);
       this.handlerClose();
       markers.clear();
-
-      this.emulator.emulate(
-        start,
-        end,
-        speed,
-        interval,
-        sensors,
-        (point) => {
-          this.handlerNewPoint(point);
-        },
-        () => {
-          // console.log("stop");
-        }
-      );
-    },
-    handlerStopEmulate() {
-      this.emulator.stop();
-      this.status = "online";
-      this.handlerClose();
-      markers.clear();
-    },
-    handlerPauseEmulate() {
-      this.emulator.pause();
-    },
-    handlerPlayEmulate() {
-      this.emulator.play();
+      this.$provider.setStartDate(start);
+      this.$provider.setEndDate(end);
+      const sensors = await this.$provider.lastValuesForPeriod(start, end);
+      for (const sensor in sensors) {
+        this.handlerNewPoint(sensors[sensor]);
+      }
     },
     handlerNewPoint(point) {
       if (!point.model) {
@@ -186,17 +150,17 @@ export default {
     },
     async handlerClick(point) {
       let log;
-      let count;
-      if (this.status === "emulator") {
-        log = await this.emulator.getHistoryBySensor(point.sensor_id);
-        count = await this.emulator.getCountTxBySender(point.sender);
+      if (this.status === "history") {
+        log = await this.$provider.getHistoryPeriodBySensor(
+          point.sensor_id,
+          this.$provider.start,
+          this.$provider.end
+        );
       } else {
         log = await this.$provider.getHistoryBySensor(point.sensor_id);
-        count = await this.$provider.getCountTxBySender(point.sender);
       }
       this.point = {
         ...point,
-        count,
         log: [...log],
       };
     },

@@ -6,6 +6,8 @@ class Provider {
     this.isReady = false;
     this.url = url.replace(/\/$/, "");
     this.connection = false;
+    this.start = null;
+    this.end = null;
     this.socket = io(url);
     this.socket.on("connect_error", (e) => {
       console.log("connect error", e);
@@ -58,6 +60,25 @@ class Provider {
       });
   }
 
+  setStartDate(start) {
+    this.start = start;
+  }
+
+  setEndDate(end) {
+    this.end = end;
+  }
+
+  lastValuesForPeriod(start, end) {
+    return axios
+      .get(`${this.url}/api/sensor/last/${start}/${end}`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return {};
+      });
+  }
+
   getHistoryByDate(start, end, sensor_ids = "") {
     sensor_ids = sensor_ids
       .trim()
@@ -76,6 +97,17 @@ class Provider {
           list[sensor_id.trim()] = result.data.result[sensor_id.trim()];
         }
         return list;
+      })
+      .catch(() => {
+        return [];
+      });
+  }
+
+  getHistoryPeriodBySensor(sensor, start, end) {
+    return axios
+      .get(`${this.url}/api/sensor/${sensor}/${start}/${end}`)
+      .then((result) => {
+        return result.data.result;
       })
       .catch(() => {
         return [];

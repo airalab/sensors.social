@@ -6,41 +6,7 @@ import config from "../../config";
 
 export const immediate = false;
 
-const WindControl = L.Control.extend({
-  initialize: function (layer) {
-    this.layer = layer;
-  },
-  options: {
-    position: "topleft",
-  },
-  onAdd: function (map) {
-    var container = L.DomUtil.create("button", "leaflet-control-button");
-    container.textContent = "Wind";
-    container.style.padding = "11px";
-    container.style.backgroundColor = immediate ? "#eee" : "#fff";
-    container.style.border = "1px solid #a2a2a2";
-    container.style.borderRadius = "2px";
-    container.style.cursor = "pointer";
-    container.style.boxShadow = "0 1px 5px rgb(0 0 0 / 20%)";
-    container.style.fontWeight = "bold";
-    if (immediate) {
-      map.addLayer(this.layer);
-    }
-    container.onclick = () => {
-      if (map.hasLayer(this.layer)) {
-        map.removeLayer(this.layer);
-        container.style.backgroundColor = "#fff";
-      } else {
-        map.addLayer(this.layer);
-        container.style.backgroundColor = "#eee";
-      }
-    };
-    return container;
-  },
-});
-
 let windLayer;
-let windControl;
 
 export function init() {
   return axios.get(config.WIND_PROVIDER).then((r) => {
@@ -56,18 +22,7 @@ export function init() {
         "rgb(245,64,32)",
       ],
     });
-    windControl = new WindControl(windLayer).setPosition("bottomright");
   });
-}
-
-export function switchControl(map, enabled = false) {
-  if (windControl) {
-    if (enabled) {
-      map.addControl(windControl);
-    } else {
-      map.removeControl(windControl);
-    }
-  }
 }
 
 export function switchLayer(map, enabled = false) {
@@ -78,9 +33,4 @@ export function switchLayer(map, enabled = false) {
       map.removeLayer(windLayer);
     }
   }
-}
-
-export function switchWind(map, enabled = false) {
-  switchLayer(map, enabled);
-  switchControl(map, enabled);
 }
