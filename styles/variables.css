@@ -1,0 +1,16 @@
+body {
+    --color-light: #fff;
+    --color-dark: #171819;
+    --color-blue: #03a5ed;
+    --color-green: #60bc2a;
+    --color-red: #f10856;
+
+    --color-link: var(--color-blue);
+    --color-link-hover: var(--color-green);
+
+    --font-family--black: 'Arial Black', sans-serif;
+    --font-family--normal: 'Arial', sans-serif;
+    --font-size: 1rem;
+
+    --gap: 1rem;
+}
