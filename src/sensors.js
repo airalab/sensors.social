@@ -27,4 +27,8 @@ export default {
     icon: require("./assets/panorama.png"),
     link: "https://panorama-park63.ru/",
   },
+  "e4871acd155431c63fbbc54b89d015bc17bc5fbe44d5846502f7e58566e24a8e": {
+    icon: require("./assets/radiation.jpg"),
+    link: "https://airalab.org/",
+  },
 };

@@ -32,10 +32,10 @@ export default {
   REMOTE_PROVIDER: "https://roseman.airalab.org/",
   WIND_PROVIDER: "https://wind.airalab.org/latest",
   MAP: {
-    zoom: "13",
+    zoom: "3",
     position: {
-      lat: "53.5197",
-      lng: "49.3647",
+      lat: "50.1206",
+      lng: "92.9883",
     },
   },
 };
