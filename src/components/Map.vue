@@ -16,7 +16,7 @@ export default {
       this.$router.replace({
         name: "main",
         params: {
-          provider: this.$route.params.provider || "ipfs",
+          provider: this.$route.params.provider || "remote",
           type: this.$route.params.type || "pm10",
           zoom: e.target.getZoom(),
           lat: pos.lat.toFixed(4),
@@ -30,7 +30,7 @@ export default {
         .replace({
           name: "main",
           params: {
-            provider: this.$route.params.provider || "ipfs",
+            provider: this.$route.params.provider || "remote",
             type: this.$route.params.type || "pm10",
             zoom: e.target.getZoom(),
             lat: pos.lat.toFixed(4),
