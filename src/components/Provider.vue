@@ -1,7 +1,5 @@
 <template>
   <div class="sensors-panel-section sensors-dateselect">
-    <span>{{ $t("provider.history") }}</span>
-    &nbsp;
     <input
       type="date"
       v-model="start"

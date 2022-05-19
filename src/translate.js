@@ -10,7 +10,6 @@ export default {
       },
     },
     provider: {
-      history: "History",
       realtime: "Real time",
     },
     layer: {
@@ -29,7 +28,6 @@ export default {
       },
     },
     provider: {
-      history: "История за день",
       realtime: "В реальном времени",
     },
     layer: {

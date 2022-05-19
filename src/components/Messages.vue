@@ -1,16 +1,13 @@
 <template>
-  <div style="margin-left: 20px">
-    <div class="sensors-switcher">
-      <input
-        type="checkbox"
-        id="messages"
-        v-model="control"
-        :disabled="disabled"
-      />
-      <label for="messages"></label>
-    </div>
-    &nbsp;
-    <div>{{ $t("layer.messages") }}</div>
+  <div class="sensors-switcher">
+    <input
+      type="checkbox"
+      id="messages"
+      v-model="control"
+      :disabled="disabled"
+    />
+    <label for="messages"></label>
+    <span>{{ $t("layer.messages") }}</span>
   </div>
 </template>
 

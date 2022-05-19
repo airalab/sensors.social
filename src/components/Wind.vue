@@ -1,11 +1,8 @@
 <template>
-  <div>
-    <div class="sensors-switcher">
-      <input type="checkbox" id="wind" v-model="control" :disabled="disabled" />
-      <label for="wind"></label>
-    </div>
-    &nbsp;
-    <div>{{ $t("layer.wind") }}</div>
+  <div class="sensors-switcher">
+    <input type="checkbox" id="wind" v-model="control" :disabled="disabled" />
+    <label for="wind"></label>
+    <span>{{ $t("layer.wind") }}</span>
   </div>
 </template>
 
