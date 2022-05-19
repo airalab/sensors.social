@@ -16,31 +16,32 @@
         <small>{{ dateMsg }}</small>
       </div>
     </div>
-
-    <div v-if="last" style="text-align: left">
-      <p style="text-align: center; margin: 10px">
-        <b>{{ date }}</b>
-      </p>
-      <div style="overflow: hidden; margin: 10px; font-size: 14px">
-        <p
-          v-for="(param, k) in Object.keys(last.data)"
-          :key="k"
-          style="float: left; margin-top: 0px"
-        >
-          <button class="btn" @click="measurement = param">
-            <b>{{ param | measurement }}</b> =
-            {{ last.data[param] | measurementFormat(param) }}
-          </button>
-          &nbsp;
+    <template v-else>
+      <div v-if="last" style="text-align: left">
+        <p style="text-align: center; margin: 10px">
+          <b>{{ date }}</b>
         </p>
+        <div style="overflow: hidden; margin: 10px; font-size: 14px">
+          <p
+            v-for="(param, k) in Object.keys(last.data)"
+            :key="k"
+            style="float: left; margin-top: 0px"
+          >
+            <button class="btn" @click="measurement = param">
+              <b>{{ param | measurement }}</b> =
+              {{ last.data[param] | measurementFormat(param) }}
+            </button>
+            &nbsp;
+          </p>
+        </div>
       </div>
-    </div>
-    <div v-if="log.length > 0">
-      <Chart :log="log" :measurement="measurement" :sensor_id="sensor_id" />
-    </div>
-    <div v-if="link">
-      <a :href="link" target="_blank">{{ link }}</a>
-    </div>
+      <div v-if="log.length > 0">
+        <Chart :log="log" :measurement="measurement" :sensor_id="sensor_id" />
+      </div>
+      <div v-if="link">
+        <a :href="link" target="_blank">{{ link }}</a>
+      </div>
+    </template>
   </div>
 </template>
 

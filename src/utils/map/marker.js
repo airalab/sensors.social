@@ -178,7 +178,7 @@ function createMarker(point, colors) {
     marker = createMarkerBrand(coord, point, colors);
   } else if (point.data.windang) {
     marker = createMarkerArrow(coord, point, colors);
-  } else if (point.model === 44) {
+  } else if (point.model === 4) {
     marker = createMarkerUser(coord, point);
   } else {
     marker = createMarkerCircle(coord, point, colors);
@@ -213,7 +213,7 @@ export async function addPoint(point) {
       await addMarker(point);
     } else if (point.model === 3) {
       await addMarker(point);
-    } else if (point.model === 44) {
+    } else if (point.model === 4) {
       await addMarkerUser(point);
     }
     this.next();

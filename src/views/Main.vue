@@ -11,7 +11,7 @@
       />
       <div class="sensors-panel-section">
         <Wind :disabled="provider !== 'ipfs'" />
-        <!-- <Messages /> -->
+        <Messages />
       </div>
     </div>
 
@@ -49,7 +49,7 @@ import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
 import Wind from "../components/Wind.vue";
-// import Messages from "../components/Messages.vue";
+import Messages from "../components/Messages.vue";
 import * as providers from "../providers";
 import config from "../config";
 import * as markers from "../utils/map/marker";
@@ -89,7 +89,7 @@ export default {
     Provider,
     Header,
     Wind,
-    // Messages,
+    Messages,
   },
   computed: {
     isLoader() {
