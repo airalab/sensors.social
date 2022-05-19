@@ -11,7 +11,7 @@ import { getCityByPos } from "../utils/map/utils";
 export default {
   props: ["zoom", "lat", "lng", "type", "availableWind"],
   async mounted() {
-    if (this.zoom > 10) {
+    if (this.zoom > 9) {
       getCityByPos(this.lat, this.lng, this.$i18n.locale).then((r) => {
         this.$emit("city", r);
       });
@@ -33,7 +33,7 @@ export default {
     map.on("moveend", (e) => {
       const pos = e.target.getCenter();
       const zoom = e.target.getZoom();
-      if (zoom > 10) {
+      if (zoom > 9) {
         getCityByPos(pos.lat, pos.lng, this.$i18n.locale).then((r) => {
           console.log(r);
           this.$emit("city", r);
