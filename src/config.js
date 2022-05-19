@@ -38,4 +38,5 @@ export default {
       lng: "49.3647",
     },
   },
+  SHOW_MESSAGES: true,
 };

@@ -79,6 +79,17 @@ class Provider {
       });
   }
 
+  messagesForPeriod(start, end) {
+    return axios
+      .get(`${this.url}/api/sensor/messages/${start}/${end}`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return {};
+      });
+  }
+
   getHistoryByDate(start, end, sensor_ids = "") {
     sensor_ids = sensor_ids
       .trim()
@@ -147,8 +158,8 @@ class Provider {
       });
   }
 
-  watch(cb) {
-    this.socket.on("update", cb);
+  watch(/*cb*/) {
+    // this.socket.on("update", cb);
   }
 }
 

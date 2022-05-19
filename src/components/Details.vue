@@ -1,13 +1,22 @@
 <template>
   <div class="panel">
     <button class="close" @click="$emit('close')">&Cross;</button>
-    <h2 class="title">
+    <h2 class="title" v-if="!data.message">
       Sensor id:
       <Avatar :address="sensor_id" class="icon" />
       <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">{{
         sensor_id | collapse
       }}</Copy>
     </h2>
+
+    <div class="message" v-if="data.message">
+      <b>{{ data.username }} p</b>
+      <p>{{ data.message }}</p>
+      <div style="text-align: right">
+        <small>{{ dateMsg }}</small>
+      </div>
+    </div>
+
     <div v-if="last" style="text-align: left">
       <p style="text-align: center; margin: 10px">
         <b>{{ date }}</b>
@@ -43,7 +52,7 @@ import Copy from "./Copy.vue";
 import sensors from "../sensors";
 
 export default {
-  props: ["sender", "sensor_id", "log", "model", "type"],
+  props: ["sender", "sensor_id", "log", "model", "type", "data"],
   components: {
     Chart,
     Avatar,
@@ -63,6 +72,9 @@ export default {
     },
     date: function () {
       return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
+    },
+    dateMsg: function () {
+      return moment(this.data.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
     },
   },
 };
@@ -109,5 +121,8 @@ export default {
 }
 .btn:hover {
   cursor: pointer;
+}
+.message p {
+  margin: 20px 0;
 }
 </style>

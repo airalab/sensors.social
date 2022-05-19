@@ -5,7 +5,7 @@
 
       <!-- если город один -->
       <div class="sensors-panel-title green">
-        {{ $t("header.city.togliatti") }}
+        {{ city }}
       </div>
 
       <!-- <div class="sensors-select green">
@@ -69,7 +69,7 @@
 
 <script>
 export default {
-  props: ["localeCurrent"],
+  props: ["localeCurrent", "city"],
   data() {
     return {
       locale: this.localeCurrent,

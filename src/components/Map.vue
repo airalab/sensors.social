@@ -6,10 +6,16 @@
 import { init } from "../utils/map/instance";
 import { init as initWind } from "../utils/map/wind";
 import { init as initMarkers } from "../utils/map/marker";
+import { getCityByPos } from "../utils/map/utils";
 
 export default {
   props: ["zoom", "lat", "lng", "type", "availableWind"],
   async mounted() {
+    if (this.zoom > 10) {
+      getCityByPos(this.lat, this.lng, this.$i18n.locale).then((r) => {
+        this.$emit("city", r);
+      });
+    }
     const map = init([this.lat, this.lng], this.zoom);
     map.on("zoomend", (e) => {
       const pos = e.target.getCenter();
@@ -26,6 +32,16 @@ export default {
     });
     map.on("moveend", (e) => {
       const pos = e.target.getCenter();
+      const zoom = e.target.getZoom();
+      if (zoom > 10) {
+        getCityByPos(pos.lat, pos.lng, this.$i18n.locale).then((r) => {
+          console.log(r);
+          this.$emit("city", r);
+        });
+      } else {
+        this.$emit("city", "");
+      }
+
       this.$router
         .replace({
           name: "main",

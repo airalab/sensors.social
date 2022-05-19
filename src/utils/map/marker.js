@@ -11,10 +11,12 @@ import generate, {
 } from "../../utils/color";
 import measurement from "../../utils/measurement";
 import sensors from "../../sensors";
+import config from "../../config";
 
 const queue = new Queue();
 let scale;
-let markers;
+let markersLayer;
+let messagesLayer;
 let handlerClickMarker;
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -28,13 +30,23 @@ export function init(map, type, cb) {
   handlerClickMarker = cb;
   const scaleParams = measurement(type);
   scale = generate(scaleParams.colors, scaleParams.range);
-  markers = new L.MarkerClusterGroup({
+  markersLayer = new L.MarkerClusterGroup({
     showCoverageOnHover: false,
     // zoomToBoundsOnClick: false,
     maxClusterRadius: 120,
     iconCreateFunction: iconCreate,
   });
-  map.addLayer(markers);
+  map.addLayer(markersLayer);
+
+  messagesLayer = new L.MarkerClusterGroup({
+    showCoverageOnHover: false,
+    // zoomToBoundsOnClick: false,
+    maxClusterRadius: 120,
+    iconCreateFunction: iconCreateMsg,
+  });
+  if (config.SHOW_MESSAGES) {
+    map.addLayer(messagesLayer);
+  }
 }
 
 function iconCreate(cluster) {
@@ -66,10 +78,23 @@ function iconCreate(cluster) {
     iconSize: new L.Point(40, 40),
   });
 }
+function iconCreateMsg(cluster) {
+  const childCount = cluster.getChildCount();
+  return new L.DivIcon({
+    html:
+      "<div style='font-weight: bold;background-image: url(" +
+      require("../../assets/msg.png") +
+      ");background-size: contain;color:#fff;padding-top:4px;font-size:16px;width: 40px;height: 40px;'><span>" +
+      childCount +
+      "</span></div>",
+    className: "marker-cluster",
+    iconSize: new L.Point(40, 40),
+  });
+}
 
 function findMarker(sensor_id) {
   return new Promise((resolve) => {
-    markers.eachLayer((m) => {
+    markersLayer.eachLayer((m) => {
       if (m.options.data.sensor_id === sensor_id) {
         resolve(m);
       }
@@ -81,6 +106,14 @@ function findMarker(sensor_id) {
 function createIconBrand(sensor_id, colorRgb) {
   return L.divIcon({
     html: `<img src="${sensors[sensor_id].icon}" alt="" style="border: 3px solid rgba(${colorRgb}, 0.7);width: 40px; height: 40px; border-radius: 50%;">`,
+    iconSize: [40, 40],
+    className: "marker-icon",
+  });
+}
+
+function createIconMsg() {
+  return L.divIcon({
+    html: `<img src="${require("../../assets/msg.png")}" alt="" style="width: 40px; height: 40px;">`,
     iconSize: [40, 40],
     className: "marker-icon",
   });
@@ -130,6 +163,14 @@ function createMarkerCircle(coord, data, colors) {
   });
 }
 
+function createMarkerUser(coord, data) {
+  return L.marker(new L.LatLng(coord[0], coord[1]), {
+    icon: createIconMsg(),
+    data: data,
+    typeMarker: "msg",
+  });
+}
+
 function createMarker(point, colors) {
   const coord = point.geo.split(",");
   let marker;
@@ -137,6 +178,8 @@ function createMarker(point, colors) {
     marker = createMarkerBrand(coord, point, colors);
   } else if (point.data.windang) {
     marker = createMarkerArrow(coord, point, colors);
+  } else if (point.model === 44) {
+    marker = createMarkerUser(coord, point);
   } else {
     marker = createMarkerCircle(coord, point, colors);
   }
@@ -170,6 +213,8 @@ export async function addPoint(point) {
       await addMarker(point);
     } else if (point.model === 3) {
       await addMarker(point);
+    } else if (point.model === 44) {
+      await addMarkerUser(point);
     }
     this.next();
   }
@@ -194,10 +239,37 @@ async function addMarker(point) {
     marker.on("click", (event) => {
       handlerClickMarker(event.target.options.data);
     });
-    markers.addLayer(marker);
+    markersLayer.addLayer(marker);
+  }
+}
+
+async function addMarkerUser(point) {
+  const colors = {
+    basic: "#f99981",
+    border: "#999",
+    rgb: [161, 161, 161],
+  };
+  const marker = await findMarker(point.sensor_id);
+  if (!marker) {
+    const marker = createMarker(point, colors);
+    marker.on("click", (event) => {
+      handlerClickMarker(event.target.options.data);
+    });
+    messagesLayer.addLayer(marker);
   }
 }
 
 export function clear() {
-  markers.clearLayers();
+  markersLayer.clearLayers();
+  messagesLayer.clearLayers();
+}
+
+export function switchMessagesLayer(map, enabled = false) {
+  if (messagesLayer) {
+    if (enabled) {
+      map.addLayer(messagesLayer);
+    } else {
+      map.removeLayer(messagesLayer);
+    }
+  }
 }

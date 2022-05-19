@@ -1,5 +1,5 @@
 <template>
-  <div class="sensors-panel-section">
+  <div>
     <div class="sensors-switcher">
       <input type="checkbox" id="wind" v-model="control" :disabled="disabled" />
       <label for="wind"></label>

@@ -1,6 +1,8 @@
 import { init as initIpfs } from "../utils/ipfs";
 import { getAgents } from "../utils/utils";
 import { measurements as converter } from "../utils/measurement";
+import io from "socket.io-client";
+import configApp from "../config";
 
 class Provider {
   constructor(config) {
@@ -8,6 +10,21 @@ class Provider {
     this.isReady = false;
     this.whiteListAccounts = [];
     this.history = {};
+
+    this.connection = false;
+    this.socket = io(configApp.REMOTE_PROVIDER);
+    this.socket.on("connect_error", (e) => {
+      console.log("connect error", e);
+      this.connection = false;
+    });
+    this.socket.on("error", function (error) {
+      console.warn(error);
+    });
+    this.socket.on("connect", () => {
+      console.log("socket connectiion");
+      this.connection = true;
+    });
+
     this.init(config).then(() => {
       this.isReady = true;
       this.peers();
@@ -75,11 +92,17 @@ class Provider {
   }
 
   getHistoryBySensor(sensor) {
-    return Promise.resolve(this.history[sensor]);
+    return Promise.resolve(this.history[sensor] ? this.history[sensor] : []);
   }
 
   getCountTxBySender() {
     return false;
+  }
+
+  watchMessages(cb) {
+    this.socket.on("update", (result) => {
+      cb(result);
+    });
   }
 
   watch(cb) {
@@ -96,6 +119,7 @@ class Provider {
         try {
           json = JSON.parse(Buffer.from(r.data).toString("utf8"));
         } catch (e) {
+          // console.log(sender, Buffer.from(r.data).toString("utf8"));
           console.error(e.message);
           return;
         }
@@ -125,7 +149,6 @@ class Provider {
               data: measurementLowerCase,
               timestamp,
             };
-
             if (
               !Object.prototype.hasOwnProperty.call(this.history, sensor_id)
             ) {

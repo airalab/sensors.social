@@ -15,6 +15,7 @@ export default {
     },
     layer: {
       wind: "wind layer",
+      messages: "Messages layer",
     },
   },
   ru: {
@@ -33,6 +34,7 @@ export default {
     },
     layer: {
       wind: "Направление ветра",
+      messages: "Сообщения",
     },
   },
 };

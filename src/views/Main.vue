@@ -1,6 +1,6 @@
 <template>
   <div class="sensors-screen" :class="{ loading: isLoader }">
-    <Header :localeCurrent="$i18n.locale" />
+    <Header :localeCurrent="$i18n.locale" :city="city" />
 
     <div class="sensors-panel sensors-panel--bottom">
       <Types :current="type.toLowerCase()" />
@@ -9,7 +9,10 @@
         :canHistory="canHistory"
         @history="handlerHistory"
       />
-      <Wind :disabled="provider !== 'ipfs'" />
+      <div class="sensors-panel-section">
+        <Wind :disabled="provider !== 'ipfs'" />
+        <!-- <Messages /> -->
+      </div>
     </div>
 
     <Details
@@ -20,12 +23,14 @@
       :model="point.model"
       :count="point.count"
       :type="type.toLowerCase()"
+      :data="point.data"
       @close="handlerClose"
     />
 
     <Map
       :type="type.toLowerCase()"
       @clickMarker="handlerClick"
+      @city="handlerChangeCity"
       :zoom="zoom"
       :lat="lat"
       :lng="lng"
@@ -44,6 +49,7 @@ import Details from "../components/Details.vue";
 import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
 import Wind from "../components/Wind.vue";
+// import Messages from "../components/Messages.vue";
 import * as providers from "../providers";
 import config from "../config";
 import * as markers from "../utils/map/marker";
@@ -73,6 +79,7 @@ export default {
       points: {},
       status: "online",
       canHistory: false,
+      city: "",
     };
   },
   components: {
@@ -82,6 +89,7 @@ export default {
     Provider,
     Header,
     Wind,
+    // Messages,
   },
   computed: {
     isLoader() {
@@ -105,6 +113,8 @@ export default {
           this.canHistory = true;
         }
       }, 1000);
+    } else {
+      this.$provider.watchMessages(this.handlerNewPoint);
     }
   },
   methods: {
@@ -118,6 +128,10 @@ export default {
       const sensors = await this.$provider.lastValuesForPeriod(start, end);
       for (const sensor in sensors) {
         this.handlerNewPoint(sensors[sensor]);
+      }
+      const messages = await this.$provider.messagesForPeriod(start, end);
+      for (const message in messages) {
+        this.handlerNewPoint(messages[message]);
       }
     },
     handlerNewPoint(point) {
@@ -143,7 +157,8 @@ export default {
         Object.prototype.hasOwnProperty.call(
           point.data,
           this.type.toLowerCase()
-        )
+        ) ||
+        Object.prototype.hasOwnProperty.call(point.data, "message")
       ) {
         this.$set(this.points, point.sensor_id, point.data);
       }
@@ -166,6 +181,9 @@ export default {
     },
     handlerClose() {
       this.point = null;
+    },
+    handlerChangeCity(city) {
+      this.city = city;
     },
   },
 };
