@@ -1,11 +1,12 @@
 <template>
-  <div class="small">
+  <div class="chart">
     <highcharts :options="options" ref="chart"></highcharts>
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import { measurements } from "../utils/measurement";
 
 export default {
   props: ["log", "measurement", "sensor_id"],
@@ -17,6 +18,7 @@ export default {
         chart: {
           type: "spline",
           height: 300,
+          width: 500,
         },
         xAxis: {
           type: "datetime",
@@ -53,28 +55,50 @@ export default {
   },
   computed: {
     series: function () {
-      if (this.measurement === "pm10" || this.measurement === "pm25") {
-        return [
-          {
-            name: "PM10",
-            color: "#e8b738",
+      if (this.log.length > 0) {
+        const measurementNames = Object.keys(this.log[0].data).map((item) =>
+          item.toLowerCase()
+        );
+        const series = [];
+        for (let measurement of measurementNames) {
+          series.push({
+            visible: measurement === this.measurement,
+            name: measurement,
+            color:
+              measurements[measurement] && measurements[measurement].chartColor
+                ? measurements[measurement].chartColor
+                : "#e8b738",
             lineWidth: 1,
             data: [],
             options: {
-              name: "pm10",
+              name: measurement,
             },
-          },
-          {
-            name: "PM2.5",
-            color: "#89b268",
-            lineWidth: 1,
-            data: [],
-            options: {
-              name: "pm25",
-            },
-          },
-        ];
+          });
+        }
+        return series;
       }
+      // if (this.measurement === "pm10" || this.measurement === "pm25") {
+      //   return [
+      //     {
+      //       name: "PM10",
+      //       color: "#e8b738",
+      //       lineWidth: 1,
+      //       data: [],
+      //       options: {
+      //         name: "pm10",
+      //       },
+      //     },
+      //     {
+      //       name: "PM2.5",
+      //       color: "#89b268",
+      //       lineWidth: 1,
+      //       data: [],
+      //       options: {
+      //         name: "pm25",
+      //       },
+      //     },
+      //   ];
+      // }
       return [
         {
           name: this.measurement,
@@ -150,8 +174,8 @@ export default {
 </script>
 
 <style>
-.small {
-  max-width: 400px;
+.chart {
+  /* max-width: 400px; */
   margin: 0 auto;
 }
 </style>

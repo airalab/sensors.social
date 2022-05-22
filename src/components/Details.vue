@@ -1,63 +1,61 @@
 <template>
-  <div class="panel">
-    <button class="close" @click="$emit('close')">&Cross;</button>
-    <h2 class="title" v-if="!data.message">
-      Sensor id:
-      <Avatar :address="sensor_id" class="icon" />
+  <div>
+    <h2>
+      {{ $t("details.sensor") }}
       <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">{{
         sensor_id | collapse
       }}</Copy>
     </h2>
-
-    <div class="message" v-if="data.message">
-      <b>{{ data.username }} p</b>
-      <p>{{ data.message }}</p>
-      <div style="text-align: right">
-        <small>{{ dateMsg }}</small>
-      </div>
+    <div class="sensor-popup--subtitle">
+      <span><i class="fa-solid fa-stopwatch"></i> {{ date }}</span>
+      <!-- <span
+        ><i class="fa-solid fa-location-dot"></i> г. Тольятти, ул. 40 лет победы
+        51В</span
+      > -->
     </div>
-    <template v-else>
-      <div v-if="last" style="text-align: left">
-        <p style="text-align: center; margin: 10px">
-          <b>{{ date }}</b>
-        </p>
-        <div style="overflow: hidden; margin: 10px; font-size: 14px">
-          <p
-            v-for="(param, k) in Object.keys(last.data)"
-            :key="k"
-            style="float: left; margin-top: 0px"
-          >
-            <button class="btn" @click="measurement = param">
-              <b>{{ param | measurement }}</b> =
-              {{ last.data[param] | measurementFormat(param) }}
-            </button>
-            &nbsp;
-          </p>
-        </div>
-      </div>
-      <div v-if="log.length > 0">
-        <Chart :log="log" :measurement="measurement" :sensor_id="sensor_id" />
-      </div>
-      <div v-if="link">
-        <a :href="link" target="_blank">{{ link }}</a>
-      </div>
+    <template v-if="last">
+      <ul class="sensor-popup--data">
+        <li v-for="(param, k) in Object.keys(last.data)" :key="k">
+          <div @click="measurement = param">
+            <Icon :type="param" />
+            {{ param | measurement }} =
+            {{ last.data[param] | measurementFormat(param) }}
+            <a
+              v-if="param === 'pm10' || param === 'pm25'"
+              href=""
+              @click.stop.prevent="$emit('modal', 'info')"
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </a>
+          </div>
+        </li>
+      </ul>
     </template>
+    <Chart
+      v-if="log.length > 0"
+      :log="log"
+      :measurement="measurement"
+      :sensor_id="sensor_id"
+    />
+    <div v-if="link">
+      <a :href="link" target="_blank">{{ link }}</a>
+    </div>
   </div>
 </template>
 
 <script>
 import moment from "moment";
 import Chart from "./Chart.vue";
-import Avatar from "./Avatar.vue";
 import Copy from "./Copy.vue";
+import Icon from "./Icon.vue";
 import sensors from "../sensors";
 
 export default {
-  props: ["sender", "sensor_id", "log", "model", "type", "data"],
+  props: ["sender", "sensor_id", "log", "model", "type"],
   components: {
     Chart,
-    Avatar,
     Copy,
+    Icon,
   },
   data() {
     return {
@@ -74,56 +72,6 @@ export default {
     date: function () {
       return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
     },
-    dateMsg: function () {
-      return moment(this.data.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
-    },
   },
 };
 </script>
-
-<style scoped>
-.panel {
-  overflow: hidden;
-  position: absolute;
-  top: 41px;
-  right: 0;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 10px;
-  border: 5px solid #e0e0e0;
-  width: 400px;
-}
-.icon {
-  width: 14px;
-  border-radius: 50%;
-  vertical-align: baseline;
-  margin-right: 4px;
-}
-.title {
-  font-size: 15px;
-  margin-top: 30px;
-  text-align: center;
-}
-.close {
-  position: absolute;
-  top: 0;
-  right: 0;
-  font-size: 20px;
-  background: #6186ff;
-  border: 0;
-  color: #fff;
-}
-.close:hover {
-  cursor: pointer;
-}
-.btn {
-  background: none;
-  border: none;
-}
-.btn:hover {
-  cursor: pointer;
-}
-.message p {
-  margin: 20px 0;
-}
-</style>

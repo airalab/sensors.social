@@ -1,5 +1,5 @@
 <template>
-  <div class="sensors-switcher" style="margin-left: 20px">
+  <div class="sensors-switcher">
     <input
       type="checkbox"
       id="messages"

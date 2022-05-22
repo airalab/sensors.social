@@ -1,5 +1,5 @@
 <template>
-  <div class="sensors-switcher">
+  <div class="sensors-switcher" :class="{ disabled: disabled }">
     <input type="checkbox" id="wind" v-model="control" :disabled="disabled" />
     <label for="wind"></label>
     <span>{{ $t("layer.wind") }}</span>
@@ -11,7 +11,11 @@ import { instanceMap } from "../utils/map/instance";
 import { switchLayer } from "../utils/map/wind";
 
 export default {
-  props: ["disabled"],
+  props: {
+    disabled: {
+      default: true,
+    },
+  },
   data() {
     return {
       control: false,

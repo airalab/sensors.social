@@ -9,6 +9,8 @@ export const measurements = {
   pm10: {
     label: "PM10",
     unit: "μg/m3",
+    icon: "soap",
+    chartColor: "#e8b738",
     colors: [
       "#00796b",
       "#00796b",
@@ -34,6 +36,8 @@ export const measurements = {
   pm25: {
     label: "PM2.5",
     unit: "μg/m3",
+    icon: "soap",
+    chartColor: "#89b268",
     colors: [
       "#00796b",
       "#00796b",
@@ -59,6 +63,8 @@ export const measurements = {
   co: {
     label: "CO",
     unit: "mg/m3",
+    icon: "circle-nodes",
+    chartColor: "#c1c1c1",
     colors: [
       "#00796b",
       "#00796b",
@@ -84,6 +90,7 @@ export const measurements = {
   nh3: {
     label: "NH3",
     unit: "mg/m3",
+    chartColor: "#a1e37a",
     colors: [
       "#00796b",
       "#00796b",
@@ -109,6 +116,7 @@ export const measurements = {
   no2: {
     label: "NO2",
     unit: "mg/m3",
+    chartColor: "#d4dd53",
     colors: [
       "#00796b",
       "#00796b",
@@ -134,6 +142,8 @@ export const measurements = {
   temperature: {
     label: "Tmp",
     unit: "℃",
+    icon: "temperature-high",
+    chartColor: "#2d7ac7",
     colors: [
       "#313695",
       "#313695",
@@ -203,6 +213,7 @@ export const measurements = {
   pm1: {
     label: "PM1",
     unit: "PM1",
+    chartColor: "#ff99e9",
   },
   pressure: {
     label: "Pr",
@@ -211,10 +222,14 @@ export const measurements = {
   humidity: {
     label: "Hm",
     unit: "%",
+    icon: "droplet",
+    chartColor: "#6fd3ff",
   },
   gc: {
     label: "GC",
     unit: "μR/h",
+    icon: "circle-radiation",
+    chartColor: "#e99152",
   },
 };
 

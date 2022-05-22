@@ -1,31 +1,51 @@
 <template>
   <div class="sensors-screen" :class="{ loading: isLoader }">
-    <Header :localeCurrent="$i18n.locale" :city="city" />
+    <div class="sensors-screen-layers">
+      <div class="sensors-screen-layers--center">
+        <Header :localeCurrent="$i18n.locale" :city="city" />
 
-    <div class="sensors-panel sensors-panel--bottom">
-      <Types :current="type.toLowerCase()" />
-      <Provider
-        :current="provider"
-        :canHistory="canHistory"
-        @history="handlerHistory"
-      />
-      <div class="sensors-panel-section">
-        <Wind :disabled="provider !== 'ipfs'" />
-        <Messages />
+        <div class="sensors-panel--center-left">
+          <Modal v-if="point" @close="handlerClose">
+            <Message
+              v-if="point.data.message"
+              :data="point.data"
+              @close="handlerClose"
+            />
+            <Details
+              v-else
+              :sender="point.sender"
+              :sensor_id="point.sensor_id"
+              :log="point.log"
+              :model="point.model"
+              :count="point.count"
+              :type="type.toLowerCase()"
+              @close="handlerClose"
+              @modal="handlerModal"
+            />
+          </Modal>
+        </div>
+
+        <div class="sensors-panel--center-right">
+          <Modal v-if="isShowInfo" @close="handlerCloseInfo">
+            <Info />
+          </Modal>
+        </div>
+      </div>
+
+      <div class="sensors-panel sensors-panel--bottom">
+        <div class="sensors-panel-section sensors-dateselect">
+          <Provider
+            :current="provider"
+            :canHistory="canHistory"
+            @history="handlerHistory"
+          />
+          <Wind :disabled="provider !== 'ipfs'" />
+          <Messages />
+        </div>
+
+        <Types :current="type.toLowerCase()" @modal="handlerModal" />
       </div>
     </div>
-
-    <Details
-      v-if="point"
-      :sender="point.sender"
-      :sensor_id="point.sensor_id"
-      :log="point.log"
-      :model="point.model"
-      :count="point.count"
-      :type="type.toLowerCase()"
-      :data="point.data"
-      @close="handlerClose"
-    />
 
     <Map
       :type="type.toLowerCase()"
@@ -36,7 +56,6 @@
       :lng="lng"
       :availableWind="provider === 'ipfs'"
     />
-
     <i class="fa-solid fa-compass fa-spin"></i>
   </div>
 </template>
@@ -50,6 +69,9 @@ import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
 import Wind from "../components/Wind.vue";
 import Messages from "../components/Messages.vue";
+import Message from "../components/Message.vue";
+import Info from "../components/Info.vue";
+import Modal from "../components/Modal.vue";
 import * as providers from "../providers";
 import config from "../config";
 import * as markers from "../utils/map/marker";
@@ -80,6 +102,7 @@ export default {
       status: "online",
       canHistory: false,
       city: "",
+      isShowInfo: false,
     };
   },
   components: {
@@ -90,6 +113,9 @@ export default {
     Header,
     Wind,
     Messages,
+    Modal,
+    Info,
+    Message,
   },
   computed: {
     isLoader() {
@@ -97,10 +123,10 @@ export default {
     },
   },
   mounted() {
-    if (this.provider === "ipfs") {
-      Vue.prototype.$provider = new providers.Ipfs(config.IPFS);
-    } else if (this.provider === "remote") {
+    if (this.provider === "remote") {
       Vue.prototype.$provider = new providers.Remote(config.REMOTE_PROVIDER);
+    } else {
+      Vue.prototype.$provider = new providers.Ipfs(config.IPFS);
     }
     this.$provider.ready().then(() => {
       this.providerReady = true;
@@ -181,6 +207,14 @@ export default {
     },
     handlerClose() {
       this.point = null;
+    },
+    handlerCloseInfo() {
+      this.isShowInfo = false;
+    },
+    handlerModal(modal) {
+      if (modal === "info") {
+        this.isShowInfo = true;
+      }
     },
     handlerChangeCity(city) {
       this.city = city;

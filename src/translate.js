@@ -16,6 +16,9 @@ export default {
       wind: "wind layer",
       messages: "Messages layer",
     },
+    details: {
+      sensor: "Sensor",
+    },
   },
   ru: {
     header: {
@@ -33,6 +36,9 @@ export default {
     layer: {
       wind: "Направление ветра",
       messages: "Сообщения",
+    },
+    details: {
+      sensor: "Датчик",
     },
   },
 };

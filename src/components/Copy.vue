@@ -1,12 +1,12 @@
 <template>
-  <span
-    class="copy"
+  <a
+    class="nowrap"
     v-clipboard:copy="msg"
     v-clipboard:success="success"
     :title="title"
   >
-    <slot />
-  </span>
+    <slot /> <i class="fa-solid fa-copy"></i>
+  </a>
 </template>
 
 <script>

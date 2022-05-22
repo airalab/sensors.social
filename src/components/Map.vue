@@ -35,7 +35,6 @@ export default {
       const zoom = e.target.getZoom();
       if (zoom > 9) {
         getCityByPos(pos.lat, pos.lng, this.$i18n.locale).then((r) => {
-          console.log(r);
           this.$emit("city", r);
         });
       } else {

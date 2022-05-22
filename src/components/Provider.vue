@@ -1,5 +1,5 @@
 <template>
-  <div class="sensors-panel-section sensors-dateselect">
+  <div>
     <input
       type="date"
       v-model="start"
