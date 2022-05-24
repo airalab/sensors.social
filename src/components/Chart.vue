@@ -1,5 +1,5 @@
 <template>
-  <div class="chart">
+  <div>
     <highcharts :options="options" ref="chart"></highcharts>
   </div>
 </template>
@@ -17,8 +17,7 @@ export default {
         title: false,
         chart: {
           type: "spline",
-          height: 300,
-          width: 500,
+          height: 400,
         },
         xAxis: {
           type: "datetime",
@@ -172,10 +171,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.chart {
-  /* max-width: 400px; */
-  margin: 0 auto;
-}
-</style>
