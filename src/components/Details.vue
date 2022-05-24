@@ -8,10 +8,9 @@
     </h2>
     <div class="sensor-popup--subtitle">
       <span><i class="fa-solid fa-stopwatch"></i> {{ date }}</span>
-      <!-- <span
-        ><i class="fa-solid fa-location-dot"></i> г. Тольятти, ул. 40 лет победы
-        51В</span
-      > -->
+      <span v-if="address">
+        <i class="fa-solid fa-location-dot"></i> {{ address }}
+      </span>
     </div>
     <template v-if="last">
       <ul class="sensor-popup--data">
@@ -51,7 +50,7 @@ import Icon from "./Icon.vue";
 import sensors from "../sensors";
 
 export default {
-  props: ["sender", "sensor_id", "log", "model", "type"],
+  props: ["sender", "sensor_id", "log", "model", "address", "type"],
   components: {
     Chart,
     Copy,

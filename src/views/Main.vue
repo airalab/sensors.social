@@ -18,6 +18,7 @@
               :log="point.log"
               :model="point.model"
               :count="point.count"
+              :address="point.address"
               :type="type.toLowerCase()"
               @close="handlerClose"
               @modal="handlerModal"
@@ -75,6 +76,7 @@ import Modal from "../components/Modal.vue";
 import * as providers from "../providers";
 import config from "../config";
 import * as markers from "../utils/map/marker";
+import { getAddressByPos } from "../utils/map/utils";
 
 export default {
   props: {
@@ -200,8 +202,13 @@ export default {
       } else {
         log = await this.$provider.getHistoryBySensor(point.sensor_id);
       }
+
+      const geo = point.geo.split(",");
+      const address = await getAddressByPos(geo[0], geo[1], this.$i18n.locale);
+
       this.point = {
         ...point,
+        address,
         log: [...log],
       };
     },
