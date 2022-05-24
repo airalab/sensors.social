@@ -16,6 +16,9 @@ export function getCityByPos(lat, lon, language = "en") {
         }
       }
       return "";
+    })
+    .catch(() => {
+      return "";
     });
 }
 export function getAddressByPos(lat, lon, language = "en") {
@@ -39,6 +42,9 @@ export function getAddressByPos(lat, lon, language = "en") {
         }
         return addr.join(", ");
       }
+      return "";
+    })
+    .catch(() => {
       return "";
     });
 }
