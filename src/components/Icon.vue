@@ -11,10 +11,13 @@ export default {
   props: ["type"],
   computed: {
     hasIcon() {
-      return measurements[this.type] && measurements[this.type].icon;
+      return (
+        measurements[this.type.toLowerCase()] &&
+        measurements[this.type.toLowerCase()].icon
+      );
     },
     icon: function () {
-      return measurements[this.type].icon;
+      return measurements[this.type.toLowerCase()].icon;
     },
   },
 };

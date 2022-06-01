@@ -22,11 +22,11 @@ const i18n = new VueI18n({
 });
 
 Vue.filter("measurement", function (value) {
-  return measurements[value]?.label || value;
+  return measurements[value.toLowerCase()]?.label || value;
 });
 Vue.filter("measurementFormat", function (value, type) {
-  return measurements[type]
-    ? `${toFixed(value)} ${measurements[type].unit}`
+  return measurements[type.toLowerCase()]
+    ? `${toFixed(value)} ${measurements[type.toLowerCase()].unit}`
     : toFixed(value);
 });
 Vue.filter("collapse", function (value) {

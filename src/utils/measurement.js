@@ -63,7 +63,7 @@ export const measurements = {
   co: {
     label: "CO",
     unit: "mg/m3",
-    icon: "circle-nodes",
+    icon: "vial-virus",
     chartColor: "#c1c1c1",
     colors: [
       "#00796b",
@@ -90,6 +90,7 @@ export const measurements = {
   nh3: {
     label: "NH3",
     unit: "mg/m3",
+    icon: "vial-virus",
     chartColor: "#a1e37a",
     colors: [
       "#00796b",
@@ -116,6 +117,7 @@ export const measurements = {
   no2: {
     label: "NO2",
     unit: "mg/m3",
+    icon: "vial-virus",
     chartColor: "#d4dd53",
     colors: [
       "#00796b",
@@ -201,10 +203,12 @@ export const measurements = {
   windang: {
     label: "Windang",
     unit: "°",
+    icon: "wind",
   },
   windspeed: {
     label: "Windspeed",
     unit: "m/s",
+    icon: "wind",
   },
   windspeedmax: {
     label: "Windspeedmax",
@@ -212,12 +216,14 @@ export const measurements = {
   },
   pm1: {
     label: "PM1",
-    unit: "PM1",
+    unit: "μg/m3",
+    icon: "soap",
     chartColor: "#ff99e9",
   },
   pressure: {
     label: "Pr",
     unit: "mmHg",
+    icon: "arrows-down-to-line",
   },
   humidity: {
     label: "Hm",
