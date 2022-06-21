@@ -166,6 +166,9 @@ export default {
       if (!point.model) {
         return;
       }
+      point.data = Object.fromEntries(
+        Object.entries(point.data).map(([k, v]) => [k.toLowerCase(), v])
+      );
       markers.addPoint({
         ...point,
         isEmpty: !point.data[this.type.toLowerCase()],
