@@ -141,8 +141,6 @@ export default {
           this.canHistory = true;
         }
       }, 1000);
-    } else {
-      this.$provider.watchMessages(this.handlerNewPoint);
     }
   },
   methods: {

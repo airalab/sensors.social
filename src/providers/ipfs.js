@@ -1,8 +1,6 @@
 import { init as initIpfs } from "../utils/ipfs";
 import { getAgents } from "../utils/utils";
 import { measurements as converter } from "../utils/measurement";
-import io from "socket.io-client";
-import configApp from "../config";
 
 class Provider {
   constructor(config) {
@@ -10,21 +8,6 @@ class Provider {
     this.isReady = false;
     this.whiteListAccounts = [];
     this.history = {};
-
-    this.connection = false;
-    this.socket = io(configApp.REMOTE_PROVIDER);
-    this.socket.on("connect_error", (e) => {
-      console.log("connect error", e);
-      this.connection = false;
-    });
-    this.socket.on("error", function (error) {
-      console.warn(error);
-    });
-    this.socket.on("connect", () => {
-      console.log("socket connectiion");
-      this.connection = true;
-    });
-
     this.init(config).then(() => {
       this.isReady = true;
       this.peers();
@@ -97,12 +80,6 @@ class Provider {
 
   getCountTxBySender() {
     return false;
-  }
-
-  watchMessages(cb) {
-    this.socket.on("update", (result) => {
-      cb(result);
-    });
   }
 
   watch(cb) {
