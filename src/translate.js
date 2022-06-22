@@ -13,8 +13,8 @@ export default {
       realtime: "Real time",
     },
     layer: {
-      wind: "wind layer",
-      messages: "Messages layer",
+      wind: "wind",
+      messages: "Messages",
     },
     details: {
       sensor: "Sensor",
@@ -36,7 +36,7 @@ export default {
       realtime: "В реальном времени",
     },
     layer: {
-      wind: "Направление ветра",
+      wind: "Ветер",
       messages: "Сообщения",
     },
     details: {
