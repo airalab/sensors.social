@@ -30,6 +30,9 @@
         </li>
       </ul>
     </template>
+    <div class="text-tip">
+      {{ $t("notice") }}
+    </div>
     <Chart
       v-if="log.length > 0"
       :log="log"
