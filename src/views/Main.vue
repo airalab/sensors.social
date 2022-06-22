@@ -4,33 +4,37 @@
       <div class="sensors-screen-layers--center">
         <Header :localeCurrent="$i18n.locale" :city="city" />
 
-        <div class="sensors-panel--center-left">
-          <Modal v-if="point" @close="handlerClose">
-            <Message
-              v-if="point.data.message"
-              :data="point.data"
-              @close="handlerClose"
-            />
-            <Details
-              v-else
-              :sender="point.sender"
-              :sensor_id="point.sensor_id"
-              :log="point.log"
-              :model="point.model"
-              :count="point.count"
-              :address="point.address"
-              :type="type.toLowerCase()"
-              @close="handlerClose"
-              @modal="handlerModal"
-            />
-          </Modal>
-        </div>
+        <Modal
+          v-if="point"
+          @close="handlerClose"
+          class="sensors-panel--center-left"
+        >
+          <Message
+            v-if="point.data.message"
+            :data="point.data"
+            @close="handlerClose"
+          />
+          <Details
+            v-else
+            :sender="point.sender"
+            :sensor_id="point.sensor_id"
+            :log="point.log"
+            :model="point.model"
+            :count="point.count"
+            :address="point.address"
+            :type="type.toLowerCase()"
+            @close="handlerClose"
+            @modal="handlerModal"
+          />
+        </Modal>
 
-        <div class="sensors-panel--center-right">
-          <Modal v-if="isShowInfo" @close="handlerCloseInfo">
-            <Info />
-          </Modal>
-        </div>
+        <Modal
+          v-if="isShowInfo"
+          @close="handlerCloseInfo"
+          class="sensors-panel--center-right"
+        >
+          <Info />
+        </Modal>
       </div>
 
       <div class="sensors-panel sensors-panel--bottom">
