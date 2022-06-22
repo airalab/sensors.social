@@ -15,6 +15,7 @@ export default {
     layer: {
       wind: "wind",
       messages: "Messages",
+      help: "The wind layer is available in real time mode",
     },
     details: {
       sensor: "Sensor",
@@ -38,6 +39,7 @@ export default {
     layer: {
       wind: "Ветер",
       messages: "Сообщения",
+      help: "Слой ветер доступен в режиме реального времени",
     },
     details: {
       sensor: "Датчик",

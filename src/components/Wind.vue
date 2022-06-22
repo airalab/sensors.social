@@ -1,5 +1,9 @@
 <template>
-  <div class="sensors-switcher" :class="{ disabled: disabled }">
+  <div
+    class="sensors-switcher"
+    :class="{ disabled: disabled, title__top: disabled }"
+    :data-title="disabled ? $t('layer.help') : null"
+  >
     <input type="checkbox" id="wind" v-model="control" :disabled="disabled" />
     <label for="wind"></label>
     <span>{{ $t("layer.wind") }}</span>
