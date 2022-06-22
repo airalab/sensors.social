@@ -74,6 +74,14 @@ li, dd {
     position: relative;
 }
 
+.text-tip {
+    color: var(--color-gray);
+    border-top: 1px solid var(--color-gray);
+    font-size: 80%;
+    margin-top: var(--gap);
+    padding-top: var(--gap);
+}
+
 /* end of BASE & TYPOGRAPHY */
 
 
@@ -256,7 +264,8 @@ label:active:after {
 
 .sensors-panel--top {
     background-color: var(--color-dark);
-    color: var(--color-light)
+    color: var(--color-light);
+    position: sticky;
 }
 
 .sensors-panel--top a {
@@ -569,6 +578,7 @@ label:active:after {
 
     .sensors-panel--bottom .sensors-switcher {
         display: block;
+        margin-top: calc(var(--gap) * 0.5)
     }
 
     .sensors-dateselect .sensors-switcher label {
@@ -613,6 +623,12 @@ ul.sensor-popup--data .icon {
     font-size: calc(var(--gap) * 1.5);
     text-align: center;
     width: calc(var(--gap) * 2.5);
+}
+
+.sensor-popup--content {
+    height: 80%;
+    overflow-y: auto;
+    margin-top: var(--gap);
 }
 /* SENSOR POPUP end */
 
