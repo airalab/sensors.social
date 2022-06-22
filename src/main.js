@@ -8,8 +8,10 @@ import router from "./router";
 import { toFixed, measurements } from "./utils/measurement";
 import VueI18n from "vue-i18n";
 import messages from "./translate";
+import Fragment from "vue-fragment";
 
 Vue.config.productionTip = false;
+Vue.use(Fragment.Plugin);
 Vue.use(VueHighcharts);
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);

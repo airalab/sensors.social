@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <fragment>
     <h2>
       {{ $t("details.sensor") }}
       <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">{{
@@ -12,37 +12,39 @@
         <i class="fa-solid fa-location-dot"></i> {{ address }}
       </span>
     </div>
-    <template v-if="last">
-      <ul class="sensor-popup--data">
-        <li v-for="(param, k) in Object.keys(last.data)" :key="k">
-          <div @click="measurement = param">
-            <Icon :type="param" />
-            {{ param | measurement }} =
-            {{ last.data[param] | measurementFormat(param) }}
-            <a
-              v-if="param === 'pm10' || param === 'pm25'"
-              href=""
-              @click.stop.prevent="$emit('modal', 'info')"
-            >
-              <i class="fa-solid fa-circle-info"></i>
-            </a>
-          </div>
-        </li>
-      </ul>
-    </template>
-    <div class="text-tip">
-      {{ $t("notice") }}
+    <div class="sensor-popup--content">
+      <template v-if="last">
+        <ul class="sensor-popup--data">
+          <li v-for="(param, k) in Object.keys(last.data)" :key="k">
+            <div @click="measurement = param">
+              <Icon :type="param" />
+              {{ param | measurement }} =
+              {{ last.data[param] | measurementFormat(param) }}
+              <a
+                v-if="param === 'pm10' || param === 'pm25'"
+                href=""
+                @click.stop.prevent="$emit('modal', 'info')"
+              >
+                <i class="fa-solid fa-circle-info"></i>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </template>
+      <div class="text-tip">
+        {{ $t("notice") }}
+      </div>
+      <Chart
+        v-if="log.length > 0"
+        :log="log"
+        :measurement="measurement"
+        :sensor_id="sensor_id"
+      />
+      <div v-if="link">
+        <a :href="link" target="_blank">{{ link }}</a>
+      </div>
     </div>
-    <Chart
-      v-if="log.length > 0"
-      :log="log"
-      :measurement="measurement"
-      :sensor_id="sensor_id"
-    />
-    <div v-if="link">
-      <a :href="link" target="_blank">{{ link }}</a>
-    </div>
-  </div>
+  </fragment>
 </template>
 
 <script>
