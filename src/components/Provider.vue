@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="sensors-switcher">
     <input
       type="date"
       v-model="start"
