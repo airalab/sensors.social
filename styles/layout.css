@@ -151,7 +151,7 @@ input[type="date"] {
 	height: 0;
 	width: 0;
 	visibility: hidden;
-    display: block;
+    display: none;
 }
 
 .sensors-switcher label {
@@ -273,7 +273,7 @@ label:active:after {
 }
 
 .sensors-panel--bottom.sensors-panel {
-    background-color: transparent !important;
+    background-color: #ffffff9c;
 }
 
 .sensors-panel--top, .sensors-panel--bottom {
@@ -573,7 +573,8 @@ label:active:after {
 @media screen and (max-width: 1250px) {
 
     .sensors-panel--bottom {
-        align-items: flex-start;
+        /* align-items: flex-start; */
+        display: block;
     }
 
     .sensors-panel--bottom .sensors-switcher {
@@ -582,7 +583,7 @@ label:active:after {
     }
 
     .sensors-dateselect .sensors-switcher label {
-        margin: 0;
+        margin-left: 0;
     }
 
     *[class *= 'sensors-panel--center-'] {
@@ -648,6 +649,7 @@ ul.sensor-popup--data .icon {
     opacity: 0;
     overflow-y: auto;
     padding: var(--gap);
+    pointer-events: none;
     position: absolute;
     white-space: break-spaces;
     width: 250px;
@@ -659,7 +661,7 @@ ul.sensor-popup--data .icon {
 }
 
 .title__top:after {
-    bottom: calc(var(--gap) * 3);
+    bottom: calc(var(--gap) * 1.8);
     left: 0;
 }
 /* CSS TITLES end */
