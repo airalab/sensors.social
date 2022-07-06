@@ -1,5 +1,6 @@
 <template>
   <div class="sensors-screen" :class="{ loading: isLoader }">
+    
     <div class="sensors-screen-layers">
       <div class="sensors-screen-layers--center">
         <Header :localeCurrent="$i18n.locale" :city="city" />

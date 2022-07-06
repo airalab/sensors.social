@@ -1,10 +1,7 @@
 <template>
   <div class="sensors-panel-section">
     <section class="sensors-data">
-      <a href="" @click.stop.prevent="$emit('modal', 'info')">
-        <i class="fa-solid fa-circle-info"></i>
-      </a>
-
+ 
       <div>
         <div class="sensors-select">
           <select v-model="type">
@@ -19,12 +16,19 @@
           <i class="fa-solid fa-sort-down"></i>
         </div>
 
-        <div class="text-small">{{ unit }}</div>
+        <!-- <div class="text-small">{{ unit }}</div> -->
       </div>
+      
     </section>
 
     <section>
       <Color :type="type.toLowerCase()" />
+    </section>
+
+    <section class="sensors-data">
+      <a href="javascript:;" @click.stop.prevent="$emit('modal', 'info')">
+        <i class="fa-solid fa-circle-info"></i>
+      </a>
     </section>
   </div>
 </template>
