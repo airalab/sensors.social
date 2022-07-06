@@ -54,7 +54,8 @@ li, dd {
 .sensors-screen {
     position: relative;
     width: 100vw;
-    height: 100vh;
+    height: 100vh; /* fallback */
+    height: 100svh; /* smallest */
     overflow: hidden;
 }
 
@@ -113,14 +114,14 @@ li, dd {
     text-transform: inherit;
     cursor: pointer;
 
-    padding-right: 1rem;
+    padding-right: 0.7rem;
 }
 
 .sensors-select i {
     pointer-events: none;
     position: absolute;
     right: 0;
-    top: calc(50% - 1.3rem*0.5);
+    top: calc(50% - 1.3rem * 0.5);
 }
 
 .sensors-select.green {
@@ -273,7 +274,17 @@ label:active:after {
 }
 
 .sensors-panel--bottom.sensors-panel {
-    background-color: #ffffff9c;
+    background-color: transparent;
+    pointer-events: none;
+}
+
+.sensors-panel--bottom.sensors-panel > * {
+    pointer-events: all;
+}
+
+.sensors-panel--bottom.sensors-panel .sensors-panel-section {
+    float: left;
+    clear: both;
 }
 
 .sensors-panel--top, .sensors-panel--bottom {
@@ -514,7 +525,7 @@ label:active:after {
     position: absolute;
     top: calc(var(--gap) * 5);
     bottom: var(--gap);
-    z-index: 10;
+    z-index: 100;
     width: 48%;
 }
 
@@ -601,6 +612,18 @@ label:active:after {
     .sensors-panel--bottom .sensors-panel-section:not(:last-child) {
         margin-bottom: var(--gap);
     }
+
+    *[class *= 'sensors-panel--center-'] {
+        position: fixed;
+        top: calc(var(--gap) * 2);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #fff !important;
+        margin: 0;
+        width: 100%;
+        overflow-y: auto;
+    }
 }
 /* end of DATE SELECT */
 
@@ -671,3 +694,10 @@ ul.sensor-popup--data .icon {
         opacity: 1;
     }
 }
+
+/* + MAP */
+.leaflet-control-attribution, .leaflet-control {
+    filter: grayscale(1);
+    pointer-events: none !important;
+}
+/* - MAP */
