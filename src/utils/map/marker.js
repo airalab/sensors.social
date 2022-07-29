@@ -202,6 +202,10 @@ function updateMarker(marker, point, colors) {
       color: colors.border,
     });
   }
+  if (point.model === 3) {
+    const coord = point.geo.split(",");
+    marker.setLatLng(new L.LatLng(coord[0], coord[1]));
+  }
 }
 
 export async function addPoint(point) {
