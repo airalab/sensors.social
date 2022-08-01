@@ -6,6 +6,15 @@
     </div>
     <div style="margin-top: 30px">
       <p>{{ data.message }}</p>
+
+      <template v-if="data.images && data.ipfs">
+        <div v-for="(image, k) in data.images" :key="k">
+          <img
+            style="max-width: 400px"
+            :src="`https://ipfs.io/ipfs/${data.ipfs}/${image}`"
+          />
+        </div>
+      </template>
     </div>
   </div>
 </template>

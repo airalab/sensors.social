@@ -159,9 +159,11 @@ class Provider {
   }
 
   watch(cb) {
-    this.socket.on("update", (result) => {
-      cb(result);
-    });
+    if (cb) {
+      this.socket.on("update", (result) => {
+        cb(result);
+      });
+    }
   }
 }
 
