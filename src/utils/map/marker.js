@@ -213,14 +213,18 @@ function updateMarker(marker, point, colors) {
 export async function addPoint(point) {
   queue.add(makeRequest.bind(queue, point));
   async function makeRequest(point) {
-    if (point.model === 1) {
-      console.log(point);
-    } else if (point.model === 2) {
-      await addMarker(point);
-    } else if (point.model === 3) {
-      await addPointPath(point);
-    } else if (point.model === 4) {
-      await addMarkerUser(point);
+    try {
+      if (point.model === 1) {
+        console.log(point);
+      } else if (point.model === 2) {
+        await addMarker(point);
+      } else if (point.model === 3) {
+        await addPointPath(point);
+      } else if (point.model === 4) {
+        await addMarkerUser(point);
+      }
+    } catch (error) {
+      console.log(error);
     }
     this.next();
   }
