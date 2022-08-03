@@ -12,12 +12,14 @@ import generate, {
 import measurement from "../../utils/measurement";
 import sensors from "../../sensors";
 import config from "../../config";
+import "leaflet-arrowheads";
 
 const queue = new Queue();
 let scale;
 let markersLayer;
 let messagesLayer;
 let handlerClickMarker;
+let paths = {};
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -216,7 +218,7 @@ export async function addPoint(point) {
     } else if (point.model === 2) {
       await addMarker(point);
     } else if (point.model === 3) {
-      await addMarker(point);
+      await addPointPath(point);
     } else if (point.model === 4) {
       await addMarkerUser(point);
     }
@@ -244,6 +246,44 @@ async function addMarker(point) {
       handlerClickMarker(event.target.options.data);
     });
     markersLayer.addLayer(marker);
+  }
+}
+
+async function addPointPath(point) {
+  const color = point.isEmpty ? "#a1a1a1" : getColor(scale, point.value);
+  const coord = point.geo.split(",");
+  if (paths[point.sensor_id]) {
+    if (paths[point.sensor_id].getLatLngs().length === 1) {
+      paths[point.sensor_id]
+        .arrowheads({
+          yawn: 40,
+          fill: true,
+          frequency: "endonly",
+        })
+        .setStyle({
+          color: color,
+        })
+        .addLatLng(coord);
+    } else {
+      paths[point.sensor_id]
+        .setStyle({
+          color: color,
+        })
+        .addLatLng(coord);
+    }
+  } else {
+    const polyline = L.polyline([coord], {
+      color: color,
+      // dashArray: "10",
+      weight: 5,
+      opacity: 0.7,
+      data: point,
+    });
+    polyline.on("click", (event) => {
+      handlerClickMarker(event.target.options.data);
+    });
+    markersLayer.addLayer(polyline);
+    paths[point.sensor_id] = polyline;
   }
 }
 

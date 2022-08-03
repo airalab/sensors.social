@@ -1,6 +1,5 @@
 <template>
   <div class="sensors-screen" :class="{ loading: isLoader }">
-    
     <div class="sensors-screen-layers">
       <div class="sensors-screen-layers--center">
         <Header :localeCurrent="$i18n.locale" :city="city" />
@@ -158,7 +157,9 @@ export default {
       this.$provider.setEndDate(end);
       const sensors = await this.$provider.lastValuesForPeriod(start, end);
       for (const sensor in sensors) {
-        this.handlerNewPoint(sensors[sensor]);
+        for (const item of sensors[sensor]) {
+          this.handlerNewPoint(item);
+        }
       }
       const messages = await this.$provider.messagesForPeriod(start, end);
       for (const message in messages) {
