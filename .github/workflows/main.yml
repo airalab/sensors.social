@@ -40,13 +40,3 @@ jobs:
       - name: Set outputs
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
-      - name: IPFS
-        uses: aquiladev/ipfs-action@v0.1.5
-        with:
-          path: ./dist
-          service: pinata
-          host: api.pinata.cloud
-          pinataKey: ${{ secrets.PINATA_KEY }}
-          pinataSecret: ${{ secrets.PINATA_SECRET }}
-          pinataPinName: "dapp.sensors.robonomics.network-${{ steps.vars.outputs.sha_short }}"
