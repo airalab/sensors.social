@@ -6,14 +6,25 @@
     </div>
     <div style="margin-top: 30px">
       <p>{{ data.message }}</p>
-
-      <template v-if="data.images && data.ipfs">
-        <div v-for="(image, k) in data.images" :key="k">
-          <img
-            style="max-width: 400px"
-            :src="`https://ipfs.io/ipfs/${data.ipfs}/${image}`"
-          />
-        </div>
+      <template v-if="isImages">
+        <h2>{{ $t("details.photos") }}</h2>
+        <div v-if="!imagesLoaded">...</div>
+        <template v-else>
+          <div v-for="(image, k) in images" :key="k">
+            <a :href="image" target="_blank">
+              <img style="max-width: 400px" :src="image" />
+            </a>
+          </div>
+          <template>
+            <a
+              v-for="(image, k) in badImages"
+              :key="k"
+              :href="image"
+              target="_blank"
+              >{{ image }}</a
+            >
+          </template>
+        </template>
       </template>
     </div>
   </div>
@@ -22,11 +33,97 @@
 <script>
 import moment from "moment";
 
+function preloadImages(sources, callback) {
+  let counter = 0;
+  const attempts = {};
+
+  function onLoad() {
+    counter++;
+    if (counter == sources.length) {
+      const images = [];
+      const badImages = [];
+      for (const image of sources) {
+        if (attempts[image] && attempts[image] > 0) {
+          console.log(`Bad image ${image}`);
+          badImages.push(image);
+        } else {
+          images.push(image);
+        }
+      }
+      callback(images, badImages);
+    }
+  }
+
+  for (let source of sources) {
+    let img = document.createElement("img");
+    img.onload = () => {
+      attempts[source] = 0;
+      onLoad();
+    };
+    img.onerror = () => {
+      if (!attempts[source]) {
+        attempts[source] = 0;
+      }
+      attempts[source]++;
+      if (attempts[source] < 3) {
+        img.src = source;
+      } else {
+        onLoad();
+      }
+    };
+    img.src = source;
+  }
+}
+
 export default {
   props: ["data"],
+  data() {
+    return {
+      isImages: false,
+      images: [],
+      badImages: [],
+      imagesLoaded: false,
+    };
+  },
   computed: {
     dateMsg: function () {
       return moment(this.data.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
+    },
+  },
+  watch: {
+    data() {
+      this.imagesLoad();
+    },
+  },
+  created() {
+    this.imagesLoad();
+  },
+  methods: {
+    imagesLoad() {
+      if (this.data.images && this.data.images.length > 0) {
+        this.images = [];
+        this.badImages = [];
+        this.imagesLoaded = false;
+        this.isImages = true;
+        const images = this.data.images.map(
+          (image) =>
+            `https://gateway.pinata.cloud/ipfs/${this.data.ipfs}/${image}`
+        );
+        preloadImages(images, (result, badImages) => {
+          if (result.length > 0) {
+            this.images = result;
+          }
+          if (badImages.length > 0) {
+            this.badImages = badImages;
+          }
+          this.imagesLoaded = true;
+        });
+      } else {
+        this.isImages = false;
+        this.images = [];
+        this.badImages = [];
+        this.imagesLoaded = false;
+      }
     },
   },
 };
