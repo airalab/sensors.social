@@ -254,7 +254,7 @@ async function addMarker(point) {
 }
 
 async function addPointPath(point) {
-  const color = point.isEmpty ? "#a1a1a1" : getColor(scale, point.value);
+  const color = point.isEmpty ? "#bb4506" : getColor(scale, point.value);
   const coord = point.geo.split(",");
   if (paths[point.sensor_id]) {
     if (paths[point.sensor_id].getLatLngs().length === 1) {
@@ -279,8 +279,8 @@ async function addPointPath(point) {
     const polyline = L.polyline([coord], {
       color: color,
       // dashArray: "10",
-      weight: 5,
-      opacity: 0.7,
+      weight: 2,
+      opacity: 0.8,
       data: point,
     });
     polyline.on("click", (event) => {
