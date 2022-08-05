@@ -19,6 +19,7 @@ export default {
     },
     details: {
       sensor: "Sensor",
+      photos: "Photos",
     },
     notice:
       "The specified data is not legally significant information for general use and special information in accordance with the federal law of July 19, 1998 no 113-fz «On the hydrometeorological service»",
@@ -43,6 +44,7 @@ export default {
     },
     details: {
       sensor: "Датчик",
+      photos: "Фотографии",
     },
     notice:
       "Указанные данные не являются юридически значимой информацией для общего пользования и специальной информацией в соответствии с федеральным законом от 19.07.1998 г. no 113-фз «О гидрометеорологической службе»",
