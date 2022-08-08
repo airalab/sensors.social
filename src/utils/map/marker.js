@@ -19,7 +19,6 @@ let scale;
 let markersLayer;
 let messagesLayer;
 let handlerClickMarker;
-let paths = {};
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -256,9 +255,19 @@ async function addMarker(point) {
 async function addPointPath(point) {
   const color = point.isEmpty ? "#bb4506" : getColor(scale, point.value);
   const coord = point.geo.split(",");
-  if (paths[point.sensor_id]) {
-    if (paths[point.sensor_id].getLatLngs().length === 1) {
-      paths[point.sensor_id]
+
+  const path = await findMarker(point.sensor_id);
+  if (path) {
+    const points = path.getLatLngs();
+    if (
+      points[points.length - 1].lat === Number(coord[0]) &&
+      points[points.length - 1].lng === Number(coord[1])
+    ) {
+      return;
+    }
+
+    if (points.length === 1) {
+      path
         .arrowheads({
           yawn: 30,
           fill: true,
@@ -270,7 +279,7 @@ async function addPointPath(point) {
         })
         .addLatLng(coord);
     } else {
-      paths[point.sensor_id]
+      path
         .setStyle({
           color: color,
         })
@@ -288,7 +297,6 @@ async function addPointPath(point) {
       handlerClickMarker(event.target.options.data);
     });
     markersLayer.addLayer(polyline);
-    paths[point.sensor_id] = polyline;
   }
 }
 
