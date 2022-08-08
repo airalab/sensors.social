@@ -260,9 +260,10 @@ async function addPointPath(point) {
     if (paths[point.sensor_id].getLatLngs().length === 1) {
       paths[point.sensor_id]
         .arrowheads({
-          yawn: 40,
+          yawn: 30,
           fill: true,
-          frequency: "endonly",
+          frequency: "80px",
+          size: "15px",
         })
         .setStyle({
           color: color,
