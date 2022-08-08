@@ -107,7 +107,7 @@ export default {
         this.isImages = true;
         const images = this.data.images.map(
           (image) =>
-            `https://gateway.pinata.cloud/ipfs/${this.data.ipfs}/${image}`
+            `https://aira.mypinata.cloud/ipfs/${this.data.ipfs}/${image}`
         );
         preloadImages(images, (result, badImages) => {
           if (result.length > 0) {
