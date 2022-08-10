@@ -9,11 +9,7 @@
           @close="handlerClose"
           class="sensors-panel--center-left"
         >
-          <Message
-            v-if="point.data.message"
-            :data="point.data"
-            @close="handlerClose"
-          />
+          <Message v-if="point.data.message" :data="point.data" />
           <Details
             v-else
             :sender="point.sender"
@@ -23,7 +19,6 @@
             :count="point.count"
             :address="point.address"
             :type="type.toLowerCase()"
-            @close="handlerClose"
             @modal="handlerModal"
           />
         </Modal>
@@ -147,6 +142,13 @@ export default {
       }, 1000);
     }
   },
+  watch: {
+    point(_, oldValue) {
+      if (oldValue) {
+        markers.hidePath(oldValue.sensor_id);
+      }
+    },
+  },
   methods: {
     async handlerHistory({ start, end }) {
       this.status = "history";
@@ -220,6 +222,9 @@ export default {
       };
     },
     handlerClose() {
+      if (this.point) {
+        markers.hidePath(this.point.sensor_id);
+      }
       this.point = null;
     },
     handlerCloseInfo() {

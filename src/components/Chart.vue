@@ -7,10 +7,12 @@
 <script>
 import moment from "moment";
 import { measurements } from "../utils/measurement";
+import { moveMarkerTime } from "../utils/map/marker";
 
 export default {
-  props: ["log", "measurement", "sensor_id"],
+  props: ["log", "measurement", "sensor_id", "model"],
   data() {
+    const self = this;
     return {
       datacollection: null,
       options: {
@@ -36,6 +38,11 @@ export default {
           shared: true,
           crosshairs: true,
           formatter: function () {
+            if (self.model === 3) {
+              const point = self.log.find((item) => item.timestamp === this.x);
+              moveMarkerTime(self.sensor_id, point);
+            }
+
             let data = "";
             this.points.forEach((d) => {
               data += "<b>" + d.series.name + "</b> = " + d.y + "<br />";
@@ -46,6 +53,18 @@ export default {
               "</span><br />" +
               data
             );
+          },
+        },
+        plotOptions: {
+          series: {
+            events: {
+              mouseOut: function () {
+                if (self.model === 3) {
+                  const point = self.log[self.log.length - 1];
+                  moveMarkerTime(self.sensor_id, point, true);
+                }
+              },
+            },
           },
         },
         series: [],

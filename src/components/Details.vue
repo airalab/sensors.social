@@ -11,6 +11,12 @@
       <span v-if="address">
         <i class="fa-solid fa-location-dot"></i> {{ address }}
       </span>
+
+      <div v-if="model === 3" class="sensors-switcher">
+        <input type="checkbox" id="realtime" v-model="isShowPath" />
+        <label for="realtime"></label>
+        <span class="sensors-switcher-text">{{ $t("details.showpath") }}</span>
+      </div>
     </div>
     <div class="sensor-popup--content">
       <template v-if="last">
@@ -36,6 +42,7 @@
       </div>
       <Chart
         v-if="log.length > 0"
+        :model="model"
         :log="log"
         :measurement="measurement"
         :sensor_id="sensor_id"
@@ -53,6 +60,7 @@ import Chart from "./Chart.vue";
 import Copy from "./Copy.vue";
 import Icon from "./Icon.vue";
 import sensors from "../sensors";
+import { showPath, hidePath } from "../utils/map/marker";
 
 export default {
   props: ["sender", "sensor_id", "log", "model", "address", "type"],
@@ -64,7 +72,20 @@ export default {
   data() {
     return {
       measurement: this.type,
+      isShowPath: false,
     };
+  },
+  watch: {
+    sensor_id() {
+      this.isShowPath = false;
+    },
+    isShowPath() {
+      if (this.isShowPath) {
+        showPath(this.sensor_id);
+      } else {
+        hidePath(this.sensor_id);
+      }
+    },
   },
   computed: {
     link: function () {

@@ -17,6 +17,8 @@ import "leaflet-arrowheads";
 const queue = new Queue();
 let scale;
 let markersLayer;
+let pathsLayer;
+let moveLayer;
 let messagesLayer;
 let handlerClickMarker;
 
@@ -38,6 +40,11 @@ export function init(map, type, cb) {
     iconCreateFunction: iconCreate,
   });
   map.addLayer(markersLayer);
+
+  pathsLayer = new L.layerGroup();
+  map.addLayer(pathsLayer);
+  moveLayer = new L.layerGroup();
+  map.addLayer(moveLayer);
 
   messagesLayer = new L.MarkerClusterGroup({
     showCoverageOnHover: false,
@@ -96,6 +103,17 @@ function iconCreateMsg(cluster) {
 function findMarker(sensor_id) {
   return new Promise((resolve) => {
     markersLayer.eachLayer((m) => {
+      if (m.options.data.sensor_id === sensor_id) {
+        resolve(m);
+      }
+    });
+    resolve(false);
+  });
+}
+
+function findMarkerMoved(sensor_id) {
+  return new Promise((resolve) => {
+    moveLayer.eachLayer((m) => {
       if (m.options.data.sensor_id === sensor_id) {
         resolve(m);
       }
@@ -218,6 +236,7 @@ export async function addPoint(point) {
       } else if (point.model === 2) {
         await addMarker(point);
       } else if (point.model === 3) {
+        await addMarker(point);
         await addPointPath(point);
       } else if (point.model === 4) {
         await addMarkerUser(point);
@@ -252,11 +271,36 @@ async function addMarker(point) {
   }
 }
 
-async function addPointPath(point) {
+export async function moveMarkerTime(sensor_id, point, stop = false) {
+  let marker;
+  if (stop) {
+    marker = await findMarkerMoved(sensor_id);
+    if (marker) {
+      moveLayer.removeLayer(marker);
+      markersLayer.addLayer(marker);
+    }
+  } else {
+    marker = await findMarker(sensor_id);
+    if (marker) {
+      markersLayer.removeLayer(marker);
+      moveLayer.addLayer(marker);
+    } else {
+      marker = await findMarkerMoved(sensor_id);
+    }
+  }
+
+  if (marker) {
+    const coord = point.geo.split(",");
+    marker.setLatLng(new L.LatLng(coord[0], coord[1]));
+  }
+}
+
+const paths = {};
+export async function addPointPath(point) {
   const color = point.isEmpty ? "#bb4506" : getColor(scale, point.value);
   const coord = point.geo.split(",");
 
-  const path = await findMarker(point.sensor_id);
+  const path = paths[point.sensor_id] || null;
   if (path) {
     const points = path.getLatLngs();
     if (
@@ -271,7 +315,7 @@ async function addPointPath(point) {
         .arrowheads({
           yawn: 30,
           fill: true,
-          frequency: "80px",
+          frequency: "allvertices",
           size: "15px",
         })
         .setStyle({
@@ -288,15 +332,25 @@ async function addPointPath(point) {
   } else {
     const polyline = L.polyline([coord], {
       color: color,
-      // dashArray: "10",
       weight: 2,
       opacity: 0.8,
       data: point,
     });
-    polyline.on("click", (event) => {
-      handlerClickMarker(event.target.options.data);
-    });
-    markersLayer.addLayer(polyline);
+    paths[point.sensor_id] = polyline;
+  }
+}
+
+export async function showPath(sensor_id) {
+  const path = paths[sensor_id] || null;
+  if (path) {
+    pathsLayer.addLayer(path);
+  }
+}
+
+export async function hidePath(sensor_id) {
+  const path = paths[sensor_id] || null;
+  if (path && pathsLayer.hasLayer(path)) {
+    pathsLayer.removeLayer(path);
   }
 }
 
@@ -318,6 +372,7 @@ async function addMarkerUser(point) {
 
 export function clear() {
   markersLayer.clearLayers();
+  pathsLayer.clearLayers();
   messagesLayer.clearLayers();
 }
 
