@@ -54,8 +54,7 @@ li, dd {
 .sensors-screen {
     position: relative;
     width: 100vw;
-    height: 100vh; /* fallback */
-    height: 100svh; /* smallest */
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -82,6 +81,31 @@ li, dd {
     margin-top: var(--gap);
     padding-top: var(--gap);
 }
+
+button {
+    border: 0;
+    border-radius: 2rem;
+    cursor: pointer;
+    padding: calc(var(--gap) * 0.5) var(--gap);
+    text-align: center;
+    transition: 0.2s background-color linear;
+}
+
+button:hover {
+    background-color: var(--color-green);
+}
+
+.button--control {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+}
+
+.button--round {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+}
+
 
 /* end of BASE & TYPOGRAPHY */
 
@@ -114,14 +138,14 @@ li, dd {
     text-transform: inherit;
     cursor: pointer;
 
-    padding-right: 0.7rem;
+    padding-right: 1rem;
 }
 
 .sensors-select i {
     pointer-events: none;
     position: absolute;
     right: 0;
-    top: calc(50% - 1.3rem * 0.5);
+    top: calc(50% - 1.3rem*0.5);
 }
 
 .sensors-select.green {
@@ -152,7 +176,7 @@ input[type="date"] {
 	height: 0;
 	width: 0;
 	visibility: hidden;
-    display: none;
+    display: block;
 }
 
 .sensors-switcher label {
@@ -274,17 +298,7 @@ label:active:after {
 }
 
 .sensors-panel--bottom.sensors-panel {
-    background-color: transparent;
-    pointer-events: none;
-}
-
-.sensors-panel--bottom.sensors-panel > * {
-    pointer-events: all;
-}
-
-.sensors-panel--bottom.sensors-panel .sensors-panel-section {
-    float: left;
-    clear: both;
+    background-color: transparent !important;
 }
 
 .sensors-panel--top, .sensors-panel--bottom {
@@ -300,6 +314,14 @@ label:active:after {
 
 .sensors-panel-section section:not(:last-child) {
     margin-right: var(--gap);
+}
+
+.sensors-panel--right {
+    background-color: transparent !important;
+    padding: 0;
+    position: absolute;
+    right: var(--gap);
+    bottom: var(--gap);
 }
 
 /* end of PANELS */
@@ -525,7 +547,7 @@ label:active:after {
     position: absolute;
     top: calc(var(--gap) * 5);
     bottom: var(--gap);
-    z-index: 100;
+    z-index: 10;
     width: 48%;
 }
 
@@ -584,8 +606,7 @@ label:active:after {
 @media screen and (max-width: 1250px) {
 
     .sensors-panel--bottom {
-        /* align-items: flex-start; */
-        display: block;
+        align-items: flex-start;
     }
 
     .sensors-panel--bottom .sensors-switcher {
@@ -594,7 +615,7 @@ label:active:after {
     }
 
     .sensors-dateselect .sensors-switcher label {
-        margin-left: 0;
+        margin: 0;
     }
 
     *[class *= 'sensors-panel--center-'] {
@@ -611,18 +632,6 @@ label:active:after {
 
     .sensors-panel--bottom .sensors-panel-section:not(:last-child) {
         margin-bottom: var(--gap);
-    }
-
-    *[class *= 'sensors-panel--center-'] {
-        position: fixed;
-        top: calc(var(--gap) * 2);
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #fff !important;
-        margin: 0;
-        width: 100%;
-        overflow-y: auto;
     }
 }
 /* end of DATE SELECT */
@@ -672,7 +681,6 @@ ul.sensor-popup--data .icon {
     opacity: 0;
     overflow-y: auto;
     padding: var(--gap);
-    pointer-events: none;
     position: absolute;
     white-space: break-spaces;
     width: 250px;
@@ -684,7 +692,7 @@ ul.sensor-popup--data .icon {
 }
 
 .title__top:after {
-    bottom: calc(var(--gap) * 1.8);
+    bottom: calc(var(--gap) * 3);
     left: 0;
 }
 /* CSS TITLES end */
@@ -694,10 +702,3 @@ ul.sensor-popup--data .icon {
         opacity: 1;
     }
 }
-
-/* + MAP */
-.leaflet-control-attribution, .leaflet-control {
-    filter: grayscale(1);
-    pointer-events: none !important;
-}
-/* - MAP */
