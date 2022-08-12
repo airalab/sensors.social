@@ -1,5 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.locatecontrol";
+import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 
 let map;
 export function instanceMap() {
@@ -10,12 +12,23 @@ export function instanceMap() {
 }
 
 export function init(position, zoom) {
-  map = L.map("map");
+  const layerMap = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      attribution:
+        '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+    }
+  );
+  map = L.map("map", { layers: [layerMap] });
   map.setView(position, zoom);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution:
-      '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+  L.control
+    .locate({
+      position: "bottomright",
+      strings: {
+        title: "Show my location",
+      },
+    })
+    .addTo(map);
   // map.zoomControl.setPosition("bottomright");
   map.zoomControl.remove();
   return map;

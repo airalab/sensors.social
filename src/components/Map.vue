@@ -109,3 +109,9 @@ export default {
   position: relative;
 }
 </style>
+
+<style>
+.leaflet-bottom {
+  bottom: 50px;
+}
+</style>
