@@ -31,7 +31,6 @@ export default {
           title: false,
         },
         yAxis: {
-          min: 0,
           title: false,
         },
         tooltip: {
@@ -131,7 +130,6 @@ export default {
     },
   },
   mounted() {
-    this.options.yAxis.min = this.getMinY();
     this.fillData();
   },
   watch: {
@@ -139,7 +137,6 @@ export default {
       this.fillData();
     },
     measurement: function () {
-      this.options.yAxis.min = this.getMinY();
       this.fillData();
     },
     log: {
@@ -169,9 +166,6 @@ export default {
     },
   },
   methods: {
-    getMinY() {
-      return this.measurement === "temperature" ? -50 : 0;
-    },
     fillData() {
       const series = this.series;
       for (const i in series) {
