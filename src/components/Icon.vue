@@ -1,7 +1,5 @@
 <template>
-  <span v-if="hasIcon" class="icon"
-    ><i :class="`fa-solid fa-${icon}`"></i
-  ></span>
+  <span class="icon"><i :class="`fa-solid fa-${icon}`"></i></span>
 </template>
 
 <script>
@@ -17,7 +15,7 @@ export default {
       );
     },
     icon: function () {
-      return measurements[this.type.toLowerCase()].icon;
+      return this.hasIcon ? measurements[this.type.toLowerCase()].icon : "vial";
     },
   },
 };
