@@ -55,6 +55,7 @@ li, dd {
     position: relative;
     width: 100vw;
     height: 100vh;
+    height: 100svh;
     overflow: hidden;
 }
 
@@ -185,7 +186,6 @@ input[type="date"] {
 	width: 2.5rem;
 	height: 1.5rem;
 	background: var(--color-dark);
-	display: block;
 	border-radius: 2rem;
 	position: relative;
     display: inline-block;
