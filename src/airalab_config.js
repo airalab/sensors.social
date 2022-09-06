@@ -29,13 +29,13 @@ export default {
       "swarm.connect",
     ],
   },
-  REMOTE_PROVIDER: "",
-  WIND_PROVIDER: "",
+  REMOTE_PROVIDER: "https://roseman.airalab.org/",
+  WIND_PROVIDER: "https://wind.airalab.org/latest",
   MAP: {
-    zoom: "6",
+    zoom: "13",
     position: {
-      lat: "",
-      lng: "",
+      lat: "53.5197",
+      lng: "49.3647",
     },
   },
   SHOW_MESSAGES: true,
