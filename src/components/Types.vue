@@ -1,7 +1,6 @@
 <template>
   <div class="sensors-panel-section">
     <section class="sensors-data">
- 
       <div>
         <div class="sensors-select">
           <select v-model="type">
@@ -18,7 +17,6 @@
 
         <!-- <div class="text-small">{{ unit }}</div> -->
       </div>
-      
     </section>
 
     <section>
@@ -67,6 +65,7 @@ export default {
           zoom: this.$route.params.zoom,
           lat: this.$route.params.lat,
           lng: this.$route.params.lng,
+          sensor: this.$route.params.sensor,
         },
       });
       window.location.reload(false);

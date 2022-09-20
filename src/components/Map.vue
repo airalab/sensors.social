@@ -27,6 +27,7 @@ export default {
           zoom: e.target.getZoom(),
           lat: pos.lat.toFixed(4),
           lng: pos.lng.toFixed(4),
+          sensor: this.$route.params.sensor,
         },
       });
     });
@@ -50,6 +51,7 @@ export default {
             zoom: e.target.getZoom(),
             lat: pos.lat.toFixed(4),
             lng: pos.lng.toFixed(4),
+            sensor: this.$route.params.sensor,
           },
         })
         .catch(() => {});

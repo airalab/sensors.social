@@ -12,7 +12,7 @@ const routes = [
     component: Download,
   },
   {
-    path: "/:provider?/:type?/:zoom?/:lat?/:lng?",
+    path: "/:provider?/:type?/:zoom?/:lat?/:lng?/:sensor?",
     name: "main",
     component: Main,
     props: true,

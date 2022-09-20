@@ -85,6 +85,7 @@ export default {
               zoom: this.$route.params.zoom,
               lat: this.$route.params.lat,
               lng: this.$route.params.lng,
+              sensor: this.$route.params.sensor,
             },
           })
           .catch(() => {});

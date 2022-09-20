@@ -18,6 +18,7 @@
             :model="point.model"
             :count="point.count"
             :address="point.address"
+            :geo="point.geo"
             :type="type.toLowerCase()"
             @modal="handlerModal"
           />
@@ -93,6 +94,9 @@ export default {
     },
     lng: {
       default: config.MAP.position.lng,
+    },
+    sensor: {
+      type: String,
     },
   },
   data() {
@@ -180,6 +184,11 @@ export default {
         isEmpty: !point.data[this.type.toLowerCase()],
         value: point.data[this.type.toLowerCase()],
       });
+
+      if (point.sensor_id === this.sensor) {
+        this.handlerClick(point);
+      }
+
       if (this.point && this.point.sensor_id === point.sensor_id) {
         this.$set(this.point, "log", [
           ...this.point.log,

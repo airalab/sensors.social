@@ -11,6 +11,10 @@
       <span v-if="address">
         <i class="fa-solid fa-location-dot"></i> {{ address }}
       </span>
+      &nbsp;
+      <a :href="linkSensor" target="_blank">
+        <i class="fa-solid fa-up-right-from-square"></i>
+      </a>
 
       <div v-if="model === 3" class="sensors-switcher">
         <input type="checkbox" id="realtime" v-model="isShowPath" />
@@ -61,9 +65,10 @@ import Copy from "./Copy.vue";
 import Icon from "./Icon.vue";
 import sensors from "../sensors";
 import { showPath, hidePath } from "../utils/map/marker";
+import config from "../config";
 
 export default {
-  props: ["sender", "sensor_id", "log", "model", "address", "type"],
+  props: ["sender", "sensor_id", "log", "model", "address", "type", "geo"],
   components: {
     Chart,
     Copy,
@@ -88,6 +93,20 @@ export default {
     },
   },
   computed: {
+    linkSensor: function () {
+      const geo = this.geo.split(",");
+      return this.$router.resolve({
+        name: "main",
+        params: {
+          provider: this.$route.params.provider || "remote",
+          type: this.$route.params.type || "pm10",
+          zoom: this.$route.params.zoom || config.MAP.zoom,
+          lat: geo[0],
+          lng: geo[1],
+          sensor: this.sensor_id,
+        },
+      }).href;
+    },
     link: function () {
       return sensors[this.sensor_id] ? sensors[this.sensor_id].link : "";
     },
