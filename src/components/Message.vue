@@ -5,7 +5,7 @@
       <span><i class="fa-solid fa-stopwatch"></i> {{ dateMsg }}</span>
     </div>
     <div style="margin-top: 30px">
-      <p>{{ data.message }}</p>
+      <div v-html="replaceWithBr(data.message)"></div>
       <template v-if="isImages">
         <h2>{{ $t("details.photos") }}</h2>
         <div v-if="!imagesLoaded">...</div>
@@ -99,6 +99,9 @@ export default {
     this.imagesLoad();
   },
   methods: {
+    replaceWithBr(v) {
+      return v.replace(/\n/g, "<br />");
+    },
     imagesLoad() {
       if (this.data.images && this.data.images.length > 0) {
         this.images = [];
