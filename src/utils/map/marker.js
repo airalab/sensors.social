@@ -91,7 +91,7 @@ function iconCreateMsg(cluster) {
   return new L.DivIcon({
     html:
       "<div style='font-weight: bold;background-image: url(" +
-      require("../../assets/msg.png") +
+      require("../../assets/message/msg-text.png") +
       ");background-size: contain;color:#fff;padding-top:4px;font-size:16px;width: 40px;height: 40px;'><span>" +
       childCount +
       "</span></div>",
@@ -130,9 +130,22 @@ function createIconBrand(sensor_id, colorRgb) {
   });
 }
 
-function createIconMsg() {
+function createIconMsg(type = 0) {
+  let icon = "msg-text.png";
+  if (type === 1) {
+    icon = "msg-air.png";
+  } else if (type === 2) {
+    icon = "msg-garbage.png";
+  } else if (type === 3) {
+    icon = "msg-water.png";
+  } else if (type === 4) {
+    icon = "msg-fire.png";
+  } else if (type === 5) {
+    icon = "msg-forest.png";
+  }
   return L.divIcon({
-    html: `<img src="${require("../../assets/msg.png")}" alt="" style="width: 40px; height: 40px;">`,
+    html: `<img src="${require("../../assets/message/" +
+      icon)}" alt="" style="width: 40px; height: 40px;">`,
     iconSize: [40, 40],
     className: "marker-icon",
   });
@@ -184,7 +197,7 @@ function createMarkerCircle(coord, data, colors) {
 
 function createMarkerUser(coord, data) {
   return L.marker(new L.LatLng(coord[0], coord[1]), {
-    icon: createIconMsg(),
+    icon: createIconMsg(data.data.type),
     data: data,
     typeMarker: "msg",
   });
