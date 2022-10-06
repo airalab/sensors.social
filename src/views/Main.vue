@@ -77,6 +77,9 @@ import * as providers from "../providers";
 import config from "../config";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
+import { getMapPosiotion } from "../utils/utils";
+
+const mapPosition = getMapPosiotion();
 
 export default {
   props: {
@@ -87,13 +90,13 @@ export default {
       default: "pm10",
     },
     zoom: {
-      default: config.MAP.zoom,
+      default: mapPosition.zoom,
     },
     lat: {
-      default: config.MAP.position.lat,
+      default: mapPosition.lat,
     },
     lng: {
-      default: config.MAP.position.lng,
+      default: mapPosition.lng,
     },
     sensor: {
       type: String,

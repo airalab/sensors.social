@@ -7,6 +7,7 @@ import { init } from "../utils/map/instance";
 import { init as initWind } from "../utils/map/wind";
 import { init as initMarkers } from "../utils/map/marker";
 import { getCityByPos } from "../utils/map/utils";
+import { saveMapPosiotion } from "../utils/utils";
 
 export default {
   props: ["zoom", "lat", "lng", "type", "availableWind"],
@@ -19,6 +20,11 @@ export default {
     const map = init([this.lat, this.lng], this.zoom);
     map.on("zoomend", (e) => {
       const pos = e.target.getCenter();
+      saveMapPosiotion(
+        e.target.getZoom(),
+        pos.lat.toFixed(4),
+        pos.lng.toFixed(4)
+      );
       this.$router.replace({
         name: "main",
         params: {
@@ -41,7 +47,11 @@ export default {
       } else {
         this.$emit("city", "");
       }
-
+      saveMapPosiotion(
+        e.target.getZoom(),
+        pos.lat.toFixed(4),
+        pos.lng.toFixed(4)
+      );
       this.$router
         .replace({
           name: "main",
