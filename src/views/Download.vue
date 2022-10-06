@@ -1,19 +1,36 @@
 <template>
   <div class="page">
     <h1>Период</h1>
-    <div class="block">
-      Начало:
-      <input type="date" v-model="start" :max="maxDate" />
-    </div>
-    <div class="block">
-      Конец:
-      <input type="date" v-model="end" :max="maxDate" />
-    </div>
+    <table>
+      <tr>
+        <td style="text-align: right; width: 50%">Город:</td>
+        <td style="text-align: left">
+          <select v-model="city">
+            <option v-for="(item, key) in cities" :value="item" :key="key">
+              {{ item }}
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right">Начало:</td>
+        <td style="text-align: left">
+          <input type="date" v-model="start" :max="maxDate" />
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right">Конец:</td>
+        <td style="text-align: left">
+          <input type="date" v-model="end" :max="maxDate" />
+        </td>
+      </tr>
+    </table>
     <a class="link" :href="link" target="_blank">Сохранить csv</a>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import moment from "moment";
 import config from "../config";
 
@@ -23,6 +40,8 @@ export default {
       start: moment().subtract(6, "days").format("YYYY-MM-DD"),
       end: moment().format("YYYY-MM-DD"),
       maxDate: moment().format("YYYY-MM-DD"),
+      cities: [],
+      city: "",
     };
   },
   computed: {
@@ -37,8 +56,13 @@ export default {
       );
     },
     link() {
-      return `${config.REMOTE_PROVIDER}api/sensor/csv/${this.startTimestamp}/${this.endTimestamp}`;
+      return `${config.REMOTE_PROVIDER}api/sensor/csv/${this.startTimestamp}/${this.endTimestamp}/${this.city}`;
     },
+  },
+  async created() {
+    const result = await axios(`${config.REMOTE_PROVIDER}api/sensor/cities`);
+    this.cities = result.data.result;
+    this.city = this.cities[0];
   },
 };
 </script>
@@ -48,9 +72,6 @@ export default {
   width: 700px;
   margin: 20px auto;
   text-align: center;
-}
-.block {
-  margin: 10px;
 }
 .link {
   border: 1px solid rgb(0, 217, 255);
@@ -63,5 +84,18 @@ export default {
 .link:hover {
   background: rgb(121, 201, 255);
   color: #fff;
+}
+table {
+  width: 100%;
+  margin: 20px 0;
+}
+table td {
+  padding: 10px;
+}
+select {
+  border: 1px solid var(--color-dark);
+  background-color: var(--color-light);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
 }
 </style>
