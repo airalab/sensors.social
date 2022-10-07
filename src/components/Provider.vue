@@ -1,5 +1,5 @@
 <template>
-  <div class="sensors-switcher">
+  <fragment>
     <input
       type="date"
       v-model="start"
@@ -7,16 +7,18 @@
       :disabled="current == 'ipfs'"
     />
     <div class="sensors-switcher">
-      <input
-        type="checkbox"
-        id="realtime"
-        v-model="isIpfs"
-        :checked="current == 'ipfs'"
-      />
-      <label for="realtime"></label>
-      <span class="sensors-switcher-text">{{ $t("provider.realtime") }}</span>
+      <div class="sensors-switcher">
+        <input
+          type="checkbox"
+          id="realtime"
+          v-model="isIpfs"
+          :checked="current == 'ipfs'"
+        />
+        <label for="realtime"></label>
+        <span class="sensors-switcher-text">{{ $t("provider.realtime") }}</span>
+      </div>
     </div>
-  </div>
+  </fragment>
 </template>
 
 <script>
