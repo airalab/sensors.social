@@ -78,6 +78,7 @@ import config from "../config";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
 import { getMapPosiotion } from "../utils/utils";
+import { instanceMap } from "../utils/map/instance";
 
 const mapPosition = getMapPosiotion();
 
@@ -238,6 +239,13 @@ export default {
         markers.hidePath(this.point.sensor_id);
       }
       this.point = null;
+      instanceMap().setActiveArea({
+        position: "absolute",
+        top: "0px",
+        left: "0px",
+        right: "0px",
+        height: "100%",
+      });
     },
     handlerCloseInfo() {
       this.isShowInfo = false;

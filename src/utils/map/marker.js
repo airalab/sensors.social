@@ -48,7 +48,33 @@ const messagesLayers = {
 };
 
 export function init(map, type, cb) {
-  handlerClickMarker = cb;
+  handlerClickMarker = (event) => {
+    if (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      )
+    ) {
+      map.setActiveArea({
+        position: "absolute",
+        top: "90px",
+        left: "0px",
+        right: "0px",
+        height: "20%",
+      });
+    } else {
+      map.setActiveArea({
+        position: "absolute",
+        top: "0px",
+        left: "50%",
+        right: "0px",
+        height: "100%",
+      });
+    }
+
+    map.panTo(event.latlng);
+    cb(event.target.options.data);
+  };
+
   const scaleParams = measurement(type);
   scale = generate(scaleParams.colors, scaleParams.range);
   markersLayer = new L.MarkerClusterGroup({
@@ -304,9 +330,7 @@ async function addMarker(point) {
     updateMarker(marker, point, colors);
   } else {
     const marker = createMarker(point, colors);
-    marker.on("click", (event) => {
-      handlerClickMarker(event.target.options.data);
-    });
+    marker.on("click", handlerClickMarker);
     markersLayer.addLayer(marker);
   }
 }
@@ -403,9 +427,7 @@ async function addMarkerUser(point) {
   const marker = await findMarker(point.sensor_id);
   if (!marker) {
     const marker = createMarker(point, colors);
-    marker.on("click", (event) => {
-      handlerClickMarker(event.target.options.data);
-    });
+    marker.on("click", handlerClickMarker);
     if (
       messageTypes[point.data.type] &&
       messagesLayers[messageTypes[point.data.type]]
