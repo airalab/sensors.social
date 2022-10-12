@@ -126,4 +126,10 @@ export default {
 .leaflet-bottom {
   bottom: 50px;
 }
+.count-gank {
+  color: #333;
+  font-size: 12px;
+  padding-top: 14px;
+  display: inline-block;
+}
 </style>

@@ -19,7 +19,6 @@ let scale;
 let markersLayer;
 let pathsLayer;
 let moveLayer;
-let messagesLayer;
 let handlerClickMarker;
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -28,6 +27,25 @@ L.Icon.Default.mergeOptions({
   iconUrl: require("leaflet/dist/images/marker-icon.png"),
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
+
+const messageTypes = {
+  0: "text",
+  1: "air",
+  2: "garbage",
+  3: "water",
+  4: "fire",
+  5: "forest",
+  42: "gank",
+};
+const messagesLayers = {
+  text: null,
+  air: null,
+  garbage: null,
+  water: null,
+  fire: null,
+  forest: null,
+  gank: null,
+};
 
 export function init(map, type, cb) {
   handlerClickMarker = cb;
@@ -46,14 +64,18 @@ export function init(map, type, cb) {
   moveLayer = new L.layerGroup();
   map.addLayer(moveLayer);
 
-  messagesLayer = new L.MarkerClusterGroup({
-    showCoverageOnHover: false,
-    // zoomToBoundsOnClick: false,
-    maxClusterRadius: 120,
-    iconCreateFunction: iconCreateMsg,
-  });
+  for (const type of Object.values(messageTypes)) {
+    messagesLayers[type] = new L.MarkerClusterGroup({
+      showCoverageOnHover: false,
+      // zoomToBoundsOnClick: false,
+      maxClusterRadius: 120,
+      iconCreateFunction: (cluster) => iconCreateMsg(cluster, type),
+    });
+  }
   if (config.SHOW_MESSAGES) {
-    map.addLayer(messagesLayer);
+    for (const messagesLayer of Object.values(messagesLayers)) {
+      map.addLayer(messagesLayer);
+    }
   }
 }
 
@@ -86,13 +108,16 @@ function iconCreate(cluster) {
     iconSize: new L.Point(40, 40),
   });
 }
-function iconCreateMsg(cluster) {
+
+function iconCreateMsg(cluster, type = "text") {
   const childCount = cluster.getChildCount();
   return new L.DivIcon({
     html:
       "<div style='font-weight: bold;background-image: url(" +
-      require("../../assets/message/msg-text.png") +
-      ");background-size: contain;color:#fff;padding-top:4px;font-size:16px;width: 40px;height: 40px;'><span>" +
+      require("../../assets/message/msg-" + type + ".png") +
+      ");background-size: contain;color:#fff;padding-top:4px;font-size:16px;width: 40px;height: 40px;'><span class='count-" +
+      type +
+      "'>" +
       childCount +
       "</span></div>",
     className: "marker-cluster",
@@ -142,6 +167,8 @@ function createIconMsg(type = 0) {
     icon = "msg-fire.png";
   } else if (type === 5) {
     icon = "msg-forest.png";
+  } else if (type === 42) {
+    icon = "msg-gank.png";
   }
   return L.divIcon({
     html: `<img src="${require("../../assets/message/" +
@@ -379,22 +406,31 @@ async function addMarkerUser(point) {
     marker.on("click", (event) => {
       handlerClickMarker(event.target.options.data);
     });
-    messagesLayer.addLayer(marker);
+    if (
+      messageTypes[point.data.type] &&
+      messagesLayers[messageTypes[point.data.type]]
+    ) {
+      messagesLayers[messageTypes[point.data.type]].addLayer(marker);
+    }
   }
 }
 
 export function clear() {
   markersLayer.clearLayers();
   pathsLayer.clearLayers();
-  messagesLayer.clearLayers();
+  for (const messagesLayer of Object.values(messagesLayers)) {
+    messagesLayer.clearLayers();
+  }
 }
 
 export function switchMessagesLayer(map, enabled = false) {
-  if (messagesLayer) {
-    if (enabled) {
-      map.addLayer(messagesLayer);
-    } else {
-      map.removeLayer(messagesLayer);
+  for (const messagesLayer of Object.values(messagesLayers)) {
+    if (messagesLayer) {
+      if (enabled) {
+        map.addLayer(messagesLayer);
+      } else {
+        map.removeLayer(messagesLayer);
+      }
     }
   }
 }
