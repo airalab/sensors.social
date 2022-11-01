@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>{{ data.username }}</h2>
+    <h2>{{ $t("details.user") }} {{ data.username }}</h2>
     <div class="sensor-popup--subtitle">
       <span><i class="fa-solid fa-stopwatch"></i> {{ dateMsg }}</span>
     </div>

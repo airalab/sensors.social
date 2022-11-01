@@ -19,6 +19,7 @@ export default {
     },
     details: {
       sensor: "Sensor",
+      user: "Пользователь #",
       photos: "Photos",
       showpath: "Show route",
     },
@@ -45,6 +46,7 @@ export default {
     },
     details: {
       sensor: "Датчик",
+      user: "User #",
       photos: "Фотографии",
       showpath: "Показать маршрут",
     },

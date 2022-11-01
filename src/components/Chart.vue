@@ -92,6 +92,10 @@ export default {
             },
           });
         }
+        let hasVisible = series.find((item) => item.visible === true);
+        if (!hasVisible && series.length > 0) {
+          series[0].visible = true;
+        }
         return series;
       }
       // if (this.measurement === "pm10" || this.measurement === "pm25") {
