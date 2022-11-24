@@ -1,10 +1,37 @@
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import "leaflet-active-area";
 import "leaflet.locatecontrol";
 import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
-import "leaflet-active-area";
+import "leaflet.tilelayer.colorfilter";
+import "leaflet/dist/leaflet.css";
 
 let map;
+const attrs = {
+  attribution:
+    '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+};
+
+const layerMapLight = L.tileLayer.colorFilter(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    ...attrs,
+    filter: ["grayscale:50%", "saturate:70%"],
+  }
+);
+const layerMapDark = L.tileLayer.colorFilter(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    ...attrs,
+    filter: [
+      "invert:100%",
+      "grayscale:100%",
+      "bright:100%",
+      "saturate:0%",
+      "sepia:10%",
+    ],
+  }
+);
+
 export function instanceMap() {
   if (map) {
     return map;
@@ -12,15 +39,10 @@ export function instanceMap() {
   throw new Error("Must be initialized before using the mapd.");
 }
 
-export function init(position, zoom) {
-  const layerMap = L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-      attribution:
-        '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-    }
-  );
-  map = L.map("map", { layers: [layerMap] });
+export function init(position, zoom, theme = "light") {
+  map = L.map("map");
+  setTheme(theme);
+  map.attributionControl.setPrefix("");
   map.setView(position, zoom);
   L.control
     .locate({
@@ -30,7 +52,17 @@ export function init(position, zoom) {
       },
     })
     .addTo(map);
-  // map.zoomControl.setPosition("bottomright");
   map.zoomControl.remove();
   return map;
+}
+
+export function setTheme(theme) {
+  const map = instanceMap();
+  if (theme === "light") {
+    map.removeLayer(layerMapDark);
+    map.addLayer(layerMapLight);
+  } else {
+    map.removeLayer(layerMapLight);
+    map.addLayer(layerMapDark);
+  }
 }

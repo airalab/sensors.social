@@ -1,0 +1,30 @@
+body {
+  --color-light: #fff;
+  --color-gray: #4e4e4f;
+  --color-middle-gray: #B6BDC4;
+  --color-light-gray: #d5d3d3;
+  --color-dark: #000;
+  --color-blue: #03a5ed;
+  --color-green: #60bc2a;
+  --color-red: #fc0202; 
+  --color-yellow: #f5ff00;
+  --color-orange: #ff9d00;
+
+  --color-link: var(--color-blue);
+  --color-link-hover: var(--color-green);
+
+  --font-family--black: 'Arial Black', sans-serif;
+  --font-family--normal: 'Arial', sans-serif;
+  --font-size: 1rem;
+
+  --gap: 1rem;
+
+  --sensor-popup-bg: #ffffff;
+}
+
+body.dark {
+  --color-light: #000;
+  --color-dark: #fff;
+
+  --sensor-popup-bg: #5a5a5a;
+}

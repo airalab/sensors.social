@@ -1,7 +1,7 @@
+import axios from "axios";
 import L from "leaflet";
 import "leaflet-velocity";
 import "leaflet-velocity/dist/leaflet-velocity.css";
-import axios from "axios";
 import config from "../../config";
 
 export const immediate = false;

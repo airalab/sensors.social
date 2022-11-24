@@ -1,6 +1,6 @@
 import { init as initIpfs } from "../utils/ipfs";
-import { getAgents } from "../utils/utils";
 import { measurements as converter } from "../utils/measurement";
+import { getAgents } from "../utils/utils";
 
 class Provider {
   constructor(config) {
@@ -56,30 +56,8 @@ class Provider {
     });
   }
 
-  canExport() {
-    return false;
-  }
-
-  getSensors() {
-    return Promise.resolve([]);
-  }
-
-  getHistoryByDate(start, end) {
-    const history = this.history;
-    for (const sensor in history) {
-      history[sensor] = history[sensor].filter((point) => {
-        return point.timestamp >= start && point.timestamp <= end;
-      });
-    }
-    return Promise.resolve(history);
-  }
-
   getHistoryBySensor(sensor) {
     return Promise.resolve(this.history[sensor] ? this.history[sensor] : []);
-  }
-
-  getCountTxBySender() {
-    return false;
   }
 
   watch(cb) {

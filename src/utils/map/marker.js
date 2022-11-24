@@ -1,18 +1,30 @@
+import Queue from "js-queue";
 import L from "leaflet";
+import "leaflet-arrowheads";
 import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import Queue from "js-queue";
+import config from "../../config";
+import sensors from "../../sensors";
 import generate, {
   getColor,
-  getColorRGB,
   getColorDarken,
   getColorDarkenRGB,
+  getColorRGB,
 } from "../../utils/color";
 import measurement from "../../utils/measurement";
-import sensors from "../../sensors";
-import config from "../../config";
-import "leaflet-arrowheads";
+
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+import type1 from "../../assets/message/msg-air.png";
+import type4 from "../../assets/message/msg-fire.png";
+import type5 from "../../assets/message/msg-forest.png";
+import type42 from "../../assets/message/msg-gank.png";
+import type2 from "../../assets/message/msg-garbage.png";
+import type0 from "../../assets/message/msg-text.png";
+import type3 from "../../assets/message/msg-water.png";
 
 const queue = new Queue();
 let scale;
@@ -23,9 +35,9 @@ let handlerClickMarker;
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 
 const messageTypes = {
@@ -46,6 +58,24 @@ const messagesLayers = {
   forest: null,
   gank: null,
 };
+const messageIconName = {
+  text: type0,
+  air: type1,
+  garbage: type2,
+  water: type3,
+  fire: type4,
+  forest: type5,
+  gank: type42,
+};
+const messageIconType = {
+  0: type0,
+  1: type1,
+  2: type2,
+  3: type3,
+  4: type4,
+  5: type5,
+  42: type42,
+};
 
 export function init(map, type, cb) {
   handlerClickMarker = (event) => {
@@ -65,8 +95,8 @@ export function init(map, type, cb) {
       map.setActiveArea({
         position: "absolute",
         top: "0px",
-        left: "50%",
-        right: "0px",
+        left: "0px",
+        right: "50%",
         height: "100%",
       });
     }
@@ -77,6 +107,7 @@ export function init(map, type, cb) {
 
   const scaleParams = measurement(type);
   scale = generate(scaleParams.colors, scaleParams.range);
+
   markersLayer = new L.MarkerClusterGroup({
     showCoverageOnHover: false,
     // zoomToBoundsOnClick: false,
@@ -108,28 +139,29 @@ export function init(map, type, cb) {
 function iconCreate(cluster) {
   const markers = cluster.getAllChildMarkers();
   const childCount = cluster.getChildCount();
+  let childCountCalc = 0;
   let sum = 0;
   markers.forEach((marker) => {
+    if (
+      marker.options.data.value === undefined &&
+      marker.options.data.value !== ""
+    ) {
+      return;
+    }
+    childCountCalc++;
     sum += Number(marker.options.data.value);
   });
-  if (childCount > 0) {
-    sum = sum / childCount;
+  if (childCountCalc > 0) {
+    sum = sum / childCountCalc;
   }
   const color = getColorRGB(scale, sum);
   const colorBorder = getColorDarkenRGB(scale, sum);
   const isDark = scale(sum).luminance() < 0.4;
 
   return new L.DivIcon({
-    html:
-      "<div style='font-weight: bold;color:" +
-      (isDark ? "#eee" : "#333") +
-      ";background-color: rgba(" +
-      color +
-      ", 0.7);border-color: rgba(" +
-      colorBorder +
-      ", 1);border-width: 2px;border-style: solid;border-radius: 18px;'><span>" +
-      childCount +
-      "</span></div>",
+    html: `<div class='marker-cluster-circle' style='color:${
+      isDark ? "#eee" : "#333"
+    };background-color: rgba(${color}, 0.7);border-color: rgba(${colorBorder}, 1);'><span>${childCount}</span></div>`,
     className: "marker-cluster",
     iconSize: new L.Point(40, 40),
   });
@@ -138,14 +170,7 @@ function iconCreate(cluster) {
 function iconCreateMsg(cluster, type = "text") {
   const childCount = cluster.getChildCount();
   return new L.DivIcon({
-    html:
-      "<div style='font-weight: bold;background-image: url(" +
-      require("../../assets/message/msg-" + type + ".png") +
-      ");background-size: contain;color:#fff;padding-top:4px;font-size:16px;width: 40px;height: 40px;'><span class='count-" +
-      type +
-      "'>" +
-      childCount +
-      "</span></div>",
+    html: `<div class="marker-cluster-msg" style='background-image: url(${messageIconName[type]});'><span class='count-${type}'>${childCount}</span></div>`,
     className: "marker-cluster",
     iconSize: new L.Point(40, 40),
   });
@@ -175,30 +200,15 @@ function findMarkerMoved(sensor_id) {
 
 function createIconBrand(sensor_id, colorRgb) {
   return L.divIcon({
-    html: `<img src="${sensors[sensor_id].icon}" alt="" style="border: 3px solid rgba(${colorRgb}, 0.7);width: 40px; height: 40px; border-radius: 50%;">`,
+    html: `<img src="${sensors[sensor_id].icon}" alt="" class="marker-icon-brand" style="border: 3px solid rgba(${colorRgb}, 0.7);">`,
     iconSize: [40, 40],
     className: "marker-icon",
   });
 }
 
 function createIconMsg(type = 0) {
-  let icon = "msg-text.png";
-  if (type === 1) {
-    icon = "msg-air.png";
-  } else if (type === 2) {
-    icon = "msg-garbage.png";
-  } else if (type === 3) {
-    icon = "msg-water.png";
-  } else if (type === 4) {
-    icon = "msg-fire.png";
-  } else if (type === 5) {
-    icon = "msg-forest.png";
-  } else if (type === 42) {
-    icon = "msg-gank.png";
-  }
   return L.divIcon({
-    html: `<img src="${require("../../assets/message/" +
-      icon)}" alt="" style="width: 40px; height: 40px;">`,
+    html: `<img src="${messageIconType[type]}" alt="" class="marker-icon-msg">`,
     iconSize: [40, 40],
     className: "marker-icon",
   });
@@ -213,7 +223,7 @@ function createIconArrow(dir, speed, color) {
       <div class="icon-arrow" style="border-color: ${color} ${color} transparent transparent;">
         <div style="background-color: ${color};"></div>
       </div>
-      <div class="label-arrow"">${speed} m/s</div>
+      <div class="label-arrow">${speed} m/s</div>
     </div>`,
     iconSize: new L.Point(40, 40),
   });

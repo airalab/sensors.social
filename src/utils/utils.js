@@ -1,7 +1,8 @@
+import agents from "../agents.json";
 import config from "../config";
 
 export function getAgents() {
-  return require("../agents.json");
+  return agents;
 }
 
 export function saveMapPosiotion(zoom, lat, lng) {

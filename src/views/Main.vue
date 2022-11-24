@@ -1,84 +1,73 @@
 <template>
-  <div class="sensors-screen" :class="{ loading: isLoader }">
-    <div class="sensors-screen-layers">
-      <div class="sensors-screen-layers--center">
-        <Header :localeCurrent="$i18n.locale" :city="city" />
+  <div id="app">
+    <!-- <Loader v-if="isLoader" /> -->
 
-        <Modal
-          v-if="point"
-          @close="handlerClose"
-          class="sensors-panel--center-left"
-        >
-          <Message v-if="point.data.message" :data="point.data" />
-          <Details
-            v-else
-            :sender="point.sender"
-            :sensor_id="point.sensor_id"
-            :log="point.log"
-            :model="point.model"
-            :count="point.count"
-            :address="point.address"
-            :geo="point.geo"
-            :type="type.toLowerCase()"
-            @modal="handlerModal"
-          />
-        </Modal>
+    <div class="sensors-screen">
+      <div class="sensors-screen-layers">
+        <div class="sensors-screen-layers--center">
+          <Header :localeCurrent="$i18n.locale" :city="city" />
 
-        <Modal
-          v-if="isShowInfo"
-          @close="handlerCloseInfo"
-          class="sensors-panel--center-right"
-        >
-          <Info />
-        </Modal>
-      </div>
+          <div class="container sensors-container">
+            <Measures :current="type.toLowerCase()" />
+            <ColorfulScale />
 
-      <div class="sensors-panel sensors-panel--bottom">
-        <div class="sensors-panel-section sensors-dateselect">
-          <Provider
-            :current="provider"
+            <template v-if="point">
+              <MessagePopup
+                v-if="point.data.message"
+                @close="handlerClose"
+                :data="point.data"
+              />
+              <SensorPopup
+                v-else
+                :sender="point.sender"
+                :sensor_id="point.sensor_id"
+                :log="point.log"
+                :model="point.model"
+                :address="point.address"
+                :geo="point.geo"
+                :type="type.toLowerCase()"
+                @modal="handlerModal"
+                @close="handlerClose"
+              />
+            </template>
+
+            <Map
+              :type="type"
+              :zoom="zoom"
+              :lat="lat"
+              :lng="lng"
+              :availableWind="provider === 'ipfs'"
+              @clickMarker="handlerClick"
+              @city="handlerChangeCity"
+            />
+          </div>
+
+          <Footer
+            :currentProvider="provider"
             :canHistory="canHistory"
             @history="handlerHistory"
           />
-          <Wind :disabled="provider !== 'ipfs'" />
-          <Messages />
         </div>
-
-        <Types :current="type.toLowerCase()" @modal="handlerModal" />
       </div>
     </div>
-
-    <Map
-      :type="type.toLowerCase()"
-      @clickMarker="handlerClick"
-      @city="handlerChangeCity"
-      :zoom="zoom"
-      :lat="lat"
-      :lng="lng"
-      :availableWind="provider === 'ipfs'"
-    />
-    <i class="fa-solid fa-compass fa-spin"></i>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
+import ColorfulScale from "../components/colorfulScale/ColorfulScale.vue";
+import Footer from "../components/footer/Footer.vue";
+import Header from "../components/header/Header.vue";
+import Loader from "../components/Loader.vue";
 import Map from "../components/Map.vue";
-import Types from "../components/Types.vue";
-import Details from "../components/Details.vue";
-import Provider from "../components/Provider.vue";
-import Header from "../components/Header.vue";
-import Wind from "../components/Wind.vue";
-import Messages from "../components/Messages.vue";
-import Message from "../components/Message.vue";
-import Info from "../components/Info.vue";
-import Modal from "../components/Modal.vue";
-import * as providers from "../providers";
+import Measures from "../components/measures/Measures.vue";
+import MessagePopup from "../components/message/MessagePopup.vue";
+import SensorPopup from "../components/sensor/SensorPopup.vue";
 import config from "../config";
+import * as providers from "../providers";
+import { instanceMap } from "../utils/map/instance";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
 import { getMapPosiotion } from "../utils/utils";
-import { instanceMap } from "../utils/map/instance";
 
 const mapPosition = getMapPosiotion();
 
@@ -103,6 +92,16 @@ export default {
       type: String,
     },
   },
+  components: {
+    Header,
+    Map,
+    Measures,
+    ColorfulScale,
+    Footer,
+    SensorPopup,
+    Loader,
+    MessagePopup,
+  },
   data() {
     return {
       providerReady: false,
@@ -112,19 +111,8 @@ export default {
       canHistory: false,
       city: "",
       isShowInfo: false,
+      providerObj: null,
     };
-  },
-  components: {
-    Map,
-    Types,
-    Details,
-    Provider,
-    Header,
-    Wind,
-    Messages,
-    Modal,
-    Info,
-    Message,
   },
   computed: {
     isLoader() {
@@ -133,17 +121,17 @@ export default {
   },
   mounted() {
     if (this.provider === "remote") {
-      Vue.prototype.$provider = new providers.Remote(config.REMOTE_PROVIDER);
+      this.providerObj = new providers.Remote(config.REMOTE_PROVIDER);
     } else {
-      Vue.prototype.$provider = new providers.Ipfs(config.IPFS);
+      this.providerObj = new providers.Ipfs(config.IPFS);
     }
-    this.$provider.ready().then(() => {
+    this.providerObj.ready().then(() => {
       this.providerReady = true;
-      this.$provider.watch(this.handlerNewPoint);
+      this.providerObj.watch(this.handlerNewPoint);
     });
     if (this.provider === "remote") {
       const iRemote = setInterval(() => {
-        if (this.$provider && this.$provider.connection) {
+        if (this.providerObj && this.providerObj.connection) {
           clearInterval(iRemote);
           this.canHistory = true;
         }
@@ -160,18 +148,18 @@ export default {
   methods: {
     async handlerHistory({ start, end }) {
       this.status = "history";
-      this.$provider.watch(null);
+      this.providerObj.watch(null);
       this.handlerClose();
       markers.clear();
-      this.$provider.setStartDate(start);
-      this.$provider.setEndDate(end);
-      const sensors = await this.$provider.lastValuesForPeriod(start, end);
+      this.providerObj.setStartDate(start);
+      this.providerObj.setEndDate(end);
+      const sensors = await this.providerObj.lastValuesForPeriod(start, end);
       for (const sensor in sensors) {
         for (const item of sensors[sensor]) {
           this.handlerNewPoint(item);
         }
       }
-      const messages = await this.$provider.messagesForPeriod(start, end);
+      const messages = await this.providerObj.messagesForPeriod(start, end);
       for (const message in messages) {
         this.handlerNewPoint(messages[message]);
       }
@@ -194,13 +182,13 @@ export default {
       }
 
       if (this.point && this.point.sensor_id === point.sensor_id) {
-        this.$set(this.point, "log", [
+        this.point.log = [
           ...this.point.log,
           {
             data: point.data,
             timestamp: point.timestamp,
           },
-        ]);
+        ];
       }
 
       if (
@@ -210,19 +198,19 @@ export default {
         ) ||
         Object.prototype.hasOwnProperty.call(point.data, "message")
       ) {
-        this.$set(this.points, point.sensor_id, point.data);
+        this.points[point.sensor_id] = point.data;
       }
     },
     async handlerClick(point) {
       let log;
       if (this.status === "history") {
-        log = await this.$provider.getHistoryPeriodBySensor(
+        log = await this.providerObj.getHistoryPeriodBySensor(
           point.sensor_id,
-          this.$provider.start,
-          this.$provider.end
+          this.providerObj.start,
+          this.providerObj.end
         );
       } else {
-        log = await this.$provider.getHistoryBySensor(point.sensor_id);
+        log = await this.providerObj.getHistoryBySensor(point.sensor_id);
       }
 
       const geo = point.geo.split(",");
@@ -261,3 +249,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.sensors-panel--bottom {
+  position: relative;
+  z-index: 10;
+}
+</style>

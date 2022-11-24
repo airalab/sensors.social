@@ -28,23 +28,26 @@ export function getAddressByPos(lat, lon, language = "en") {
     )
     .then((r) => {
       if (r.data.address) {
-        const addr = [];
+        const addr = {
+          country: r.data.address.country || "",
+          address: [],
+        };
         if (r.data.address.city) {
-          addr.push(r.data.address.city);
+          addr.address.push(r.data.address.city);
         } else if (r.data.address.town) {
-          addr.push(r.data.address.town);
+          addr.address.push(r.data.address.town);
         }
         if (r.data.address.road) {
-          addr.push(r.data.address.road);
+          addr.address.push(r.data.address.road);
         }
         if (r.data.address.house_number) {
-          addr.push(r.data.address.house_number);
+          addr.address.push(r.data.address.house_number);
         }
-        return addr.join(", ");
+        return addr;
       }
-      return "";
+      return false;
     })
     .catch(() => {
-      return "";
+      return false;
     });
 }
