@@ -63,29 +63,29 @@
 
 <script>
 import Vue from "vue";
-import Map from "../components/Map.vue";
-import Types from "../components/Types.vue";
 import Details from "../components/Details.vue";
-import Provider from "../components/Provider.vue";
 import Header from "../components/Header.vue";
-import Wind from "../components/Wind.vue";
-import Messages from "../components/Messages.vue";
-import Message from "../components/Message.vue";
 import Info from "../components/Info.vue";
+import Map from "../components/Map.vue";
+import Message from "../components/Message.vue";
+import Messages from "../components/Messages.vue";
 import Modal from "../components/Modal.vue";
-import * as providers from "../providers";
+import Provider from "../components/Provider.vue";
+import Types from "../components/Types.vue";
+import Wind from "../components/Wind.vue";
 import config from "../config";
+import * as providers from "../providers";
+import { instanceMap } from "../utils/map/instance";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
 import { getMapPosiotion } from "../utils/utils";
-import { instanceMap } from "../utils/map/instance";
 
 const mapPosition = getMapPosiotion();
 
 export default {
   props: {
     provider: {
-      default: "remote",
+      default: "ipfs",
     },
     type: {
       default: "pm10",
