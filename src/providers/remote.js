@@ -89,6 +89,17 @@ class Provider {
       });
   }
 
+  getHistoryPeriodBySensor(sensor, start, end) {
+    return api
+      .get(`/${sensor}/${start}/${end}`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return [];
+      });
+  }
+
   watch(cb) {
     if (cb) {
       this.socket.on("update", (result) => {
