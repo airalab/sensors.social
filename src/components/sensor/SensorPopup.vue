@@ -178,15 +178,14 @@ export default {
       return value.slice(0, 6) + "..." + value.slice(-4);
     },
     linkSensor: function () {
-      const geo = this.geo.split(",");
       return this.$router.resolve({
         name: "main",
         params: {
           provider: this.$route.params.provider || "remote",
           type: this.$route.params.type || "pm10",
           zoom: this.$route.params.zoom || config.MAP.zoom,
-          lat: geo[0],
-          lng: geo[1],
+          lat: this.geo.lat,
+          lng: this.geo.lng,
           sensor: this.sensor_id,
         },
       }).href;

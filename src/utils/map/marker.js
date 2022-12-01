@@ -267,7 +267,7 @@ function createMarkerUser(coord, data) {
 }
 
 function createMarker(point, colors) {
-  const coord = point.geo.split(",");
+  const coord = [point.geo.lat, point.geo.lng];
   let marker;
   if (sensors[point.sensor_id]) {
     marker = createMarkerBrand(coord, point, colors);
@@ -298,7 +298,7 @@ function updateMarker(marker, point, colors) {
     });
   }
   if (point.model === 3) {
-    const coord = point.geo.split(",");
+    const coord = [point.geo.lat, point.geo.lng];
     marker.setLatLng(new L.LatLng(coord[0], coord[1]));
   }
 }
@@ -364,7 +364,7 @@ export async function moveMarkerTime(sensor_id, point, stop = false) {
   }
 
   if (marker) {
-    const coord = point.geo.split(",");
+    const coord = [point.geo.lat, point.geo.lng];
     marker.setLatLng(new L.LatLng(coord[0], coord[1]));
   }
 }
@@ -372,7 +372,7 @@ export async function moveMarkerTime(sensor_id, point, stop = false) {
 const paths = {};
 export async function addPointPath(point) {
   const color = point.isEmpty ? "#bb4506" : getColor(scale, point.value);
-  const coord = point.geo.split(",");
+  const coord = [point.geo.lat, point.geo.lng];
 
   const path = paths[point.sensor_id] || null;
   if (path) {

@@ -96,11 +96,12 @@ class Provider {
                 ? converter[name].calc(measurement[key])
                 : measurement[key];
             }
+            const [lat, lng] = data.geo.split(",");
             const point = {
               sensor_id,
               sender,
               model: data.model,
-              geo: data.geo,
+              geo: { lat, lng },
               data: measurementLowerCase,
               timestamp,
             };

@@ -1,5 +1,12 @@
 import axios from "axios";
 import io from "socket.io-client";
+import config from "../config";
+
+const axiosConfig = {
+  baseURL: `${config.REMOTE_PROVIDER}api/sensor`,
+};
+
+export const api = axios.create(axiosConfig);
 
 class Provider {
   constructor(url) {
@@ -41,25 +48,6 @@ class Provider {
     });
   }
 
-  canExport() {
-    return true;
-  }
-
-  exportUrl(start, end) {
-    return `${this.url}/api/sensor/csv/${start}/${end}`;
-  }
-
-  getSensors() {
-    return axios
-      .get(`${this.url}/api/sensor/all`)
-      .then((result) => {
-        return result.data.result;
-      })
-      .catch(() => {
-        return [];
-      });
-  }
-
   setStartDate(start) {
     this.start = start;
   }
@@ -69,8 +57,8 @@ class Provider {
   }
 
   lastValuesForPeriod(start, end) {
-    return axios
-      .get(`${this.url}/api/sensor/last/${start}/${end}`)
+    return api
+      .get(`/last/${start}/${end}`)
       .then((result) => {
         return result.data.result;
       })
@@ -80,8 +68,8 @@ class Provider {
   }
 
   messagesForPeriod(start, end) {
-    return axios
-      .get(`${this.url}/api/sensor/messages/${start}/${end}`)
+    return api
+      .get(`/messages/${start}/${end}`)
       .then((result) => {
         return result.data.result;
       })
@@ -90,71 +78,14 @@ class Provider {
       });
   }
 
-  getHistoryByDate(start, end, sensor_ids = "") {
-    sensor_ids = sensor_ids
-      .trim()
-      .split(",")
-      .filter((item) => {
-        return item;
-      });
-    return axios
-      .get(`${this.url}/api/sensor/history/${start}/${end}`)
-      .then((result) => {
-        if (sensor_ids.length === 0) {
-          return result.data.result;
-        }
-        const list = {};
-        for (const sensor_id of sensor_ids) {
-          list[sensor_id.trim()] = result.data.result[sensor_id.trim()];
-        }
-        return list;
-      })
-      .catch(() => {
-        return [];
-      });
-  }
-
-  getHistoryPeriodBySensor(sensor, start, end) {
-    return axios
-      .get(`${this.url}/api/sensor/${sensor}/${start}/${end}`)
-      .then((result) => {
-        return result.data.result;
-      })
-      .catch(() => {
-        return [];
-      });
-  }
-
   getHistoryBySensor(sensor) {
-    return axios
-      .get(`${this.url}/api/sensor/${sensor}`)
+    return api
+      .get(`/${sensor}`)
       .then((result) => {
         return result.data.result;
       })
       .catch(() => {
         return [];
-      });
-  }
-
-  getCountTxBySender(sender) {
-    return axios
-      .get(`${this.url}/api/sensor/count/${sender}`)
-      .then((result) => {
-        return result.data.result;
-      })
-      .catch(() => {
-        return 0;
-      });
-  }
-
-  getCountTxAll() {
-    return axios
-      .get(`${this.url}/api/sensor/count`)
-      .then((result) => {
-        return result.data.result;
-      })
-      .catch(() => {
-        return 0;
       });
   }
 

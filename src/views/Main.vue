@@ -213,8 +213,11 @@ export default {
         log = await this.providerObj.getHistoryBySensor(point.sensor_id);
       }
 
-      const geo = point.geo.split(",");
-      const address = await getAddressByPos(geo[0], geo[1], this.$i18n.locale);
+      const address = await getAddressByPos(
+        point.geo.lat,
+        point.geo.lng,
+        this.$i18n.locale
+      );
 
       this.point = {
         ...point,
