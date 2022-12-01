@@ -30,6 +30,7 @@ export default {
     ],
   },
   REMOTE_PROVIDER: "https://roseman.airalab.org/",
+  // REMOTE_PROVIDER: "http://localhost:3000/",
   WIND_PROVIDER: "https://wind.airalab.org/latest",
   MAP: {
     zoom: "13",
