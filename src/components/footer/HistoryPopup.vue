@@ -156,6 +156,10 @@ export default {
   background-color: var(--color-light);
 }
 
+#history select {
+  width: 100%;
+}
+
 .history__wrapper {
   display: flex;
   flex-direction: column;
