@@ -161,8 +161,8 @@ export default {
 
 <style>
 .footer {
-  position: absolute;
-  bottom: 0;
+  position: fixed;
+  bottom: 5px;
   width: 99%;
   z-index: 12;
   padding-bottom: var(--gap);
