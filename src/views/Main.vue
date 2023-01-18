@@ -74,7 +74,7 @@ const mapPosition = getMapPosiotion();
 export default {
   props: {
     provider: {
-      default: "remote",
+      default: "ipfs",
     },
     type: {
       default: "pm10",
@@ -168,9 +168,11 @@ export default {
       if (!point.model) {
         return;
       }
-      point.data = Object.fromEntries(
-        Object.entries(point.data).map(([k, v]) => [k.toLowerCase(), v])
-      );
+      point.data = point.data
+        ? Object.fromEntries(
+            Object.entries(point.data).map(([k, v]) => [k.toLowerCase(), v])
+          )
+        : {};
       markers.addPoint({
         ...point,
         isEmpty: !point.data[this.type.toLowerCase()],
