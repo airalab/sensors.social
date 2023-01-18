@@ -47,7 +47,7 @@ export default {
       this.$router.replace({
         name: "main",
         params: {
-          provider: this.$route.params.provider || "remote",
+          provider: this.$route.params.provider || "ipfs",
           type: this.$route.params.type || "pm10",
           zoom: e.target.getZoom(),
           lat: pos.lat.toFixed(4),
@@ -75,7 +75,7 @@ export default {
         .replace({
           name: "main",
           params: {
-            provider: this.$route.params.provider || "remote",
+            provider: this.$route.params.provider || "ipfs",
             type: this.$route.params.type || "pm10",
             zoom: e.target.getZoom(),
             lat: pos.lat.toFixed(4),
@@ -134,8 +134,8 @@ export default {
   color: #fff;
   padding-top: 4px;
   font-size: 16px;
-  width: 40px;
-  height: 40px;
+  width: 40px !important;
+  height: 40px !important;
 }
 .marker-icon-brand {
   width: 40px !important;
