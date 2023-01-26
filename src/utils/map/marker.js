@@ -439,7 +439,9 @@ export function clear() {
   markersLayer.clearLayers();
   pathsLayer.clearLayers();
   for (const messagesLayer of Object.values(messagesLayers)) {
-    messagesLayer.clearLayers();
+    if (messagesLayer) {
+      messagesLayer.clearLayers();
+    }
   }
 }
 
