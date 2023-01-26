@@ -18,14 +18,6 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-import type1 from "../../assets/message/msg-air.png";
-import type4 from "../../assets/message/msg-fire.png";
-import type5 from "../../assets/message/msg-forest.png";
-import type42 from "../../assets/message/msg-gank.png";
-import type2 from "../../assets/message/msg-garbage.png";
-import type0 from "../../assets/message/msg-text.png";
-import type3 from "../../assets/message/msg-water.png";
-
 const queue = new Queue();
 let scale;
 let markersLayer;
@@ -47,37 +39,33 @@ const messageTypes = {
   3: "water",
   4: "fire",
   5: "forest",
+  6: "recycle",
+  7: "parking",
+  8: "notif",
+  9: "alert",
   42: "gank",
 };
-const messagesLayers = {
-  text: null,
-  air: null,
-  garbage: null,
-  water: null,
-  fire: null,
-  forest: null,
-  gank: null,
-};
-const messageIconName = {
-  text: type0,
-  air: type1,
-  garbage: type2,
-  water: type3,
-  fire: type4,
-  forest: type5,
-  gank: type42,
-};
-const messageIconType = {
-  0: type0,
-  1: type1,
-  2: type2,
-  3: type3,
-  4: type4,
-  5: type5,
-  42: type42,
-};
+let messageIconName = {};
+let messageIconType = {};
+const messagesLayers = Object.values(messageTypes).reduce((result, item) => {
+  result[item] = null;
+  return result;
+}, {});
 
-export function init(map, type, cb) {
+export async function init(map, type, cb) {
+  for (const index of Object.keys(messageTypes)) {
+    try {
+      messageIconType[index] = (
+        await import(`../../assets/message/msg-${messageTypes[index]}.png`)
+      ).default;
+    } catch (error) {
+      messageIconType[index] = (
+        await import(`../../assets/message/msg-text.png`)
+      ).default;
+    }
+    messageIconName[messageTypes[index]] = messageIconType[index];
+  }
+
   handlerClickMarker = (event) => {
     if (
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
