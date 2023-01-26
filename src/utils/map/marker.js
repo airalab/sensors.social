@@ -124,6 +124,13 @@ export async function init(map, type, cb) {
   }
 }
 
+export function isReadyLayers() {
+  if (markersLayer && pathsLayer && moveLayer) {
+    return true;
+  }
+  return false;
+}
+
 function iconCreate(cluster) {
   const markers = cluster.getAllChildMarkers();
   const childCount = cluster.getChildCount();

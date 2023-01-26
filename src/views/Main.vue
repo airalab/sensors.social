@@ -131,7 +131,11 @@ export default {
     });
     if (this.provider === "remote") {
       const iRemote = setInterval(() => {
-        if (this.providerObj && this.providerObj.connection) {
+        if (
+          this.providerObj &&
+          this.providerObj.connection &&
+          markers.isReadyLayers()
+        ) {
           clearInterval(iRemote);
           this.canHistory = true;
         }
@@ -165,7 +169,7 @@ export default {
       }
     },
     handlerNewPoint(point) {
-      if (!point.model) {
+      if (!point.model || !markers.isReadyLayers()) {
         return;
       }
       point.data = point.data
