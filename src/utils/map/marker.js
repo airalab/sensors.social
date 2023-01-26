@@ -436,8 +436,12 @@ async function addMarkerUser(point) {
 }
 
 export function clear() {
-  markersLayer.clearLayers();
-  pathsLayer.clearLayers();
+  if (markersLayer) {
+    markersLayer.clearLayers();
+  }
+  if (pathsLayer) {
+    pathsLayer.clearLayers();
+  }
   for (const messagesLayer of Object.values(messagesLayers)) {
     if (messagesLayer) {
       messagesLayer.clearLayers();
