@@ -166,22 +166,26 @@ function iconCreateMsg(cluster, type = "text") {
 
 function findMarker(sensor_id) {
   return new Promise((resolve) => {
-    markersLayer.eachLayer((m) => {
-      if (m.options.data.sensor_id === sensor_id) {
-        resolve(m);
-      }
-    });
+    if (markersLayer) {
+      markersLayer.eachLayer((m) => {
+        if (m.options.data.sensor_id === sensor_id) {
+          resolve(m);
+        }
+      });
+    }
     resolve(false);
   });
 }
 
 function findMarkerMoved(sensor_id) {
   return new Promise((resolve) => {
-    moveLayer.eachLayer((m) => {
-      if (m.options.data.sensor_id === sensor_id) {
-        resolve(m);
-      }
-    });
+    if (moveLayer) {
+      moveLayer.eachLayer((m) => {
+        if (m.options.data.sensor_id === sensor_id) {
+          resolve(m);
+        }
+      });
+    }
     resolve(false);
   });
 }
@@ -329,7 +333,11 @@ async function addMarker(point) {
   } else {
     const marker = createMarker(point, colors);
     marker.on("click", handlerClickMarker);
-    markersLayer.addLayer(marker);
+    if (markersLayer) {
+      markersLayer.addLayer(marker);
+    } else {
+      console.log("Not found markersLayer");
+    }
   }
 }
 
@@ -337,13 +345,13 @@ export async function moveMarkerTime(sensor_id, point, stop = false) {
   let marker;
   if (stop) {
     marker = await findMarkerMoved(sensor_id);
-    if (marker) {
+    if (marker && moveLayer && markersLayer) {
       moveLayer.removeLayer(marker);
       markersLayer.addLayer(marker);
     }
   } else {
     marker = await findMarker(sensor_id);
-    if (marker) {
+    if (marker && moveLayer && markersLayer) {
       markersLayer.removeLayer(marker);
       moveLayer.addLayer(marker);
     } else {
@@ -404,14 +412,14 @@ export async function addPointPath(point) {
 
 export async function showPath(sensor_id) {
   const path = paths[sensor_id] || null;
-  if (path) {
+  if (path && pathsLayer) {
     pathsLayer.addLayer(path);
   }
 }
 
 export async function hidePath(sensor_id) {
   const path = paths[sensor_id] || null;
-  if (path && pathsLayer.hasLayer(path)) {
+  if (path && pathsLayer && pathsLayer.hasLayer(path)) {
     pathsLayer.removeLayer(path);
   }
 }
