@@ -39,10 +39,10 @@ const messageTypes = {
   3: "water",
   4: "fire",
   5: "forest",
-  6: "recycle",
-  7: "parking",
-  8: "notif",
-  9: "alert",
+  6: "alert ",
+  7: "notif",
+  8: "recycle",
+  9: "parking",
   42: "gank",
 };
 let messageIconName = {};
@@ -51,14 +51,6 @@ const messagesLayers = Object.values(messageTypes).reduce((result, item) => {
   result[item] = null;
   return result;
 }, {});
-
-function t() {
-  return new Promise((r) => {
-    setTimeout(() => {
-      r();
-    }, 2000);
-  });
-}
 
 export async function init(map, type, cb) {
   for (const index of Object.keys(messageTypes)) {
@@ -73,7 +65,6 @@ export async function init(map, type, cb) {
     }
     messageIconName[messageTypes[index]] = messageIconType[index];
   }
-  await t();
   handlerClickMarker = (event) => {
     if (
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
