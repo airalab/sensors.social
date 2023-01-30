@@ -52,6 +52,14 @@ const messagesLayers = Object.values(messageTypes).reduce((result, item) => {
   return result;
 }, {});
 
+function t() {
+  return new Promise((r) => {
+    setTimeout(() => {
+      r();
+    }, 2000);
+  });
+}
+
 export async function init(map, type, cb) {
   for (const index of Object.keys(messageTypes)) {
     try {
@@ -65,7 +73,7 @@ export async function init(map, type, cb) {
     }
     messageIconName[messageTypes[index]] = messageIconType[index];
   }
-
+  await t();
   handlerClickMarker = (event) => {
     if (
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
