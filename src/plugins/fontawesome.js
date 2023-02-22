@@ -1,5 +1,6 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+  faArrowsDownToLine,
   faArrowUpRightFromSquare,
   faCheck,
   faCircleInfo,
@@ -20,6 +21,9 @@ import {
   faSort,
   faStopwatch,
   faTemperatureHigh,
+  faVial,
+  faVialVirus,
+  faWind,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -46,7 +50,11 @@ library.add(
   faCircleRadiation,
   faSliders,
   faCopy,
-  faCheck
+  faCheck,
+  faWind,
+  faVial,
+  faVialVirus,
+  faArrowsDownToLine
 );
 
 export function useIcons(app) {

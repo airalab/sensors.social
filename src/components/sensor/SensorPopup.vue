@@ -128,14 +128,20 @@ export default {
         measurements[type.toLowerCase()].icon;
     },
     icon: function () {
-      return (type) =>
-        this.hasIcon ? measurements[type.toLowerCase()].icon : "vial";
+      return (type) => {
+        return this.hasIcon(type)
+          ? measurements[type.toLowerCase()].icon
+          : "vial";
+      };
     },
     items() {
       const items = [];
       for (const item of Object.keys(this.last.data)) {
         let scale = null;
-        if (measurements[item.toLowerCase()].colors) {
+        if (
+          measurements[item.toLowerCase()] &&
+          measurements[item.toLowerCase()].colors
+        ) {
           scale = generate(
             measurements[item.toLowerCase()].colors,
             measurements[item.toLowerCase()].range
@@ -150,7 +156,9 @@ export default {
           state: getState(
             scale,
             this.last.data[item],
-            measurements[item.toLowerCase()].states
+            measurements[item.toLowerCase()]
+              ? measurements[item.toLowerCase()].states
+              : undefined
           ),
           color: scale ? getColor(scale, this.last.data[item]) : "",
         });

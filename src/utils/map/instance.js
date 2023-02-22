@@ -40,7 +40,7 @@ export function instanceMap() {
 }
 
 export function init(position, zoom, theme = "light") {
-  map = L.map("map");
+  map = L.map("map", { minZoom: 3 });
   setTheme(theme);
   map.attributionControl.setPrefix("");
   map.setView(position, zoom);
