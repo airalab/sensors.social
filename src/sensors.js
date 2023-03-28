@@ -5,6 +5,7 @@ import ekovoz from "./assets/ekovoz.png";
 import panorama from "./assets/panorama.png";
 import qvantorium from "./assets/qvantorium.jpg";
 import radiation from "./assets/radiation.jpg";
+import radiation from "./assets/sun.png";
 
 export default {
   "7e071fd9b023ed8f18458a73613a0834f6220bd5cc50357ba3493c6040a9ea8c": {
@@ -38,5 +39,8 @@ export default {
   e4871acd155431c63fbbc54b89d015bc17bc5fbe44d5846502f7e58566e24a8e: {
     icon: radiation,
     link: "https://airalab.org/",
+  },
+  62c86fb3712e2c8e3d8a7a79f62c1cb0dbd4ad2980606dbf8fcf96ce9ed46c8d: {
+    icon: sun,
   },
 };
