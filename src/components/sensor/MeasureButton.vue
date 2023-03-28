@@ -68,6 +68,7 @@ export default {
 .sensor-popup__item__wrapper {
   display: flex;
   flex-direction: column;
+  text-transform: none;
   /* padding-top: 2px; */
 }
 
