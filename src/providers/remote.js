@@ -67,6 +67,17 @@ class Provider {
       });
   }
 
+  maxValuesForPeriod(start, end, type) {
+    return api
+      .get(`/max/${start}/${end}/${type}`)
+      .then((result) => {
+        return result.data.result;
+      })
+      .catch(() => {
+        return {};
+      });
+  }
+
   messagesForPeriod(start, end) {
     return api
       .get(`/messages/${start}/${end}`)

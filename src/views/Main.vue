@@ -54,11 +54,12 @@
 </template>
 
 <script>
+import moment from "moment";
+import Loader from "../components/Loader.vue";
+import Map from "../components/Map.vue";
 import ColorfulScale from "../components/colorfulScale/ColorfulScale.vue";
 import Footer from "../components/footer/Footer.vue";
 import Header from "../components/header/Header.vue";
-import Loader from "../components/Loader.vue";
-import Map from "../components/Map.vue";
 import Measures from "../components/measures/Measures.vue";
 import MessagePopup from "../components/message/MessagePopup.vue";
 import SensorPopup from "../components/sensor/SensorPopup.vue";
@@ -157,7 +158,18 @@ export default {
       markers.clear();
       this.providerObj.setStartDate(start);
       this.providerObj.setEndDate(end);
-      const sensors = await this.providerObj.lastValuesForPeriod(start, end);
+      const today = moment().format("YYYY-MM-DD");
+      const startDate = moment.unix(start).format("YYYY-MM-DD");
+      let sensors;
+      if (today === startDate) {
+        sensors = await this.providerObj.lastValuesForPeriod(start, end);
+      } else {
+        sensors = await this.providerObj.maxValuesForPeriod(
+          start,
+          end,
+          this.type
+        );
+      }
       for (const sensor in sensors) {
         for (const item of sensors[sensor]) {
           this.handlerNewPoint(item);
