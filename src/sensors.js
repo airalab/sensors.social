@@ -43,4 +43,7 @@ export default {
   "62c86fb3712e2c8e3d8a7a79f62c1cb0dbd4ad2980606dbf8fcf96ce9ed46c8d": {
     icon: sun,
   },
+  "850aef6dbc5f015c58c02bcc829301c5b47b1cf8dd81121e6d2e52d91a85b176": {
+    icon: radiation
+  }
 };
