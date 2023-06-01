@@ -22,9 +22,17 @@
             <font-awesome-icon icon="fa-solid fa-location-dot" />
             {{ address.address.join(", ") }}
           </span>
-          <a class="copy" :href="linkSensor" target="_blank">
-            <font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" />
-          </a>
+          <span>
+            <a class="copy" :href="linkSensor" target="_blank">
+              <font-awesome-icon
+                icon="fa-solid fa-arrow-up-right-from-square"
+              />
+            </a>
+          </span>
+
+          <span v-if="link">
+            <a :href="link" target="_blank">{{ link }}</a>
+          </span>
 
           <div v-if="model === 3" class="sensors-switcher">
             <input type="checkbox" id="realtime" v-model="isShowPath" />
