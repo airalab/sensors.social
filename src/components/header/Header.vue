@@ -11,6 +11,7 @@
           <select v-model="locale">
             <option value="en">English</option>
             <option value="ru">Русский</option>
+            <option value="el">Ελληνικά</option>
           </select>
           <font-awesome-icon icon="fa-solid fa-sort" />
         </div>
