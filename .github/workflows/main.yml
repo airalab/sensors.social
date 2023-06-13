@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+permissions:
+  contents: write
 
 jobs:
   deploy:
@@ -35,7 +37,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          cname: sensors.robonomics.network
 
       - name: Set outputs
         id: vars
