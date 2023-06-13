@@ -1,53 +1,49 @@
 <template>
-  <div id="app">
-    <!-- <Loader v-if="isLoader" /> -->
+  <div class="sensors-screen">
+    <div class="sensors-screen-layers">
+      <div class="sensors-screen-layers--center">
+        <Header :localeCurrent="$i18n.locale" :city="city" />
 
-    <div class="sensors-screen">
-      <div class="sensors-screen-layers">
-        <div class="sensors-screen-layers--center">
-          <Header :localeCurrent="$i18n.locale" :city="city" />
+        <div class="container sensors-container">
+          <Measures :current="type.toLowerCase()" />
+          <ColorfulScale />
 
-          <div class="container sensors-container">
-            <Measures :current="type.toLowerCase()" />
-            <ColorfulScale />
-
-            <template v-if="point">
-              <MessagePopup
-                v-if="point.data.message"
-                @close="handlerClose"
-                :data="point.data"
-              />
-              <SensorPopup
-                v-else
-                :sender="point.sender"
-                :sensor_id="point.sensor_id"
-                :log="point.log"
-                :model="point.model"
-                :address="point.address"
-                :geo="point.geo"
-                :type="type.toLowerCase()"
-                @modal="handlerModal"
-                @close="handlerClose"
-              />
-            </template>
-
-            <Map
-              :type="type"
-              :zoom="zoom"
-              :lat="lat"
-              :lng="lng"
-              :availableWind="provider === 'ipfs'"
-              @clickMarker="handlerClick"
-              @city="handlerChangeCity"
+          <template v-if="point">
+            <MessagePopup
+              v-if="point.data.message"
+              @close="handlerClose"
+              :data="point.data"
             />
-          </div>
+            <SensorPopup
+              v-else
+              :sender="point.sender"
+              :sensor_id="point.sensor_id"
+              :log="point.log"
+              :model="point.model"
+              :address="point.address"
+              :geo="point.geo"
+              :type="type.toLowerCase()"
+              @modal="handlerModal"
+              @close="handlerClose"
+            />
+          </template>
 
-          <Footer
-            :currentProvider="provider"
-            :canHistory="canHistory"
-            @history="handlerHistory"
+          <Map
+            :type="type"
+            :zoom="zoom"
+            :lat="lat"
+            :lng="lng"
+            :availableWind="provider === 'ipfs'"
+            @clickMarker="handlerClick"
+            @city="handlerChangeCity"
           />
         </div>
+
+        <Footer
+          :currentProvider="provider"
+          :canHistory="canHistory"
+          @history="handlerHistory"
+        />
       </div>
     </div>
   </div>
