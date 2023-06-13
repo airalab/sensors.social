@@ -55,6 +55,12 @@ li, dd {
   overflow: hidden;
 }
 
+.dark select {
+  color: var(--color-blue) !important;
+}
+
+select { color-scheme: light }
+
 /* SELECT */
 .sensors-select {
   display: inline-block;
