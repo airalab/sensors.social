@@ -2,8 +2,8 @@ import Queue from "js-queue";
 import L from "leaflet";
 import "leaflet-arrowheads";
 import "leaflet.markercluster";
-import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
 import config from "../../config";
 import sensors from "../../sensors";
 import generate, {
@@ -227,6 +227,14 @@ function createIconArrow(dir, speed, color) {
   });
 }
 
+function iconCreateCircle(colors) {
+  return new L.DivIcon({
+    html: `<div class='marker-cluster-circle' style='color:${colors.border};background-color: rgba(${colors.rgb}, 0.7);border-color: ${colors.border};'></div>`,
+    className: "marker-cluster",
+    iconSize: new L.Point(40, 40),
+  });
+}
+
 function createMarkerBrand(coord, data, colors) {
   return L.marker(new L.LatLng(coord[0], coord[1]), {
     icon: createIconBrand(data.sensor_id, colors.rgb),
@@ -244,16 +252,21 @@ function createMarkerArrow(coord, data, colors) {
 }
 
 function createMarkerCircle(coord, data, colors) {
-  return L.circleMarker(new L.LatLng(coord[0], coord[1]), {
-    radius: 15,
-    fillColor: colors.basic,
-    color: colors.border,
-    weight: 2,
-    // opacity: 0.7,
-    fillOpacity: 0.7,
+  return L.marker(new L.LatLng(coord[0], coord[1]), {
+    icon: iconCreateCircle(colors),
     data: data,
     typeMarker: "circle",
   });
+  // return L.circleMarker(new L.LatLng(coord[0], coord[1]), {
+  //   radius: 15,
+  //   fillColor: colors.basic,
+  //   color: colors.border,
+  //   weight: 2,
+  //   // opacity: 0.7,
+  //   fillOpacity: 0.7,
+  //   data: data,
+  //   typeMarker: "circle",
+  // });
 }
 
 function createMarkerUser(coord, data) {
