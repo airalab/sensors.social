@@ -66,6 +66,8 @@ import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
 import { getMapPosiotion } from "../utils/utils";
 
+import { useStore } from "@/store";
+
 const mapPosition = getMapPosiotion();
 
 export default {
@@ -99,6 +101,13 @@ export default {
     Loader,
     MessagePopup,
   },
+
+  metaInfo() {
+    return {
+      meta: { name: "color-scheme", content: "dark light" },
+    };
+  },
+
   data() {
     return {
       providerReady: false,
@@ -109,6 +118,7 @@ export default {
       city: "",
       isShowInfo: false,
       providerObj: null,
+      store: useStore(),
     };
   },
   computed: {
@@ -138,7 +148,22 @@ export default {
         }
       }, 1000);
     }
+
+    this.$nextTick(() => {
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", () => {
+          if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            localStorage.setItem("theme", "light");
+            this.store.toggleTheme();
+          } else {
+            localStorage.setItem("theme", "dark");
+            this.store.toggleTheme();
+          }
+        });
+    });
   },
+
   watch: {
     point(_, oldValue) {
       if (oldValue) {
