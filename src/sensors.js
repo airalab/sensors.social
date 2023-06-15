@@ -45,5 +45,8 @@ export default {
   },
   "850aef6dbc5f015c58c02bcc829301c5b47b1cf8dd81121e6d2e52d91a85b176": {
     icon: radiation
+  },
+  "6cbea54e4f1ca357ed492cf852e85ea567cf5fae829c368c665e017e114a39a8": {
+    icon: radiation
   }
 };
