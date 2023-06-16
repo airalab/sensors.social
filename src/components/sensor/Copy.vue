@@ -11,15 +11,13 @@
 
 <script>
 export default {
-  props: ["msg", "title"],
+  props: ["msg", "title", "notify"],
   methods: {
     success() {
-      // this.$notify({
-      //   group: "alert",
-      //   position: "top left",
-      //   title: "Сlipboard",
-      //   text: "Address copied",
-      // });
+      this.$notify({
+        position: "top right",
+        text: this.notify,
+      });
     },
   },
 };
