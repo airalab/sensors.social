@@ -1,6 +1,6 @@
 <template>
   <a
-    class="nowrap"
+    class="nowrap copy"
     v-clipboard:copy="msg"
     v-clipboard:success="success"
     :title="title"
@@ -27,6 +27,6 @@ export default {
 
 <style scoped>
 .copy {
-  cursor: copy;
+  cursor: pointer;
 }
 </style>
