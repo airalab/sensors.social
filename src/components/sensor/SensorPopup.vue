@@ -12,7 +12,7 @@
           <Copy
             :msg="sensor_id"
             :title="`Sensor id: ${sensor_id}`"
-            notify="Sensor id copied"
+            :notify="$t('details.copied')"
           >
             {{ $filters.collapse(sensor_id) }}
           </Copy>

@@ -35,6 +35,7 @@ export default {
       user: "User #",
       photos: "Photos",
       showpath: "Show route",
+      copied: "Sensor id copied",
     },
     history: {
       city: "Locality",
@@ -86,6 +87,7 @@ export default {
       user: "Пользователь #",
       photos: "Фотографии",
       showpath: "Показать маршрут",
+      copied: "Sensor id скопирован",
     },
     history: {
       city: "Населенный пункт",
