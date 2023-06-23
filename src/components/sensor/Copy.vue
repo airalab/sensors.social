@@ -1,6 +1,6 @@
 <template>
   <a
-    class="nowrap"
+    class="nowrap copy"
     v-clipboard:copy="msg"
     v-clipboard:success="success"
     :title="title"
@@ -11,15 +11,13 @@
 
 <script>
 export default {
-  props: ["msg", "title"],
+  props: ["msg", "title", "notify"],
   methods: {
     success() {
-      // this.$notify({
-      //   group: "alert",
-      //   position: "top left",
-      //   title: "Сlipboard",
-      //   text: "Address copied",
-      // });
+      this.$notify({
+        position: "top right",
+        text: this.notify,
+      });
     },
   },
 };
@@ -27,6 +25,6 @@ export default {
 
 <style scoped>
 .copy {
-  cursor: copy;
+  cursor: pointer;
 }
 </style>

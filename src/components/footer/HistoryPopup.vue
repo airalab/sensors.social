@@ -4,9 +4,26 @@
       <label for="location">{{ $t("history.city") }}:</label>
       <div class="sensors-select sensors-select-border">
         <select v-model="city">
-          <option v-for="(item, key) in cities" :value="item" :key="key">
-            {{ item }}
-          </option>
+          <template v-for="(country, key) in Object.keys(cities)" :key="key">
+            <option disabled style="text-transform: lowercase">
+              {{ country }}
+            </option>
+            <template
+              v-for="(state, key2) in Object.keys(cities[country])"
+              :key="key2"
+            >
+              <option disabled style="text-transform: lowercase">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{ state }}
+              </option>
+              <option
+                v-for="(city, key3) in cities[country][state]"
+                :value="city"
+                :key="key3"
+              >
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ city }}
+              </option>
+            </template>
+          </template>
         </select>
         <font-awesome-icon icon="fa-solid fa-sort" />
       </div>
@@ -74,7 +91,7 @@ export default {
       start: moment().subtract(1, "days").format("YYYY-MM-DD"),
       end: moment().format("YYYY-MM-DD"),
       maxDate: moment().format("YYYY-MM-DD"),
-      cities: [],
+      cities: {},
       city: "",
 
       timePeriod: [
@@ -123,7 +140,9 @@ export default {
   async created() {
     const result = await axios(`${config.REMOTE_PROVIDER}api/sensor/cities`);
     this.cities = result.data.result;
-    this.city = this.cities[0];
+    const country = Object.keys(this.cities);
+    const state = Object.keys(this.cities[country[0]]);
+    this.city = this.cities[country[0]][state[0]][0];
   },
 };
 </script>

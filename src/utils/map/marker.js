@@ -303,10 +303,7 @@ function updateMarker(marker, point, colors) {
       createIconArrow(point.data.windang, point.data.windspeed, colors.basic)
     );
   } else {
-    marker.setStyle({
-      fillColor: colors.basic,
-      color: colors.border,
-    });
+    marker.setIcon(iconCreateCircle(colors));
   }
   if (point.model === 3) {
     const coord = [point.geo.lat, point.geo.lng];

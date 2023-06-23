@@ -9,7 +9,11 @@
       <div class="sensor-popup__header-wrapper">
         <h2>
           {{ $t("details.sensor") }}
-          <Copy :msg="sensor_id" :title="`Sensor id: ${sensor_id}`">
+          <Copy
+            :msg="sensor_id"
+            :title="`Sensor id: ${sensor_id}`"
+            :notify="$t('details.copied')"
+          >
             {{ $filters.collapse(sensor_id) }}
           </Copy>
         </h2>

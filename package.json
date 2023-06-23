@@ -12,6 +12,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/vue-fontawesome": "^3.0.1",
+    "@kyvg/vue3-notification": "^2.9.1",
     "axios": "^1.1.2",
     "buffer": "^6.0.3",
     "chroma-js": "^2.4.2",
