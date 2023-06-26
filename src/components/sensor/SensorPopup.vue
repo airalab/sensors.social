@@ -73,6 +73,10 @@
       <div class="text-tip">
         <span v-if="isLocationRussion">{{ $t("notice_with_fz") }}</span>
         <span v-else>{{ $t("notice_without_fz") }}</span>
+
+        <h3 v-if="donated_by" style="margin-top: 20px; text-align: right">
+          {{ donated_by }}
+        </h3>
       </div>
     </div>
 
@@ -100,7 +104,16 @@ import MeasureInfo from "./MeasureInfo.vue";
 
 export default {
   emits: ["close"],
-  props: ["sender", "sensor_id", "log", "model", "address", "type", "geo"],
+  props: [
+    "sender",
+    "sensor_id",
+    "log",
+    "model",
+    "address",
+    "type",
+    "geo",
+    "donated_by",
+  ],
   components: { MeasureButton, MeasureInfo, Chart, Copy },
   data() {
     return {

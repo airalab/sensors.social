@@ -22,6 +22,7 @@
               :model="point.model"
               :address="point.address"
               :geo="point.geo"
+              :donated_by="point.donated_by"
               :type="type.toLowerCase()"
               @modal="handlerModal"
               @close="handlerClose"

@@ -97,12 +97,14 @@ class Provider {
                 : measurement[key];
             }
             const [lat, lng] = data.geo.split(",");
+            const donated_by = data.donated_by || undefined;
             const point = {
               sensor_id,
               sender,
               model: data.model,
               geo: { lat, lng },
               data: measurementLowerCase,
+              donated_by,
               timestamp,
             };
             if (
@@ -113,6 +115,8 @@ class Provider {
             this.history[sensor_id].push(point);
 
             cb(point);
+          } else {
+            console.log(sensor_id, data);
           }
         }
       },
