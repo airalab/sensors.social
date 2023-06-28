@@ -26,11 +26,13 @@ permissions:
     contents: write
 ```
 
+### Manage Github Pages
+
 After making modifications to the files, you can deploy your instance of the map by following these steps:
 
 1. Commit and push the changes to your forked repository. 
 2. Wait until the actions have successfully completed.
-3. Go to the `Pages` section of your repository settings.
+3. Go to the `Pages` section of your repository `Settings`.
 4. Enable GitHub Pages by selecting `Deploy from a branch` as the source
 5. Choose the `gh-pages` branch and the `root` folder.
 6. Save the settings, and GitHub Pages will deploy your instance of the map. 
