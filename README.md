@@ -4,9 +4,10 @@ Decentralized Open Sensors Map. Don't forget to your IFPS ID into `src/agents.js
 
 ## Setup your own Map
 
-To deploy your own instance of the map using GitHub Pages, start by forking the [repository](https://github.com/airalab/sensors.robonomics.network)/ and clone it. To successfully deploy the map, you will need to modify certain files:
+To deploy your own instance of the map using GitHub Pages, start by forking the [repository](https://github.com/airalab/sensors.robonomics.network) and clone it. To enable GitHub Actions, go to the repository page, click on the `Actions` tab, and set up a workflow if you haven't done so already.
+To successfully deploy the map, you will need to modify certain files:
 
-### Option 1: you don't have CNAME
+### Option 1: you don't have Domain
 
 1. In `.github/workflows/main.yaml` remove `cname: sensors.robonomics.network`.
 2.  Add the following code right below `runs-on: ubuntu-latest` in `.github/workflows/main.yaml`: 
@@ -16,7 +17,7 @@ permissions:
 ```
 3. In `vite.config.js` add `base: "/<repository name>/",` to the `defineConfig` object just above the `plugins` section , replacing `<repository_name>` with the name of your fork (default will be `sensors.robonomics.network`)
 
-### Option 2: you have CNAME
+### Option 2: you have Domanin
 
 1. In `.github/workflows/main.yaml` change `cname: sensors.robonomics.network` to your `CNAME`.
 2.  Add the following code right below `runs-on: ubuntu-latest` in `.github/workflows/main.yaml`: 
@@ -25,14 +26,19 @@ permissions:
     contents: write
 ```
 
+### Manage Github Pages
+
 After making modifications to the files, you can deploy your instance of the map by following these steps:
 
 1. Commit and push the changes to your forked repository. 
-2. Go to the `Pages` section of your repository settings.
-3. Enable GitHub Pages by selecting `Deploy from a branch` as the source
-4. Choose the `gh-pages` branch and the `root` folder.
-4. Save the settings, and GitHub Pages will deploy your instance of the map. 
-5. Access it using the provided GitHub Pages URL. 
+2. Wait until the actions have successfully completed.
+3. Go to the `Pages` section of your repository `Settings`.
+4. Enable GitHub Pages by selecting `Deploy from a branch` as the source
+5. Choose the `gh-pages` branch and the `root` folder.
+6. Save the settings, and GitHub Pages will deploy your instance of the map. 
+7. Access it using the provided GitHub Pages URL. 
+
+> If you dont see the GitHub Pages URL try to reload the page.
 
 ## Project setup
 
