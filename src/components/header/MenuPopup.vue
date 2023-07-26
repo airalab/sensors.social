@@ -10,7 +10,7 @@
           <ul class="nav__list">
             <li class="nav__item">
               <a
-                href="https://wiki.robonomics.network/docs/sensors-network-introduction/"
+                href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensor-hardware/"
                 class="nav__link"
                 target="_blank"
                 rel="noreferrer noopener"
