@@ -27,7 +27,7 @@
           </details>
         </div>
 
-        <ThemeSwitcher />
+        <!-- <ThemeSwitcher /> -->
       </div>
     </div>
   </header>
@@ -35,10 +35,10 @@
 
 <script>
 import MenuPopup from "./MenuPopup.vue";
-import ThemeSwitcher from "./ThemeSwitcher.vue";
+// import ThemeSwitcher from "./ThemeSwitcher.vue";
 
 export default {
-  components: { MenuPopup, ThemeSwitcher },
+  components: { MenuPopup /*, ThemeSwitcher*/ },
   props: ["localeCurrent", "city"],
   data() {
     return {
