@@ -131,7 +131,8 @@ export default {
     if (this.provider === "remote") {
       this.providerObj = new providers.Remote(config.REMOTE_PROVIDER);
     } else {
-      this.providerObj = new providers.Ipfs(config.IPFS);
+      this.providerObj = new providers.Libp2p(config.LIBP2P);
+      // this.providerObj = new providers.Ipfs(config.IPFS);
     }
     this.providerObj.ready().then(() => {
       this.providerReady = true;
