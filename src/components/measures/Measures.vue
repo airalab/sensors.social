@@ -58,7 +58,7 @@ export default {
       await this.$router.push({
         name: "main",
         params: {
-          provider: this.$route.params.provider || "ipfs",
+          provider: this.$route.params.provider || "realtime",
           type: this.type,
           zoom: this.$route.params.zoom,
           lat: this.$route.params.lat,

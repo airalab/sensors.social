@@ -28,7 +28,7 @@
             type="date"
             v-model="start"
             :max="maxDate"
-            :disabled="currentProvider == 'ipfs'"
+            :disabled="currentProvider == 'realtime'"
           />
           <Switcher
             id="realtime"
@@ -88,7 +88,7 @@ export default {
       isActive: false,
       isActiveMenu: false,
 
-      realtime: this.currentProvider === "ipfs",
+      realtime: this.currentProvider === "realtime",
       wind: false,
       messages: config.SHOW_MESSAGES,
       start: moment().format("YYYY-MM-DD"),
@@ -112,7 +112,7 @@ export default {
       await this.$router.push({
         name: "main",
         params: {
-          provider: v ? "ipfs" : "remote",
+          provider: v ? "realtime" : "remote",
           type: this.$route.params.type,
           zoom: this.$route.params.zoom,
           lat: this.$route.params.lat,

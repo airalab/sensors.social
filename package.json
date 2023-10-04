@@ -35,7 +35,6 @@
     "leaflet.tilelayer.colorfilter": "^1.2.5",
     "libp2p": "^0.46.11",
     "moment": "^2.29.4",
-    "multiaddr": "^10.0.1",
     "pinia": "^2.0.23",
     "socket.io-client": "^2.3.0",
     "vue": "^3.2.38",

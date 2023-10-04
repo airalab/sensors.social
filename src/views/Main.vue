@@ -34,7 +34,7 @@
             :zoom="zoom"
             :lat="lat"
             :lng="lng"
-            :availableWind="provider === 'ipfs'"
+            :availableWind="provider === 'realtime'"
             @clickMarker="handlerClick"
             @city="handlerChangeCity"
           />
@@ -124,7 +124,9 @@ export default {
   },
   computed: {
     isLoader() {
-      return this.provider === "ipfs" && Object.keys(this.points).length === 0;
+      return (
+        this.provider === "realtime" && Object.keys(this.points).length === 0
+      );
     },
   },
   mounted() {
@@ -132,7 +134,6 @@ export default {
       this.providerObj = new providers.Remote(config.REMOTE_PROVIDER);
     } else {
       this.providerObj = new providers.Libp2p(config.LIBP2P);
-      // this.providerObj = new providers.Ipfs(config.IPFS);
     }
     this.providerObj.ready().then(() => {
       this.providerReady = true;
