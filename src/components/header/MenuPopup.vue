@@ -20,7 +20,7 @@
             </li>
             <li class="nav__item">
               <a
-                href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensor-hardware/"
+                href="https://wiki.robonomics.network/docs/sds-sensor-connect/  "
                 class="nav__link"
                 target="_blank"
                 rel="noreferrer noopener"
