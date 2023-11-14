@@ -4,7 +4,8 @@ export default {
       title: "Blockchain sensors map",
       description:
         "This is a map of independent sensors with different technical characteristics and indicators.",
-      connect: "How to connect",
+      assembly: "DIY: How to assembly sensor",
+      connect: "How to connect sensor",
       issue: "Open issue",
       fork: "Fork map",
       city: {
@@ -56,7 +57,8 @@ export default {
       title: "Карта датчиков на блокчейн",
       description:
         "Это карта независимых датчиков с разными техническими характеристиками и показателями.",
-      connect: "Как подключиться",
+      assembly: "Как собрать датчик",
+      connect: "Как подключить датчик",
       issue: "Сообщить об ошибке",
       fork: "Сделать форк",
       city: {
