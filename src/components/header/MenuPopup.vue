@@ -15,6 +15,16 @@
                 target="_blank"
                 rel="noreferrer noopener"
               >
+                {{ $t("header.assembly") }}
+              </a>
+            </li>
+            <li class="nav__item">
+              <a
+                href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensor-hardware/"
+                class="nav__link"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 {{ $t("header.connect") }}
               </a>
             </li>
