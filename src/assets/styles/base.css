@@ -47,7 +47,7 @@ li, dd {
   background: #A5A5A5; 
 }
 
-#app {
+#app .sensors-screen {
   position: relative;
   width: 100vw;
   height: 100vh;
