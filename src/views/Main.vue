@@ -74,7 +74,7 @@ const mapPosition = getMapPosiotion();
 export default {
   props: {
     provider: {
-      default: "libp2p",
+      default: "realtime",
     },
     type: {
       default: "pm10",
