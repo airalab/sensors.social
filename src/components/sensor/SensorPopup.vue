@@ -214,7 +214,7 @@ export default {
       return this.$router.resolve({
         name: "main",
         params: {
-          provider: this.$route.params.provider || "remote",
+          provider: this.$route.params.provider || config.DEFAUL_TYPE_PROVIDER,
           type: this.$route.params.type || "pm10",
           zoom: this.$route.params.zoom || config.MAP.zoom,
           lat: this.geo.lat,

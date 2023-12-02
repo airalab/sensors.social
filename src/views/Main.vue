@@ -74,7 +74,7 @@ const mapPosition = getMapPosiotion();
 export default {
   props: {
     provider: {
-      default: "realtime",
+      default: config.DEFAUL_TYPE_PROVIDER,
     },
     type: {
       default: "pm10",

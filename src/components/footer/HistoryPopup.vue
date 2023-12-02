@@ -138,11 +138,17 @@ export default {
     },
   },
   async created() {
-    const result = await axios(`${config.REMOTE_PROVIDER}api/sensor/cities`);
-    this.cities = result.data.result;
-    const country = Object.keys(this.cities);
-    const state = Object.keys(this.cities[country[0]]);
-    this.city = this.cities[country[0]][state[0]][0];
+    try {
+      const result = await axios.get(
+        `${config.REMOTE_PROVIDER}api/sensor/cities`
+      );
+      this.cities = result.data.result;
+      const country = Object.keys(this.cities);
+      const state = Object.keys(this.cities[country[0]]);
+      this.city = this.cities[country[0]][state[0]][0];
+    } catch (error) {
+      console.log(error.message);
+    }
   },
 };
 </script>
