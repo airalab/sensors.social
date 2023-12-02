@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { useStore } from "@/store";
 import moment from "moment";
 import Loader from "../components/Loader.vue";
 import Map from "../components/Map.vue";
@@ -66,8 +67,6 @@ import { instanceMap } from "../utils/map/instance";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
 import { getMapPosiotion } from "../utils/utils";
-
-import { useStore } from "@/store";
 
 const mapPosition = getMapPosiotion();
 
