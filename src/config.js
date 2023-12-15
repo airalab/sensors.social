@@ -17,5 +17,5 @@ export default {
     },
   },
   SHOW_MESSAGES: true,
-  DEFAUL_TYPE_PROVIDER: "realtime",
+  DEFAUL_TYPE_PROVIDER: "remote",
 };

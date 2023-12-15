@@ -128,9 +128,26 @@ export default {
       );
     },
   },
-  mounted() {
+  async mounted() {
     if (this.provider === "remote") {
       this.providerObj = new providers.Remote(config.REMOTE_PROVIDER);
+      if (!(await this.providerObj.status())) {
+        window.location.href =
+          window.location.origin +
+          "/" +
+          this.$router.resolve({
+            name: this.$route.name,
+            params: {
+              provider: "realtime",
+              type: this.$route.params.type,
+              zoom: this.$route.params.zoom,
+              lat: this.$route.params.lat,
+              lng: this.$route.params.lng,
+              sensor: this.$route.params.sensor,
+            },
+          }).href;
+        return;
+      }
     } else {
       this.providerObj = new providers.Libp2p(config.LIBP2P);
     }

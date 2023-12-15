@@ -28,6 +28,20 @@ class Provider {
     });
   }
 
+  async status() {
+    try {
+      const result = await axios.get(
+        `${config.REMOTE_PROVIDER}api/sensor/cities`
+      );
+      if (result.status === 200) {
+        return true;
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+    return false;
+  }
+
   init() {
     return new Promise((resolve) => {
       this.socket.on("connect", () => {
