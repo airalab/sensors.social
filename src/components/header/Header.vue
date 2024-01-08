@@ -2,7 +2,9 @@
   <header class="header">
     <div class="container header__container">
       <div class="header__wrapper">
-        <h1 class="title">{{ $t("header.title") }}</h1>
+        <h1 class="title">
+          <router-link to="/">{{ $t("header.title") }}</router-link>
+        </h1>
         <div class="title">{{ city }}</div>
       </div>
 
@@ -70,7 +72,7 @@ export default {
 </script>
 
 <style scoped>
-h1 {
+h1.title > a {
   color: var(--color-middle-gray);
 }
 
