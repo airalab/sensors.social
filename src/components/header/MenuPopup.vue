@@ -48,6 +48,11 @@
                 {{ $t("header.fork") }}
               </a>
             </li>
+            <li class="nav__item">
+              <router-link class="nav__link" :to="{ name: 'privacy-policy' }">
+                {{ $t("header.policy") }}
+              </router-link>
+            </li>
           </ul>
         </div>
       </nav>
