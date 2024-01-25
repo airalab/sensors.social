@@ -1,6 +1,6 @@
 <template>
   <div class="map-wrapper">
-    <div class="map" id="map"></div>
+    <div :class="{ inactive: store.isColored }" class="map" id="map"></div>
   </div>
 </template>
 
@@ -115,6 +115,11 @@ export default {
 .leaflet-bottom {
   bottom: 70px;
 }
+
+#map.inactive {
+  filter: grayscale(100%);
+}
+
 @media screen and (max-width: 680px) {
   .leaflet-bottom {
     bottom: 0px;

@@ -13,8 +13,7 @@ body {
   --color-link: var(--color-blue);
   --color-link-hover: var(--color-green);
 
-  --font-family--black: 'Arial Black', sans-serif;
-  --font-family--normal: 'Arial', sans-serif;
+  --font-family--normal: 'Noto Sans', sans-serif;
   --font-size: 1rem;
 
   --gap: 1rem;

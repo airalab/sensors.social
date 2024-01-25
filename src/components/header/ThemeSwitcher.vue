@@ -6,34 +6,46 @@
       :class="{ dark: store.theme === 'dark' }"
     >
       <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        width="23"
-        height="23"
-        viewBox="0 0 23 23"
       >
-        <g
-          id="Group_42"
-          data-name="Group 42"
-          transform="translate(-1245.324 -10)"
-        >
-          <g
-            id="Ellipse_15"
-            data-name="Ellipse 15"
-            transform="translate(1245.324 10)"
-            fill="none"
-            stroke="#03a5ed"
-            stroke-width="1"
-          >
-            <circle cx="11.5" cy="11.5" r="11.5" stroke="none" />
-            <circle cx="11.5" cy="11.5" r="11" fill="none" />
+        <g id="Group 3">
+          <g id="Group 2">
+            <circle
+              id="Ellipse 2"
+              cx="12"
+              cy="12"
+              r="11"
+              stroke="white"
+              stroke-width="2"
+            />
           </g>
-          <path
-            id="moon-solid"
-            d="M6.376,32a6.39,6.39,0,1,0,4.445,10.972.456.456,0,0,0-.4-.776,5.022,5.022,0,0,1-3.318-9.32.456.456,0,0,0-.188-.85c-.18-.014-.359-.023-.542-.023Z"
-            transform="translate(1251.175 -16.721)"
-            stroke="#03a5ed"
-            stroke-width="1"
-          />
+          <g id="Mask group">
+            <mask
+              id="mask0_9_36"
+              style="mask-type: alpha"
+              maskUnits="userSpaceOnUse"
+              x="4"
+              y="4"
+              width="16"
+              height="16"
+            >
+              <circle id="Ellipse 2_2" cx="12" cy="12" r="8" fill="white" />
+            </mask>
+            <g mask="url(#mask0_9_36)">
+              <rect
+                id="Rectangle 3"
+                x="4"
+                y="4"
+                width="8"
+                height="16"
+                fill="white"
+              />
+            </g>
+          </g>
         </g>
       </svg>
     </button>
@@ -68,6 +80,7 @@ export default {
 <style>
 .theme-switcher {
   margin-top: -1px;
+  margin-right: 10px;
 }
 
 .theme-switcher__btn {
@@ -78,10 +91,20 @@ export default {
 }
 
 .theme-switcher__btn.dark svg circle {
-  fill: var(--color-blue);
+  fill: var(--color-light);
 }
 
-.theme-switcher__btn.dark svg path {
-  stroke: #000;
+.theme-switcher__btn.dark svg mask circle {
+  fill: rgba(255, 255, 255, 0.75);
+}
+
+.header__wrapper--mobile .theme-switcher svg {
+  fill: var(--color-dark);
+}
+
+.header__wrapper--mobile-active .theme-switcher__btn {
+  margin-top: var(--gap);
+  margin-bottom: calc(var(--gap) * 0.5);
+  margin-left: 0;
 }
 </style>
