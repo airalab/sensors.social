@@ -222,13 +222,11 @@ export default {
     addPoint(index, point) {
       this.$refs.chart.chart.series[index].addPoint(point, true, false);
     },
-    // helps toggle active/inactive tab ang graph
+    // helps toggle active/inactive tab and graph
     toggleTabState(item) {
       const measure = this.$refs.chart.chart.series.filter(
         (m) => m.name === item.name
       );
-
-      console.log(measure);
 
       if (this.$refs.chart.chart.series.length) {
         if (
@@ -247,7 +245,6 @@ export default {
           );
         }
 
-        console.log(5);
         if (!this.$refs.chart.chart.series[measure[0].index].visible) {
           this.$refs.chart.chart.series[measure[0].index].show();
         } else {
