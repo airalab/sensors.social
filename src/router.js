@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Main from "./views/Main.vue";
 import PrivacyPolicy from "./views/PrivacyPolicy.vue";
+import AirMeasurements from "./views/AirMeasurements.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -19,6 +20,11 @@ const router = createRouter({
       path: "/privacy-policy/",
       name: "privacy-policy",
       component: PrivacyPolicy,
+    },
+    {
+      path: "/air-measurements/",
+      name: "air-measurements",
+      component: AirMeasurements,
     },
   ],
 });

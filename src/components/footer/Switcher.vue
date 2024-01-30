@@ -43,6 +43,7 @@ export default {
 .sensors-switcher {
   display: inline-block;
   white-space: nowrap;
+  text-transform: none;
 }
 
 .sensors-switcher:not(:last-child) {
@@ -147,17 +148,16 @@ div[data-title]:hover::after {
 }
 
 @media screen and (max-width: 1060px) {
-  .sensors-switcher:not(:last-child) {
-    margin-right: 0;
-    margin-bottom: var(--gap);
-  }
-
   .sensors-dateselect .sensors-switcher label {
     margin-right: 1rem !important;
   }
 }
 
-@media screen and (max-width: 680px) {
+@media screen and (max-width: 940px) {
+  .sensors-switcher:not(last-child) {
+    margin-bottom: var(--gap);
+  }
+
   .switcher-helper {
     display: block;
     font-family: var(--font-family--normal);

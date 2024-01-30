@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { useStore } from "@/store";
 import moment from "moment";
 import { moveMarkerTime } from "../../utils/map/marker";
 import { measurements } from "../../utils/measurement";
@@ -63,11 +64,49 @@ export default {
                   moveMarkerTime(self.sensor_id, point, true);
                 }
               },
+              legendItemClick: function (n) {
+                let name = n;
+
+                if (!n) {
+                  name = self.store.currentActiveMeasure;
+                }
+
+                if (n.target) {
+                  name = n.target.name;
+                  let measure = n.target.name;
+
+                  if (name === "temperature") {
+                    measure = "tmp";
+                  } else if (name === "humidity") {
+                    measure = "hm";
+                  }
+
+                  self.store.selectCurrentActiveMeasure(
+                    measure.toUpperCase(),
+                    true
+                  );
+                }
+
+                if (name) {
+                  if (name === "TMP") {
+                    name = "temperature";
+                  } else if (name === "HM") {
+                    name = "humidity";
+                  }
+
+                  const item = self.series.filter(
+                    (m) => m.name === name.replace(".", "").toLowerCase()
+                  );
+
+                  self.toggleTabState(item[0]);
+                }
+              },
             },
           },
         },
         series: [],
       },
+      store: useStore(),
     };
   },
   computed: {
@@ -110,6 +149,9 @@ export default {
         },
       ];
     },
+    storeMeasures() {
+      return this.store.currentActiveMeasure;
+    },
   },
   mounted() {
     this.fillData();
@@ -146,6 +188,15 @@ export default {
         });
       },
     },
+    // for toggling tabs state
+    storeMeasures: {
+      handler: function () {
+        this.options.plotOptions.series.events.legendItemClick(
+          this.store.currentActiveMeasure
+        );
+      },
+      deep: true,
+    },
   },
   methods: {
     fillData() {
@@ -162,9 +213,44 @@ export default {
         });
       }
       this.options.series = series;
+      if (!this.store.currentActiveMeasure)
+        this.store.selectCurrentActiveMeasure(
+          this.options.series[0].name.toUpperCase(),
+          true
+        );
     },
     addPoint(index, point) {
       this.$refs.chart.chart.series[index].addPoint(point, true, false);
+    },
+    // helps toggle active/inactive tab and graph
+    toggleTabState(item) {
+      const measure = this.$refs.chart.chart.series.filter(
+        (m) => m.name === item.name
+      );
+
+      if (this.$refs.chart.chart.series.length) {
+        if (
+          this.$refs.chart.chart.series[measure[0].index].name === "temperature"
+        ) {
+          this.store.addToggleState("TMP");
+        } else if (
+          this.$refs.chart.chart.series[measure[0].index].name === "humidity"
+        ) {
+          this.store.addToggleState("HM");
+        } else {
+          this.store.addToggleState(
+            this.$refs.chart.chart.series[measure[0].index].name
+              .toUpperCase()
+              .replace(".", "")
+          );
+        }
+
+        if (!this.$refs.chart.chart.series[measure[0].index].visible) {
+          this.$refs.chart.chart.series[measure[0].index].show();
+        } else {
+          this.$refs.chart.chart.series[measure[0].index].hide();
+        }
+      }
     },
   },
 };

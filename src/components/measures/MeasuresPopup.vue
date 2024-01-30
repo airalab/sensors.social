@@ -4,17 +4,8 @@
     class="sensors-panel popup-js container"
     :class="{ active: isActive }"
   >
-    <ul class="measures__list">
-      <MeasureButton
-        v-for="measure in measures"
-        :key="measure"
-        :measure="measure"
-        @select="(value) => (select = value)"
-      />
-    </ul>
-
     <div class="measures__wrapper">
-      <MeasureInfo v-if="measure" :measure="measure" />
+      <MeasureInfo :measure="measure" />
 
       <a
         class="popup__close"
@@ -28,30 +19,68 @@
 </template>
 
 <script>
-import MeasureButton from "./MeasureButton.vue";
 import MeasureInfo from "./MeasureInfo.vue";
 
 export default {
-  components: { MeasureButton, MeasureInfo },
+  components: { MeasureInfo },
 
   props: {
     isActive: {
       type: Boolean,
     },
+    type: {
+      type: String,
+    },
   },
 
   data() {
     return {
-      select: "PM10",
-      measures: ["PM10", "PM2.5", "CO", "NH3", "NO2", "Tmp"],
+      measures: [
+        {
+          id: 0,
+          name: "PM10",
+          description: this.$t("measures.PM10"),
+        },
+        {
+          id: 1,
+          name: "PM2.5",
+          description: this.$t("measures.PM25"),
+        },
+        {
+          id: 2,
+          name: "CO",
+          description: this.$t("measures.CO"),
+        },
+        {
+          id: 3,
+          name: "NH3",
+          description: this.$t("measures.NH3"),
+        },
+        {
+          id: 4,
+          name: "NO2",
+          description: this.$t("measures.NO2"),
+        },
+        {
+          id: 5,
+          name: "Tmp",
+          description: this.$t("measures.TMP"),
+        },
+      ],
     };
   },
   computed: {
     measure() {
-      return {
-        name: this.select,
-        description: this.$t(`measures.${this.select.replace(".", "")}`),
-      };
+      return this.measures.filter((measure) => {
+        if (this.$props.type === "temperature") {
+          return measure.name.toLowerCase() === "tmp";
+        } else {
+          return (
+            measure.name.toLowerCase().replace(".", "") ===
+            this.$props.type.toLowerCase()
+          );
+        }
+      });
     },
   },
 };
@@ -59,10 +88,10 @@ export default {
 
 <style scoped>
 #measures.container {
-  padding-top: calc(var(--gap) * 1.5);
+  padding-top: calc(var(--gap) * 9);
   padding-bottom: 3rem;
-  padding-right: 1rem !important;
-  max-width: 380px;
+  padding-right: 0.7rem !important;
+  min-width: 320px;
   width: 100%;
 }
 
@@ -74,8 +103,20 @@ export default {
 
 .measures__wrapper {
   padding-right: 2rem;
-  height: 230px;
+  height: 308px;
   overflow-y: auto;
+}
+
+.popup__close {
+  font-size: calc(var(--gap) * 1.2);
+  width: 32px;
+  height: 32px;
+  right: calc(var(--gap) * -1.8);
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-light);
 }
 
 @media screen and (max-width: 400px) {
