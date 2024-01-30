@@ -244,6 +244,11 @@ h1.title > a {
   margin-right: var(--gap);
 }
 
+.sensors-select select option {
+  color: var(--color-dark);
+  background-color: var(--color-light);
+}
+
 .header__join {
   margin-top: 2px;
 }
