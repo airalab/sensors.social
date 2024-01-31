@@ -7,26 +7,34 @@ import "leaflet/dist/leaflet.css";
 
 let map;
 const attrs = {
-  // attribution:
-  //   '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+  attribution:
+    '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
 };
 
 const layerMapLight = L.tileLayer.colorFilter(
-  "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&apistyle=s.t:33|p.v:off",
-  // "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  // "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&apistyle=s.t:33|p.v:off",
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     ...attrs,
-    subdomains: ["mt0", "mt1", "mt2", "mt3"],
-    filter: ["grayscale:63%", "bright:74%", "contrast:200%", "saturate:94%"],
+    filter: ["grayscale:50%", "saturate:70%"],
+    // subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    // filter: ["grayscale:63%", "bright:74%", "contrast:200%", "saturate:94%"],
   }
 );
 const layerMapDark = L.tileLayer.colorFilter(
-  "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&apistyle=s.t:33|p.v:off",
-  // "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  // "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&apistyle=s.t:33|p.v:off",
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     ...attrs,
-    subdomains: ["mt0", "mt1", "mt2", "mt3"],
-    filter: ["grayscale:63%", "bright:74%", "contrast:200%", "saturate:94%"],
+    filter: [
+      "invert:100%",
+      "grayscale:100%",
+      "bright:100%",
+      "saturate:0%",
+      "sepia:10%",
+    ],
+    // subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    // filter: ["grayscale:63%", "bright:74%", "contrast:200%", "saturate:94%"],
   }
 );
 
