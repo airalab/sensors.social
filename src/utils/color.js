@@ -1,5 +1,5 @@
 import chroma from "chroma-js";
-import { states as statesDefault } from "./measurement";
+import { states as statesDefault } from "../measurements/tools";
 
 export default function generate(colors, range = [0, 500]) {
   return chroma.scale(colors).classes([...range, range[range.length - 1] + 1]);

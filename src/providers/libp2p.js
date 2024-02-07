@@ -1,5 +1,5 @@
+import converter from "../measurements";
 import { createNode } from "../utils/libp2p";
-import { measurements as converter } from "../utils/measurement";
 import { getAgents } from "../utils/utils";
 
 const topic = "airalab.lighthouse.5.robonomics.eth";
@@ -86,8 +86,8 @@ class Provider {
           const measurementLowerCase = {};
           for (var key in measurement) {
             const name = key.toLowerCase();
-            measurementLowerCase[name] = converter[name]?.calc
-              ? converter[name].calc(measurement[key])
+            measurementLowerCase[name] = converter[name]?.calculate
+              ? converter[name].calculate(measurement[key])
               : measurement[key];
           }
           const [lat, lng] = data.geo.split(",");

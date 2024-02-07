@@ -47,7 +47,6 @@
     <div ref="content" class="sensor-popup--content">
       <template v-if="last">
         <div class="sensor-popup--content-info">
-          <!-- <MeasureInfo v-if="measure" :state="measure" /> -->
           <ul class="sensor-popup--data">
             <MeasureButton
               v-for="item in items"
@@ -95,14 +94,14 @@
 import { useStore } from "@/store";
 import moment from "moment";
 import config from "../../config";
+import measurements from "../../measurements";
+import { toFixed } from "../../measurements/tools";
 import sensors from "../../sensors";
-import generate, { getColor, getState } from "../../utils/color";
+import generate, { getState } from "../../utils/color";
 import { hidePath, showPath } from "../../utils/map/marker";
-import { getStateIcon, measurements, toFixed } from "../../utils/measurement";
 import Chart from "./Chart.vue";
 import Copy from "./Copy.vue";
 import MeasureButton from "./MeasureButton.vue";
-import MeasureInfo from "./MeasureInfo.vue";
 
 export default {
   emits: ["close"],
@@ -116,7 +115,7 @@ export default {
     "geo",
     "donated_by",
   ],
-  components: { MeasureButton, MeasureInfo, Chart, Copy },
+  components: { MeasureButton, Chart, Copy },
   data() {
     return {
       select: "",
@@ -141,15 +140,6 @@ export default {
         measurements[this.type.toLowerCase()].colors,
         measurements[this.type.toLowerCase()].range
       );
-    },
-    state() {
-      if (this.select) {
-        return this.measure.state;
-      }
-      return getState(this.scale, this.last.data[this.type]);
-    },
-    stateIcon() {
-      return getStateIcon(this.state);
     },
     hasIcon() {
       return (type) =>
@@ -180,8 +170,6 @@ export default {
           id: item,
           title: this.$filters.measurementFormat(this.last.data[item], item),
           text: this.$filters.measurement(item),
-          icon: `fa-solid fa-${this.icon(item)}`,
-          info: this.$filters.measurementInfo(item),
           state: getState(
             scale,
             this.last.data[item],
@@ -189,7 +177,9 @@ export default {
               ? measurements[item.toLowerCase()].states
               : undefined
           ),
-          color: scale ? getColor(scale, this.last.data[item]) : "",
+          // icon: `fa-solid fa-${this.icon(item)}`,
+          // info: this.$filters.measurementInfo(item),
+          // color: scale ? getColor(scale, this.last.data[item]) : "",
         });
       }
       return items;

@@ -1,4 +1,5 @@
-import { measurements, toFixed } from "../utils/measurement";
+import measurements from "../measurements";
+import { toFixed } from "../measurements/tools";
 
 export function useFilters(app) {
   app.config.globalProperties.$filters = {
@@ -10,9 +11,9 @@ export function useFilters(app) {
         ? `${toFixed(value)} ${measurements[type.toLowerCase()].unit}`
         : toFixed(value);
     },
-    measurementInfo(type) {
-      return measurements[type.toLowerCase()]?.info || "";
-    },
+    // measurementInfo(type) {
+    //   return measurements[type.toLowerCase()]?.info || "";
+    // },
     collapse(value) {
       if (!value) {
         return "";

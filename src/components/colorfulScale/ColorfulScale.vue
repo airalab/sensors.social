@@ -20,8 +20,8 @@
 
 <script>
 import { useStore } from "@/store";
-import ColorfulScaleItem from "./ColorfulScaleItem.vue";
 import MeasuresPopup from "../measures/MeasuresPopup.vue";
+import ColorfulScaleItem from "./ColorfulScaleItem.vue";
 
 export default {
   components: { ColorfulScaleItem, MeasuresPopup },

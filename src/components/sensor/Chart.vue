@@ -7,8 +7,8 @@
 <script>
 import { useStore } from "@/store";
 import moment from "moment";
+import measurements from "../../measurements";
 import { moveMarkerTime } from "../../utils/map/marker";
-import { measurements } from "../../utils/measurement";
 
 export default {
   props: ["log", "measurement", "sensor_id", "model"],

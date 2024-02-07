@@ -5,6 +5,7 @@ import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import config from "../../config";
+import { getMeasurementByName } from "../../measurements/tools";
 import sensors from "../../sensors";
 import generate, {
   getColor,
@@ -12,7 +13,6 @@ import generate, {
   getColorDarkenRGB,
   getColorRGB,
 } from "../../utils/color";
-import measurement from "../../utils/measurement";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -92,7 +92,7 @@ export async function init(map, type, cb) {
     cb(event.target.options.data);
   };
 
-  const scaleParams = measurement(type);
+  const scaleParams = getMeasurementByName(type);
   scale = generate(scaleParams.colors, scaleParams.range);
 
   markersLayer = new L.MarkerClusterGroup({

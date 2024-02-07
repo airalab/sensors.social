@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { measurements } from "../../utils/measurement";
+import measurements from "../../measurements";
 
 export default {
   props: ["current"],
