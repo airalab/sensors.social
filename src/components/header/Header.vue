@@ -170,21 +170,13 @@ export default {
     },
   },
   mounted() {
+    document.body.querySelectorAll("details").forEach((e) => {
+      e.open = false;
+    });
+
     // Close all opened details on body click
     document.body.onclick = (e) => {
       const current = e.target.closest("details");
-      // const emojis = e.target.closest(".colorful-scale");
-      // const history = e.target.closest(".sensors__history");
-      // const mobile = e.target.closest(".mobile");
-      // const footerMenu = e.target.closest(".footer__mobile-menu");
-
-      // // popups
-      // const sensorPopup = document.querySelector(".sensor-popup");
-      // const historyPopup = document.querySelector("#history");
-      // const footerMobilePopup = document.querySelector(
-      //   ".sensors-switchers__wrapper"
-      // );
-      // const measures = document.querySelector("#measures");
 
       if (this.allDetailsClose && this.curr && !current) {
         this.curr = "";
