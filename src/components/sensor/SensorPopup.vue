@@ -204,7 +204,7 @@ export default {
       return value.slice(0, 6) + "..." + value.slice(-4);
     },
     linkSensor: function () {
-      return this.$router.resolve({
+      const route = this.$router.resolve({
         name: "main",
         params: {
           provider: this.$route.params.provider || config.DEFAUL_TYPE_PROVIDER,
@@ -214,7 +214,8 @@ export default {
           lng: this.geo.lng,
           sensor: this.sensor_id,
         },
-      }).href;
+      });
+      return new URL(route.href, window.location.origin).href;
     },
     link: function () {
       return sensors[this.sensor_id] ? sensors[this.sensor_id].link : "";
