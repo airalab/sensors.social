@@ -193,16 +193,41 @@ export default {
   ru: {
     header: {
       title: "Карта датчиков на блокчейн",
-      description:
-        "Это карта независимых датчиков с разными техническими характеристиками и показателями.",
-      assembly: "Как собрать датчик",
+      subtitleAbout: "About",
+      description1:
+        "Это карта независимых датчиков с разными техническими характеристиками и показателями",
+      description2:
+        ", without any beneficiaries. It offers two distinct layers of decentralization at your choise: peer-to-peer connectivity for direct access to sensor data, and the federative concept for accumulating sensor data and displaying measurement history. For more information, please visit the following",
+      descriptionLink1: "free will of individuals",
+      descriptionLink2: "link",
+      subtitleSupport: "Support",
+      create: "How to  create your own map",
       connect: "Как подключить датчик",
-      issue: "Сообщить об ошибке",
-      fork: "Сделать форк",
+      fork: "GitHub repository",
       city: {
-        togliatti: "Тольятти",
+        togliatti: "Togliatti",
       },
+      subtitleOther: "Other links",
       policy: "Политика конфиденциальности",
+      measurements: "Air measurements information",
+      subtitleJoin: "Add your sensor on this map",
+      description3: "You can",
+      description4:
+        "your own sensor using components available on the free market. Follow",
+      description5:
+        "provided to connect your sensor to the map. We welcome your participation and look forward to expanding our community together. Join us today!",
+      descriptionLink3: "assemble",
+      descriptionLink4: "the instructions",
+      subtitleAdditionalSupport: "Additional support",
+      assembly: "Как собрать датчик (YouTube видео)",
+      additionalSupportText:
+        "Ask any questions about map using GitHub issues in",
+      additionalSupportLink: "core repository",
+      subtitleFork: "Create your own map",
+      description6:
+        "Feel free to fork the GitHub repository of this map and deploy it on any domain of your choice. With this flexibility, you have the option to display all sensors or set up your own customized service. Take control and make it your own!",
+      descriptionLink5: "GitHub repository",
+      descriptionLink6: "Instructions",
     },
     measures: {
       pollutionScale: "Шкала загрязнения",

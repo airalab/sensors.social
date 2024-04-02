@@ -374,6 +374,7 @@ input {
   margin: 0 0.4rem 0 1.2rem
 }
 
+
 @media screen and (max-width: 1250px) {
 
   .sensors-panel--bottom {
@@ -388,6 +389,11 @@ input {
   .sensors-dateselect .sensors-switcher label {
     margin: 0;
   }
+
+  /* geo location */
+  .leaflet-right .leaflet-control {
+    margin-top: 50px;
+  }
 }
 
 @media screen and (max-width: 600px) { 
@@ -400,6 +406,14 @@ input {
   }
 }
 /* end of DATE SELECT */
+
+
+@media screen and (max-width: 450px) {
+  /* geo location */
+  .leaflet-right .leaflet-control {
+    margin-bottom: 60px;
+  }
+}
 
 
 /* ANIMATION */

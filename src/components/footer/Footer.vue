@@ -373,7 +373,7 @@ export default {
     position: absolute;
     bottom: var(--gap);
     right: var(--gap);
-    min-height: 220px;
+    min-height: 260px;
     flex-direction: column;
     align-items: flex-start;
     padding: calc(var(--gap) * 1) calc(var(--gap) * 2);

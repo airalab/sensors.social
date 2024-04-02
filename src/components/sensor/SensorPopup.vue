@@ -272,7 +272,8 @@ h2 {
 
 .sensor-popup.popup-js {
   padding-right: 0 !important;
-  background-color: var(--color-light);
+  color: #000;
+  background-color: #fff;
 }
 
 .sensor-popup.container {
@@ -292,8 +293,8 @@ h2 {
   align-items: center;
   justify-content: center;
   font-size: var(--font-size);
-  background-color: var(--color-light);
-  color: var(--color-dark);
+  background-color: #fff;
+  color: #000;
 }
 
 /* SENSOR POPUP */
@@ -303,7 +304,7 @@ h2 {
   padding: calc(var(--gap) * 2) var(--gap);
   display: flex;
   align-items: center;
-  color: var(--color-dark);
+  color: #000;
 }
 
 .sensor-popup__header--neutral {
@@ -410,6 +411,7 @@ ul.sensor-popup--data .icon {
   flex-direction: column;
   font-style: normal;
   font-size: calc(var(--font-size) * 0.7);
+  color: #000;
 }
 
 .text-tip a {
@@ -448,7 +450,8 @@ ul.sensor-popup--data .icon {
   }
 
   .sensor-popup .popup__close {
-    right: var(--gap);
+    left: unset;
+    top: -1.2rem;
   }
 
   .sensor-popup__header {
@@ -475,6 +478,12 @@ ul.sensor-popup--data .icon {
 
   ul.sensor-popup--data {
     gap: calc(var(--gap) * 0.3);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sensor-address {
+    max-width: 160px;
   }
 }
 </style>
