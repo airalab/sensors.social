@@ -14,13 +14,11 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}"],
         cleanupOutdatedCaches: false,
-        maximumFileSizeToCacheInBytes: 9000000,
       },
       manifest: {
-        name: "Decentralized Sensors Network - map of IoT sensors connected to Web3",
-        short_name: "Decentralized Sensors Network",
-        description:
-          "Robonomics team invite you to use new internet technologies for your IoT devices. This map is open source project with aim to present example of using ipfs, ethereum and polkadot tech for Smart cities applications developers",
+        name: "Robonomics Sensors",
+        short_name: "Sensors map",
+        description: "Decentralized opensource sensors air monitoring map",
         theme_color: "#333",
         background_color: "#333",
         display: "standalone",
