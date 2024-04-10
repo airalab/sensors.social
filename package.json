@@ -37,6 +37,7 @@
     "moment": "^2.29.4",
     "pinia": "^2.0.23",
     "socket.io-client": "^2.3.0",
+    "vite-plugin-mkcert": "^1.17.5",
     "vite-plugin-pwa": "^0.19.7",
     "vue": "^3.2.38",
     "vue-highcharts": "^0.2.0",

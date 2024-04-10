@@ -151,6 +151,7 @@ export default {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  color: var(--color-dark);
 }
 
 .privacy-policy h1 {

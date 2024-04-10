@@ -11,7 +11,7 @@ import measurements from "../../measurements";
 import { moveMarkerTime } from "../../utils/map/marker";
 
 export default {
-  props: ["log", "measurement", "sensor_id", "model"],
+  props: ["log", "measurement", "sensor_id", "model", "type"],
   data() {
     const self = this;
     return {
@@ -120,10 +120,8 @@ export default {
           series.push({
             visible: measurement === this.measurement,
             name: measurement,
-            color:
-              measurements[measurement] && measurements[measurement].chartColor
-                ? measurements[measurement].chartColor
-                : "#e8b738",
+            // color: "#000",
+            zones: measurements[measurement.toLowerCase()].zones,
             lineWidth: 1,
             data: [],
             options: {
@@ -213,11 +211,21 @@ export default {
         });
       }
       this.options.series = series;
-      if (!this.store.currentActiveMeasure)
+      if (!this.store.currentActiveMeasure && !this.$props.type)
         this.store.selectCurrentActiveMeasure(
           this.options.series[0].name.toUpperCase(),
           true
         );
+
+      if (!this.store.currentActiveMeasure && this.$props.type) {
+        let measure = this.$props.type;
+        if (this.$props.type === "temperature") {
+          measure = "tmp";
+        } else if (this.$props.type === "humidity") {
+          measure = "hm";
+        }
+        this.store.selectCurrentActiveMeasure(measure.toUpperCase(), true);
+      }
     },
     addPoint(index, point) {
       this.$refs.chart.chart.series[index].addPoint(point, true, false);
@@ -255,3 +263,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.highcharts-legend-item path {
+  fill: #000 !important;
+}
+</style>

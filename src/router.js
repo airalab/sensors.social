@@ -5,6 +5,11 @@ import AirMeasurements from "./views/AirMeasurements.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
+  scrollBehavior(to) {
+    if (to.hash) {
+      return { el: to.hash, top: 30 };
+    }
+  },
   routes: [
     {
       path: "/:provider?/:type?/:zoom?/:lat?/:lng?/:sensor?",

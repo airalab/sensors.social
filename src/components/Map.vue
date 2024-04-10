@@ -120,6 +120,10 @@ export default {
   filter: grayscale(100%);
 }
 
+.leaflet-control-attribution.leaflet-control {
+  font-size: calc(var(--font-size) * 0.5);
+}
+
 @media screen and (max-width: 680px) {
   .leaflet-bottom {
     bottom: 0px;

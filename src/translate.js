@@ -28,7 +28,7 @@ export default {
       descriptionLink3: "assemble",
       descriptionLink4: "the instructions",
       subtitleAdditionalSupport: "Additional support",
-      assembly: "Assembling your sensor (YouTube video)",
+      assembly: "YouTube video guide",
       additionalSupportText:
         "Ask any questions about map using GitHub issues in",
       additionalSupportLink: "core repository",
@@ -37,6 +37,7 @@ export default {
         "Feel free to fork the GitHub repository of this map and deploy it on any domain of your choice. With this flexibility, you have the option to display all sensors or set up your own customized service. Take control and make it your own!",
       descriptionLink5: "GitHub repository",
       descriptionLink6: "Instructions",
+      bookmarkTitle: "Your bookmarks",
     },
     measures: {
       pollutionScale: "Pollution scale",
@@ -60,13 +61,11 @@ export default {
       },
       PM25: "PM 2.5 is atmospheric particles with a size of up to 2.5 micrometers, which include dust, soot, and smoke. They can be harmful to health, causing breathing problems, allergies, and cardiovascular diseases. Sources of PM 2.5 include industry, transportation, and household emissions. Monitoring and reducing their levels are important for health and clean air.",
       pollutionScalePM25: {
-        1: "0-12 µg/m³: Very good",
-        2: "13-35 µg/m³: Good",
-        3: "36-53 µg/m³: Satisfactory",
-        4: "54-70 µg/m³: Unsatisfactory",
-        5: "71-150 µg/m³: Poor (may be harmful for sensitive groups)",
-        6: "151-250 µg/m³: Very poor (poses a health risk)",
-        7: "251 µg/m³ and above: Unacceptable (emergency measures to protect health)",
+        1: "0-35 µg/m³: Good",
+        2: "35-70 µg/m³: Satisfyingly",
+        3: "70-150 µg/m³: Poor",
+        4: "151-250 µg/m³: Very poor",
+        5: "251 µg/m³ and above: Unacceptable",
       },
       recsPM25Text:
         "In case of elevated levels of PM 2.5, it is recommended to take the following measures:",
@@ -81,10 +80,10 @@ export default {
       pollutionScaleCOText:
         "The scale of CO pollution levels can be as follows:",
       pollutionScaleCO: {
-        1: "0-2 mg/m³: Low pollution level - air quality is considered good and safe for most people.",
-        2: "2-4 mg/m³: Moderate pollution level - may cause some discomfort for sensitive groups of people.",
-        3: "4-14 mg/m³: High pollution level - can have a negative impact on health, especially for individuals with respiratory problems.",
-        4: "14 mg/m³ and above: Very high pollution level - poses a serious health threat and may cause poisoning.",
+        1: "0-2 mg/m³: Low pollution level",
+        2: "2-4 mg/m³: Moderate pollution level",
+        3: "4-14 mg/m³: High pollution level",
+        4: "14 mg/m³ and above: Very high pollution level",
       },
       recsCOText:
         "In case of elevated levels of CO outdoors, it is recommended to:",
@@ -99,11 +98,11 @@ export default {
       },
       GO: "Radiation is energy transmitted in the form of particles or waves. Ionizing radiation (high energy) can cause ionization of atoms and molecules, which can be harmful to health. Non-ionizing radiation (low energy) has less impact but can still have various effects on the body. It is important to follow safety recommendations to minimize potential risks from radiation.The radiation scale is measured in units of exposure called 'sieverts' (Sv). Health risks from radiation increase with the dose.",
       pollutionScaleGO: {
-        1: "0.01 µSv/h and below: Background radiation level, usually safe for health.",
-        2: "0.01-0.1 µSv/h: Low radiation level, generally safe for most people.",
+        1: "0.01 µSv/h and below: Background radiation level, usually safe.",
+        2: "0.01-0.1 µSv/h: Low radiation level, generally safe.",
         3: "0.1-1 µSv/h: Moderate radiation level, may be safe for most people, but prolonged exposure may require monitoring.",
-        4: "1-10 µSv/h: Elevated radiation level, caution is needed, especially for prolonged exposure.",
-        5: "10 µSv/h and above: High radiation level, poses a health risk, and additional protective measures may be necessary.",
+        4: "1-10 µSv/h: Elevated radiation level, caution is needed.",
+        5: "10 µSv/h and above: High radiation level, poses a health risk.",
       },
       pollutionScaleGOText:
         "Guidelines considered safe for long-term living typically range around 1-2 µSv/h (1000-2000 nanosieverts per hour) or less. However, short-term outdoor exposure at levels above 10 µSv/h does not pose a significant threat to health. It is important to adhere to recommendations and instructions from local health authorities, especially in areas with increased radiation risk.",
@@ -219,7 +218,7 @@ export default {
       descriptionLink3: "assemble",
       descriptionLink4: "the instructions",
       subtitleAdditionalSupport: "Additional support",
-      assembly: "Как собрать датчик (YouTube видео)",
+      assembly: "YouTube video guide",
       additionalSupportText:
         "Ask any questions about map using GitHub issues in",
       additionalSupportLink: "core repository",
@@ -228,6 +227,7 @@ export default {
         "Feel free to fork the GitHub repository of this map and deploy it on any domain of your choice. With this flexibility, you have the option to display all sensors or set up your own customized service. Take control and make it your own!",
       descriptionLink5: "GitHub repository",
       descriptionLink6: "Instructions",
+      bookmarkTitle: "Your bookmarks",
     },
     measures: {
       pollutionScale: "Шкала загрязнения",
@@ -251,13 +251,11 @@ export default {
       },
       PM25: "PM 2.5 - это атмосферные частицы размером до 2,5 микрометра, которые включают пыль, сажу и дым. Они могут нанести вред здоровью, вызывая проблемы с дыханием, аллергии и сердечно-сосудистые заболевания. Источниками PM 2.5 являются промышленность, автотранспорт и домашние выбросы. Мониторинг и снижение их уровня важны для здоровья и чистого воздуха.",
       pollutionScalePM25: {
-        1: "0-12 мкг/м³: Очень хорошо ",
-        2: "13-35 мкг/м³: Хорошо",
-        3: "36-53 мкг/м³: Удовлетворительно",
-        4: "54-70 мкг/м³: Неудовлетворительно",
-        5: "71-150 мкг/м³: Плохо (может быть вредным для чувствительных групп)",
-        6: "151-250 мкг/м³: Очень плохо  (представляет опасность для здоровья)",
-        7: "251 мкг/м³ + : Неприемлемо  (срочные меры для защиты здоровья)",
+        1: "0-35 мкг/м³: Очень хорошо ",
+        2: "35-70 мкг/м³: Удовлетворительно",
+        3: "70-150 мкг/м³: Плохо",
+        4: "151-250 мкг/м³: Очень плохо",
+        5: "251 мкг/м³ + : Неприемлемо ",
       },
       recsPM25Text:
         "При повышенном уровне PM 2.5 рекомендуется принимать следующие меры:",
@@ -272,10 +270,10 @@ export default {
       pollutionScaleCOText:
         "Шкала уровней загрязнения Co может быть следующей:",
       pollutionScaleCO: {
-        1: "0-2 мг/м³: Низкий уровень загрязнения - качество воздуха считается хорошим и безопасным для большинства людей.",
-        2: "2-4 мг/м³: Умеренный уровень загрязнения - может вызывать некоторый дискомфорт для чувствительных групп людей.",
-        3: "4-14 мг/м³: Высокий уровень загрязнения - может оказывать негативное воздействие на здоровье, особенно для людей с респираторными проблемами.",
-        4: "14 мг/м³ и выше: Очень высокий уровень загрязнения - представляет серьезную угрозу для здоровья и может вызывать отравление.",
+        1: "0-2 мг/м³: Низкий уровень загрязнения",
+        2: "2-4 мг/м³: Умеренный уровень загрязнения",
+        3: "4-14 мг/м³: Высокий уровень загрязнения",
+        4: "14 мг/м³ и выше: Очень высокий уровень загрязнения",
       },
       recsCOText: "При повышенном уровне Co на улице рекомендуется:",
       recsCOText2:
@@ -289,11 +287,11 @@ export default {
       },
       GO: "Радиация - это энергия, передающаяся в виде частиц или волн. Ионизирующая радиация (высокая энергия) может вызывать ионизацию атомов и молекул, что может быть вредным для здоровья. Неионизирующая радиация (низкая энергия) имеет меньшее воздействие, но все же может оказывать различные эффекты на организм. Важно соблюдать рекомендации по безопасности для минимизации потенциальных рисков от радиации. Шкала радиации измеряется в единицах излучения - 'зивертах' (зв). Опасность для здоровья от радиации возрастает с увеличением дозы.",
       pollutionScaleGO: {
-        1: "0.01 мкЗв/ч и менее: Фоновый уровень радиации, обычно безопасный для здоровья.",
-        2: "0.01-0.1 мкЗв/ч: Низкий уровень радиации, обычно безопасный для большинства людей.",
+        1: "0.01 мкЗв/ч и менее: Фоновый уровень радиации, обычно безопасный.",
+        2: "0.01-0.1 мкЗв/ч: Низкий уровень радиации, обычно безопасный.",
         3: "0.1-1 мкЗв/ч: Умеренный уровень радиации, может быть безопасным для большинства людей, но длительное воздействие может потребовать мониторинга.",
-        4: "1-10 мкЗв/ч: Повышенный уровень радиации, требуется осторожность, особенно для длительного пребывания.",
-        5: "10 мкЗв/ч и выше: Высокий уровень радиации, представляет опасность для здоровья, и дополнительные меры защиты могут быть необходимы.",
+        4: "1-10 мкЗв/ч: Повышенный уровень радиации, требуется осторожность.",
+        5: "10 мкЗв/ч и выше: Высокий уровень радиации, представляет опасность для здоровья.",
       },
       pollutionScaleGOText:
         "Нормы, считающиеся безопасными для долгосрочного проживания, обычно составляют около 1-2 мкЗв/ч (1000-2000 нанозиверт в час) или менее. Однако, кратковременное пребывание на улице при уровнях выше 10 мкЗв/ч не представляет большой угрозы для здоровья. Важно придерживаться рекомендаций и указаний местных органов здравоохранения, особенно в зонах повышенного радиационного риска.",
