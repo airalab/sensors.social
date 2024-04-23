@@ -79,7 +79,6 @@ export default {
 
 <style>
 .theme-switcher {
-  margin-top: -1px;
   margin-right: 10px;
 }
 
@@ -99,7 +98,7 @@ export default {
 }
 
 .header__wrapper--mobile .theme-switcher svg {
-  fill: var(--color-dark);
+  fill: transparent;
 }
 
 .header__wrapper--mobile-active .theme-switcher__btn {

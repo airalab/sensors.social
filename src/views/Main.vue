@@ -2,6 +2,7 @@
   <div class="sensors-screen">
     <div class="sensors-screen-layers">
       <div class="sensors-screen-layers--center">
+        <InstallPWA />
         <Header :localeCurrent="$i18n.locale" :city="city" />
 
         <div class="container sensors-container">
@@ -15,6 +16,7 @@
             />
             <SensorPopup
               v-else
+              :currentProvider="provider"
               :sender="point.sender"
               :sensor_id="point.sensor_id"
               :log="point.log"
@@ -58,6 +60,7 @@ import Map from "../components/Map.vue";
 import ColorfulScale from "../components/colorfulScale/ColorfulScale.vue";
 import Footer from "../components/footer/Footer.vue";
 import Header from "../components/header/Header.vue";
+import InstallPWA from "../components/header/InstallPWA.vue";
 import MessagePopup from "../components/message/MessagePopup.vue";
 import SensorPopup from "../components/sensor/SensorPopup.vue";
 import config from "../config";
@@ -98,6 +101,7 @@ export default {
     SensorPopup,
     Loader,
     MessagePopup,
+    InstallPWA,
   },
 
   metaInfo() {

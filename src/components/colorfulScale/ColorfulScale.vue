@@ -1,53 +1,191 @@
 <template>
   <div class="colorful-scale">
     <ColorfulScaleItem
-      v-for="color in colors"
-      :key="color.color"
-      :color="color"
-      @click="open"
-      :isActive="isActive"
+      v-for="measure in measurementsColors"
+      :key="measure.id"
+      :measure="measure"
+      :type="type"
     />
-
-    <div class="measures-popup popup-wrapper">
-      <MeasuresPopup
-        :type="type"
-        :isActive="isActive"
-        @toggleIsActive="close"
-      />
-    </div>
   </div>
 </template>
 
 <script>
 import { useStore } from "@/store";
-import MeasuresPopup from "../measures/MeasuresPopup.vue";
 import ColorfulScaleItem from "./ColorfulScaleItem.vue";
 
 export default {
-  components: { ColorfulScaleItem, MeasuresPopup },
+  components: { ColorfulScaleItem },
 
   props: ["type"],
 
   data() {
     return {
-      colors: [
+      measurementsColors: [
         {
-          color: "green",
-          icon: "smile_icon",
-          text: "Fine",
+          id: 0,
+          name: "PM10",
+          sub: "10",
+          colors: [
+            {
+              color: "green",
+              text: "0-50 µg/m³",
+            },
+            {
+              color: "blue",
+              text: "51-100 µg/m³",
+            },
+            {
+              color: "orange",
+              text: "101-250 µg/m³",
+            },
+            {
+              color: "red",
+              text: "251-350 µg/m³",
+            },
+            {
+              color: "purple",
+              text: "> 351 µg/m³",
+            },
+          ],
         },
         {
-          color: "orange",
-          icon: "neutral_icon",
-          text: "May need attention",
+          id: 1,
+          name: "PM2.5",
+          sub: "2.5",
+          colors: [
+            {
+              color: "green",
+              text: "0-35 µg/m³",
+            },
+            {
+              color: "blue",
+              text: "36-70 µg/m³",
+            },
+            {
+              color: "orange",
+              text: "70-150 µg/m³",
+            },
+            {
+              color: "red",
+              text: "151-250 µg/m³",
+            },
+            {
+              color: "purple",
+              text: "> 251 µg/m³",
+            },
+          ],
         },
         {
-          color: "red",
-          icon: "upset_icon",
-          text: "Be careful",
+          id: 2,
+          name: "CO",
+          colors: [
+            {
+              color: "green",
+              text: "0-2 mg/m³",
+            },
+            {
+              color: "blue",
+              text: "2-4 mg/m³",
+            },
+            {
+              color: "red",
+              text: "4-14 mg/m³",
+            },
+            {
+              color: "purple",
+              text: "> 14 mg/m³",
+            },
+          ],
+        },
+        {
+          id: 3,
+          name: "GO",
+          colors: [
+            {
+              color: "green",
+              text: "0.01 µSv/h and below",
+            },
+            {
+              color: "blue",
+              text: "0.01-0.1 µSv/h",
+            },
+            {
+              color: "orange",
+              text: "0.1-1 µSv/h",
+            },
+            {
+              color: "red",
+              text: "1-10 µSv/h",
+            },
+            {
+              color: "purple",
+              text: "> 10 µSv/h",
+            },
+          ],
+        },
+        {
+          id: 4,
+          name: "Tmp",
+          colors: [
+            {
+              color: "purple",
+              text: "-10°C / 14°F and below ",
+            },
+            {
+              color: "navy",
+              text: "-10 to 0°C / 14 to 32°F",
+            },
+            {
+              color: "blue",
+              text: "0 to 10°C / 32-50°F ",
+            },
+            {
+              color: "green",
+              text: "10 to 25°C / 50-77°F",
+            },
+            {
+              color: "orange",
+              text: "25°C / 77°F and above",
+            },
+          ],
+        },
+        {
+          id: 5,
+          name: "HM",
+          colors: [
+            {
+              color: "red",
+              text: "< 30%",
+            },
+            {
+              color: "orange",
+              text: "30 - 40% ",
+            },
+            {
+              color: "blue",
+              text: "40 - 60%",
+            },
+            {
+              color: "navy",
+              text: "60 - 70%",
+            },
+            {
+              color: "purple",
+              text: "> 70%",
+            },
+          ],
+        },
+        {
+          id: 6,
+          name: "NH3",
+          sub: "3",
+        },
+        {
+          id: 7,
+          name: "NO2",
+          sub: "2",
         },
       ],
-      isActive: false,
       store: useStore(),
     };
   },
@@ -69,24 +207,6 @@ export default {
 .colorful-scale {
   position: relative;
   width: max-content;
-  z-index: 18;
-}
-
-.measures-popup {
-  top: -20px;
-  left: -10px;
-  z-index: 0;
-}
-
-@media screen and (max-width: 680px) {
-}
-
-@media screen and (max-width: 400px) {
-  .measures-popup {
-    top: calc(var(--gap) * 6);
-    left: var(--gap);
-    right: 3rem;
-    position: fixed;
-  }
+  z-index: 7;
 }
 </style>

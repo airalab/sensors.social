@@ -250,7 +250,7 @@ export default {
 
 .footer .sensors-dateselect input[type="date"] {
   margin-right: var(--gap);
-  min-width: 130px;
+  min-width: 135px;
 }
 
 .sensors-dateselect__calendar-button {
@@ -258,7 +258,7 @@ export default {
   top: 8px;
   right: 20px;
   width: 25px;
-  height: 25px;
+  height: 16px;
   background-color: #fff;
   pointer-events: none;
 }
@@ -319,13 +319,18 @@ export default {
     right: var(--gap);
     bottom: 23px;
     z-index: 9;
+    width: 32px;
   }
 
   .measures {
     order: 1;
   }
 
-  .sensors-dateselect__calendar {
+  .footer .sensors-dateselect {
+    margin-right: 20px;
+  }
+
+  .footer .sensors-dateselect__calendar {
     order: 1;
     margin-right: auto;
   }
@@ -335,7 +340,6 @@ export default {
   }
 
   .sensors__history {
-    margin-right: 60px;
     border: 1px solid transparent;
     z-index: 2;
     order: 2;
@@ -411,26 +415,17 @@ export default {
   .footer {
     z-index: 8;
   }
+
+  .footer .sensors__history {
+    padding: 4px 10px;
+  }
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 390px) {
   .footer .sensors-dateselect {
     flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .sensors-dateselect__calendar {
-    margin-right: 0;
-    margin-top: var(--gap);
-    margin-bottom: var(--gap);
-  }
-
-  .footer .sensors-dateselect input[type="date"] {
-    margin-right: 0;
-  }
-
-  .sensors-dateselect__calendar-button {
-    right: 5px;
+    align-items: flex-start;
+    gap: var(--gap);
   }
 }
 </style>

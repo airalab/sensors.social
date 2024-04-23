@@ -4,11 +4,15 @@ body {
   --color-middle-gray: #B6BDC4;
   --color-light-gray: #d5d3d3;
   --color-dark: #000;
-  --color-blue: #03a5ed;
+  --color-blue: #03a5ed; 
+  --color-teal: #12bfcc;
   --color-green: #60bc2a;
   --color-red: #fc0202; 
+  --color-bright-red: #ff4d00;
   --color-yellow: #f5ff00;
   --color-orange: #ff9d00;
+  --color-purple: #7a00da;
+  --color-navy: #2a5cbc;
 
   --color-link: var(--color-blue);
   --color-link-hover: var(--color-green);
@@ -19,6 +23,8 @@ body {
   --gap: 1rem;
 
   --sensor-popup-bg: #ffffff;
+
+  --main-bg: #ffffff;
 }
 
 body.dark {
@@ -26,4 +32,5 @@ body.dark {
   --color-dark: #fff;
 
   --sensor-popup-bg: #5a5a5a;
+  --main-bg:  #2f2f2f;
 }
