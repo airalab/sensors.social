@@ -1,5 +1,8 @@
 <template>
-  <div class="container install-pwa__container" v-if="!isInstalled">
+  <div
+    class="container install-pwa__container"
+    v-if="!isInstalled && isBrowserSupport"
+  >
     <div class="install-pwa__content">
       <img src="@/assets/images/sensors-world-app.png" alt="sensors-cy-app" />
       <div class="install-pwa__text">
@@ -19,6 +22,14 @@ export default {
       isSupported: false,
       db: null,
       isInstalled: "loading",
+      isBrowserSupport: true,
+      browsers: {
+        chrome: false,
+        safari: false,
+        firefox: false,
+        edge: false,
+        opera: false,
+      },
     };
   },
 
@@ -101,6 +112,31 @@ export default {
       this.addDataToDb(true, false);
       this.isInstalled = "removed";
     },
+
+    checkBrowser() {
+      // Get the user-agent string
+      let userAgentString = navigator.userAgent;
+
+      // Detect Chrome
+      this.browsers.chrome = userAgentString.indexOf("Chrome") > -1;
+
+      // Detect Firefox
+      this.browsers.firefox = userAgentString.indexOf("Firefox") > -1;
+
+      // Detect Safari
+      this.browsers.safari = userAgentString.indexOf("Safari") > -1;
+
+      // Discard Safari since it also matches Chrome
+      if (this.browsers.chrome && this.browsers.safari)
+        this.browsers.safari = false;
+
+      // Detect Opera
+      this.browsers.opera = userAgentString.indexOf("OP") > -1;
+
+      // Discard Chrome since it also matches Opera
+      if (this.browsers.chrome && this.browsers.opera)
+        this.browsers.chrome = false;
+    },
   },
 
   async created() {
@@ -119,6 +155,11 @@ export default {
       this.isSupported = true;
     } else {
       this.isSupported = false;
+    }
+
+    this.checkBrowser();
+    if (this.browsers.safari || this.browsers.firefox || this.browsers.opera) {
+      this.isBrowserSupport = false;
     }
   },
 };

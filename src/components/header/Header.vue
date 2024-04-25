@@ -5,7 +5,9 @@
         <h1 class="title">
           <router-link to="/">{{ $t("header.title") }}</router-link>
         </h1>
-        <div class="title title-city">{{ city }}</div>
+        <div class="title title-city">
+          {{ city }}
+        </div>
       </div>
 
       <div class="header__wrapper">
@@ -17,7 +19,10 @@
           <details :open="!helper">
             <summary class="header__about-btn">About</summary>
 
-            <div class="header-popup header-popup--menu popup-wrapper">
+            <div
+              class="header-popup header-popup--menu popup-wrapper"
+              :class="{ 'no-city': !city }"
+            >
               <MenuPopup />
             </div>
           </details>
@@ -29,7 +34,7 @@
             <option value="ru">RU</option>
           </select>
         </div>
-        <ThemeSwitcher />
+        <!-- <ThemeSwitcher /> -->
         <div
           @click="colorMap('bookmark')"
           class="header__bookmark"
@@ -51,7 +56,10 @@
               </svg>
             </summary>
 
-            <div class="header-popup header-popup--bookmark popup-wrapper">
+            <div
+              class="header-popup header-popup--bookmark popup-wrapper"
+              :class="{ 'no-city': !city }"
+            >
               <BookmarkPopup />
             </div>
           </details>
@@ -129,12 +137,21 @@ export default {
     document.body.onclick = (e) => {
       this.closeAllDetails(e);
     };
+
+    this.store.initTheme();
+
+    if (localStorage.theme === "light") {
+      document.querySelector("body").classList.remove("dark");
+    } else {
+      document.querySelector("body").classList.add("dark");
+    }
   },
 };
 </script>
 
 <style scoped>
 h1.title > a {
+  white-space: nowrap;
   color: var(--color-middle-gray);
 }
 
@@ -207,6 +224,7 @@ h1.title > a {
 }
 
 .header__bookmark {
+  margin-left: var(--gap);
   margin-top: 6px;
 }
 
@@ -293,17 +311,39 @@ h1.title > a {
   }
 }
 
-@media screen and (max-width: 376px) {
+@media screen and (max-width: 470px) {
+  .header__container {
+    min-height: 80px;
+    padding-bottom: calc(var(--gap) * 0.5);
+  }
+
+  .header-popup {
+    top: 78px;
+  }
+}
+
+@media screen and (max-width: 428px) {
   .header__container {
     flex-direction: column;
   }
 
   .header-popup {
-    top: 105px;
+    top: 98px;
+  }
+
+  .header-popup.no-city {
+    top: 78px;
   }
 
   .header-popup::after {
     left: calc(100% - 230px);
+  }
+
+  .header__wrapper:first-of-type {
+    margin-right: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
   }
 
   .header-popup--bookmark::after {

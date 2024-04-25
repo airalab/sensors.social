@@ -16,12 +16,31 @@
         >Learn more</router-link
       >
     </div>
-    <router-link
+    <span
       v-for="color in measure.colors"
       :key="color.color"
-      :to="{ name: 'air-measurements', hash: `#${measure.name}` }"
       :class="`colorful-scale__text colorful-scale__text--${color.color}`"
-      >{{ color.text }}</router-link
+      >{{ color.text }}</span
+    >
+  </div>
+  <div
+    class="colorful-scale__wrapper colorful-scale__wrapper--popup"
+    v-if="!type"
+  >
+    <div class="colorful-scale__title">
+      <span>
+        {{ measure.name.replace(".", "").replace(/[0-9]/g, "")
+        }}<sub>{{ measure.sub ?? measure.sub }}</sub> particles
+      </span>
+      <router-link :to="{ name: 'air-measurements', hash: `#${measure.name}` }">
+        More</router-link
+      >
+    </div>
+    <span
+      v-for="color in measure.colors"
+      :key="color.color"
+      :class="`colorful-scale__text colorful-scale__text--${color.color}`"
+      >{{ color.text }}</span
     >
   </div>
 </template>
@@ -57,15 +76,33 @@ export default {
   display: flex;
   flex-direction: column;
   font-weight: 900;
-  padding: calc(var(--gap) * 0.4);
+  padding: calc(var(--gap) * 0.4) calc(var(--gap) * 0.6);
   text-transform: none;
   color: var(--color-dark);
   background-color: var(--color-light);
   border-radius: 3px;
 }
 
+.colorful-scale__wrapper--popup .colorful-scale__title {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.colorful-scale__wrapper--popup {
+  margin-bottom: calc(var(--gap) * 3);
+}
+
+.colorful-scale__wrapper--popup .colorful-scale__title a {
+  font-size: calc(var(--font-size) * 1.1);
+}
+
 .colorful-scale__title a {
+  line-height: 1.2;
   font-size: calc(var(--font-size) * 0.8);
+}
+
+.colorful-scale__title span {
+  line-height: 1;
 }
 
 .colorful-scale__text {
