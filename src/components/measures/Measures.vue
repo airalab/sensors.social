@@ -85,9 +85,27 @@ export default {
   border: transparent;
 }
 
-@media screen and (max-width: 390px) {
+@media screen and (max-width: 640px) {
+  .measures {
+    margin-right: 10px;
+  }
+}
+
+@media screen and (max-width: 460px) {
   .measures .sensors-select select {
     font-size: 12px;
+  }
+
+  .measures {
+    margin-right: 5px;
+    margin-top: 1px;
+  }
+}
+
+@media screen and (max-width: 374px) {
+  .measures .sensors-select {
+    background-image: none;
+    padding-left: 5px;
   }
 }
 </style>

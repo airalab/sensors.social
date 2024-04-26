@@ -337,7 +337,7 @@ h2 {
   top: 52px;
   bottom: 0;
   right: 0;
-  z-index: 14;
+  z-index: 15;
   width: 58%;
 }
 

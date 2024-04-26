@@ -1,6 +1,9 @@
 <template>
   <div id="measuresPopup" class="sensors-panel container">
-    <button class="header__close-popup" @click="$emit('toggleClose')"></button>
+    <button
+      class="footer__close-popup"
+      @click.stop="$emit('toggleClose', $event)"
+    ></button>
     <div class="popup__content">
       <h2>{{ $t("measures.popupTitle") }}</h2>
       <ColorfulScaleItem
@@ -24,6 +27,7 @@ import ColorfulScaleItem from "../colorfulScale/ColorfulScaleItem.vue";
 
 export default {
   components: { ColorfulScaleItem },
+  emits: ["toggleClose"],
 
   data() {
     return {
@@ -235,7 +239,7 @@ export default {
   }
 
   #measuresPopup .popup__content {
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 230px);
   }
 }
 </style>

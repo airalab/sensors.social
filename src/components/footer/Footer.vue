@@ -1,20 +1,20 @@
 <template>
   <footer class="footer">
+    <div class="overlay" :class="{ open: isMeasuresPopupOpen }"></div>
     <div class="container">
-      <a
-        href="javascript:;"
-        class="footer__mobile-menu"
-        @click="toggleMobileMenu"
-        :class="{ active: isActiveMenu }"
-      >
-        <font-awesome-icon icon="fa-solid fa-sliders" />
-      </a>
-
       <div id="dateSelect" class="sensors-dateselect">
+        <a
+          href="javascript:;"
+          class="footer__mobile-menu"
+          @click="toggleMobileMenu"
+          :class="{ active: isActiveMenu }"
+        >
+          <font-awesome-icon icon="fa-solid fa-sliders" />
+        </a>
         <Measures :current="type.toLowerCase()" />
         <div tabindex="0" class="footer-measures-popup">
-          <details :open="!isMeasuresPopupOpen">
-            <summary @click="toggleMeasurePopup">
+          <details ref="details" @toggle="toggleMeasurePopup">
+            <summary>
               <svg
                 width="24"
                 height="24"
@@ -36,7 +36,7 @@
               </svg>
             </summary>
 
-            <div class="popup-wrapper">
+            <div class="popup-wrapper measures-popup-wrapper">
               <MeasuresPopup @toggleClose="toggleMeasurePopup" />
             </div>
           </details>
@@ -227,8 +227,15 @@ export default {
       this.toggleOpen("isActiveMenu");
     },
 
-    toggleMeasurePopup() {
-      this.toggleOpen("isMeasuresPopupOpen");
+    toggleMeasurePopup(e) {
+      if (
+        e.target.classList.contains("footer__close-popup") &&
+        this.$refs.details.open
+      ) {
+        this.$refs.details.open = false;
+      } else {
+        this.toggleOpen("isMeasuresPopupOpen");
+      }
     },
 
     getHistory() {
@@ -285,6 +292,7 @@ export default {
   max-width: 505px;
   width: 100%;
   background-color: var(--color-light);
+  z-index: 16;
 }
 
 .footer-measures-popup summary {
@@ -315,6 +323,11 @@ export default {
 
 .dark .footer-measures-popup details[open] summary svg path {
   fill: #fff;
+}
+
+.footer-measures-popup svg {
+  width: 35px;
+  height: 34px;
 }
 
 .sensors-dateselect__history {
@@ -350,9 +363,9 @@ export default {
   position: relative;
   display: inline-block;
   width: 32px;
-  height: 34px;
+  height: 28px;
   margin-right: 35px;
-  padding: 0.2rem 1.2rem;
+  /* padding: 0.2rem 1.2rem; */
   /* z-index: 11; */
 }
 
@@ -401,16 +414,14 @@ export default {
   }
 
   .footer-measures-popup {
-    order: -1;
-    margin-right: 20px;
+    margin-right: 10px;
   }
 
   .footer .sensors-dateselect {
-    margin-right: 20px;
+    margin-right: 10px;
   }
 
   .footer .sensors-dateselect__calendar {
-    order: 1;
     margin-right: auto;
   }
 
@@ -419,6 +430,7 @@ export default {
   }
 
   .sensors__history {
+    height: 25px;
     border: 1px solid transparent;
     z-index: 2;
     order: 2;
@@ -493,7 +505,7 @@ export default {
 @media screen and (max-width: 640px) {
   .footer-measures-popup .popup-wrapper {
     right: var(--gap);
-    top: calc(var(--gap) * 7);
+    top: calc(var(--gap) * 4);
     max-width: unset;
     width: unset;
   }
@@ -503,36 +515,72 @@ export default {
   .footer {
     z-index: 8;
   }
-
-  .footer .sensors__history {
-    padding: 4px 10px;
-  }
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 460px) {
+  .footer .container {
+    display: flex;
+    align-items: center;
+  }
+
+  .footer__mobile-menu {
+    position: static;
+    order: 2;
+    margin-right: 20px;
+  }
   .footer .sensors-dateselect {
-    flex-direction: column;
+    /* flex-direction: column; */
+    justify-content: center;
     align-items: flex-start;
-    gap: var(--gap);
   }
 
   .footer .sensors__history {
+    position: static;
     padding: 0;
+    margin: 0;
+    margin-right: 10px;
+  }
+
+  .footer .sensors-dateselect__calendar {
+    margin-right: 0;
+    order: 5;
+    align-self: center;
   }
 
   .footer .sensors-dateselect input[type="date"] {
-    padding: 0.2rem 0.6rem;
-    min-width: 150px;
+    padding: 0 0.3rem;
+    margin: 0;
+    min-width: 60px;
+    font-size: 0.8rem;
   }
 
-  .sensors-dateselect__calendar-button {
-    top: 7px;
+  .footer-measures-popup svg {
+    width: 30px;
+    height: 33px;
+    margin-right: 15px;
+  }
+
+  .sensors-dateselect .sensors-dateselect__calendar-button {
+    display: none;
+    top: 3px;
     right: 20px;
+  }
+
+  .sensors-dateselect__calendar-button svg {
+    width: 20px;
+    height: 15px;
   }
 
   .footer__mobile-menu {
     left: calc(var(--gap) * 2 + 32px);
     bottom: 26px;
+  }
+}
+
+@media screen and (max-width: 355px) {
+  .footer .container {
+    transform: scale(0.9);
+    padding-bottom: 0;
   }
 }
 </style>

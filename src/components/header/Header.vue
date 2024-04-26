@@ -114,18 +114,22 @@ export default {
         this.store.removeColorMap();
       }
 
-      document.body.querySelectorAll("details").forEach((event) => {
-        if (
-          event !== current ||
-          e.target.classList.contains("header__close-popup")
-        ) {
-          event.open = false;
-          this.allDetailsClose = true;
-          if (!this.helper) {
-            localStorage.setItem("helper", true);
+      document.body
+        .querySelector(".header")
+        .querySelectorAll("details")
+        .forEach((event) => {
+          if (
+            event !== current ||
+            e.target.classList.contains("header__close-popup") ||
+            e.target.classList.contains("footer__close-popup")
+          ) {
+            event.open = false;
+            this.allDetailsClose = true;
+            if (!this.helper) {
+              localStorage.setItem("helper", true);
+            }
           }
-        }
-      });
+        });
     },
   },
   mounted() {
@@ -276,19 +280,16 @@ h1.title > a {
 
   .header__wrapper h1 {
     margin-right: 0;
-    margin-bottom: 5px;
   }
 
   .header__container {
     position: relative;
     padding-bottom: var(--gap);
-    min-height: 100px;
   }
 
   .header__wrapper:first-of-type {
     flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 5px;
+    justify-content: center;
   }
 
   .menu-link {
@@ -299,11 +300,11 @@ h1.title > a {
     position: absolute;
     max-width: unset;
     width: 100%;
-    top: 88px;
+    top: 60px;
   }
 
   .header-popup::after {
-    left: calc(100% - 180px);
+    left: calc(100% - 160px);
   }
 
   .header-popup--bookmark::after {
@@ -313,41 +314,29 @@ h1.title > a {
 
 @media screen and (max-width: 470px) {
   .header__container {
-    min-height: 80px;
     padding-bottom: calc(var(--gap) * 0.5);
   }
 
   .header-popup {
-    top: 78px;
+    top: 50px;
+  }
+
+  .header-popup::after {
+    left: calc(100% - 160px);
+  }
+
+  .header-popup--bookmark::after {
+    left: calc(100% - 32px);
   }
 }
 
 @media screen and (max-width: 428px) {
-  .header__container {
-    flex-direction: column;
-  }
-
-  .header-popup {
-    top: 98px;
-  }
-
-  .header-popup.no-city {
-    top: 78px;
-  }
-
-  .header-popup::after {
-    left: calc(100% - 230px);
-  }
-
   .header__wrapper:first-of-type {
-    margin-right: 0;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
+    margin-right: 10px;
   }
 
-  .header-popup--bookmark::after {
-    left: calc(100% - 102px);
+  .header__wrapper .title {
+    font-size: 10px;
   }
 }
 </style>
