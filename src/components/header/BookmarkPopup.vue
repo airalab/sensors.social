@@ -10,12 +10,12 @@
           :key="bookmark.id"
         >
           <a target="_blank" :href="bookmark.link">
-            <h4>{{ bookmark.customName }}</h4>
+            <h4 v-if="bookmark.customName">{{ bookmark.customName }}</h4>
             <span>{{ bookmark.address }}</span>
           </a>
         </li>
       </ul>
-      <div v-else>no bookmarks yet...</div>
+      <div class="bookmark__no-bm" v-else>{{ $t("header.noBookmarks") }}</div>
     </div>
   </div>
 </template>
@@ -130,5 +130,9 @@ export default {
 
 .bookmark__item a:hover {
   border-color: var(--color-blue);
+}
+
+.bookmark__no-bm {
+  font-size: calc((var(--font-size) * 0.9));
 }
 </style>

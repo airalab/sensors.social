@@ -100,7 +100,6 @@
           <li class="blue">{{ $t("measures.pollutionScaleGO.2") }}</li>
           <li class="orange">{{ $t("measures.pollutionScaleGO.3") }}</li>
           <li class="red">{{ $t("measures.pollutionScaleGO.4") }}</li>
-          <li class="purple">{{ $t("measures.pollutionScaleGO.5") }}</li>
         </ul>
         <div class="air-measurements__recs">
           <p>{{ $t("measures.pollutionScaleGOText") }}</p>
@@ -177,20 +176,13 @@
     <div class="air-measurements__wrapper air-measurements__header" id="NH3">
       <h2 id="NH3" class="air-measurements__subtitle">NH<sub>3</sub></h2>
       <p class="air-measurements__descr">
-        Ammonia. It is capable of causing toxic pulmonary edema and severe
-        damage to the nervous system when inhaled. The maximum single
-        concentration is 0.2 mg/m3, the average daily concentration is 0.4
-        mg/m3.
+        {{ $t("measures.NH3") }}
       </p>
     </div>
     <div class="air-measurements__wrapper air-measurements__header" id="NO2">
       <h2 id="NO2" class="air-measurements__subtitle">NO<sub>2</sub></h2>
       <p class="air-measurements__descr">
-        Nitrogen oxide. Poisonous red-brown gas with a sharp unpleasant odor or
-        yellowish liquid. The source is the combustion of various types of fuel.
-        NO2 in the atmosphere can cause acid rain and irritation of mucous
-        membranes. The maximum single concentration is 0.085 mg/m3, the average
-        daily concentration is 0.4 mg/m3.
+        {{ $t("measures.NO2") }}
       </p>
     </div>
   </section>
@@ -213,7 +205,7 @@ export default {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  background-color: var(--color-light);
+  background-color: transparent;
   color: var(--color-dark);
 }
 

@@ -63,4 +63,10 @@ export default {
   border: none;
   cursor: pointer;
 }
+
+@media screen and (max-width: 680px) {
+  .copy {
+    font-size: calc(var(--font-size) * 0.8);
+  }
+}
 </style>

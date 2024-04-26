@@ -6,47 +6,23 @@
       <div class="sensor-popup__header-wrapper">
         <div class="sensor-popup--subtitle">
           <div class="sensor-popup__header-top-wrapper">
-            <div class="sensor-address" v-if="address">
-              <span>{{ address.address.join(", ") }}</span>
-              <button
-                @click="shareData"
-                class="share"
-                :class="{ shared: isShared }"
-              ></button>
-            </div>
-            <!-- INPUT FOR CHANGING CHART -->
-            <div class="sensors-dateselect__calendar">
-              <!-- calendar -->
-              <input
-                type="date"
-                v-model="start"
-                :max="maxDate"
-                :disabled="currentProvider == 'realtime'"
-              />
-              <span class="sensors-dateselect__calendar-button">
-                <button type="button">
-                  <svg
-                    width="17"
-                    height="19"
-                    viewBox="0 0 17 19"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clip-path="url(#clip0_23_68)">
-                      <path
-                        d="M4.85714 0C5.52879 0 6.07143 0.530664 6.07143 1.1875V2.375H10.9286V1.1875C10.9286 0.530664 11.4712 0 12.1429 0C12.8145 0 13.3571 0.530664 13.3571 1.1875V2.375H15.1786C16.1842 2.375 17 3.17285 17 4.15625V5.9375H0V4.15625C0 3.17285 0.815848 2.375 1.82143 2.375H3.64286V1.1875C3.64286 0.530664 4.18549 0 4.85714 0ZM0 7.125H17V17.2188C17 18.2021 16.1842 19 15.1786 19H1.82143C0.815848 19 0 18.2021 0 17.2188V7.125ZM2.42857 10.0938V11.2812C2.42857 11.6078 2.70179 11.875 3.03571 11.875H4.25C4.58393 11.875 4.85714 11.6078 4.85714 11.2812V10.0938C4.85714 9.76719 4.58393 9.5 4.25 9.5H3.03571C2.70179 9.5 2.42857 9.76719 2.42857 10.0938ZM7.28571 10.0938V11.2812C7.28571 11.6078 7.55893 11.875 7.89286 11.875H9.10714C9.44107 11.875 9.71429 11.6078 9.71429 11.2812V10.0938C9.71429 9.76719 9.44107 9.5 9.10714 9.5H7.89286C7.55893 9.5 7.28571 9.76719 7.28571 10.0938ZM12.75 9.5C12.4161 9.5 12.1429 9.76719 12.1429 10.0938V11.2812C12.1429 11.6078 12.4161 11.875 12.75 11.875H13.9643C14.2982 11.875 14.5714 11.6078 14.5714 11.2812V10.0938C14.5714 9.76719 14.2982 9.5 13.9643 9.5H12.75ZM2.42857 14.8438V16.0312C2.42857 16.3578 2.70179 16.625 3.03571 16.625H4.25C4.58393 16.625 4.85714 16.3578 4.85714 16.0312V14.8438C4.85714 14.5172 4.58393 14.25 4.25 14.25H3.03571C2.70179 14.25 2.42857 14.5172 2.42857 14.8438ZM7.89286 14.25C7.55893 14.25 7.28571 14.5172 7.28571 14.8438V16.0312C7.28571 16.3578 7.55893 16.625 7.89286 16.625H9.10714C9.44107 16.625 9.71429 16.3578 9.71429 16.0312V14.8438C9.71429 14.5172 9.44107 14.25 9.10714 14.25H7.89286ZM12.1429 14.8438V16.0312C12.1429 16.3578 12.4161 16.625 12.75 16.625H13.9643C14.2982 16.625 14.5714 16.3578 14.5714 16.0312V14.8438C14.5714 14.5172 14.2982 14.25 13.9643 14.25H12.75C12.4161 14.25 12.1429 14.5172 12.1429 14.8438Z"
-                        fill="black"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_23_68">
-                        <rect width="17" height="19" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </button>
-              </span>
-            </div>
+            <Bookmark
+              :address="address.address && address.address.join(', ')"
+              :link="linkSensor"
+            />
+            <button
+              @click="shareData"
+              class="share"
+              :class="{ shared: isShared }"
+            ></button>
+          </div>
+
+          <div class="sensor-address" v-if="address">
+            <span>{{
+              address.address.join(", ").length >= 45
+                ? address.address.join(", ").slice(0, 45) + "..."
+                : address.address.join(", ")
+            }}</span>
           </div>
 
           <span v-if="link">
@@ -54,7 +30,7 @@
           </span>
 
           <span>
-            {{ $t("details.sensor") }}
+            <!-- {{ $t("details.sensor") }} -->
             <Copy
               :msg="sensor_id"
               :title="`Sensor id: ${sensor_id}`"
@@ -63,8 +39,6 @@
               {{ $filters.collapse(sensor_id) }}
             </Copy>
           </span>
-
-          <Bookmark :address="address.address.join(', ')" :link="linkSensor" />
 
           <div v-if="model === 3" class="sensors-switcher">
             <input type="checkbox" id="realtime" v-model="isShowPath" />
@@ -80,6 +54,39 @@
     <div ref="content" class="sensor-popup--content">
       <template v-if="last">
         <div class="sensor-popup--content-info">
+          <!-- INPUT FOR CHANGING CHART -->
+          <!-- calendar -->
+          <!-- <div class="sensors-dateselect__calendar">
+            <input
+              type="date"
+              v-model="start"
+              :max="maxDate"
+              :disabled="currentProvider == 'realtime'"
+            />
+            <span class="sensors-dateselect__calendar-button">
+              <button type="button">
+                <svg
+                  width="17"
+                  height="19"
+                  viewBox="0 0 17 19"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clip-path="url(#clip0_23_68)">
+                    <path
+                      d="M4.85714 0C5.52879 0 6.07143 0.530664 6.07143 1.1875V2.375H10.9286V1.1875C10.9286 0.530664 11.4712 0 12.1429 0C12.8145 0 13.3571 0.530664 13.3571 1.1875V2.375H15.1786C16.1842 2.375 17 3.17285 17 4.15625V5.9375H0V4.15625C0 3.17285 0.815848 2.375 1.82143 2.375H3.64286V1.1875C3.64286 0.530664 4.18549 0 4.85714 0ZM0 7.125H17V17.2188C17 18.2021 16.1842 19 15.1786 19H1.82143C0.815848 19 0 18.2021 0 17.2188V7.125ZM2.42857 10.0938V11.2812C2.42857 11.6078 2.70179 11.875 3.03571 11.875H4.25C4.58393 11.875 4.85714 11.6078 4.85714 11.2812V10.0938C4.85714 9.76719 4.58393 9.5 4.25 9.5H3.03571C2.70179 9.5 2.42857 9.76719 2.42857 10.0938ZM7.28571 10.0938V11.2812C7.28571 11.6078 7.55893 11.875 7.89286 11.875H9.10714C9.44107 11.875 9.71429 11.6078 9.71429 11.2812V10.0938C9.71429 9.76719 9.44107 9.5 9.10714 9.5H7.89286C7.55893 9.5 7.28571 9.76719 7.28571 10.0938ZM12.75 9.5C12.4161 9.5 12.1429 9.76719 12.1429 10.0938V11.2812C12.1429 11.6078 12.4161 11.875 12.75 11.875H13.9643C14.2982 11.875 14.5714 11.6078 14.5714 11.2812V10.0938C14.5714 9.76719 14.2982 9.5 13.9643 9.5H12.75ZM2.42857 14.8438V16.0312C2.42857 16.3578 2.70179 16.625 3.03571 16.625H4.25C4.58393 16.625 4.85714 16.3578 4.85714 16.0312V14.8438C4.85714 14.5172 4.58393 14.25 4.25 14.25H3.03571C2.70179 14.25 2.42857 14.5172 2.42857 14.8438ZM7.89286 14.25C7.55893 14.25 7.28571 14.5172 7.28571 14.8438V16.0312C7.28571 16.3578 7.55893 16.625 7.89286 16.625H9.10714C9.44107 16.625 9.71429 16.3578 9.71429 16.0312V14.8438C9.71429 14.5172 9.44107 14.25 9.10714 14.25H7.89286ZM12.1429 14.8438V16.0312C12.1429 16.3578 12.4161 16.625 12.75 16.625H13.9643C14.2982 16.625 14.5714 16.3578 14.5714 16.0312V14.8438C14.5714 14.5172 14.2982 14.25 13.9643 14.25H12.75C12.4161 14.25 12.1429 14.5172 12.1429 14.8438Z"
+                      fill="black"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_23_68">
+                      <rect width="17" height="19" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </button>
+            </span>
+          </div> -->
           <ul class="sensor-popup--data">
             <MeasureButton
               v-for="item in items"
@@ -327,7 +334,7 @@ h2 {
 
 .sensors-panel {
   position: absolute;
-  top: 40px;
+  top: 52px;
   bottom: 0;
   right: 0;
   z-index: 14;
@@ -338,6 +345,7 @@ h2 {
   padding-right: 0 !important;
   color: #000;
   background-color: #fff;
+  border-radius: 0;
 }
 
 .sensor-popup.container {
@@ -360,8 +368,6 @@ h2 {
   background-color: #fff;
   color: #000;
 }
-
-/* SENSOR POPUP */
 
 .sensor-popup__header {
   min-height: 110px;
@@ -405,13 +411,15 @@ h2 {
 }
 
 .sensor-address {
-  display: inline-block;
+  display: flex;
+  align-items: center;
   margin-bottom: calc(var(--gap) * 0.5);
-  font-weight: 700;
+  font-weight: 400;
   margin-right: auto;
 }
 
 .share {
+  margin-right: 10px;
   width: 16px;
   height: 22px;
   padding: calc(var(--gap) * 0.3);
@@ -492,6 +500,16 @@ ul.sensor-popup--data .icon {
   width: 100%;
 }
 
+.sensor-popup--content-info {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.sensor-popup--content-info .sensors-dateselect__calendar {
+  display: inline-block;
+}
+
 .text-tip {
   display: flex;
   flex-direction: column;
@@ -505,7 +523,6 @@ ul.sensor-popup--data .icon {
   font-weight: 700;
   font-size: calc(var(--font-size) * 0.9);
 }
-/* SENSOR POPUP end */
 
 @media screen and (max-width: 1080px) {
   .sensors-panel {
@@ -520,7 +537,7 @@ ul.sensor-popup--data .icon {
 
   .sensors-panel {
     position: absolute;
-    top: calc(var(--gap) * 16);
+    top: calc(var(--gap) * 12);
     left: 0;
     right: 0;
     bottom: 0;
@@ -529,29 +546,28 @@ ul.sensor-popup--data .icon {
   }
 
   .sensor-popup.container {
-    /* padding-left: var(--gap);
-      padding-right: var(--gap) !important; */
-    padding-bottom: calc(var(--gap) * 5);
-    /* overflow: hidden; */
+    padding-bottom: var(--gap);
   }
 
   .sensor-popup .popup__close {
     left: unset;
-    top: -1.2rem;
+    top: -2rem;
+    height: 37px;
+    font-size: 1.4rem;
+    background-color: #fff;
   }
 
   .sensor-popup__header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
+    text-align: left;
     padding: var(--gap);
   }
 
   .sensor-popup__header-top-wrapper {
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: flex-start;
-    margin-bottom: var(--gap);
   }
 
   .sensor-popup__header-icon {
@@ -560,15 +576,24 @@ ul.sensor-popup--data .icon {
     margin-right: 0;
   }
 
+  .sensor-address {
+    gap: 10px;
+    font-weight: 400;
+    font-size: calc(var(--font-size) * 0.8);
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
   .sensor-popup--subtitle span:not(:last-child) {
     margin-right: var(--gap);
     align-self: flex-start;
   }
 
   .sensor-popup .sensors-dateselect__calendar input {
-    min-width: 130px;
-    font-size: 12px;
-    height: 28px;
+    font-size: 14px;
+    height: 32px;
+    min-width: 150px;
+    /* height: 28px; */
   }
 
   .sensor-popup .sensors-dateselect__calendar-button {
@@ -576,21 +601,16 @@ ul.sensor-popup--data .icon {
   }
 
   .sensor-popup--content {
+    padding: var(--gap);
+    margin-top: 0;
+    padding-top: 0;
     flex-direction: column;
-    height: 50%;
+    height: 65%;
     padding-bottom: calc(var(--gap) * 4);
   }
 
   ul.sensor-popup--data {
     gap: calc(var(--gap) * 0.3);
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .sensor-address {
-    max-width: 160px;
-    margin: 0 auto;
-    margin-bottom: var(--gap);
   }
 }
 </style>

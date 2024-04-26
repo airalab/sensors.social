@@ -68,7 +68,7 @@ import * as providers from "../providers";
 import { instanceMap } from "../utils/map/instance";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
-import { getMapPosiotion } from "../utils/utils";
+import { getMapPosiotion, saveMapPosiotion } from "../utils/utils";
 
 const mapPosition = getMapPosiotion();
 
@@ -121,6 +121,11 @@ export default {
       isShowInfo: false,
       providerObj: null,
       store: useStore(),
+      geoLocationOptions: {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      },
     };
   },
   computed: {
@@ -170,6 +175,22 @@ export default {
       }, 1000);
     }
 
+    // get user's geolocation with consent
+    const coords = JSON.parse(localStorage.getItem("map-position"));
+    if (
+      (coords &&
+        coords.lat === config.MAP.position.lat &&
+        coords.lng === config.MAP.position.lng) ||
+      (coords && Object.entries(coords).length === 0) ||
+      !coords
+    ) {
+      navigator.geolocation.getCurrentPosition(
+        this.getGeoLocationSuccess,
+        this.getGeoLocationError,
+        this.geoLocationOptions
+      );
+    }
+
     this.$nextTick(() => {
       window
         .matchMedia("(prefers-color-scheme: dark)")
@@ -177,9 +198,11 @@ export default {
           if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
             localStorage.setItem("theme", "light");
             this.store.toggleTheme();
+            document.querySelector("body").classList.add("dark");
           } else {
             localStorage.setItem("theme", "dark");
             this.store.toggleTheme();
+            document.querySelector("body").classList.remove("dark");
           }
         });
     });
@@ -320,6 +343,16 @@ export default {
     },
     handlerChangeCity(city) {
       this.city = city;
+    },
+
+    getGeoLocationSuccess(pos) {
+      const crd = pos.coords;
+      console.log(crd.latitude, crd.longitude);
+      saveMapPosiotion(13, crd.latitude, crd.longitude);
+    },
+
+    getGeoLocationError(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
     },
   },
 };

@@ -12,6 +12,36 @@
 
       <div id="dateSelect" class="sensors-dateselect">
         <Measures :current="type.toLowerCase()" />
+        <div tabindex="0" class="footer-measures-popup">
+          <details :open="!isMeasuresPopupOpen">
+            <summary @click="toggleMeasurePopup">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="11"
+                  stroke="white"
+                  stroke-width="2"
+                />
+                <path
+                  d="M10.834 13.178C10.834 12.87 10.8713 12.5947 10.946 12.352C11.0207 12.1093 11.142 11.8807 11.31 11.666C11.4873 11.4513 11.73 11.232 12.038 11.008C12.318 10.8027 12.5327 10.6207 12.682 10.462C12.8313 10.3033 12.934 10.1447 12.99 9.986C13.046 9.82733 13.074 9.65 13.074 9.454C13.074 9.15533 12.9807 8.93133 12.794 8.782C12.6073 8.62333 12.3553 8.544 12.038 8.544C11.6927 8.544 11.3333 8.60467 10.96 8.726C10.596 8.84733 10.2133 9.01067 9.812 9.216L9.014 7.718C9.47133 7.466 9.96133 7.26067 10.484 7.102C11.0067 6.94333 11.5807 6.864 12.206 6.864C13.1487 6.864 13.8767 7.09733 14.39 7.564C14.9127 8.03067 15.174 8.62333 15.174 9.342C15.174 9.72467 15.118 10.056 15.006 10.336C14.894 10.6067 14.726 10.8633 14.502 11.106C14.278 11.3487 13.9933 11.6053 13.648 11.876C13.396 12.072 13.1953 12.24 13.046 12.38C12.906 12.52 12.808 12.6553 12.752 12.786C12.696 12.9167 12.668 13.08 12.668 13.276V13.682H10.834V13.178ZM10.582 16.02C10.582 15.5907 10.7033 15.292 10.946 15.124C11.1887 14.9467 11.4827 14.858 11.828 14.858C12.164 14.858 12.4533 14.9467 12.696 15.124C12.9387 15.292 13.06 15.5907 13.06 16.02C13.06 16.4307 12.9387 16.7293 12.696 16.916C12.4533 17.0933 12.164 17.182 11.828 17.182C11.4827 17.182 11.1887 17.0933 10.946 16.916C10.7033 16.7293 10.582 16.4307 10.582 16.02Z"
+                  fill="white"
+                />
+              </svg>
+            </summary>
+
+            <div class="popup-wrapper">
+              <MeasuresPopup @toggleClose="toggleMeasurePopup" />
+            </div>
+          </details>
+        </div>
+
         <div
           id="switchers"
           class="sensors-switchers__wrapper"
@@ -111,16 +141,18 @@ import { switchLayer } from "../../utils/map/wind";
 import HistoryPopup from "./HistoryPopup.vue";
 import Switcher from "./Switcher.vue";
 import Measures from "../../components/measures/Measures.vue";
+import MeasuresPopup from "./MeasuresPopup.vue";
 
 export default {
   emits: ["history"],
   props: ["currentProvider", "canHistory", "type"],
-  components: { Switcher, HistoryPopup, Measures },
+  components: { Switcher, HistoryPopup, Measures, MeasuresPopup },
 
   data() {
     return {
       isActive: false,
       isActiveMenu: false,
+      isMeasuresPopupOpen: false,
 
       realtime: this.currentProvider === "realtime",
       wind: false,
@@ -177,24 +209,26 @@ export default {
   },
 
   methods: {
-    toggleIsActive() {
-      if (!this.isActive) {
-        this.isActive = true;
+    toggleOpen(state) {
+      if (!this[state]) {
+        this[state] = true;
         this.store.colorMap();
       } else {
-        this.isActive = false;
+        this[state] = false;
         this.store.removeColorMap();
       }
     },
 
+    toggleIsActive() {
+      this.toggleOpen("isActive");
+    },
+
     toggleMobileMenu() {
-      if (!this.isActiveMenu) {
-        this.isActiveMenu = true;
-        this.store.colorMap();
-      } else {
-        this.isActiveMenu = false;
-        this.store.removeColorMap();
-      }
+      this.toggleOpen("isActiveMenu");
+    },
+
+    toggleMeasurePopup() {
+      this.toggleOpen("isMeasuresPopupOpen");
     },
 
     getHistory() {
@@ -237,6 +271,50 @@ export default {
 
 .footer .sensors-dateselect .popup__close {
   display: none;
+}
+
+.footer-measures-popup {
+  margin-bottom: -8px;
+  margin-right: auto;
+}
+
+.footer-measures-popup .popup-wrapper {
+  position: fixed;
+  top: calc(var(--gap) * 5);
+  left: var(--gap);
+  max-width: 505px;
+  width: 100%;
+  background-color: var(--color-light);
+}
+
+.footer-measures-popup summary {
+  cursor: pointer;
+  display: inline-block;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.footer-measures-popup summary::-webkit-details-marker {
+  display: none;
+}
+
+.footer-measures-popup details summary svg {
+  fill: var(--color-dark);
+}
+
+.footer-measures-popup details[open] summary svg {
+  fill: var(--color-blue);
+}
+
+.dark .footer-measures-popup details summary svg path {
+  fill: #111;
+}
+
+.dark .footer-measures-popup details[open] summary svg path {
+  fill: #fff;
 }
 
 .sensors-dateselect__history {
@@ -322,8 +400,9 @@ export default {
     width: 32px;
   }
 
-  .measures {
-    order: 1;
+  .footer-measures-popup {
+    order: -1;
+    margin-right: 20px;
   }
 
   .footer .sensors-dateselect {
@@ -411,6 +490,15 @@ export default {
   }
 }
 
+@media screen and (max-width: 640px) {
+  .footer-measures-popup .popup-wrapper {
+    right: var(--gap);
+    top: calc(var(--gap) * 7);
+    max-width: unset;
+    width: unset;
+  }
+}
+
 @media screen and (max-width: 580px) {
   .footer {
     z-index: 8;
@@ -421,11 +509,30 @@ export default {
   }
 }
 
-@media screen and (max-width: 390px) {
+@media screen and (max-width: 450px) {
   .footer .sensors-dateselect {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--gap);
+  }
+
+  .footer .sensors__history {
+    padding: 0;
+  }
+
+  .footer .sensors-dateselect input[type="date"] {
+    padding: 0.2rem 0.6rem;
+    min-width: 150px;
+  }
+
+  .sensors-dateselect__calendar-button {
+    top: 7px;
+    right: 20px;
+  }
+
+  .footer__mobile-menu {
+    left: calc(var(--gap) * 2 + 32px);
+    bottom: 26px;
   }
 }
 </style>
