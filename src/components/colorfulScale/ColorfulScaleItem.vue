@@ -1,5 +1,5 @@
 <template>
-  <div
+  <!-- <div
     class="colorful-scale__wrapper"
     v-if="
       type !== 'temperature'
@@ -16,13 +16,7 @@
         >Learn more</router-link
       >
     </div>
-    <span
-      v-for="color in measure.colors"
-      :key="color.color"
-      :class="`colorful-scale__text colorful-scale__text--${color.color}`"
-      >{{ color.text }}</span
-    >
-  </div>
+  </div> -->
   <div
     class="colorful-scale__wrapper colorful-scale__wrapper--popup"
     v-if="!type"

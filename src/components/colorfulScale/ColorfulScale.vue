@@ -5,6 +5,7 @@
       :key="measure.id"
       :measure="measure"
       :type="type"
+      :noColors="noColors"
     />
   </div>
 </template>
@@ -16,7 +17,7 @@ import ColorfulScaleItem from "./ColorfulScaleItem.vue";
 export default {
   components: { ColorfulScaleItem },
 
-  props: ["type"],
+  props: ["type", "noColors"],
 
   data() {
     return {

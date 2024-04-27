@@ -6,7 +6,7 @@
         <Header :localeCurrent="$i18n.locale" :city="city" />
 
         <div class="container sensors-container">
-          <ColorfulScale :type="type" />
+          <ColorfulScale :type="type" :noColors="true" />
 
           <template v-if="point">
             <MessagePopup
@@ -349,6 +349,7 @@ export default {
       const crd = pos.coords;
       console.log(crd.latitude, crd.longitude);
       saveMapPosiotion(13, crd.latitude, crd.longitude);
+      window.location.reload();
     },
 
     getGeoLocationError(err) {
