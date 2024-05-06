@@ -164,6 +164,7 @@ export default {
     log: {
       immediate: false,
       handler: function (newValue) {
+        this.fillData();
         // $nextTick для случая если полностью обновился график
         this.$nextTick(() => {
           const count =

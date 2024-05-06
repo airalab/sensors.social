@@ -56,7 +56,7 @@
         <div class="sensor-popup--content-info">
           <!-- INPUT FOR CHANGING CHART -->
           <!-- calendar -->
-          <!-- <div class="sensors-dateselect__calendar">
+          <div class="sensors-dateselect__calendar">
             <input
               type="date"
               v-model="start"
@@ -86,7 +86,7 @@
                 </svg>
               </button>
             </span>
-          </div> -->
+          </div>
           <ul class="sensor-popup--data">
             <MeasureButton
               v-for="item in items"
@@ -137,10 +137,10 @@ import { toFixed } from "../../measurements/tools";
 import sensors from "../../sensors";
 import generate, { getState } from "../../utils/color";
 import { hidePath, showPath } from "../../utils/map/marker";
+import Bookmark from "./Bookmark.vue";
 import Chart from "./Chart.vue";
 import Copy from "./Copy.vue";
 import MeasureButton from "./MeasureButton.vue";
-import Bookmark from "./Bookmark.vue";
 
 export default {
   emits: ["close"],
@@ -270,9 +270,14 @@ export default {
     date: function () {
       return moment(this.last.timestamp, "X").format("DD.MM.YYYY HH:mm:ss");
     },
-    startDate: function () {
+    startTimestamp: function () {
       return Number(
         moment(this.start + " 00:00:00", "YYYY-MM-DD HH:mm:ss").format("X")
+      );
+    },
+    endTimestamp: function () {
+      return Number(
+        moment(this.start + " 23:59:59", "YYYY-MM-DD HH:mm:ss").format("X")
       );
     },
   },
@@ -306,6 +311,16 @@ export default {
         }, 2000);
       }
     },
+    getHistory() {
+      if (this.realtime) {
+        return;
+      }
+      this.$emit("history", {
+        sensor_id: this.sensor_id,
+        start: this.startTimestamp,
+        end: this.endTimestamp,
+      });
+    },
   },
   updated() {
     setTimeout(() => {
@@ -322,6 +337,9 @@ export default {
       } else {
         hidePath(this.sensor_id);
       }
+    },
+    start() {
+      this.getHistory();
     },
   },
 };

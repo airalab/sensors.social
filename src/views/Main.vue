@@ -27,6 +27,7 @@
               :type="type.toLowerCase()"
               @modal="handlerModal"
               @close="handlerClose"
+              @history="handlerHistoryLog"
             />
           </template>
 
@@ -313,6 +314,19 @@ export default {
         address,
         log: [...log],
       };
+    },
+    async handlerHistoryLog({ sensor_id, start, end }) {
+      if (this.status === "history") {
+        const log = await this.providerObj.getHistoryPeriodBySensor(
+          sensor_id,
+          start,
+          end
+        );
+        this.point = {
+          ...this.point,
+          log: [...log],
+        };
+      }
     },
     handlerClose() {
       // removes b&W filter from the map
