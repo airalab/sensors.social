@@ -177,7 +177,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 #history.container {
   padding: calc(var(--gap) * 1) calc(var(--gap) * 2);
   /* padding-top: calc(var(--gap) * 4); */

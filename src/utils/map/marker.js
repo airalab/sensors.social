@@ -319,12 +319,20 @@ export async function addPoint(point) {
         console.log(point);
       } else if (point.model === 2) {
         await addMarker(point);
+
+        /* + Broadcasting about new sensor */
+        const bc = new BroadcastChannel('sensors')
+        bc.postMessage(point)
+        bc.close()
+        /* - Broadcasting about new sensor */
+
       } else if (point.model === 3) {
         await addMarker(point);
         await addPointPath(point);
       } else if (point.model === 4) {
         await addMarkerUser(point);
       }
+
     } catch (error) {
       console.log(error);
     }
@@ -462,6 +470,12 @@ async function addMarkerUser(point) {
 export function clear() {
   if (markersLayer) {
     markersLayer.clearLayers();
+
+    /* + Broadcasting about removing all sensors */
+    const bc = new BroadcastChannel('sensorsremoved')
+    bc.postMessage(true)
+    bc.close()
+    /* - Broadcasting about removing all sensors */
   }
   if (pathsLayer) {
     pathsLayer.clearLayers();

@@ -3,41 +3,17 @@ import { defineStore } from "pinia";
 export const useStore = defineStore({
   id: "main",
   state: () => ({
-    theme: "",
     // helps to color map black&white when popup is opened
     isColored: false,
     currentSensorPopupMeasures: [],
     currentActiveMeasure: "",
+    idbBookmarkDbname: 'SensorsDBBookmarks',
+    idbBookmarkVDbver: 1,
+    idbBookmarkVDbtable: 'bookmarks',
+    idbWatcherBroadcast: 'idbBookmarkChanges', /* this we need until IndexedDB Observer will be available in browsers */
+    sensors: [] // all uploaded sensors (getting via broadcast messages)
   }),
   actions: {
-    initTheme() {
-      const cachedTheme = localStorage.theme ? localStorage.theme : false;
-      const userPrefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-
-      let theme = "light";
-      if (cachedTheme) {
-        theme = cachedTheme;
-      } else if (userPrefersDark) {
-        theme = "dark";
-      }
-      this.theme = theme;
-      localStorage.theme = theme;
-    },
-    toggleTheme() {
-      switch (localStorage.theme) {
-        case "light":
-          this.theme = "dark";
-          localStorage.theme = "dark";
-          break;
-
-        default:
-          this.theme = "light";
-          localStorage.theme = "light";
-          break;
-      }
-    },
     // helps to color map black&white when popup is opened
     colorMap() {
       this.isColored = true;

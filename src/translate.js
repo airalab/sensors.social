@@ -37,8 +37,6 @@ export default {
         "Feel free to fork the GitHub repository of this map and deploy it on any domain of your choice. With this flexibility, you have the option to display all sensors or set up your own customized service. Take control and make it your own!",
       descriptionLink5: "GitHub repository",
       descriptionLink6: "Instructions",
-      bookmarkTitle: "Your bookmarks",
-      noBookmarks: "You can save sensors from the map here",
     },
     measures: {
       pollutionScale: "Pollution scale",
@@ -159,9 +157,6 @@ export default {
         5: "Seek a cool place and use fans or air conditioning.",
       },
     },
-    footer: {
-      history: "Download History",
-    },
     provider: {
       realtime: "Real time",
     },
@@ -180,16 +175,42 @@ export default {
     history: {
       city: "Locality",
       period: "Calendar period",
-      download: "Download .CSV",
       currentDay: "Current day",
       currentMonth: "Last month",
       chooseDates: "Select dates",
       usecity: "Select locality",
+      title: "Import data",
+      button: "Download csv file",
     },
     notice_with_fz:
       "The specified data is not legally significant information for general use and special information in accordance with the federal law of July 19, 1998 no 113-fz «On the hydrometeorological service»",
     notice_without_fz:
       "This information holds no legal validity and is intended solely for personal use.",
+    sensorpopup: {
+      infotitle: "Advanced information",
+      bookmarkplaceholder: "A name for sensor",
+      bookmarkbutton: "Add to Bookmarks",
+      infosensorid: "Sensor id",
+      infosensormodel: "Sensor model",
+      infosensorgeo: "Sensor geoposition",
+      infosensorowner: "Sensor owner",
+      infosensordonated: "Donated by"
+    },
+    bookmarks: {
+      listtitle: "Your bookmarked sensors",
+      listempty: "Save any sensor from the map here for quicker access"
+    },
+    links: {
+      measurement: "Measurements guide",
+      github: "GitHub repository",
+      privacy: "Privacy policy"
+    },
+    scales: {
+      title: "Units of measurement",
+      upto: "up to",
+      above: "above"
+    },
+    loadedsesnsors: "Loaded sensors"
   },
   ru: {
     header: {
@@ -229,8 +250,6 @@ export default {
         "Feel free to fork the GitHub repository of this map and deploy it on any domain of your choice. With this flexibility, you have the option to display all sensors or set up your own customized service. Take control and make it your own!",
       descriptionLink5: "GitHub repository",
       descriptionLink6: "Instructions",
-      bookmarkTitle: "Ваши закладки",
-      noBookmarks: "You can save sensors from the map here",
     },
     measures: {
       pollutionScale: "Шкала загрязнения",
@@ -377,15 +396,41 @@ export default {
     history: {
       city: "Населенный пункт",
       period: "Календарный период",
-      download: "Сохранить CSV",
       currentDay: "Текущие cутки",
       currentMonth: "Последний месяц",
       chooseDates: "Выбрать Даты",
       usecity: "Выбрать населенный пункт",
+      title: "Импорт данных",
+      button: "Скачать csv файл",
     },
     notice_with_fz:
       "Указанные данные не являются юридически значимой информацией для общего пользования и специальной информацией в соответствии с федеральным законом от 19.07.1998 г. no 113-фз «О гидрометеорологической службе»",
     notice_without_fz:
       "Указанные данные не являются юридически значимой информацией.",
+    sensorpopup: {
+      infotitle: "Подробная информация",
+      bookmarkplaceholder: "Название сенсора",
+      bookmarkbutton: "Сохранить в закладки",
+      infosensorid: "ID датчика",
+      infosensormodel: "Модель датчика",
+      infosensorgeo: "Геопозиция датчика",
+      infosensorowner: "Владелец датчика",
+      infosensordonated: "Спонсирован"
+    },
+    bookmarks: {
+      listtitle: "Сохраненные датчики",
+      listempty: "Здесь вы можете сохранить датчики для быстрого просмотра"
+    },
+    links: {
+      measurement: "Руководство по измеренным показателям",
+      github: "Репозиторий GitHub",
+      privacy: "Политика конфиденциальности"
+    },
+    scales: {
+      title: "Единицы измерения",
+      upto: "до",
+      above: "выше"
+    },
+    loadedsesnsors: "Загружено датчиков"
   },
 };

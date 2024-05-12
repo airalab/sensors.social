@@ -1,6 +1,6 @@
 <template>
   <Header :localeCurrent="$i18n.locale" />
-  <section class="air-measurements">
+  <section class="air-measurements container-pagetext">
     <h1>Air measurements information</h1>
 
     <div class="air-measurements__wrapper" id="PM10">
@@ -199,28 +199,6 @@ export default {
 <style scoped>
 .mb {
   margin-bottom: calc(var(--gap) * 2) !important;
-}
-
-.air-measurements {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: transparent;
-  color: var(--color-dark);
-}
-
-.air-measurements h1 {
-  max-width: 800px;
-  margin: 0 auto;
-  margin-bottom: calc(var(--gap) * 3);
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.air-measurements h2,
-.air-measurements h3 {
-  font-size: var(--font-size);
-  font-weight: 900;
 }
 
 .air-measurements__header p {
