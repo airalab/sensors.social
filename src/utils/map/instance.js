@@ -44,6 +44,10 @@ export function instanceMap() {
   }
   throw new Error("Must be initialized before using the mapd.");
 }
+export function removeMap() {
+  map.remove();
+  map = undefined;
+}
 
 export function init(position, zoom, theme = "light") {
   map = L.map("map", { minZoom: 3 });
