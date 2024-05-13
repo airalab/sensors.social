@@ -11,7 +11,7 @@ import measurements from "../../measurements";
 import { moveMarkerTime } from "../../utils/map/marker";
 
 export default {
-  props: ["log", "measurement", "sensor_id", "model", "type"],
+  props: ["log", "measurement", "sensor_id", "model", "type", "units"],
   data() {
     const self = this;
     return {
@@ -111,8 +111,8 @@ export default {
   },
   computed: {
     series: function () {
-      if (this.log.length > 0) {
-        const measurementNames = Object.keys(this.log[0].data).map((item) =>
+      if (this.log.length > 0 && this.units && this.units.length > 0) {
+        const measurementNames = this.units.map((item) =>
           item.toLowerCase()
         );
         const series = [];
@@ -150,9 +150,6 @@ export default {
     storeMeasures() {
       return this.store.currentActiveMeasure;
     },
-  },
-  mounted() {
-    this.fillData();
   },
   watch: {
     sensor_id: function () {
@@ -261,6 +258,9 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    this.fillData()
   },
 };
 </script>

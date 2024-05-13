@@ -14,11 +14,11 @@ export default {
   },
   "162ebfac08a69bc96c0bd569c95026c6750cbecca7a61731dfe1a985a9391176": {
     icon: atc,
-    link: "http://atcgaz.ru/главная/",
+    link: "http://atcgaz.ru/",
   },
   "7c7ffabc786c46ff40d8ca922b1248e1261baefec702eea160001140063f8c53": {
     icon: atc,
-    link: "http://atcgaz.ru/главная/",
+    link: "http://atcgaz.ru/",
   },
   "7cdeafa03331cb330c3993ff0381457f0713a8fd6d0b3dbe93ea24affe5676ac": {
     icon: artesiantlt,
@@ -37,16 +37,9 @@ export default {
     link: "https://panorama-park63.ru/",
   },
   e4871acd155431c63fbbc54b89d015bc17bc5fbe44d5846502f7e58566e24a8e: {
-    icon: radiation,
     link: "https://airalab.org/",
   },
   "62c86fb3712e2c8e3d8a7a79f62c1cb0dbd4ad2980606dbf8fcf96ce9ed46c8d": {
     icon: sun,
-  },
-  "850aef6dbc5f015c58c02bcc829301c5b47b1cf8dd81121e6d2e52d91a85b176": {
-    icon: radiation
-  },
-  "6cbea54e4f1ca357ed492cf852e85ea567cf5fae829c368c665e017e114a39a8": {
-    icon: radiation
   }
 };

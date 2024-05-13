@@ -1,6 +1,6 @@
 <template>
   <Header :localeCurrent="$i18n.locale" />
-  <section class="privacy-policy">
+  <section class="container-pagetext privacy-policy">
     <h1>Privacy Policy</h1>
 
     <p class="privacy-policy__descr">
@@ -147,16 +147,6 @@ export default {
 </script>
 
 <style scoped>
-.privacy-policy {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  color: var(--color-dark);
-}
-
-.privacy-policy h1 {
-  margin-bottom: 10px;
-}
 
 .privacy-policy ul {
   padding-left: 20px;

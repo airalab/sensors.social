@@ -1,342 +1,126 @@
 <template>
-  <header class="header">
-    <div class="container header__container">
-      <div class="header__wrapper">
-        <h1 class="title">
-          <router-link to="/">{{ $t("header.title") }}</router-link>
-        </h1>
-        <div class="title title-city">
-          {{ city }}
-        </div>
+  <header class="flexline space-between">
+    <div class="flexline align-start">
+      <router-link to="/" class="appicon"><img alt="App logo" src="app-icon-512.png" /></router-link>
+      <b class="text-changabletheme" v-if="countPoints > 0">{{$t('loadedsesnsors')}}: {{countPoints}}</b>
+    </div>
+
+    <div class="flexline">
+      <select v-model="locale">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+      </select>
+
+      <div id="about" class="popover-top-right" popover>
+        <template v-if="locale === 'ru'">
+          <h3>Web3 открытая сеть датчиков</h3>
+          <p>Добро пожаловать в открытую сеть датчиков, которая построена на open-source принципах и поддерживается энтузиастами (см. 
+            <a href="https://www.fsf.org/campaigns/priority-projects/decentralization-federation" target="_blank" rel="noopener">the free will of 
+            individuals</a>). Карта предлагает два разных уровня децентрализации: прямая peer-to-peer 
+            связь датчиков и блокчейн для сбора и хранения истории показаний с датчиков. <a href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensors-connectivity-module/" target="_blank" rel="noopener">Тут</a> можно ознакомиться более подробно с технической стороной.</p>
+          <h3>Добавьте свой датчик на карту</h3>
+          <p>Вы можете <a href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensor-hardware/" target="_blank" rel="noopener">собрать свой датчик</a>, используя комплектующие 
+          на открытом рынке электроники, <a href="https://robonomics.academy/en/learn/sensors-connectivity-course/setting-up-and-connecting-sensors/" target="_blank" rel="noopener">добавить датчик на карту</a>. 
+          Мы с радостью приветствуем новых участников сообщества. Присоединяйтесь!</p>
+          <p><a href="https://youtu.be/AQ7ZzgbN7jU?si=Y_FsDCEw5T97" target="_blank" rel="noopener">Видео-инструкция на YouTube</a></p>
+        </template>
+        <template v-else>
+          <h3>Web3 public sensors map</h3>
+          <p>Welcome to the decentralized opensource sensors map which operates with the sole intent of serving 
+            <a href="https://www.fsf.org/campaigns/priority-projects/decentralization-federation" target="_blank" rel="noopener">the free will of 
+            individuals</a>, without any beneficiaries. It offers two distinct layers of decentralization at your choise: peer-to-peer 
+            connectivity for direct access to sensor data, and the federative concept for accumulating sensor data and displaying measurement 
+            history. Click <a href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensors-connectivity-module/" target="_blank" rel="noopener">here</a> for further technical details.</p>
+          <h3>Add your sensor on this map</h3>
+          <p>You can <a href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensor-hardware/" target="_blank" rel="noopener">assemble your own sensor</a> using components available on the free market. 
+          Follow the instructions provided to <a href="https://robonomics.academy/en/learn/sensors-connectivity-course/setting-up-and-connecting-sensors/" target="_blank" rel="noopener">connect your sensor to the map</a>. We welcome your participation and look forward to expanding our 
+          community together. Join us today!</p>
+          <p><a href="https://youtu.be/AQ7ZzgbN7jU?si=Y_FsDCEw5T97" target="_blank" rel="noopener">YouTube video guide</a></p>
+        </template>
+
+        <hr/>
+          <section class="navlinks">
+            <a href="https://github.com/airalab/sensors.robonomics.network" target="_blank" rel="noopener">{{$t('links.github')}}</a>
+            <router-link to="/air-measurements">{{$t('links.measurement')}}</router-link>
+            <router-link to="/privacy-policy">{{$t('links.privacy')}}</router-link>
+          </section>
       </div>
+      <button class="popovercontrol" popovertarget="about"><font-awesome-icon icon="fa-solid fa-bars" /></button>
 
-      <div class="header__wrapper">
-        <div
-          @click="colorMap('menu')"
-          class="menu-link header--mr"
-          tabindex="0"
-        >
-          <details :open="!helper">
-            <summary class="header__about-btn">About</summary>
-
-            <div
-              class="header-popup header-popup--menu popup-wrapper"
-              :class="{ 'no-city': !city }"
-            >
-              <MenuPopup />
-            </div>
-          </details>
-        </div>
-
-        <div class="sensors-select">
-          <select v-model="locale">
-            <option value="en">EN</option>
-            <option value="ru">RU</option>
-          </select>
-        </div>
-        <!-- <ThemeSwitcher /> -->
-        <div
-          @click="colorMap('bookmark')"
-          class="header__bookmark"
-          tabindex="0"
-        >
-          <details :open="!helper">
-            <summary>
-              <svg
-                width="19"
-                height="23"
-                viewBox="0 0 19 23"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M16.0479 17.0509L18.0539 18.0539V2.00599C18.0539 0.902696 17.1512 0 16.0479 0H6.00794C4.90465 0 4.01198 0.902696 4.01198 2.00599H14.0419C15.1452 2.00599 16.0479 2.90869 16.0479 4.01198V17.0509ZM12.0359 4.01198H2.00599C0.902696 4.01198 0 4.91468 0 6.01797V22.0659L7.02097 19.0569L14.0419 22.0659V6.01797C14.0419 4.91468 13.1392 4.01198 12.0359 4.01198Z"
-                  fill="white"
-                />
-              </svg>
-            </summary>
-
-            <div
-              class="header-popup header-popup--bookmark popup-wrapper"
-              :class="{ 'no-city': !city }"
-            >
-              <BookmarkPopup />
-            </div>
-          </details>
-        </div>
-      </div>
     </div>
   </header>
 </template>
 
 <script>
 import { useStore } from "@/store";
-import MenuPopup from "./MenuPopup.vue";
-import BookmarkPopup from "./BookmarkPopup.vue";
-import ThemeSwitcher from "./ThemeSwitcher.vue";
 
 export default {
-  components: { MenuPopup, BookmarkPopup, ThemeSwitcher },
-  props: ["localeCurrent", "city"],
   data() {
     return {
-      locale: this.localeCurrent,
-      helper: localStorage.getItem("helper"),
-      store: useStore(),
-      curr: "",
-      isMenuOpen: false,
-      allDetailsClose: true,
-    };
+      locale: localStorage.getItem("locale") || this.$i18n.locale || 'en',
+      store: useStore()
+    }
   },
   watch: {
     locale(newValue) {
       this.$i18n.locale = newValue;
       localStorage.setItem("locale", newValue);
-    },
-  },
-  methods: {
-    // making map black&white when popup opens
-    colorMap(item) {
-      if (this.curr && this.curr === item) {
-        this.curr = "";
-        this.store.removeColorMap();
-      } else {
-        this.curr = item;
-        this.store.colorMap();
-      }
-    },
-
-    closeAllDetails(e) {
-      const current = e.target.closest("details");
-
-      if (this.allDetailsClose && this.curr && !current) {
-        this.curr = "";
-        this.store.removeColorMap();
-      }
-
-      document.body
-        .querySelector(".header")
-        .querySelectorAll("details")
-        .forEach((event) => {
-          if (
-            event !== current ||
-            e.target.classList.contains("header__close-popup") ||
-            e.target.classList.contains("footer__close-popup")
-          ) {
-            event.open = false;
-            this.allDetailsClose = true;
-            if (!this.helper) {
-              localStorage.setItem("helper", true);
-            }
-          }
-        });
-    },
-  },
-  mounted() {
-    document.body.querySelectorAll("details").forEach((e) => {
-      e.open = false;
-    });
-
-    // Close all opened details on body click
-    document.body.onclick = (e) => {
-      this.closeAllDetails(e);
-    };
-
-    this.store.initTheme();
-
-    if (localStorage.theme === "light") {
-      document.querySelector("body").classList.remove("dark");
-    } else {
-      document.querySelector("body").classList.add("dark");
     }
   },
+  computed: {
+    countPoints() { return this.store.sensors.length }
+  }
 };
 </script>
 
 <style scoped>
-h1.title > a {
-  white-space: nowrap;
-  color: var(--color-middle-gray);
-}
-
-.header {
-  position: sticky;
-  top: 0;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.74);
-  backdrop-filter: blur(4.5px);
-  z-index: 15;
-}
-
-.header--mr {
-  margin-right: var(--gap);
-}
-
-.header__container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header__wrapper {
-  display: flex;
-  align-items: center;
-}
-
-.header__wrapper:first-of-type {
-  max-width: 450px;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-right: var(--gap);
-}
-
-.title-city {
-  text-transform: capitalize;
-}
-
-.sensors-select select {
-  padding: calc(var(--gap) * 0.1) calc(var(--gap) * 0.5);
-  min-height: 30px;
-  font-size: calc(var(--font-size) * 0.9);
-}
-
-.sensors-select select option {
-  color: var(--color-dark);
-  background-color: var(--color-light);
-}
-
-.header__about-btn {
-  padding: calc(var(--gap) * 0.2) calc(var(--gap) * 0.5);
-  font-family: var(--font-family--normal);
-  font-weight: 600;
-  font-size: calc(var(--font-size) * 0.8);
-  color: #fff;
-  background-color: transparent;
-  border: 2px solid #fff;
-  border-radius: 5px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.menu-link {
-  position: relative;
-}
-
-.menu-link details[open] summary {
-  background-color: var(--color-blue);
-}
-
-.header__bookmark {
-  margin-left: var(--gap);
-  margin-top: 6px;
-}
-
-.header__bookmark details[open] summary svg path {
-  fill: var(--color-blue);
-}
-
-.header__wrapper summary::-webkit-details-marker,
-.header__wrapper summary::marker {
-  display: none;
-  font-size: 0;
-}
-.header__wrapper summary {
-  cursor: pointer;
-  display: inline-block;
-  user-select: none;
-}
-
-.header-popup {
-  top: 40px;
-  right: 0;
-  width: 380px;
-  padding-top: var(--gap);
-  padding-bottom: var(--gap);
-  background-color: var(--color-light);
-  color: var(--color-dark);
-}
-
-.header-popup::after {
-  content: "";
-  position: absolute;
-  bottom: 100%;
-  left: 90%;
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 6px solid #fff;
-}
-
-.header-popup--bookmark {
-  top: 52px;
-}
-
-@media screen and (max-width: 640px) {
-  .header {
-    z-index: 40;
-  }
-
-  .header__wrapper h1 {
-    margin-right: 0;
-  }
-
-  .header__container {
-    position: relative;
-    padding-bottom: var(--gap);
-  }
-
-  .header__wrapper:first-of-type {
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .menu-link {
-    position: static;
-  }
-
-  .header-popup {
+  header {
+    left: 0;
+    padding: var(--gap);
     position: absolute;
-    max-width: unset;
-    width: 100%;
-    top: 60px;
+    top: 0;
+    width: 100vw;
+    z-index: 10;
+    pointer-events: none;
   }
 
-  .header-popup::after {
-    left: calc(100% - 160px);
+  header > * {
+    pointer-events: all;
   }
 
-  .header-popup--bookmark::after {
-    left: calc(100% - 32px);
-  }
-}
-
-@media screen and (max-width: 470px) {
-  .header__container {
-    padding-bottom: calc(var(--gap) * 0.5);
+  .appicon {
+    border-radius: .5rem;
+    display: block;
+    overflow: hidden;
+    user-select: none;
+    width: 2.5rem;
   }
 
-  .header-popup {
-    top: 50px;
+  .appicon img {
+    display: block;
+    max-width: 100%;
   }
 
-  .header-popup::after {
-    left: calc(100% - 160px);
+  .popover-top-right {
+    top: calc(var(--gap) * 2 + var(--app-inputheight));
+    right: var(--gap);
+    width: 500px;
+    max-width: calc(100vw - var(--gap) * 2);
   }
 
-  .header-popup--bookmark::after {
-    left: calc(100% - 32px);
-  }
-}
-
-@media screen and (max-width: 428px) {
-  .header__wrapper:first-of-type {
-    margin-right: 10px;
+  #about p {
+    font-size: .9em;
   }
 
-  .header__wrapper .title {
-    font-size: 10px;
+  .navlinks {
+    font-weight: bold;
   }
-}
+
+  .navlinks a {
+    display: block;
+  }
+
+  .navlinks a:not(:last-child) {
+    margin-bottom: calc(var(--gap) * .5);
+  }
 </style>

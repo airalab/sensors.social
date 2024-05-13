@@ -1,4 +1,4 @@
-body {
+:root {
   --color-light: #fff;
   --color-gray: #4e4e4f;
   --color-middle-gray: #B6BDC4;
@@ -12,7 +12,7 @@ body {
   --color-yellow: #f5ff00;
   --color-orange: #ff9d00;
   --color-purple: #7a00da;
-  --color-navy: #2a5cbc;
+  --color-navy: hsl(219, 63%, 45%);
 
   --color-link: var(--color-blue);
   --color-link-hover: var(--color-green);
@@ -25,12 +25,29 @@ body {
   --sensor-popup-bg: #ffffff;
 
   --main-bg: #ffffff;
+
+  --app-borderwidth: 2px;
+  --app-bordercolor: #000;
+  --app-inputbg: #fff;
+  --app-inputpadding: .4rem;
+  --app-inputbradius: .3rem;
+  --app-textcolor: #000;
+  --app-inputheight: 2.4rem;
+  --app-popoverbg: #fff;
+  --app-buttoncolor:hsl(219, 63%, 45%);
+  --app-buttoncolor-active:hsl(219, 63%, 60%);
+  --app-buttoncolor-hover:hsl(219, 63%, 35%);
+  --app-buttontextcolor: #fff;
+  --app-popoverbg: #fff;
 }
 
-body.dark {
-  --color-light: #000;
-  --color-dark: #fff;
+@media screen and (max-width: 500px) {
+  :root {
+    --font-size: .8rem;
+    --gap: .5rem;
+  }
 
-  --sensor-popup-bg: #5a5a5a;
-  --main-bg:  #2f2f2f;
+  .leaflet-bottom .leaflet-control {
+    margin-bottom: 0;
+  }
 }

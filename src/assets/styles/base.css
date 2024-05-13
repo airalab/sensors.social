@@ -1,13 +1,7 @@
-/* BASE & TYPOGRAPHY */
 body {
   font-size: var(--font-size);
   font-family: var(--font-family--normal);
-  background-color: var(--main-bg)
-}
-
-body *::selection {
-  color: var(--color-light);
-  background-color: var(--color-dark); 
+  background-color: var(--color-light);
 }
 
 a {
@@ -28,115 +22,216 @@ h2, h3, h4, h5
   margin-bottom: var(--gap);
 }
 
+h1,h2, h3, h4, h5 {
+  font-weight: 900;
+}
+
+h1 {
+  font-size: calc(var(--font-size) * 2);
+  font-weight: 900;
+  margin-bottom: calc(var(--gap) * 3);
+}
+
 li, dd {
   margin-bottom: calc(var(--gap) * 0.5);
 }
 
+hr {
+  margin: calc(var(--gap)*2) 0;
+  border: .5px solid var(--app-bordercolor);
+}
+
+/* + FORMS, INPUTS */
+
+input, select, .button {
+  background-color: var(--app-inputbg);
+  border-radius: var(--app-inputbradius);
+  border: var(--app-borderwidth) solid var(--app-bordercolor);
+  box-sizing: border-box;
+  color: var(--app-textcolor);
+  font-family: var(--font-family--normal);
+  font-size: var(--font-size);
+  font-weight: 700;
+  height: var(--app-inputheight); /* not good, but really need now */
+  line-height: 1;
+  padding: calc(var(--app-inputpadding) * 0.8) var(--app-inputpadding);
+  transition-duration: 0.33s;
+  transition-property: border, background-color;
+  transition-timing-function: ease-in-out;
+}
+
+input.block, select.block, .button.block {
+  display: block;
+  width: 100%;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 12 19' style='enable-background:new 0 0 12 19;' xml:space='preserve'><path d='M6.8,0.3c-0.5-0.5-1.2-0.5-1.7,0L0.4,5.1c-0.5,0.5-0.5,1.2,0,1.7c0.5,0.5,1.2,0.5,1.7,0l4-3.9l4,3.9c0.5,0.5,1.2,0.5,1.7,0c0.5-0.5,0.5-1.2,0-1.7L6.8,0.3z M0.4,13.9l4.8,4.8c0.5,0.5,1.2,0.5,1.7,0l4.8-4.8c0.5-0.5,0.5-1.2,0-1.7c-0.5-0.5-1.2-0.5-1.7,0l-4,3.9l-4-3.9c-0.5-0.5-1.2-0.5-1.7,0C-0.1,12.7-0.1,13.4,0.4,13.9z'/></svg>");
+  background-position-x: calc(100% - var(--app-inputpadding));
+  background-position-y: 50%;
+  background-repeat: no-repeat;
+  background-size: .5rem;
+  padding-right: calc(var(--app-inputpadding) * 1.5 + 0.5rem);
+  user-select: none;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  --app-bordercolor: var(--color-navy);
+}
+
+input[type=checkbox] {
+  border: var(--app-borderwidth) solid var(--app-bordercolor);
+  height: calc(var(--app-inputheight) * .5);
+  width: calc(var(--app-inputheight) * .5);
+}
+
+input[type=checkbox]:not(:last-child) {
+  margin-right: calc(var(--gap) * .5);
+}
+
+input[type=submit], .button {
+  background-color: var(--app-buttoncolor);
+  border-color: var(--app-buttoncolor);
+  color: var(--app-buttontextcolor);
+}
+
+input[type=submit]:not(:disabled):active, .button:not(:disabled):active { --app-buttoncolor: var(--app-buttoncolor-active); }
+input[type=submit]:not(:disabled):hover, .button:not(:disabled):hover { --app-buttoncolor: var(--app-buttoncolor-hover); }
+
+select:not([disabled]),
+input[type=checkbox]:not([disabled]),
+input[type=submit]:not([disabled]),
+.button:not([disabled]) {
+  cursor: pointer;
+}
+
+.button-green {
+  --app-buttoncolor: var(--color-green);
+}
+
+.button > *:not(:last-child) {
+  margin-right: calc(var(--gap) * 0.5);
+}
+
+label {
+  font-weight: 700;
+}
+/* - FORMS, INPUTS */
+
+/* + POPOVER API */
+/* [popover] {
+} */
+
+:popover-open {
+  background-color: var(--app-popoverbg);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: var(--app-inputbradius);
+  border: none;
+  inset: unset;
+  padding: var(--gap);
+}
+
+[popovertarget] {
+  transition: opacity 0.3s ease-in-out;
+}
+
+:popover-open ~ [popovertarget] {
+  opacity: .6;
+}
+
+:popover-open::backdrop {
+  backdrop-filter: grayscale(1);
+}
+
+.popovercontrol {
+  align-items: center;
+  background-color: var(--app-inputbg);
+  border-radius: 50%;
+  border: var(--app-borderwidth) solid var(--app-bordercolor);
+  cursor: pointer;
+  display: flex;
+  height: var(--app-inputheight);
+  justify-content: center;
+  user-select: none;
+  width: var(--app-inputheight);
+  color: var(--app-textcolor);
+  font-size: var(--font-size);
+}
+
+.popovercontrol .svg-inline--fa path {
+  fill: var(--app-textcolor);
+}
+/* - POPOVER API */
+
+/* + SCROLLABLE CONTENT */
+.scrollable-y {
+  overflow-y: auto;
+  max-height: 100%;
+}
 ::-webkit-scrollbar {
   width: 7px;
 }
-
-/* Track */
 ::-webkit-scrollbar-track {
   border-radius: 4px;
   background: #EAEAEA; 
 }
- 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background: #A5A5A5; 
 }
+/* - SCROLLABLE CONTENT */
 
-#app .sensors-screen {
+/* + FLEX */
+.flexline {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.flexline.space-between {
+  justify-content: space-between;
+}
+
+.flexline.align-start {
+  align-items: start;
+}
+/* - FLEX */
+
+/* + TEXT */
+.clipoverflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.textsmall {
+  font-size: .8em;
+}
+/* - TEXT */
+
+section:not(:last-child) {
+  margin-bottom: calc(var(--gap) * 2);
+}
+
+#app {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  height: 100svh;
+  max-width: 100vw;
+  min-height: 100svh;
+}
+
+#app.map {
   overflow: hidden;
 }
 
-select { color-scheme: light }
-
-/* SELECT */
-.sensors-select {
-  display: inline-block;
-  line-height: 1;
-  white-space: nowrap;
-  position: relative;
-  transition: color 0.33s ease-in-out, background-color 0.33s ease-in-out;
-
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.sensors-select-border {
-  padding: 4px 10px;
-  background-color: #fff;
-  border: 2px solid #000;
-  border-radius: 5px;
-}
-
-.sensors-select-border svg {
-  font-size: 10px;
-  pointer-events: none;
-  position: absolute;
-  right: 8px;
-  top: calc(50% - 0.55rem*0.5);
-}
-
-.sensors-select select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-
-  border: 2px solid #fff;
-  border-radius: 4px;
-  outline: 0;
-
-  font-size: inherit;
-  font-family: inherit;
-  font-weight: inherit;
-  color: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-
-  padding: 0rem 0.2rem;
-  
-}
-
-.sensors-select.green,
-.title.green {
-  color: var(--color-green)
-}
-
-.sensors-select.blue {
-  color: var(--color-blue)
-}
-/* end of SELECT */
-
-
-/* INPUT */
-input {
-  font-size: 16px;
-  font-family: var(--font-family--normal);
-  font-weight: 700;
-  border: 1px solid #000;
-  background-color:#fff;
-  padding: 0.3rem 1rem;
-  border-radius: 4px;
-  transition: color 0.33s ease-in-out, background-color 0.33s ease-in-out;
-}
-/* end of INPUT */
-
 .container {
   padding: calc(var(--gap) * 0.5) var(--gap);
-  pointer-events: all;
-  font-family: var(--font-family--normal);
-  font-weight: 700;
-  text-transform: uppercase;
+}
+
+.container-pagetext {
+  padding: calc(var(--gap) * 7) var(--gap) calc(var(--gap) * 3);
+  margin: 0 auto;
+  max-width: 1200px;
 }
 
 .sensors-container {
@@ -179,9 +274,11 @@ input {
   transition: color 0.33s ease-in-out, background-color 0.33s ease-in-out;
 }
 
-.text-small {
-  font-size: 80%;
+@media (prefers-color-scheme: dark) {
+  .text-changabletheme {color: var(--color-light)}
 }
+
+.text-small { font-size: .8em; }
 
 .text-tip {
   margin-top: var(--gap);
@@ -274,14 +371,12 @@ input {
 /* POPUP */
 
 .popup, .popup-js {
+  background-color: var(--color-light);
+  color: var(--color-dark);
   display: none;
   opacity: 0;
   position: relative;
   transform: translateY(20px);
-  padding-right: calc(var(--gap) * 2.2) !important;
-  background-color: var(--color-light);
-  color: var(--color-dark);
-  border-radius: 4px;
   transition: color 0.33s ease-in-out, background-color 0.33s ease-in-out;
 }
 
@@ -428,11 +523,6 @@ input {
   .sensors-dateselect .sensors-switcher label {
     margin: 0;
   }
-
-  /* geo location */
-  .leaflet-right .leaflet-control {
-    margin-top: 50px;
-  }
 }
 
 @media screen and (max-width: 600px) { 
@@ -445,14 +535,6 @@ input {
   }
 }
 /* end of DATE SELECT */
-
-
-@media screen and (max-width: 450px) {
-  /* geo location */
-  .leaflet-right .leaflet-control {
-    margin-bottom: 60px;
-  }
-}
 
 
 /* ANIMATION */
