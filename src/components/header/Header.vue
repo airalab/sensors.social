@@ -1,7 +1,7 @@
 <template>
   <header class="flexline space-between">
     <div class="flexline align-start">
-      <router-link to="/" class="appicon"><img alt="App logo" src="app-icon-512.png" /></router-link>
+      <router-link to="/" class="appicon"><img alt="App logo" src="../../../public/app-icon-512.png" /></router-link>
       <b class="text-changabletheme" v-if="countPoints > 0">{{$t('loadedsesnsors')}}: {{countPoints}}</b>
     </div>
 
