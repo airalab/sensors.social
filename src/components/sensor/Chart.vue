@@ -197,6 +197,7 @@ export default {
   methods: {
     fillData() {
       const series = this.series;
+
       for (const i in series) {
         series[i].data = this.log.map((item) => {
           item.data = Object.fromEntries(

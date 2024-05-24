@@ -12,10 +12,24 @@
 
       <section class="flexline space-between">
         <div class="flexline">
-          <input type="date" v-model="start" :max="maxDate" :disabled="currentProvider == 'realtime'" />
+          <input v-if="!realtime" type="date" v-model="start" :max="maxDate" />
           <Bookmark :address="address.address && address.address.join(', ')" :link="linkSensor" />
         </div>
         <button v-if="sharable" @click="shareData" class="button"><font-awesome-icon icon="fa-solid fa-share-from-square" /></button>
+      </section>
+
+      <section v-if="realtime" class="flexline">
+        <div>
+          <div class="rt-title">Realtime view mode</div>
+          <div v-if="rttime" class="rt-time">{{rttime}}</div>
+        </div>
+
+        <template v-if="rtdata">
+          <div v-for="item in rtdata" :key="item">
+            <div class="rt-unit">{{item.label}}</div>
+            <div class="rt-number" :style="(item.color) ? 'color:' + item.color : ''">{{item.measure}} {{item.unit}}</div>
+          </div>
+        </template>
       </section>
 
       <section>
@@ -63,11 +77,11 @@
 
       </section>
 
-      <section v-if="units && scales">
+      <section v-if="units && scales && scales.length > 0">
         <h3>{{$t('scales.title')}}</h3>
         <div class="scalegrid">
           <div v-for="item in scales" :key="item.label">
-            <template v-if="item.zones && (item.name || item.label)">
+            <template v-if="item?.zones && (item.name || item.label)">
               <p>
                 <b v-if="item.name">{{(locale === 'en') ? item.name.en : item.name.ru}}</b>
                 <b v-else>{{item.label}}</b>
@@ -110,7 +124,7 @@ import Copy from "./Copy.vue";
 
 export default {
   emits: ["close"],
-  props: [ "type", "currentProvider", "point"],
+  props: [ "type", "point"],
   components: { Chart, Copy, Bookmark },
   data() {
     return {
@@ -118,9 +132,11 @@ export default {
       measurement: this.type,
       isShowPath: false,
       store: useStore(),
-      realtime: this.currentProvider === "realtime",
       start: moment().format("YYYY-MM-DD"),
       maxDate: moment().format("YYYY-MM-DD"),
+      provider: this.$route.params.provider,
+      rttime: null, /* used for realtime view */
+      rtdata: [], /* used for realtime view */
     };
   },
   computed: {
@@ -129,33 +145,24 @@ export default {
     address() { return this.point.address },
     donated_by() { return this.point.donated_by },
     geo() { return this.point.geo },
-    log() { return this.point.log },
+    log() { return this.point?.log },
     model() { return this.point.model },
     sender() { return this.point.sender },
     sensor_id() { return this.point.sensor_id },
 
-    units() {
-      /* + Possible units for the sensor */
-      let measures = []
-      Object.keys(this.log).forEach(key => {
-        measures.push(Object.keys(Object.values(this.log[key])[0]))
-      })
-      return [...new Set(measures.flat())]
-    },
-
-    scales() {
-      /* + Info for scales for possible units */
-      let bufer = []
-      Object.keys(measurements).forEach(key => {
-        if(this.units.some(item => {return item === key})) {
-          bufer.push(measurements[key])
-        }
-      })
-      return bufer
+    realtime() {
+      return this.provider === "realtime"
     },
 
     addressformatted() {
-      return this.address.country + ', ' + this.address.address.join(', ')
+      let bufer = ''
+      if(this.address.country) {
+        bufer += this.address.country
+      }
+      if(this.address.address.length > 0) {
+        bufer += ', ' + this.address.address.join(', ')
+      }
+      return bufer
     },
     isLocationRussion() {
       return (
@@ -264,6 +271,27 @@ export default {
     },
     sharable: function() {
       return navigator.share && navigator.canShare
+    },
+    units() {
+      /* + Possible units for the sensor */
+      let measures = []
+      Object.values(this.log).forEach(item => {
+        Object.keys(item.data).forEach(unit => {
+          measures.push(unit)
+        })
+      })
+      return [...new Set(measures.flat())]
+    },
+    scales: function() {
+      let bufer = []
+      /* + Get nessesary scales */
+      Object.keys(measurements).forEach( key => {
+        if(this.units.some(item => {return item === key})) {
+          bufer.push(measurements[key])
+        }
+      })
+
+      return bufer
     }
   },
   methods: {
@@ -285,6 +313,49 @@ export default {
         start: this.startTimestamp,
         end: this.endTimestamp,
       });
+    },
+    updatert() {
+      if(this.realtime) {
+        /* get last time */
+        const ts = this.log[this.log.length-1].timestamp * 1000
+        if(ts) {
+          this.rttime = new Date(ts).toLocaleString()
+        }
+
+        /* get last data */
+        const data = this.log[this.log.length-1].data
+        let bufer = {}
+        
+        if(data) {
+
+          this.rtdata = []
+          Object.keys(measurements).forEach( item => {
+            Object.keys(data).forEach( datakey => {
+              
+              if(item === datakey) {
+                bufer = {}
+                bufer.key = datakey
+                bufer.measure = data[datakey]
+                bufer.label = measurements[item].label
+                bufer.unit = measurements[item].unit
+                if(measurements[item].zones.find(i => bufer.measure < i.value)){
+                  bufer.color = measurements[item].zones.find(i => bufer.measure < i.value).color
+                }
+
+
+                /* check for upper measure */
+                if(!bufer.color) {
+                  if(bufer.measure > measurements[item].zones[measurements[item].zones.length - 2].value) {
+                    bufer.color = measurements[item].zones[measurements[item].zones.length - 1].color
+                  }
+                }
+
+                this.rtdata.push(bufer)
+              }
+            })
+          })
+        }
+      }
     }
   },
   /* Causes some error, needs to be checked */
@@ -307,6 +378,12 @@ export default {
     start() {
       this.getHistory();
     },
+    log() {
+      this.updatert()
+    }
+  },
+  mounted () {
+    this.updatert()
   }
 };
 </script>
@@ -421,4 +498,33 @@ export default {
     width: var(--gap);
   }
   /* - scales */
+
+  /* + realtime */
+  .rt-title {
+    font-weight: 900;
+  }
+
+  .rt-title::before {
+    animation: blink infinite 1.5s;
+    background-color: var(--color-green);
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: 8px;
+    margin-right: 5px;
+    vertical-align: middle;
+    width: 8px;
+  }
+
+  .rt-time {
+    font-size: .8em;
+    font-weight: 300;
+    padding-left: 13px;
+  }
+
+  .rt-unit, .rt-number {
+    font-size: .8em;
+    font-weight: 900;
+  }
+  /* - realtime */
 </style>
