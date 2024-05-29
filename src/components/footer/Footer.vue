@@ -15,7 +15,7 @@
         :disabled="currentProvider == 'realtime'"
       />
 
-      <Measures :current="type.toLowerCase()" />
+      <Measures :current="measuretype.toLowerCase()" />
     </div>
 
     <div class="flexline">
@@ -39,6 +39,7 @@
         </section>
       </div>
       <button class="popovercontrol" popovertarget="mapsettings"><font-awesome-icon icon="fa-solid fa-gear" /></button>
+      <slot/>
     </div>
   </div>
 </template>
@@ -56,7 +57,7 @@ import Bookmarks from "../../components/Bookmarks.vue";
 
 export default {
   emits: ["history"],
-  props: ["currentProvider", "canHistory", "type"],
+  props: ["currentProvider", "canHistory", "measuretype"],
   components: { HistoryImport, Measures, Bookmarks },
 
   data() {
@@ -169,9 +170,9 @@ export default {
     display: flex;
     justify-content: space-between;
     left: 0;
-    padding: 0 0 var(--gap) var(--gap);
+    padding: 0 var(--app-controlsgap) var(--app-controlsgap);
     position: absolute;
-    right: calc(2 * var(--gap) + var(--app-inputheight));
+    right: 0;
     z-index: 12;
     pointer-events: none;
   }
@@ -181,15 +182,15 @@ export default {
   }
 
   .popover-bottom-right, .popover-bottom-left {
-    bottom: calc(var(--app-inputheight) + var(--gap) * 2);
-    max-width: calc(100vw - var(--gap) * 2);
+    bottom: calc(var(--app-inputheight) + var(--app-controlsgap) * 2);
+    max-width: calc(100vw - var(--app-controlsgap) * 2);
   }
 
   .popover-bottom-right {
-    right: var(--gap);
+    right: var(--app-controlsgap);
   }
 
   .popover-bottom-left {
-    left: var(--gap);
+    left: var(--app-controlsgap);
   }
 </style>

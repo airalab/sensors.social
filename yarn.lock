@@ -1607,6 +1607,11 @@
   dependencies:
     "@octokit/openapi-types" "^20.0.0"
 
+"@oddbird/popover-polyfill@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@oddbird/popover-polyfill/-/popover-polyfill-0.4.3.tgz#310d61c8fc7ee12d8dba05cdfa8bd7e5d5a281a3"
+  integrity sha512-kBS0ZAwH8kZqFl0mV89KPK4cLYl2ZoKSfYngK4dz1eLAhKzTK0yu4LrvLdMeM7JhjWK6GxBtiY+cl1s6vR2pUg==
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"

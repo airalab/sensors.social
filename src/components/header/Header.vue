@@ -76,7 +76,7 @@ export default {
 <style scoped>
   header {
     left: 0;
-    padding: var(--gap);
+    padding: var(--app-controlsgap);
     position: absolute;
     top: 0;
     width: 100vw;

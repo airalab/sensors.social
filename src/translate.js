@@ -210,7 +210,8 @@ export default {
       upto: "up to",
       above: "above"
     },
-    loadedsesnsors: "Loaded sensors"
+    loadedsesnsors: "Loaded sensors",
+    showlocation: "Show my location",
   },
   ru: {
     header: {
@@ -431,6 +432,7 @@ export default {
       upto: "до",
       above: "выше"
     },
-    loadedsesnsors: "Загружено датчиков"
+    loadedsesnsors: "Загружено датчиков",
+    showlocation: "Показать моё местоположение",
   },
 };
