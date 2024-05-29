@@ -1,11 +1,13 @@
 import L from "leaflet";
 import "leaflet-active-area";
-import "leaflet.locatecontrol";
-import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
+// import "leaflet.locatecontrol";
+// import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import "leaflet.tilelayer.colorfilter";
 import "leaflet/dist/leaflet.css";
 
 let map;
+let usermarker;
+
 const attrs = {
   attribution:
     '&copy; <a rel="nofollow" href="https://osm.org/copyright">OpenStreetMap</a> contributors',
@@ -54,14 +56,14 @@ export function init(position, zoom, theme = "light") {
   setTheme(theme);
   map.attributionControl.setPrefix("");
   map.setView(position, zoom);
-  L.control
-    .locate({
-      position: "bottomright",
-      strings: {
-        title: "Show my location",
-      },
-    })
-    .addTo(map);
+  // L.control
+  //   .locate({
+  //     position: "bottomright",
+  //     strings: {
+  //       title: "Show my location",
+  //     },
+  //   })
+  //   .addTo(map);
   map.zoomControl.remove();
   return map;
 }
@@ -75,4 +77,40 @@ export function setTheme(theme) {
     map.removeLayer(layerMapLight);
     map.addLayer(layerMapDark);
   }
+}
+
+export function setview(position, zoom) {
+  const map = instanceMap();
+  if(map){
+    map.setView(position, zoom);
+  }
+}
+
+export function drawuser(position, zoom) {
+
+  const map = instanceMap();
+  let radiusmarker = 100;
+
+  if(map){
+
+    if (usermarker) {
+      map.removeLayer(usermarker);
+    }
+
+    if(zoom > 0) {
+      radiusmarker = 10*zoom;
+    }
+
+    if(zoom > 4) {
+      radiusmarker = 5*zoom;
+    }
+
+    if(zoom > 7) {
+      radiusmarker = 2*zoom;
+    }
+
+    usermarker = new L.circleMarker(position, {radius: radiusmarker, opacity: 0.2});
+    usermarker.addTo(map);
+  }
+    
 }

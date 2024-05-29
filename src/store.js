@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import config from "./config";
 
 export const useStore = defineStore({
   id: "main",
@@ -11,7 +12,16 @@ export const useStore = defineStore({
     idbBookmarkVDbver: 1,
     idbBookmarkVDbtable: 'bookmarks',
     idbWatcherBroadcast: 'idbBookmarkChanges', /* this we need until IndexedDB Observer will be available in browsers */
-    sensors: [] // all uploaded sensors (getting via broadcast messages)
+    sensors: [], // all uploaded sensors (getting via broadcast messages)
+    /* mapposition explainer: */
+    /* first onload we're trying to find user's geolocation */
+    /* if it's not possible we're trying to get last location from local storage (now it's "map-position" in localStorage) */
+    /* if nothing has worked we take config geo or 0 meridian if something with config happened */
+    mapposition: {
+      zoom: config?.MAP.zoom || '4',
+      lat:  config?.MAP.position.lat || '0',
+      lng:  config?.MAP.position.lng || '0',
+    },
   }),
   actions: {
     // helps to color map black&white when popup is opened
@@ -53,5 +63,11 @@ export const useStore = defineStore({
     removeActiveCurrentMeasure() {
       this.currentActiveMeasure = "";
     },
+    setmapposition(lat, lng, zoom) {
+      this.mapposition.lat = lat;
+      this.mapposition.lng = lng;
+      this.mapposition.zoom = zoom;
+      localStorage.setItem("map-position", JSON.stringify({lat, lng, zoom}));
+    }
   },
 });

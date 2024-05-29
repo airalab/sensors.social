@@ -39,6 +39,8 @@
   --app-buttoncolor-hover:hsl(219, 63%, 35%);
   --app-buttontextcolor: #fff;
   --app-popoverbg: #fff;
+
+  --app-controlsgap: calc(var(--gap) * 2);
 }
 
 @media screen and (max-width: 500px) {

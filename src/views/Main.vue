@@ -8,9 +8,9 @@
     <SensorPopup v-else :currentProvider="provider" :type="type.toLowerCase()" :point="point" @modal="handlerModal" @close="handlerClose" @history="handlerHistoryLog" />
   </template>
 
-  <Map :type="type" :zoom="zoom" :lat="lat" :lng="lng" :availableWind="provider === 'realtime'" @clickMarker="handlerClick" @city="handlerChangeCity" />
+  <Map :measuretype="type" @clickMarker="handlerClick" :historyready="canHistory" :historyhandler="handlerHistory" />
   
-  <Footer :currentProvider="provider" :canHistory="canHistory" @history="handlerHistory" :type="type" />
+  <!-- <Footer :currentProvider="provider" :canHistory="canHistory" @history="handlerHistory" :type="type" /> -->
 
 </template>
 
@@ -18,7 +18,7 @@
 import { useStore } from "@/store";
 import moment from "moment";
 import Map from "../components/Map.vue";
-import Footer from "../components/footer/Footer.vue";
+// import Footer from "../components/footer/Footer.vue";
 import Header from "../components/header/Header.vue";
 import InstallPWA from "../components/header/InstallPWA.vue";
 import MessagePopup from "../components/message/MessagePopup.vue";
@@ -28,9 +28,6 @@ import * as providers from "../providers";
 import { instanceMap } from "../utils/map/instance";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
-import { getMapPosiotion, saveMapPosiotion } from "../utils/utils";
-
-const mapPosition = getMapPosiotion();
 
 export default {
   props: {
@@ -40,15 +37,6 @@ export default {
     type: {
       default: "pm10",
     },
-    zoom: {
-      default: mapPosition.zoom,
-    },
-    lat: {
-      default: mapPosition.lat,
-    },
-    lng: {
-      default: mapPosition.lng,
-    },
     sensor: {
       type: String,
     },
@@ -56,7 +44,7 @@ export default {
   components: {
     Header,
     Map,
-    Footer,
+    // Footer,
     SensorPopup,
     MessagePopup,
     InstallPWA,
@@ -75,7 +63,6 @@ export default {
       points: {},
       status: "online",
       canHistory: false,
-      city: "",
       isShowInfo: false,
       providerObj: null,
       store: useStore(),
@@ -87,11 +74,9 @@ export default {
     };
   },
   computed: {
-    // isLoader() {
-    //   return (
-    //     this.provider === "realtime" && Object.keys(this.points).length === 0
-    //   );
-    // },
+    zoom() { return this.store.mapposition.zoom },
+    lat() { return this.store.mapposition.lat },
+    lng() { return this.store.mapposition.lng },
   },
 
   watch: {
@@ -236,20 +221,6 @@ export default {
         this.isShowInfo = true;
       }
     },
-    handlerChangeCity(city) {
-      this.city = city;
-    },
-
-    getGeoLocationSuccess(pos) {
-      const crd = pos.coords;
-      console.log(crd.latitude, crd.longitude);
-      saveMapPosiotion(13, crd.latitude, crd.longitude);
-      window.location.reload();
-    },
-
-    getGeoLocationError(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
-    },
   },
 
   async mounted() {
@@ -327,20 +298,20 @@ export default {
     }
 
     // get user's geolocation with consent
-    const coords = JSON.parse(localStorage.getItem("map-position"));
-    if (
-      (coords &&
-        coords.lat === config.MAP.position.lat &&
-        coords.lng === config.MAP.position.lng) ||
-      (coords && Object.entries(coords).length === 0) ||
-      !coords
-    ) {
-      navigator.geolocation.getCurrentPosition(
-        this.getGeoLocationSuccess,
-        this.getGeoLocationError,
-        this.geoLocationOptions
-      );
-    }
+    // const coords = JSON.parse(localStorage.getItem("map-position"));
+    // if (
+    //   (coords &&
+    //     coords.lat === config.MAP.position.lat &&
+    //     coords.lng === config.MAP.position.lng) ||
+    //   (coords && Object.entries(coords).length === 0) ||
+    //   !coords
+    // ) {
+    //   navigator.geolocation.getCurrentPosition(
+    //     this.getGeoLocationSuccess,
+    //     this.getGeoLocationError,
+    //     this.geoLocationOptions
+    //   );
+    // }
 
     // matomo analytics
     this.$matomo && this.$matomo.disableCookies();

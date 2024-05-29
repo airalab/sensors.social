@@ -2,7 +2,7 @@
     <template v-if="!bookmarks || bookmarks.length < 1">{{$t("bookmarks.listempty")}}</template>
     <template v-else>
         <section v-for="bookmark in bookmarks" :key="bookmark.id" class="flexline">
-            <a :href="bookmark.link" target="_blank">
+            <a :href="bookmark.link" @click.prevent="showsensor">
                 <b v-if="bookmark.customName" class="name">{{bookmark.customName}}</b>
                 <b v-if="bookmark.address" :class="bookmark.customName ? 'addresssm' : 'adresslg'">{{bookmark.address}}</b>
             </a>
@@ -19,22 +19,26 @@ export default {
     data() {
         return {
             bookmarks: [],
-            store: useStore()
+            store: useStore(),
         }
     },
 
     methods: {
 
         async getbookmarks() {
-            this.bookmarks = await IDBgettable(this.store.idbBookmarkDbname, this.store.idbBookmarkVDbver, this.store.idbBookmarkVDbtable)
+            this.bookmarks = await IDBgettable(this.store.idbBookmarkDbname, this.store.idbBookmarkVDbver, this.store.idbBookmarkVDbtable);
         },
 
         deletebookmark(id) {
             IDBworkflow(this.store.idbBookmarkDbname, this.store.idbBookmarkVDbver, this.store.idbBookmarkVDbtable, 'readwrite', store => {
-                store.delete(id)
-                this.getbookmarks()
+                store.delete(id);
+                this.getbookmarks();
             })
-        }
+        },
+
+        showsensor() {
+            this.$router.go();
+        },
     },
 
     mounted() {
@@ -43,7 +47,7 @@ export default {
         const bc = new BroadcastChannel(this.store.idbWatcherBroadcast)
         bc.onmessage = e => {
             if(e.data) {
-                this.getbookmarks()
+                this.getbookmarks();
             }
         };
     }

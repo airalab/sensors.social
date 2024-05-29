@@ -1,34 +1,41 @@
 <template>
-  <div
-    :class="{ inactive: store.isColored }"
-    class="mapcontainer"
-    id="map"
-  ></div>
+  <div :class="{ inactive: store.isColored }" class="mapcontainer" id="map"></div>
+  <Footer :currentProvider="provider" :canHistory="historyready" @history="historyhandler" :measuretype="measuretype">
+    <button class="popovercontrol" v-if="geoavailable" @click.prevent="resetgeo" :area-label="$t('showlocation')" :title="$t('showlocation')"><font-awesome-icon icon="fa-solid fa-location-arrow" /></button>
+  </Footer>
 </template>
 
 <script>
 import { useStore } from "@/store";
 import config from "../config";
-import { init, removeMap, setTheme } from "../utils/map/instance";
+import { init, removeMap, setTheme, setview, drawuser } from "../utils/map/instance";
 import { init as initMarkers } from "../utils/map/marker";
-import { getCityByPos } from "../utils/map/utils";
 import { init as initWind } from "../utils/map/wind";
-import { saveMapPosiotion } from "../utils/utils";
+import Footer from "../components/footer/Footer.vue";
 
 export default {
   emits: ["city", "clickMarker", "close"],
-  props: ["zoom", "lat", "lng", "type", "availableWind"],
+  props: ["measuretype", "historyready", "historyhandler"],
+  components: {Footer},
   data() {
     return {
-      locale: localStorage.getItem("locale") || this.$i18n.locale || "en",
-      theme: window?.matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark",
       store: useStore(),
+      locale: localStorage.getItem("locale") || this.$i18n.locale || "en",
+      theme: window?.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark",
+      userposition: null,
+      geoavailable: false,
     };
   },
+
+  computed: {
+    zoom() { return this.store.mapposition.zoom },
+    lat() { return this.store.mapposition.lat },
+    lng() { return this.store.mapposition.lng },
+    provider() { return config.DEFAUL_TYPE_PROVIDER || this.$route.params.provider },
+  },
+
   methods: {
-    listener({ matches, media }) {
+    themelistener({ matches, media }) {
       if (!matches) {
         // Not matching anymore = not interesting
         return;
@@ -42,103 +49,120 @@ export default {
 
       setTheme(this.theme);
     },
-  },
-  computed: {
-    route() {
-      return this.$router;
+
+    relocatemap(lat, lng, zoom, type) {
+      const options = {
+          name: "main",
+          params: {
+            provider: this.provider || config.DEFAUL_TYPE_PROVIDER,
+            type: this.$route.params.type || "pm10",
+            zoom: zoom,
+            lat: lat,
+            lng: lng,
+            sensor: this.$route.params.sensor,
+          },
+      }
+      
+      if (this.$router.currentRoute.value.name === "main") {
+        /* added here check for current route is map (main), as it caused problems with other pages */
+        if(type === 'reload') {
+          this.$router.push(options).catch(e => { console.warn(e) });
+          setview([lat, lng], zoom);
+        } else {
+          this.$router.replace(options).catch(e => { console.warn(e) });
+        }
+      }
     },
+
+    getlocalmappos() {
+      if(localStorage.getItem("map-position")) {
+        const lastsettings = localStorage.getItem("map-position");
+        this.store.setmapposition(JSON.parse(lastsettings).lat, JSON.parse(lastsettings).lng, JSON.parse(lastsettings).zoom);
+      }
+    },
+
+    setgeo() {
+      return new Promise((resolve) => {
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              this.userposition = [position.coords.latitude, position.coords.longitude];
+              /* setting for the app globally user's geo position and zoom 20 for better view */
+              this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
+              this.geoavailable = true;
+              resolve();
+            },
+            e => {
+              console.warn(`ERROR(${e.code}): ${e.message}`);
+              /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
+              this.getlocalmappos();
+              resolve();
+          });
+        } else {
+          /* Если нет возможности "geolocation", то проверяем локальное хранилище */
+          this.getlocalmappos();
+          resolve();
+        }
+      })
+    },
+
+    resetgeo() {
+      const waitcoords = this.setgeo();
+      waitcoords.then( () => {
+        this.relocatemap(this.lat, this.lng, this.zoom, 'reload');
+      })
+    }
   },
+
   unmounted() {
     removeMap();
   },
+
   async mounted() {
     /* + get user's system theme */
     if (window.matchMedia) {
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", this.listener);
+        .addEventListener("change", this.themelistener);
       window
         .matchMedia("(prefers-color-scheme: light)")
-        .addEventListener("change", this.listener);
+        .addEventListener("change", this.themelistener);
     }
     /* - get user's system theme */
 
-    if (this.zoom > 9) {
-      getCityByPos(this.lat, this.lng, this.locale).then((r) => {
-        this.$emit("city", r);
+    /* + retrieve coordinates */
+    const waitcoords = this.setgeo();
+    /* - retrieve coordinates */
+
+
+    /* + Operate with a map */
+    waitcoords.then( async () => {
+      const map = init([this.lat, this.lng], this.zoom, this.theme);
+      this.relocatemap(this.lat, this.lng, this.zoom, 'reload');
+
+      if(this.userposition) {
+        drawuser(this.userposition, this.zoom);
+      }
+
+      map.on("zoomend", (e) => {
+        this.relocatemap(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
+        this.store.setmapposition(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
       });
-    }
 
-    const map = init([this.lat, this.lng], this.zoom, this.theme);
+      map.on("moveend", (e) => {
+        this.relocatemap(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
+        this.store.setmapposition(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
+      });
 
-    map.on("zoomend", (e) => {
-      const pos = e.target.getCenter();
-      saveMapPosiotion(
-        e.target.getZoom(),
-        pos.lat.toFixed(4),
-        pos.lng.toFixed(4)
-      );
+      initMarkers(map, this.measuretype, (data) => {
+        this.$emit("clickMarker", data);
+      });
 
-      if (this.$router.currentRoute.value.name === "main") {
-        /* added here check for current route is map (main), as it caused problems with other pages */
-        this.$router.replace({
-          name: "main",
-          params: {
-            provider:
-              this.$route.params.provider || config.DEFAUL_TYPE_PROVIDER,
-            type: this.$route.params.type || "pm10",
-            zoom: e.target.getZoom(),
-            lat: pos.lat.toFixed(4),
-            lng: pos.lng.toFixed(4),
-            sensor: this.$route.params.sensor,
-          },
-        });
+      if (this.provider === 'realtime') {
+        await initWind();
       }
     });
-
-    map.on("moveend", (e) => {
-      const pos = e.target.getCenter();
-      const zoom = e.target.getZoom();
-      if (zoom > 9) {
-        getCityByPos(pos.lat, pos.lng, this.locale).then((r) => {
-          this.$emit("city", r);
-        });
-      } else {
-        this.$emit("city", "");
-      }
-      saveMapPosiotion(
-        e.target.getZoom(),
-        pos.lat.toFixed(4),
-        pos.lng.toFixed(4)
-      );
-
-      if (this.$router.currentRoute.value.name === "main") {
-        /* added here check for current route is map (main), as it caused problems with other pages */
-        /* ! Here was a problem actually */
-        this.$router
-          .replace({
-            name: "main",
-            params: {
-              provider:
-                this.$route.params.provider || config.DEFAUL_TYPE_PROVIDER,
-              type: this.$route.params.type || "pm10",
-              zoom: e.target.getZoom(),
-              lat: pos.lat.toFixed(4),
-              lng: pos.lng.toFixed(4),
-              sensor: this.$route.params.sensor,
-            },
-          })
-          .catch(() => {});
-      }
-    });
-
-    initMarkers(map, this.type, (data) => {
-      this.$emit("clickMarker", data);
-    });
-
-    if (this.availableWind) {
-      await initWind();
-    }
+    /* - Operate with a map */
   },
 };
 </script>
