@@ -1,12 +1,14 @@
 <template>
   <select v-model="type" v-if="store.sensors.length > 0">
-    <option v-for="opt in availableoptions" :key="opt.value" :value="opt.value">{{opt.name}}</option>
+    <option v-for="opt in availableoptions" :key="opt.value" :value="opt.value">
+      {{ opt.name }}
+    </option>
   </select>
 </template>
 
 <script>
-import measurements from "../../measurements";
 import { useStore } from "@/store";
+import measurements from "../../measurements";
 
 export default {
   props: ["current"],
@@ -14,26 +16,28 @@ export default {
     return {
       type: this.current,
       measurements: Object.entries(measurements),
-      store: useStore()
+      store: useStore(),
     };
   },
   computed: {
     availableunits() {
-      let bufer = []
-      this.store.sensors.forEach( i => {
-        Object.keys(i.data).forEach(units => {
-          bufer.push(units)
-        })
-      })
-      return [...new Set(bufer)]
+      let bufer = [];
+      this.store.sensors.forEach((i) => {
+        Object.keys(i.data).forEach((units) => {
+          bufer.push(units);
+        });
+      });
+      return [...new Set(bufer)];
     },
     availableoptions() {
-      let buffer = []
-      this.availableunits.forEach(i => {
-        buffer.push({name: measurements[i].label, value: i})
-      })
-      return buffer
-    }
+      let buffer = [];
+      this.availableunits.forEach((i) => {
+        if (measurements[i]) {
+          buffer.push({ name: measurements[i].label, value: i });
+        }
+      });
+      return buffer;
+    },
   },
   watch: {
     type: async function () {
@@ -49,7 +53,7 @@ export default {
         },
       });
       this.$router.go(0);
-    }
-  }
+    },
+  },
 };
 </script>

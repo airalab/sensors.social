@@ -112,16 +112,14 @@ export default {
   computed: {
     series: function () {
       if (this.log.length > 0 && this.units && this.units.length > 0) {
-        const measurementNames = this.units.map((item) =>
-          item.toLowerCase()
-        );
+        const measurementNames = this.units.map((item) => item.toLowerCase());
         const series = [];
         for (let measurement of measurementNames) {
           series.push({
             visible: measurement === this.measurement,
             name: measurement,
             // color: "#000",
-            zones: measurements[measurement.toLowerCase()].zones,
+            zones: measurements[measurement.toLowerCase()]?.zones,
             lineWidth: 1,
             data: [],
             options: {
@@ -261,7 +259,7 @@ export default {
     },
   },
   mounted() {
-    this.fillData()
+    this.fillData();
   },
 };
 </script>
