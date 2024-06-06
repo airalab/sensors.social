@@ -1,37 +1,70 @@
 <template>
-  <div :class="{ inactive: store.isColored }" class="mapcontainer" id="map"></div>
-  <Footer :currentProvider="provider" :canHistory="historyready" @history="historyhandler" :measuretype="measuretype">
-    <button class="popovercontrol" v-if="geoavailable" @click.prevent="resetgeo" :area-label="$t('showlocation')" :title="$t('showlocation')"><font-awesome-icon icon="fa-solid fa-location-arrow" /></button>
+  <div
+    :class="{ inactive: store.isColored }"
+    class="mapcontainer"
+    id="map"
+  ></div>
+  <Footer
+    :currentProvider="provider"
+    :canHistory="historyready"
+    @history="historyhandler"
+    :measuretype="measuretype"
+  >
+    <button
+      class="popovercontrol"
+      v-if="geoavailable"
+      @click.prevent="resetgeo"
+      :area-label="$t('showlocation')"
+      :title="$t('showlocation')"
+    >
+      <font-awesome-icon icon="fa-solid fa-location-arrow" />
+    </button>
   </Footer>
 </template>
 
 <script>
 import { useStore } from "@/store";
+import Footer from "../components/footer/Footer.vue";
 import config from "../config";
-import { init, removeMap, setTheme, setview, drawuser } from "../utils/map/instance";
+import {
+  drawuser,
+  init,
+  removeMap,
+  setTheme,
+  setview,
+} from "../utils/map/instance";
 import { init as initMarkers } from "../utils/map/marker";
 import { init as initWind } from "../utils/map/wind";
-import Footer from "../components/footer/Footer.vue";
 
 export default {
   emits: ["city", "clickMarker", "close"],
   props: ["measuretype", "historyready", "historyhandler"],
-  components: {Footer},
+  components: { Footer },
   data() {
     return {
       store: useStore(),
       locale: localStorage.getItem("locale") || this.$i18n.locale || "en",
-      theme: window?.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark",
+      theme: window?.matchMedia("(prefers-color-scheme: light)").matches
+        ? "light"
+        : "dark",
       userposition: null,
       geoavailable: false,
     };
   },
 
   computed: {
-    zoom() { return this.store.mapposition.zoom },
-    lat() { return this.store.mapposition.lat },
-    lng() { return this.store.mapposition.lng },
-    provider() { return config.DEFAUL_TYPE_PROVIDER || this.$route.params.provider },
+    zoom() {
+      return this.store.mapposition.zoom;
+    },
+    lat() {
+      return this.store.mapposition.lat;
+    },
+    lng() {
+      return this.store.mapposition.lng;
+    },
+    provider() {
+      return this.$route.params.provider || config.DEFAUL_TYPE_PROVIDER;
+    },
   },
 
   methods: {
@@ -52,32 +85,41 @@ export default {
 
     relocatemap(lat, lng, zoom, type) {
       const options = {
-          name: "main",
-          params: {
-            provider: this.provider || config.DEFAUL_TYPE_PROVIDER,
-            type: this.$route.params.type || "pm10",
-            zoom: zoom,
-            lat: lat,
-            lng: lng,
-            sensor: this.$route.params.sensor,
-          },
-      }
-      
+        name: "main",
+        params: {
+          provider: this.provider || config.DEFAUL_TYPE_PROVIDER,
+          type: this.$route.params.type || "pm10",
+          zoom: zoom,
+          lat: lat,
+          lng: lng,
+          sensor: this.$route.params.sensor,
+        },
+      };
+
       if (this.$router.currentRoute.value.name === "main") {
+        console.log(options);
         /* added here check for current route is map (main), as it caused problems with other pages */
-        if(type === 'reload') {
-          this.$router.push(options).catch(e => { console.warn(e) });
+        if (type === "reload") {
+          this.$router.push(options).catch((e) => {
+            console.warn(e);
+          });
           setview([lat, lng], zoom);
         } else {
-          this.$router.replace(options).catch(e => { console.warn(e) });
+          this.$router.replace(options).catch((e) => {
+            console.warn(e);
+          });
         }
       }
     },
 
     getlocalmappos() {
-      if(localStorage.getItem("map-position")) {
+      if (localStorage.getItem("map-position")) {
         const lastsettings = localStorage.getItem("map-position");
-        this.store.setmapposition(JSON.parse(lastsettings).lat, JSON.parse(lastsettings).lng, JSON.parse(lastsettings).zoom);
+        this.store.setmapposition(
+          JSON.parse(lastsettings).lat,
+          JSON.parse(lastsettings).lng,
+          JSON.parse(lastsettings).zoom
+        );
       }
     },
 
@@ -85,33 +127,41 @@ export default {
       return new Promise((resolve) => {
         if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
-            position => {
-              this.userposition = [position.coords.latitude, position.coords.longitude];
+            (position) => {
+              this.userposition = [
+                position.coords.latitude,
+                position.coords.longitude,
+              ];
               /* setting for the app globally user's geo position and zoom 20 for better view */
-              this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
+              this.store.setmapposition(
+                this.userposition[0],
+                this.userposition[1],
+                20
+              );
               this.geoavailable = true;
               resolve();
             },
-            e => {
+            (e) => {
               console.warn(`ERROR(${e.code}): ${e.message}`);
               /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
               this.getlocalmappos();
               resolve();
-          });
+            }
+          );
         } else {
           /* Если нет возможности "geolocation", то проверяем локальное хранилище */
           this.getlocalmappos();
           resolve();
         }
-      })
+      });
     },
 
     resetgeo() {
       const waitcoords = this.setgeo();
-      waitcoords.then( () => {
-        this.relocatemap(this.lat, this.lng, this.zoom, 'reload');
-      })
-    }
+      waitcoords.then(() => {
+        this.relocatemap(this.lat, this.lng, this.zoom, "reload");
+      });
+    },
   },
 
   unmounted() {
@@ -134,31 +184,46 @@ export default {
     const waitcoords = this.setgeo();
     /* - retrieve coordinates */
 
-
     /* + Operate with a map */
-    waitcoords.then( async () => {
+    waitcoords.then(async () => {
       const map = init([this.lat, this.lng], this.zoom, this.theme);
-      this.relocatemap(this.lat, this.lng, this.zoom, 'reload');
+      this.relocatemap(this.lat, this.lng, this.zoom, "reload");
 
-      if(this.userposition) {
+      if (this.userposition) {
         drawuser(this.userposition, this.zoom);
       }
 
       map.on("zoomend", (e) => {
-        this.relocatemap(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
-        this.store.setmapposition(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
+        this.relocatemap(
+          e.target.getCenter().lat.toFixed(4),
+          e.target.getCenter().lng.toFixed(4),
+          e.target.getZoom()
+        );
+        this.store.setmapposition(
+          e.target.getCenter().lat.toFixed(4),
+          e.target.getCenter().lng.toFixed(4),
+          e.target.getZoom()
+        );
       });
 
       map.on("moveend", (e) => {
-        this.relocatemap(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
-        this.store.setmapposition(e.target.getCenter().lat.toFixed(4), e.target.getCenter().lng.toFixed(4), e.target.getZoom());
+        this.relocatemap(
+          e.target.getCenter().lat.toFixed(4),
+          e.target.getCenter().lng.toFixed(4),
+          e.target.getZoom()
+        );
+        this.store.setmapposition(
+          e.target.getCenter().lat.toFixed(4),
+          e.target.getCenter().lng.toFixed(4),
+          e.target.getZoom()
+        );
       });
 
       initMarkers(map, this.measuretype, (data) => {
         this.$emit("clickMarker", data);
       });
 
-      if (this.provider === 'realtime') {
+      if (this.provider === "realtime") {
         await initWind();
       }
     });
