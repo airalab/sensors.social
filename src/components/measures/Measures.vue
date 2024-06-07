@@ -9,6 +9,7 @@
 <script>
 import { useStore } from "@/store";
 import measurements from "../../measurements";
+import { getTypeProvider } from "../../utils/utils";
 
 export default {
   props: ["current"],
@@ -44,7 +45,7 @@ export default {
       await this.$router.push({
         name: "main",
         params: {
-          provider: this.$route.params.provider || "realtime",
+          provider: getTypeProvider(),
           type: this.type,
           zoom: this.$route.params.zoom,
           lat: this.$route.params.lat,

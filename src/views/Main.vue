@@ -1,17 +1,28 @@
 <template>
-
   <!-- <InstallPWA /> -->
   <Header />
 
   <template v-if="point">
     <MessagePopup v-if="point.data.message" @close="handlerClose" :data="point.data" />
-    <SensorPopup v-else :currentProvider="provider" :type="type.toLowerCase()" :point="point" @modal="handlerModal" @close="handlerClose" @history="handlerHistoryLog" />
+    <SensorPopup
+      v-else
+      :currentProvider="provider"
+      :type="type.toLowerCase()"
+      :point="point"
+      @modal="handlerModal"
+      @close="handlerClose"
+      @history="handlerHistoryLog"
+    />
   </template>
 
-  <Map :measuretype="type" @clickMarker="handlerClick" :historyready="canHistory" :historyhandler="handlerHistory" />
-  
-  <!-- <Footer :currentProvider="provider" :canHistory="canHistory" @history="handlerHistory" :type="type" /> -->
+  <Map
+    :measuretype="type"
+    :historyready="canHistory"
+    :historyhandler="handlerHistory"
+    @clickMarker="handlerClick"
+  />
 
+  <!-- <Footer :currentProvider="provider" :canHistory="canHistory" @history="handlerHistory" :type="type" /> -->
 </template>
 
 <script>
@@ -28,11 +39,12 @@ import * as providers from "../providers";
 import { instanceMap } from "../utils/map/instance";
 import * as markers from "../utils/map/marker";
 import { getAddressByPos } from "../utils/map/utils";
+import { getTypeProvider, setTypeProvider } from "../utils/utils";
 
 export default {
   props: {
     provider: {
-      default: config.DEFAUL_TYPE_PROVIDER,
+      default: getTypeProvider(),
     },
     type: {
       default: "pm10",
@@ -74,9 +86,15 @@ export default {
     };
   },
   computed: {
-    zoom() { return this.store.mapposition.zoom },
-    lat() { return this.store.mapposition.lat },
-    lng() { return this.store.mapposition.lng },
+    zoom() {
+      return this.store.mapposition.zoom;
+    },
+    lat() {
+      return this.store.mapposition.lat;
+    },
+    lng() {
+      return this.store.mapposition.lng;
+    },
   },
 
   watch: {
@@ -100,11 +118,7 @@ export default {
       if (today === startDate) {
         sensors = await this.providerObj.lastValuesForPeriod(start, end);
       } else {
-        sensors = await this.providerObj.maxValuesForPeriod(
-          start,
-          end,
-          this.type
-        );
+        sensors = await this.providerObj.maxValuesForPeriod(start, end, this.type);
       }
       for (const sensor in sensors) {
         for (const item of sensors[sensor]) {
@@ -121,9 +135,7 @@ export default {
         return;
       }
       point.data = point.data
-        ? Object.fromEntries(
-            Object.entries(point.data).map(([k, v]) => [k.toLowerCase(), v])
-          )
+        ? Object.fromEntries(Object.entries(point.data).map(([k, v]) => [k.toLowerCase(), v]))
         : {};
       markers.addPoint({
         ...point,
@@ -146,10 +158,7 @@ export default {
       }
 
       if (
-        Object.prototype.hasOwnProperty.call(
-          point.data,
-          this.type.toLowerCase()
-        ) ||
+        Object.prototype.hasOwnProperty.call(point.data, this.type.toLowerCase()) ||
         Object.prototype.hasOwnProperty.call(point.data, "message")
       ) {
         this.points[point.sensor_id] = point.data;
@@ -169,11 +178,7 @@ export default {
         log = await this.providerObj.getHistoryBySensor(point.sensor_id);
       }
 
-      const address = await getAddressByPos(
-        point.geo.lat,
-        point.geo.lng,
-        this.$i18n.locale
-      );
+      const address = await getAddressByPos(point.geo.lat, point.geo.lng, this.$i18n.locale);
 
       this.point = {
         ...point,
@@ -183,11 +188,7 @@ export default {
     },
     async handlerHistoryLog({ sensor_id, start, end }) {
       if (this.status === "history") {
-        const log = await this.providerObj.getHistoryPeriodBySensor(
-          sensor_id,
-          start,
-          end
-        );
+        const log = await this.providerObj.getHistoryPeriodBySensor(sensor_id, start, end);
         this.point = {
           ...this.point,
           log: [...log],
@@ -223,39 +224,41 @@ export default {
     },
   },
 
+  created() {
+    setTypeProvider(this.provider);
+  },
   async mounted() {
-    document.querySelector('#app').classList.add('map')
+    document.querySelector("#app").classList.add("map");
 
     /* + listnenning to broadcast messages about sensors */
-    const bcnewsensor = new BroadcastChannel('sensors')
-    const bcclearsensors = new BroadcastChannel('sensorsremoved')
-    this.store.sensors = []
+    const bcnewsensor = new BroadcastChannel("sensors");
+    const bcclearsensors = new BroadcastChannel("sensorsremoved");
+    this.store.sensors = [];
 
-    bcnewsensor.onmessage = e => {
-
+    bcnewsensor.onmessage = (e) => {
       /* add only unique items */
-      if(e.data) {
-        let unique = true
+      if (e.data) {
+        let unique = true;
 
-        this.store.sensors.forEach(i => {
-          if(e.data.sensor_id === i.sensor_id) {
+        this.store.sensors.forEach((i) => {
+          if (e.data.sensor_id === i.sensor_id) {
             unique = false;
-            return
+            return;
           }
-        })
+        });
 
-        if(unique) {
-          this.store.sensors.push(e.data)
+        if (unique) {
+          this.store.sensors.push(e.data);
         }
       }
     };
 
-    bcclearsensors.onmessage = e => {
-      if(e.data) {
-        this.store.sensors = []
+    bcclearsensors.onmessage = (e) => {
+      if (e.data) {
+        this.store.sensors = [];
       }
     };
-    
+
     /* - listnenning to broadcast messages about sensors */
 
     if (this.provider === "remote") {
@@ -286,11 +289,7 @@ export default {
     });
     if (this.provider === "remote") {
       const iRemote = setInterval(() => {
-        if (
-          this.providerObj &&
-          this.providerObj.connection &&
-          markers.isReadyLayers()
-        ) {
+        if (this.providerObj && this.providerObj.connection && markers.isReadyLayers()) {
           clearInterval(iRemote);
           this.canHistory = true;
         }
@@ -317,6 +316,5 @@ export default {
     this.$matomo && this.$matomo.disableCookies();
     this.$matomo && this.$matomo.trackPageView();
   },
-
 };
 </script>

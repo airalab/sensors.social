@@ -1,9 +1,5 @@
 <template>
-  <div
-    :class="{ inactive: store.isColored }"
-    class="mapcontainer"
-    id="map"
-  ></div>
+  <div :class="{ inactive: store.isColored }" class="mapcontainer" id="map"></div>
   <Footer
     :currentProvider="provider"
     :canHistory="historyready"
@@ -25,16 +21,10 @@
 <script>
 import { useStore } from "@/store";
 import Footer from "../components/footer/Footer.vue";
-import config from "../config";
-import {
-  drawuser,
-  init,
-  removeMap,
-  setTheme,
-  setview,
-} from "../utils/map/instance";
+import { drawuser, init, removeMap, setTheme, setview } from "../utils/map/instance";
 import { init as initMarkers } from "../utils/map/marker";
 import { init as initWind } from "../utils/map/wind";
+import { getTypeProvider } from "../utils/utils";
 
 export default {
   emits: ["city", "clickMarker", "close"],
@@ -44,9 +34,7 @@ export default {
     return {
       store: useStore(),
       locale: localStorage.getItem("locale") || this.$i18n.locale || "en",
-      theme: window?.matchMedia("(prefers-color-scheme: light)").matches
-        ? "light"
-        : "dark",
+      theme: window?.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark",
       userposition: null,
       geoavailable: false,
     };
@@ -63,7 +51,7 @@ export default {
       return this.store.mapposition.lng;
     },
     provider() {
-      return this.$route.params.provider || config.DEFAUL_TYPE_PROVIDER;
+      return getTypeProvider();
     },
   },
 
@@ -87,7 +75,7 @@ export default {
       const options = {
         name: "main",
         params: {
-          provider: this.provider || config.DEFAUL_TYPE_PROVIDER,
+          provider: getTypeProvider(),
           type: this.$route.params.type || "pm10",
           zoom: zoom,
           lat: lat,
@@ -97,7 +85,6 @@ export default {
       };
 
       if (this.$router.currentRoute.value.name === "main") {
-        console.log(options);
         /* added here check for current route is map (main), as it caused problems with other pages */
         if (type === "reload") {
           this.$router.push(options).catch((e) => {
@@ -128,16 +115,9 @@ export default {
         if ("geolocation" in navigator) {
           navigator.geolocation.getCurrentPosition(
             (position) => {
-              this.userposition = [
-                position.coords.latitude,
-                position.coords.longitude,
-              ];
+              this.userposition = [position.coords.latitude, position.coords.longitude];
               /* setting for the app globally user's geo position and zoom 20 for better view */
-              this.store.setmapposition(
-                this.userposition[0],
-                this.userposition[1],
-                20
-              );
+              this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
               this.geoavailable = true;
               resolve();
             },
