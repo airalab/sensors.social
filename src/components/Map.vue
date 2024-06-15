@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ inactive: store.isColored }" class="mapcontainer" id="map"></div>
+  <div :class="{ inactive: store.mapinactive }" class="mapcontainer" id="map"></div>
   <Footer
     :currentProvider="provider"
     :canHistory="historyready"
@@ -20,11 +20,11 @@
 
 <script>
 import { useStore } from "@/store";
-import Footer from "../components/footer/Footer.vue";
 import { drawuser, init, removeMap, setTheme, setview } from "../utils/map/instance";
 import { init as initMarkers } from "../utils/map/marker";
 import { init as initWind } from "../utils/map/wind";
 import { getTypeProvider } from "../utils/utils";
+import Footer from "../components/footer/Footer.vue";
 
 export default {
   emits: ["city", "clickMarker", "close"],
@@ -126,6 +126,11 @@ export default {
               /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
               this.getlocalmappos();
               resolve();
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 200000,
+              maximumAge: 0
             }
           );
         } else {
@@ -187,16 +192,20 @@ export default {
       });
 
       map.on("moveend", (e) => {
-        this.relocatemap(
-          e.target.getCenter().lat.toFixed(4),
-          e.target.getCenter().lng.toFixed(4),
-          e.target.getZoom()
-        );
-        this.store.setmapposition(
-          e.target.getCenter().lat.toFixed(4),
-          e.target.getCenter().lng.toFixed(4),
-          e.target.getZoom()
-        );
+        /* setTimeout for mobiles (whne swiping up app, it causes unpleasant map moving before closing app) */
+        setTimeout( () => {
+          this.relocatemap(
+            e.target.getCenter().lat.toFixed(4),
+            e.target.getCenter().lng.toFixed(4),
+            e.target.getZoom()
+          );
+          this.store.setmapposition(
+            e.target.getCenter().lat.toFixed(4),
+            e.target.getCenter().lng.toFixed(4),
+            e.target.getZoom()
+          );
+        }, 50)
+        
       });
 
       initMarkers(map, this.measuretype, (data) => {
@@ -208,6 +217,9 @@ export default {
       }
     });
     /* - Operate with a map */
+
+    /* get bookmarks and listenning for broadcast from DB */
+    await this.store.idbBookmarkGet();
   },
 };
 </script>

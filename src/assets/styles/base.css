@@ -162,6 +162,15 @@ label {
 .popovercontrol .svg-inline--fa path {
   fill: var(--app-textcolor);
 }
+
+@supports not selector(:popover-open) {
+  .popover {
+    background-color: #fff;
+    inset: unset;
+    border: 0;
+    padding: var(--gap);
+  }
+}
 /* - POPOVER API */
 
 /* + SCROLLABLE CONTENT */

@@ -2,7 +2,7 @@
   <header class="flexline space-between">
     <div class="flexline align-start">
       <router-link to="/" class="appicon"><img alt="App logo" src="../../../public/app-icon-512.png" /></router-link>
-      <b class="text-changabletheme" v-if="countPoints > 0">{{$t('loadedsesnsors')}}: {{countPoints}}</b>
+      <b class="sensorscount" v-if="countPoints > 0"><IconSensor/> {{countPoints}}</b>
     </div>
 
     <div class="flexline">
@@ -11,7 +11,8 @@
         <option value="ru">Русский</option>
       </select>
 
-      <div id="about" class="popover-top-right" popover>
+
+      <div id="about" class="popover popover-top-right" popover>
         <template v-if="locale === 'ru'">
           <h3>Web3 открытая сеть датчиков</h3>
           <p>Добро пожаловать в открытую сеть датчиков, которая построена на open-source принципах и поддерживается энтузиастами (см. 
@@ -46,6 +47,7 @@
           </section>
       </div>
       <button class="popovercontrol" popovertarget="about"><font-awesome-icon icon="fa-solid fa-bars" /></button>
+  
 
     </div>
   </header>
@@ -53,12 +55,15 @@
 
 <script>
 import { useStore } from "@/store";
+import IconSensor from "../icons/Sensor.vue";
 
 export default {
+  components: { IconSensor },
+
   data() {
     return {
       locale: localStorage.getItem("locale") || this.$i18n.locale || 'en',
-      store: useStore()
+      store: useStore(),
     }
   },
   watch: {
@@ -102,10 +107,16 @@ export default {
   }
 
   .popover-top-right {
-    top: calc(var(--gap) * 2 + var(--app-inputheight));
+    top: calc(var(--gap) * 3 + var(--app-inputheight));
     right: var(--gap);
     width: 500px;
     max-width: calc(100vw - var(--gap) * 2);
+  }
+
+  @supports not selector(:popover-open) {
+    .popover-top-right {
+      right: var(--gap) !important;
+    }
   }
 
   #about p {
@@ -122,5 +133,20 @@ export default {
 
   .navlinks a:not(:last-child) {
     margin-bottom: calc(var(--gap) * .5);
+  }
+
+  .sensorscount {
+    color: #fff;
+    background: var(--color-orange);
+    padding: 4px 10px;
+    display: block;
+    border-radius: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .sensorscount svg {
+    width: 22px;
   }
 </style>

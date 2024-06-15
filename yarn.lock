@@ -3293,10 +3293,15 @@ hasown@^2.0.0, hasown@^2.0.1, hasown@^2.0.2:
   dependencies:
     function-bind "^1.1.2"
 
-highcharts@^10.2.1:
-  version "10.2.1"
-  resolved "https://registry.yarnpkg.com/highcharts/-/highcharts-10.2.1.tgz#8723b53a5461c12b61f3ff268c28ff80187b9bf1"
-  integrity sha512-4QwLQwWc0XdBHXc2Uy6IJisAUir+sgQIMyFqYZc3BD9iFSFUdllLkRyoed6y33aPb73LAMZE2qLB5SuLqFE/fg==
+highcharts-vue@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/highcharts-vue/-/highcharts-vue-2.0.1.tgz#296bc6131caadb84edb30524cbd40e302976a52d"
+  integrity sha512-7yVaKvsWlx7OgmKFXE2D99fi/0tr2A85H4KUz3jL7CRQhAwvEvXgtDIyTBGLHJsOC5L9VlppAI7k6KfIi0j0hg==
+
+highcharts@^11.4.3:
+  version "11.4.3"
+  resolved "https://registry.yarnpkg.com/highcharts/-/highcharts-11.4.3.tgz#a6cd961e0a7d4bf749ff32db41a90125a6ab4673"
+  integrity sha512-rMmvYvcdwyUVfnRPfiZ0PnW6TgVhoS0FTBI8fc4Fp8l8ocoC9dMecvxS6E6tm7h7LrnSGoEo3b/0IRHuLatD2w==
 
 human-signals@^4.3.0:
   version "4.3.1"
@@ -5293,11 +5298,6 @@ vue-eslint-parser@^9.0.1:
     esquery "^1.4.0"
     lodash "^4.17.21"
     semver "^7.3.6"
-
-vue-highcharts@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/vue-highcharts/-/vue-highcharts-0.2.0.tgz#93754ba2ee199f3c506200987e1dc74e9adc93d9"
-  integrity sha512-+zXI/ei3KgpVuEreyeTsvLIp092m+03JtTwg6gj7DxtjJqi4LhYvV/rBnUoaXuvqTsiPNwPBPKeyiATL9iM2Gw==
 
 vue-i18n@9:
   version "9.2.2"

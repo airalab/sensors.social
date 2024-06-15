@@ -2,12 +2,13 @@
   <div class="mapcontrols">
 <div style="display:none">{{bufer}}</div>
     <div class="flexline">
-      <div id="bookmarks" class="popover-bottom-left" popover>
+
+      <div id="bookmarks" class="popover-bottom-left popover" popover>
         <h3>{{$t("bookmarks.listtitle")}}</h3>
         <Bookmarks />
       </div>
-      <button class="popovercontrol" popovertarget="bookmarks"><font-awesome-icon icon="fa-solid fa-bookmark" /></button>
-      
+      <button class="popovercontrol" :class="bookmarks && bookmarks.length > 0 ? 'active' : null" popovertarget="bookmarks"><font-awesome-icon icon="fa-solid fa-bookmark" /></button>
+
       <input
         type="date"
         v-model="start"
@@ -19,7 +20,7 @@
     </div>
 
     <div class="flexline">
-      <div id="mapsettings" class="popover-bottom-right" popover>
+      <div id="mapsettings" class="popover-bottom-right popover" popover>
         <section>
           <input id="realtime" v-model="realtime" type="checkbox" :checked="realtime" />
           <label for="realtime">{{$t('provider.realtime')}}</label>
@@ -62,6 +63,7 @@ export default {
 
   data() {
     return {
+      store: useStore(),
       isActive: false,
       isActiveMenu: false,
       isMeasuresPopupOpen: false,
@@ -71,7 +73,6 @@ export default {
       messages: config.SHOW_MESSAGES,
       start: moment().format("YYYY-MM-DD"),
       maxDate: moment().format("YYYY-MM-DD"),
-      store: useStore(),
     };
   },
   computed: {
@@ -85,6 +86,9 @@ export default {
         moment(this.start + " 23:59:59", "YYYY-MM-DD HH:mm:ss").format("X")
       );
     },
+    bookmarks: function() {
+      return this.store.idbBookmarks;
+    }
   },
   watch: {
     async realtime(v) {
@@ -121,35 +125,6 @@ export default {
   },
 
   methods: {
-    toggleOpen(state) {
-      if (!this[state]) {
-        this[state] = true;
-        this.store.colorMap();
-      } else {
-        this[state] = false;
-        this.store.removeColorMap();
-      }
-    },
-
-    toggleIsActive() {
-      this.toggleOpen("isActive");
-    },
-
-    toggleMobileMenu() {
-      this.toggleOpen("isActiveMenu");
-    },
-
-    toggleMeasurePopup(e) {
-      if (
-        e.target.classList.contains("footer__close-popup") &&
-        this.$refs.details.open
-      ) {
-        this.$refs.details.open = false;
-      } else {
-        this.toggleOpen("isMeasuresPopupOpen");
-      }
-    },
-
     getHistory() {
       if (this.realtime) {
         return;
@@ -159,7 +134,7 @@ export default {
         end: this.endTimestamp,
       });
     },
-  }
+  },
 };
 </script>
 
@@ -192,5 +167,15 @@ export default {
 
   .popover-bottom-left {
     left: var(--app-controlsgap);
+  }
+</style>
+
+<style>
+  .popovercontrol.active {
+    border-color: var(--color-green);
+  }
+
+  .popovercontrol.active path {
+    fill: var(--color-green) !important;
   }
 </style>
