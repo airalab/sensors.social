@@ -12,7 +12,7 @@
       <section class="flexline space-between">
         <div class="flexline">
           <input v-if="!realtime" type="date" v-model="start" :max="maxDate" />
-          <Bookmark :address="address.address && address.address.join(', ')" :link="linkSensor" />
+          <Bookmark :address="address?.address && address?.address.join(', ')" :link="linkSensor" />
         </div>
         <button v-if="sharable" @click="shareData" class="button">
           <font-awesome-icon icon="fa-solid fa-share-from-square" />
@@ -36,7 +36,7 @@
       </section>
 
       <section>
-        <Chart
+        <!-- <Chart
           v-if="log.length > 0"
           :model="model"
           :log="log"
@@ -44,7 +44,9 @@
           :sensor_id="sensor_id"
           :type="type"
           :units="units"
-        />
+        /> -->
+
+        <Chart :point="point" :log="log" />
       </section>
 
       <section>
@@ -89,7 +91,7 @@
           </div>
         </div>
       </section>
-
+      
       <section v-if="units && scales && scales.length > 0">
         <h3>{{ $t("scales.title") }}</h3>
         <div class="scalegrid">
@@ -123,7 +125,7 @@
       </div>
     </div>
 
-    <button @click.prevent="$emit('close')" aria-label="Close sensor" class="close">
+    <button @click.prevent="closesensor" aria-label="Close sensor" class="close">
       <font-awesome-icon icon="fa-solid fa-xmark" />
     </button>
   </div>
@@ -385,6 +387,19 @@ export default {
           });
         }
       }
+    },
+
+    closesensor() {
+
+      /* this is for removing sensor id, it goes from dummy reload in bookmark, 
+      that I needed as couldn't manage proper handle for the openning - @positivecrash */
+      const urlstr = window.location.href;
+      if(urlstr.includes(this.sensor_id)){
+        const u = urlstr.replace(this.sensor_id, "");
+        window.location.href = u;
+      }
+    
+      this.$emit('close');
     },
   },
   /* Causes some error, needs to be checked */

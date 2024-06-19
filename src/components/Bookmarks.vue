@@ -2,7 +2,7 @@
     <template v-if="!bookmarks || bookmarks.length < 1">{{$t("bookmarks.listempty")}}</template>
     <template v-else>
         <section v-for="bookmark in bookmarks" :key="bookmark.id" class="flexline">
-            <a :href="bookmark.link" @click.prevent="showsensor">
+            <a :href="bookmark.link" @click.prevent="showsensor(bookmark.link)">
                 <b v-if="bookmark.customName" class="name">{{bookmark.customName}}</b>
                 <b v-if="bookmark.address" :class="bookmark.customName ? 'addresssm' : 'adresslg'">{{bookmark.address}}</b>
             </a>
@@ -13,44 +13,41 @@
 
 <script>
 import { useStore } from "@/store";
-import {IDBgettable, IDBworkflow} from "../idb";
+import { IDBworkflow } from "../idb";
 
 export default {
     data() {
         return {
-            bookmarks: [],
             store: useStore(),
+        }
+    },
+
+    computed: {
+        bookmarks: function() {
+            return this.store.idbBookmarks;
         }
     },
 
     methods: {
 
-        async getbookmarks() {
-            this.bookmarks = await IDBgettable(this.store.idbBookmarkDbname, this.store.idbBookmarkVDbver, this.store.idbBookmarkVDbtable);
-        },
-
         deletebookmark(id) {
             IDBworkflow(this.store.idbBookmarkDbname, this.store.idbBookmarkVDbver, this.store.idbBookmarkVDbtable, 'readwrite', store => {
                 store.delete(id);
-                this.getbookmarks();
+
+                const bc = new BroadcastChannel(this.store.idbWatcherBroadcast);
+                bc.postMessage(true);
+                bc.close();
             })
         },
 
-        showsensor() {
-            this.$router.go();
-        },
+        showsensor(link) {
+            /* 
+            I'm really sorry for that, but current routing system is very complicated and it seems 
+            very hard to impelement proper router mechanism here, so I just reload - positivecrash */
+            window.location.href = link;
+            location.reload();
+        }
     },
-
-    mounted() {
-        this.getbookmarks()
-
-        const bc = new BroadcastChannel(this.store.idbWatcherBroadcast)
-        bc.onmessage = e => {
-            if(e.data) {
-                this.getbookmarks();
-            }
-        };
-    }
 }
 </script>
 
@@ -83,4 +80,5 @@ export default {
     button:hover {
         color: var(--color-red);
     }
+    
 </style>

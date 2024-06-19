@@ -98,7 +98,7 @@ export default {
   },
 
   watch: {
-    point(_, oldValue) {
+    point(newValue, oldValue) {
       if (oldValue) {
         markers.hidePath(oldValue.sensor_id);
       }
@@ -172,8 +172,8 @@ export default {
           this.providerObj.start,
           this.providerObj.end
         );
-        // adds b&W filter from the map
-        this.store.colorMap();
+
+        this.store.mapinactive = true;
       } else {
         log = await this.providerObj.getHistoryBySensor(point.sensor_id);
       }
@@ -185,6 +185,7 @@ export default {
         address,
         log: [...log],
       };
+
     },
     async handlerHistoryLog({ sensor_id, start, end }) {
       if (this.status === "history") {
@@ -196,14 +197,14 @@ export default {
       }
     },
     handlerClose() {
-      // removes b&W filter from the map
-      this.store.removeColorMap();
+      this.store.mapinactive = false;
+
       // removes all active graphs tabs in sensor popup
       this.store.removeAllCurrentMeasures();
       this.store.removeActiveCurrentMeasure();
-      if (this.point) {
-        markers.hidePath(this.point.sensor_id);
-      }
+      // if (this.point) {
+      //   markers.hidePath(this.point.sensor_id);
+      // }
       this.point = null;
       instanceMap().setActiveArea({
         position: "absolute",
@@ -215,7 +216,7 @@ export default {
     },
     handlerCloseInfo() {
       this.isShowInfo = false;
-      // removing b&w filter form the map after popup closes
+      this.store.mapinactive = false;
     },
     handlerModal(modal) {
       if (modal === "info") {
