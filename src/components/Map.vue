@@ -25,6 +25,7 @@ import { init as initMarkers } from "../utils/map/marker";
 import { init as initWind } from "../utils/map/wind";
 import { getTypeProvider } from "../utils/utils";
 import Footer from "../components/footer/Footer.vue";
+import config from "../config";
 
 export default {
   emits: ["city", "clickMarker", "close"],
@@ -101,7 +102,7 @@ export default {
 
     getlocalmappos() {
       if (localStorage.getItem("map-position")) {
-        const lastsettings = localStorage.getItem("map-position");
+        const lastsettings = localStorage.getItem("map-position") || JSON.stringify({"lat": config.MAP.position.lat, "lng": config.MAP.position.lng, "zoom": "20" });
         this.store.setmapposition(
           JSON.parse(lastsettings).lat,
           JSON.parse(lastsettings).lng,
