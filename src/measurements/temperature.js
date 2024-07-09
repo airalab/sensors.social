@@ -47,8 +47,8 @@ export default {
       value: 9999,
       color: "#ff9d00",
       label: {
-        en: "Very warm",
-        ru: "Очень тепло"
+        en: "Hot",
+        ru: "Жарко"
       }
     },
   ],
