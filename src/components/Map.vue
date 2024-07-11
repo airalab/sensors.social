@@ -113,32 +113,41 @@ export default {
 
     setgeo() {
       return new Promise((resolve) => {
-        if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              this.userposition = [position.coords.latitude, position.coords.longitude];
-              /* setting for the app globally user's geo position and zoom 20 for better view */
-              this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
-              this.geoavailable = true;
-              resolve();
-            },
-            (e) => {
-              console.warn(`ERROR(${e.code}): ${e.message}`);
-              /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
-              this.getlocalmappos();
-              resolve();
-            },
-            {
-              enableHighAccuracy: true,
-              timeout: 200000,
-              maximumAge: 0
-            }
-          );
+        const latinurl = this.$router?.currentRoute.value?.params?.lat;
+        const lnginurl = this.$router?.currentRoute.value?.params?.lng;
+        
+        if(!latinurl && !lnginurl) {
+          if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                this.userposition = [position.coords.latitude, position.coords.longitude];
+                /* setting for the app globally user's geo position and zoom 20 for better view */
+                this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
+                this.geoavailable = true;
+                resolve();
+              },
+              (e) => {
+                console.warn(`ERROR(${e.code}): ${e.message}`);
+                /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
+                this.getlocalmappos();
+                resolve();
+              },
+              {
+                enableHighAccuracy: true,
+                // timeout: 2000,
+                maximumAge: 0
+              }
+            );
+          } else {
+            /* Если нет возможности "geolocation", то проверяем локальное хранилище */
+            this.getlocalmappos();
+            resolve();
+          }
         } else {
-          /* Если нет возможности "geolocation", то проверяем локальное хранилище */
-          this.getlocalmappos();
+          this.store.setmapposition(latinurl, lnginurl, 20);
           resolve();
         }
+        
       });
     },
 

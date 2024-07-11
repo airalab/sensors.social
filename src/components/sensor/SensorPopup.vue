@@ -12,7 +12,7 @@
       <section class="flexline space-between">
         <div class="flexline">
           <input v-if="!realtime" type="date" v-model="start" :max="maxDate" />
-          <Bookmark :address="address?.address && address?.address.join(', ')" :link="linkSensor" />
+          <Bookmark v-if="sensor_id" :address="address?.address && address?.address.join(', ')" :link="sensor_id" :geo="geo" />
         </div>
         <button v-if="sharable" @click="shareData" class="button">
           <font-awesome-icon icon="fa-solid fa-share-from-square" />

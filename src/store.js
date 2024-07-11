@@ -8,9 +8,9 @@ export const useStore = defineStore({
     currentSensorPopupMeasures: [],
     currentActiveMeasure: "",
     idbBookmarkDbname: 'SensorsDBBookmarks',
-    idbBookmarkVDbver: 1,
+    idbBookmarkVDbver: 6,
     idbBookmarkVDbtable: 'bookmarks',
-    idbWatcherBroadcast: 'idbBookmarkChanges', /* this we need until IndexedDB Observer will be available in browsers */
+    idbWatcherBroadcast: 'idb_changed', /* this we need until IndexedDB Observer will be available in browsers */
     idbBookmarks: null,
     sensors: [], // all uploaded sensors (getting via broadcast messages)
     /* mapposition explainer: */
@@ -68,9 +68,9 @@ export const useStore = defineStore({
 
       const bc = new BroadcastChannel(this.idbWatcherBroadcast);
       bc.onmessage = async (e) => {
-          if(e.data) {
-            this.idbBookmarks = await IDBgettable(this.idbBookmarkDbname, this.idbBookmarkVDbver, this.idbBookmarkVDbtable);
-          }
+        if(e.data === this.idbBookmarkVDbtable) {
+          this.idbBookmarks = await IDBgettable(this.idbBookmarkDbname, this.idbBookmarkVDbver, this.idbBookmarkVDbtable);
+        }
       };
     },
   },
