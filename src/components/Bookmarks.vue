@@ -2,7 +2,7 @@
     <template v-if="!bookmarks || bookmarks.length < 1">{{$t("bookmarks.listempty")}}</template>
     <template v-else>
         <section v-for="bookmark in bookmarks" :key="bookmark.id" class="flexline">
-            <a :href="bookmark.link" @click.prevent="showsensor(bookmark.link)">
+            <a :href="getlink(bookmark)" @click.prevent="showsensor(bookmark)">
                 <b v-if="bookmark.customName" class="name">{{bookmark.customName}}</b>
                 <b v-if="bookmark.address" :class="bookmark.customName ? 'addresssm' : 'adresslg'">{{bookmark.address}}</b>
             </a>
@@ -14,6 +14,7 @@
 <script>
 import { useStore } from "@/store";
 import { IDBworkflow } from "../idb";
+import { setview } from "../utils/map/instance";
 
 export default {
     data() {
@@ -35,17 +36,25 @@ export default {
                 store.delete(id);
 
                 const bc = new BroadcastChannel(this.store.idbWatcherBroadcast);
-                bc.postMessage(true);
+                bc.postMessage(this.store.idbBookmarkVDbtable);
                 bc.close();
             })
         },
 
-        showsensor(link) {
+        showsensor(bookmark) {
             /* 
             I'm really sorry for that, but current routing system is very complicated and it seems 
             very hard to impelement proper router mechanism here, so I just reload - positivecrash */
-            window.location.href = link;
+            window.location.href = this.getlink(bookmark);
             location.reload();
+        },
+
+        getlink(bookmark) {
+            if(bookmark.link && bookmark.geo) {
+                const g = JSON.parse(bookmark.geo);
+                const provider = localStorage.getItem("provider_type") || "remote";
+                return window.location.origin + '/#/' + provider + '/' + 'pm10' + '/' + '20' + '/' + g.lat + '/' + g.lng + '/' + bookmark.link;
+            }
         }
     },
 }

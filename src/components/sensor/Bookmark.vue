@@ -13,7 +13,7 @@ import { useStore } from "@/store";
 import { IDBgettable, IDBworkflow } from "../../idb";
 
 export default {
-  props: ["address", "link"],
+  props: ["address", "link", "geo"],
 
   data() {
     return {
@@ -78,13 +78,14 @@ export default {
               customName: this.bookmarkname,
               address: this.$props.address,
               link: this.$props.link,
+              geo: JSON.stringify(this.$props.geo)
             });
             this.IsBookmarked = true;
           })
         }
 
         const bc = new BroadcastChannel(this.store.idbWatcherBroadcast)
-        bc.postMessage(true)
+        bc.postMessage(this.store.idbBookmarkVDbtable)
         bc.close()
     },
   },

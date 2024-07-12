@@ -48,7 +48,13 @@ export function IDBworkflow(dbname, dbver, dbtable, mode, onsuccess) {
             
         const oldVersion = e.oldVersion
         const newVersion = e.newVersion || db.version
-        console.log('DB updated from version', oldVersion, 'to', newVersion)
+
+        if(oldVersion === 0) {
+            console.log('DB updated from version', oldVersion, 'to', newVersion);
+        } else {
+            IDBcleartable(dbname, dbver, dbtable);
+            console.log('DB version is outdated, all data will be cleared for further compatible work');
+        }
 
         if (!db.objectStoreNames.contains(dbtable)) {
             db.createObjectStore(dbtable, {keyPath: 'id', autoIncrement: true})
@@ -72,4 +78,26 @@ export function IDBgettable(dbname, dbver, dbtable) {
             })
         })
     })
+}
+
+/* delete all data from the table */
+export function IDBcleartable(dbname, dbver, dbtable) {
+
+    IDBworkflow(dbname, dbver, dbtable, 'readwrite', store => {
+        const request = store.clear();
+
+        request.onsuccess = ()=> {
+            console.log(`DB ${dbtable} cleared`);
+            const bc = new BroadcastChannel('idb_changed');
+            bc.postMessage(dbtable);
+            bc.close();
+            return true;
+        }
+    
+        request.onerror = (err)=> {
+            console.log(`Error to empty Object Store: ${err}`);
+            return false;
+        }
+    });
+    
 }
