@@ -4,7 +4,7 @@ import dolinatlt from "./assets/dolinatlt.jpg";
 import ekovoz from "./assets/ekovoz.png";
 import panorama from "./assets/panorama.png";
 import qvantorium from "./assets/qvantorium.jpg";
-import radiation from "./assets/radiation.jpg";
+// import radiation from "./assets/radiation.jpg";
 import sun from "./assets/sun.png";
 import beon from "./assets/beon.png";
 import owlcat from "./assets/owlcatgames.jpg";

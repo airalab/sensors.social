@@ -14,8 +14,9 @@
           <input v-if="!realtime" type="date" v-model="start" :max="maxDate" />
           <Bookmark v-if="sensor_id" :address="address?.address && address?.address.join(', ')" :link="sensor_id" :geo="geo" />
         </div>
-        <button v-if="sharable" @click="shareData" class="button">
-          <font-awesome-icon icon="fa-solid fa-share-from-square" />
+        <button @click="shareData" class="button">
+          <font-awesome-icon icon="fa-solid fa-share-from-square" v-if="!shared" />
+          <font-awesome-icon icon="fa-solid fa-check" v-if="shared" />
         </button>
       </section>
 
@@ -36,16 +37,6 @@
       </section>
 
       <section>
-        <!-- <Chart
-          v-if="log.length > 0"
-          :model="model"
-          :log="log"
-          :measurement="measurement"
-          :sensor_id="sensor_id"
-          :type="type"
-          :units="units"
-        /> -->
-
         <Chart :point="point" :log="log" />
       </section>
 
@@ -160,6 +151,7 @@ export default {
       provider: this.$route.params.provider,
       rttime: null /* used for realtime view */,
       rtdata: [] /* used for realtime view */,
+      shared: false, /* status for share button */
     };
   },
   computed: {
@@ -293,9 +285,6 @@ export default {
     endTimestamp: function () {
       return Number(moment(this.start + " 23:59:59", "YYYY-MM-DD HH:mm:ss").format("X"));
     },
-    sharable: function () {
-      return navigator.share && navigator.canShare;
-    },
     units() {
       /* + Possible units for the sensor */
       let measures = [];
@@ -324,15 +313,22 @@ export default {
   },
   methods: {
     shareData() {
-      navigator
-        .share({
-          title: "Public Sensor Map",
-          url: this.linkSensor ? this.linkSensor : this.link,
+      if(!navigator.share) {
+        navigator.clipboard.writeText(this.linkSensor).then( () => {
+          this.shared = true;
+          setTimeout(() => {
+            this.shared = false;
+          }, 5000)
+        }).catch( e => {
+          console.log('not coppied', e);
         })
-        .then(() => {
-          console.log("Shared");
-        })
-        .catch(console.error);
+      } else {
+        navigator.share({
+          title: config.TITLE,
+          url: this.linkSensor || this.link,
+        });
+      }
+      
     },
     getHistory() {
       if (this.realtime) {

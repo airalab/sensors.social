@@ -18,4 +18,5 @@ export default {
   },
   SHOW_MESSAGES: true,
   DEFAUL_TYPE_PROVIDER: "remote",
+  TITLE: "Web3 public sensors map",
 };

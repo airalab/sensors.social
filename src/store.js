@@ -58,6 +58,7 @@ export const useStore = defineStore({
       this.currentActiveMeasure = "";
     },
     setmapposition(lat, lng, zoom) {
+      console.log('setmapposition', lat, lng, zoom)
       this.mapposition.lat = lat;
       this.mapposition.lng = lng;
       this.mapposition.zoom = zoom;

@@ -101,40 +101,39 @@ export default {
     },
 
     getlocalmappos() {
-      if (localStorage.getItem("map-position")) {
-        const lastsettings = localStorage.getItem("map-position") || JSON.stringify({"lat": config.MAP.position.lat, "lng": config.MAP.position.lng, "zoom": "20" });
-        this.store.setmapposition(
-          JSON.parse(lastsettings).lat,
-          JSON.parse(lastsettings).lng,
-          JSON.parse(lastsettings).zoom
-        );
-      }
+      const lastsettings = localStorage.getItem("map-position") || JSON.stringify({"lat": config.MAP.position.lat, "lng": config.MAP.position.lng, "zoom": config.MAP.position.zoom });
+      this.store.setmapposition(
+        JSON.parse(lastsettings).lat,
+        JSON.parse(lastsettings).lng,
+        JSON.parse(lastsettings).zoom
+      );
     },
 
-    setgeo() {
-      return new Promise((resolve) => {
+    setgeo(force = false) {
+      return new Promise((resolve, reject) => {
         const latinurl = this.$router?.currentRoute.value?.params?.lat;
         const lnginurl = this.$router?.currentRoute.value?.params?.lng;
-        
-        if(!latinurl && !lnginurl) {
+        const zoominurl = this.$router?.currentRoute.value?.params?.zoom;
+
+        if((!latinurl || !lnginurl) || force) {
           if ("geolocation" in navigator) {
+
             navigator.geolocation.getCurrentPosition(
               (position) => {
-                this.userposition = [position.coords.latitude, position.coords.longitude];
                 /* setting for the app globally user's geo position and zoom 20 for better view */
+                this.userposition = [position.coords.latitude, position.coords.longitude];
                 this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
-                this.geoavailable = true;
                 resolve();
               },
               (e) => {
-                console.warn(`ERROR(${e.code}): ${e.message}`);
                 /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
+                console.warn(`ERROR(${e.code}): ${e.message}`);
                 this.getlocalmappos();
-                resolve();
+                reject();
               },
               {
                 enableHighAccuracy: true,
-                // timeout: 2000,
+                timeout: 20000,
                 maximumAge: 0
               }
             );
@@ -144,7 +143,7 @@ export default {
             resolve();
           }
         } else {
-          this.store.setmapposition(latinurl, lnginurl, 20);
+          this.store.setmapposition(latinurl, lnginurl, zoominurl || config.MAP.position.zoom);
           resolve();
         }
         
@@ -152,11 +151,19 @@ export default {
     },
 
     resetgeo() {
-      const waitcoords = this.setgeo();
+      const waitcoords = this.setgeo(true);
       waitcoords.then(() => {
         this.relocatemap(this.lat, this.lng, this.zoom, "reload");
       });
     },
+
+    setgeopermission(permission) {
+      if(permission.state === 'granted') {
+        this.geoavailable = true;
+      } else {
+        this.geoavailable = false;
+      }
+    }
   },
 
   unmounted() {
@@ -164,6 +171,7 @@ export default {
   },
 
   async mounted() {
+
     /* + get user's system theme */
     if (window.matchMedia) {
       window
@@ -175,11 +183,24 @@ export default {
     }
     /* - get user's system theme */
 
-    /* + retrieve coordinates */
-    const waitcoords = this.setgeo();
-    /* - retrieve coordinates */
+    /* + get user's permission for geo */
+    if ("geolocation" in navigator) {   
+      navigator.permissions.query({ name: "geolocation" }).then((result) => {
+        this.setgeopermission(result);
+
+        result.addEventListener("change", () => {
+          this.setgeopermission(result);
+        });
+      });
+    }
+    /* - get user's permission for geo */
+
 
     /* + Operate with a map */
+
+    /* retrieve coordinates */
+    const waitcoords = this.setgeo();
+
     waitcoords.then(async () => {
       const map = init([this.lat, this.lng], this.zoom, this.theme);
       this.relocatemap(this.lat, this.lng, this.zoom, "reload");
