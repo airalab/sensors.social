@@ -73,6 +73,7 @@ export default {
     },
 
     relocatemap(lat, lng, zoom, type) {
+      console.log('relocatemap', lat, lng, zoom, type)
       const options = {
         name: "main",
         params: {
@@ -110,7 +111,7 @@ export default {
     },
 
     setgeo(force = false) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         const latinurl = this.$router?.currentRoute.value?.params?.lat;
         const lnginurl = this.$router?.currentRoute.value?.params?.lng;
         const zoominurl = this.$router?.currentRoute.value?.params?.zoom;
@@ -123,38 +124,37 @@ export default {
                 /* setting for the app globally user's geo position and zoom 20 for better view */
                 this.userposition = [position.coords.latitude, position.coords.longitude];
                 this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
-                resolve();
               },
               (e) => {
                 /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
-                console.warn(`ERROR(${e.code}): ${e.message}`);
+                console.error(`geolocation error(${e.code}): ${e.message}`);
                 this.getlocalmappos();
-                reject();
               },
               {
-                enableHighAccuracy: true,
+                enableHighAccuracy: false,
                 timeout: 20000,
-                maximumAge: 0
+                maximumAge: 1000
               }
             );
           } else {
             /* Если нет возможности "geolocation", то проверяем локальное хранилище */
             this.getlocalmappos();
-            resolve();
           }
         } else {
           this.store.setmapposition(latinurl, lnginurl, zoominurl || config.MAP.position.zoom);
-          resolve();
         }
+
+        resolve();
         
       });
     },
 
     resetgeo() {
-      const waitcoords = this.setgeo(true);
-      waitcoords.then(() => {
+      this.setgeo(true).then(() => {
         this.relocatemap(this.lat, this.lng, this.zoom, "reload");
-      });
+      }).catch(e => {
+        console.log('resetgeo error', e)
+      })
     },
 
     setgeopermission(permission) {
@@ -199,9 +199,8 @@ export default {
     /* + Operate with a map */
 
     /* retrieve coordinates */
-    const waitcoords = this.setgeo();
-
-    waitcoords.then(async () => {
+    this.setgeo()
+    .then(async () => {
       const map = init([this.lat, this.lng], this.zoom, this.theme);
       this.relocatemap(this.lat, this.lng, this.zoom, "reload");
 
@@ -236,7 +235,6 @@ export default {
             e.target.getZoom()
           );
         }, 50)
-        
       });
 
       initMarkers(map, this.measuretype, (data) => {
@@ -247,6 +245,9 @@ export default {
         await initWind();
       }
     });
+    // .catch(() => {
+    //   console.error('map drawing error');
+    // });
     /* - Operate with a map */
 
     /* get bookmarks and listenning for broadcast from DB */
