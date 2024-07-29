@@ -6,15 +6,16 @@
     @history="historyhandler"
     :measuretype="measuretype"
   >
-    <button
-      class="popovercontrol"
-      v-if="geoavailable"
-      @click.prevent="resetgeo"
-      :area-label="$t('showlocation')"
-      :title="$t('showlocation')"
-    >
-      <font-awesome-icon icon="fa-solid fa-location-arrow" />
-    </button>
+
+  <button
+    class="popovercontrol"
+    v-if="geoavailable"
+    @click.prevent="resetgeo"
+    :area-label="$t('showlocation')"
+    :title="geoisloading ? $t('locationloading') : $t('showlocation')"
+  >
+    <font-awesome-icon icon="fa-solid fa-location-arrow" :fade="geoisloading" />
+  </button>
   </Footer>
 </template>
 
@@ -38,6 +39,7 @@ export default {
       theme: window?.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark",
       userposition: null,
       geoavailable: false,
+      geoisloading: false
     };
   },
 
@@ -72,7 +74,7 @@ export default {
       setTheme(this.theme);
     },
 
-    relocatemap(lat, lng, zoom, type) {
+    relocatemap(lat, lng, zoom, type = "default") {
       console.log('relocatemap', lat, lng, zoom, type)
       const options = {
         name: "main",
@@ -102,7 +104,8 @@ export default {
     },
 
     getlocalmappos() {
-      const lastsettings = localStorage.getItem("map-position") || JSON.stringify({"lat": config.MAP.position.lat, "lng": config.MAP.position.lng, "zoom": config.MAP.position.zoom });
+      console.log("Geolocation setting up default values");
+      const lastsettings = localStorage.getItem("map-position") || JSON.stringify({"lat": config.MAP.position.lat, "lng": config.MAP.position.lng, "zoom": config.MAP.zoom });
       this.store.setmapposition(
         JSON.parse(lastsettings).lat,
         JSON.parse(lastsettings).lng,
@@ -110,97 +113,74 @@ export default {
       );
     },
 
-    setgeo(force = false) {
-      return new Promise((resolve) => {
-        const latinurl = this.$router?.currentRoute.value?.params?.lat;
-        const lnginurl = this.$router?.currentRoute.value?.params?.lng;
-        const zoominurl = this.$router?.currentRoute.value?.params?.zoom;
-
-        if((!latinurl || !lnginurl) || force) {
+    setgeo() {
+      return new Promise((resolve, reject) => {
           if ("geolocation" in navigator) {
 
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                /* setting for the app globally user's geo position and zoom 20 for better view */
-                this.userposition = [position.coords.latitude, position.coords.longitude];
-                this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
-              },
-              (e) => {
-                /* Если не удалось получить позицию юзера, то проверяем локальное хранилище */
-                console.error(`geolocation error(${e.code}): ${e.message}`);
-                this.getlocalmappos();
-              },
-              {
-                enableHighAccuracy: false,
-                timeout: 20000,
-                maximumAge: 1000
-              }
-            );
-          } else {
-            /* Если нет возможности "geolocation", то проверяем локальное хранилище */
-            this.getlocalmappos();
-          }
-        } else {
-          this.store.setmapposition(latinurl, lnginurl, zoominurl || config.MAP.position.zoom);
-        }
+            this.geoavailable = true;
 
-        resolve();
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  /* setting for the app globally user's geo position and zoom 20 for better view */
+                  this.userposition = [position.coords.latitude, position.coords.longitude];
+                  this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
+                  resolve();
+                },
+                (e) => {
+                  reject(`[ERROR ${e.code}]${e.message}`);
+                },
+                {
+                  enableHighAccuracy: true,
+                  timeout: 5000,
+                  maximumAge: 1000
+                }
+              );
+            
+            // navigator.permissions.query({ name: "geolocation" }).then((permission) => {
+            //   console.log('perm', permission.state);
+
+            //   if(permission.state !== 'denied') {
+                
+            //     this.geoavailable = true;
+
+            //     navigator.geolocation.getCurrentPosition(
+            //       (position) => {
+            //         this.userposition = [position.coords.latitude, position.coords.longitude];
+            //         this.store.setmapposition(this.userposition[0], this.userposition[1], 20);
+            //         resolve();
+            //       },
+            //       (e) => {
+            //         reject(e);
+            //       },
+            //       {
+            //         enableHighAccuracy: false,
+            //         timeout: 5000,
+            //         maximumAge: 1000
+            //       }
+            //     );
+
+            //   } else {
+            //     this.geoavailable = false;
+            //     reject("geolocation error: permission denied");
+            //   }
+            // })
+          } else {
+            this.geoavailable = false;
+            reject("geolocation error: geolocation no available");
+          }
         
       });
     },
 
     resetgeo() {
-      this.setgeo(true).then(() => {
+      this.setgeo().then(() => {
         this.relocatemap(this.lat, this.lng, this.zoom, "reload");
       }).catch(e => {
-        console.log('resetgeo error', e)
+        console.log("Error in 'resetgeo': ", e)
       })
     },
 
-    setgeopermission(permission) {
-      if(permission.state === 'granted') {
-        this.geoavailable = true;
-      } else {
-        this.geoavailable = false;
-      }
-    }
-  },
-
-  unmounted() {
-    removeMap();
-  },
-
-  async mounted() {
-
-    /* + get user's system theme */
-    if (window.matchMedia) {
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", this.themelistener);
-      window
-        .matchMedia("(prefers-color-scheme: light)")
-        .addEventListener("change", this.themelistener);
-    }
-    /* - get user's system theme */
-
-    /* + get user's permission for geo */
-    if ("geolocation" in navigator) {   
-      navigator.permissions.query({ name: "geolocation" }).then((result) => {
-        this.setgeopermission(result);
-
-        result.addEventListener("change", () => {
-          this.setgeopermission(result);
-        });
-      });
-    }
-    /* - get user's permission for geo */
-
-
-    /* + Operate with a map */
-
-    /* retrieve coordinates */
-    this.setgeo()
-    .then(async () => {
+    async loadMap() {
       const map = init([this.lat, this.lng], this.zoom, this.theme);
       this.relocatemap(this.lat, this.lng, this.zoom, "reload");
 
@@ -244,14 +224,55 @@ export default {
       if (this.provider === "realtime") {
         await initWind();
       }
-    });
-    // .catch(() => {
-    //   console.error('map drawing error');
-    // });
-    /* - Operate with a map */
 
-    /* get bookmarks and listenning for broadcast from DB */
-    await this.store.idbBookmarkGet();
+      /* get bookmarks and listenning for broadcast from DB */
+      await this.store.idbBookmarkGet();
+    }
+  },
+
+  unmounted() {
+    removeMap();
+  },
+  watch: {
+    geoisloading(d) {
+      console.log('geoisloading changed', d)
+    }
+  },
+
+  async mounted() {
+
+    this.geoisloading = true;
+
+    /* + get user's system theme */
+    if (window.matchMedia) {
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", this.themelistener);
+      window
+        .matchMedia("(prefers-color-scheme: light)")
+        .addEventListener("change", this.themelistener);
+    }
+    /* - get user's system theme */
+
+
+    /* + Operate with a map */
+
+    /* retrieve coordinates */
+    this.setgeo()
+    .then(async () => {
+      console.log("Geolocation set succesfully");
+      this.geoisloading = false;
+      this.loadMap();
+    })
+    .catch(e => {
+      /* Если нет возможности "geolocation", то проверяем локальное хранилище */
+      console.log("Geoposition not found: ", e);
+      this.getlocalmappos();
+      this.geoisloading = false;
+      this.loadMap();
+    });
+    /* - Operate with a map */
+    
   },
 };
 </script>

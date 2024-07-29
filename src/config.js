@@ -10,10 +10,10 @@ export default {
   // REMOTE_PROVIDER: "http://localhost:3000/",
   WIND_PROVIDER: "https://wind.airalab.org/latest",
   MAP: {
-    zoom: "13",
+    zoom: "3",
     position: {
-      lat: "53.5197",
-      lng: "49.3647",
+      lat: "39.0277",
+      lng: "8.7891",
     },
   },
   SHOW_MESSAGES: true,
