@@ -8,6 +8,7 @@ import qvantorium from "./assets/qvantorium.jpg";
 import sun from "./assets/sun.png";
 import beon from "./assets/beon.png";
 import owlcat from "./assets/owlcatgames.jpg";
+import harats from "./assets/harats.svg";
 
 export default {
   "7e071fd9b023ed8f18458a73613a0834f6220bd5cc50357ba3493c6040a9ea8c": {
@@ -51,5 +52,9 @@ export default {
   "28695c0354e91eb0a31744641356c5d3f6868f02b01148762f467c3687ede97b": {
    icon: owlcat,
    link: "https://owlcat.games",
+  },
+  "9533b0b8afd17b2d80efb9a56c04ea8c990fc3345791dd605a87cba6fde08a98": {
+   icon: harats,
+   link: "https://limassol.harats.com/",
   }
 };
