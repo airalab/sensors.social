@@ -18,6 +18,8 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
+import measurements from "../../measurements";
+
 const queue = new Queue();
 let scale;
 let markersLayer;
@@ -228,8 +230,14 @@ function createIconArrow(dir, speed, color) {
 }
 
 function iconCreateCircle(colors) {
+  // return new L.DivIcon({
+  //   html: `<div class='marker-cluster-circle' style='color:${colors.border};background-color: rgba(${colors.rgb}, 0.7);border-color: ${colors.border};'></div>`,
+  //   className: "marker-cluster",
+  //   iconSize: new L.Point(40, 40),
+  // });
+
   return new L.DivIcon({
-    html: `<div class='marker-cluster-circle' style='color:${colors.border};background-color: rgba(${colors.rgb}, 0.7);border-color: ${colors.border};'></div>`,
+    html: `<div class='marker-cluster-circle' style='color:${colors.border};background-color: ${colors.basic};border-color: ${colors.border};'></div>`,
     className: "marker-cluster",
     iconSize: new L.Point(40, 40),
   });
@@ -312,6 +320,14 @@ function updateMarker(marker, point, colors) {
 }
 
 export async function addPoint(point) {
+  if(point.sensor_id === 'ab9de1c7a82d9b193fd9f169d8af1b64ce4f7b391d9f50f9ac127a49615a9693') {
+    console.log('GRAY PM10', point);
+  }
+
+  if(point.sensor_id === '3eb468d90d6640bcef0b0b792a947d05bcc4da1b11316b283dda59e79336fdaa') {
+    console.log('GREEN PM10', point);
+  }
+  
   queue.add(makeRequest.bind(queue, point));
   async function makeRequest(point) {
     try {
@@ -338,6 +354,25 @@ export async function addPoint(point) {
   }
 }
 
+function markercolor(value) {
+  let color = null;
+  const unit = localStorage.getItem("currentUnit") ?? null;
+  const zones = measurements[unit].zones;
+
+  if(unit) {
+    const match = zones.find(i => value <= i?.value);
+    if(match) {
+      color = match?.color;
+    } else {
+      if(!zones[zones.length - 1]?.value) {
+        color = zones[zones.length - 1]?.color;
+      }
+    }
+  }
+
+  return color || "#a1a1a1";
+}
+
 async function addMarker(point) {
   const colors = {
     basic: "#a1a1a1",
@@ -345,9 +380,12 @@ async function addMarker(point) {
     rgb: [161, 161, 161],
   };
   if (!point.isEmpty) {
-    colors.basic = getColor(scale, point.value);
-    colors.border = getColorDarken(scale, point.value);
-    colors.rgb = getColorRGB(scale, point.value);
+    colors.basic = "color-mix(in srgb, " + markercolor(point.value) + " 70%, transparent)";
+    colors.border = "color-mix(in srgb, " + colors.basic + ", #000 10%)";
+
+    // colors.basic = getColor(scale, point.value);
+    // colors.border = getColorDarken(scale, point.value);
+    // colors.rgb = getColorRGB(scale, point.value);
   }
   const marker = await findMarker(point.sensor_id);
   if (marker) {

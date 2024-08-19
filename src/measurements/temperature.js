@@ -6,6 +6,10 @@ export default {
     en: "Temperature",
     ru: "Температура"
   },
+  nameshort: {
+    en: "Temperature",
+    ru: "Температура"
+  },
   unit: "℃",
   chartColor: "#2d7ac7",
   colors: ["#fc0202", "#ff9d00", "#60bc2a", "#ff9d00", "#fc0202"],
@@ -44,7 +48,6 @@ export default {
       }
     },
     {
-      value: 9999,
       color: "#ff9d00",
       label: {
         en: "Hot",

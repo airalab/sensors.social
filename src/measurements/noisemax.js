@@ -2,6 +2,14 @@ import { toFixed } from "./tools";
 
 export default {
   label: "Noise Max.",
+  name: {
+    en: "Noise Max.",
+    ru: "Шум Макс."
+  },
+  nameshort: {
+    en: "Noise Max.",
+    ru: "Шум Макс."
+  },
   unit: "dB",
   range: [0, 40, 70, 80, 100],
   zones: [
