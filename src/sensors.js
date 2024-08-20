@@ -9,6 +9,8 @@ import sun from "./assets/sun.png";
 import beon from "./assets/beon.png";
 import owlcat from "./assets/owlcatgames.jpg";
 import harats from "./assets/harats.svg";
+import polkadot from "./assets/polkadot.png";
+import webzeor from "./assets/webzero.png";
 
 export default {
   "7e071fd9b023ed8f18458a73613a0834f6220bd5cc50357ba3493c6040a9ea8c": {
@@ -56,5 +58,13 @@ export default {
   "9533b0b8afd17b2d80efb9a56c04ea8c990fc3345791dd605a87cba6fde08a98": {
    icon: harats,
    link: "https://limassol.harats.com/",
+  },
+  "f0194e746decf393ff64373abbf6413879f9d52acd061bddd611173da4408628": {
+   icon: polkadot,
+   link: "https://polkadot.com",
+  },
+  "36df5a1b98800a94d5e06af64257339a63be35785073deb8a1bce130be553a33": {
+   icon: webzeor,
+   link: "https://symmetry.theblockspace.net/",
   }
 };
