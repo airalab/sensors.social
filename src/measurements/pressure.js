@@ -4,5 +4,9 @@ export default {
     en: "Atmospheric pressure",
     ru: "Атмосферное давление"
   },
+  nameshort: {
+    en: "Pressure",
+    ru: "Давление"
+  },
   unit: "mmHg",
 };

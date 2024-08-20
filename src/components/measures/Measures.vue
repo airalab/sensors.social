@@ -1,7 +1,8 @@
 <template>
   <select v-model="type" v-if="store.sensors.length > 0">
     <option v-for="opt in availableoptions" :key="opt.value" :value="opt.value">
-      {{ opt.name }}
+      {{ opt.name }} 
+      <!-- - {{locale}} -->
     </option>
   </select>
 </template>
@@ -21,6 +22,9 @@ export default {
     };
   },
   computed: {
+    locale() {
+      return localStorage.getItem("locale") || this.$i18n.locale || "en";
+    },
     availableunits() {
       let bufer = [];
       this.store.sensors.forEach((i) => {
@@ -34,7 +38,10 @@ export default {
       let buffer = [];
       this.availableunits.forEach((i) => {
         if (measurements[i]) {
-          buffer.push({ name: measurements[i].label, value: i });
+          buffer.push({ 
+            name: measurements[i]?.nameshort ? measurements[i].nameshort[this.locale] : measurements[i]?.label, 
+            value: i 
+          });
         }
       });
       return buffer;

@@ -6,6 +6,10 @@ export default {
     en: "Ammonia",
     ru: "Аммиак"
   },
+  nameshort: {
+    en: "Ammonia",
+    ru: "Аммиак"
+  },
   unit: "mg/m3",
   icon: "vial-virus",
   chartColor: "#a1e37a",

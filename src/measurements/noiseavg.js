@@ -2,6 +2,14 @@ import { toFixed } from "./tools";
 
 export default {
   label: "Noise Avg.",
+  name: {
+    en: "Noise Avg.",
+    ru: "Шум Средн."
+  },
+  nameshort: {
+    en: "Noise Avg.",
+    ru: "Шум Средн."
+  },
   unit: "dB",
   range: [0, 40, 70, 80, 100],
   zones: [

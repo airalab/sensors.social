@@ -1,6 +1,10 @@
 export default {
   label: "GC",
   name: {
+    en: "Background radiation",
+    ru: "Радиационный фон"
+  },
+  nameshort: {
     en: "Radiation",
     ru: "Радиация"
   },

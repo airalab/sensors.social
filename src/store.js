@@ -57,12 +57,15 @@ export const useStore = defineStore({
     removeActiveCurrentMeasure() {
       this.currentActiveMeasure = "";
     },
-    setmapposition(lat, lng, zoom) {
+    setmapposition(lat, lng, zoom, save = true) {
       console.log('setmapposition', lat, lng, zoom)
       this.mapposition.lat = lat;
       this.mapposition.lng = lng;
       this.mapposition.zoom = zoom;
-      localStorage.setItem("map-position", JSON.stringify({lat, lng, zoom}));
+
+      if(save) {
+        localStorage.setItem("map-position", JSON.stringify({lat, lng, zoom}));
+      }
     },
     async idbBookmarkGet() {
       this.idbBookmarks = await IDBgettable(this.idbBookmarkDbname, this.idbBookmarkVDbver, this.idbBookmarkVDbtable);

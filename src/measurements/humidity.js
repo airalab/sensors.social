@@ -4,6 +4,10 @@ export default {
     en: "Humidity",
     ru: "Влажность"
   },
+  nameshort: {
+    en: "Humidity",
+    ru: "Влажность"
+  },
   unit: "%",
   chartColor: "#6fd3ff",
   range: [30, 40, 60, 70],

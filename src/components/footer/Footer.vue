@@ -1,6 +1,6 @@
 <template>
   <div class="mapcontrols">
-<div style="display:none">{{bufer}}</div>
+<!-- <div style="display:none">{{bufer}}</div> -->
     <div class="flexline">
 
       <div id="bookmarks" class="popover-bottom-left popover" popover>

@@ -554,6 +554,19 @@ section:not(:last-child) {
   }
 }
 
+@keyframes fadeOut {
+  to {
+      opacity: 0;
+      visibility: hidden;
+  }
+}
+
+@keyframes rolldownLeft {
+  to {
+    transform: scaleX(0);
+}
+}
+
 @keyframes blink {
   0%{
     opacity: .5;
