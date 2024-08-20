@@ -7,6 +7,7 @@ import gc from "./gc";
 import humidity from "./humidity";
 import nh3 from "./nh3";
 import no2 from "./no2";
+import noise from "./noise";
 import noiseavg from "./noiseavg";
 import noisemax from "./noisemax";
 import pm1 from "./pm1";
@@ -32,6 +33,7 @@ export default {
   humidity,
   nh3,
   no2,
+  noise,
   noiseavg,
   noisemax,
   pm1,

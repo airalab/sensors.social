@@ -290,7 +290,7 @@ export default {
       let measures = [];
       Object.values(this.log).forEach((item) => {
         Object.keys(item.data).forEach((unit) => {
-          measures.push(unit);
+          measures.push(unit.toLowerCase());
         });
       });
       return [...new Set(measures.flat())];
