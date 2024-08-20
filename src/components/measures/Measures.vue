@@ -29,7 +29,7 @@ export default {
       let bufer = [];
       this.store.sensors.forEach((i) => {
         Object.keys(i.data).forEach((units) => {
-          bufer.push(units);
+          bufer.push(units.toLowerCase());
         });
       });
       return [...new Set(bufer)];
