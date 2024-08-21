@@ -30,9 +30,7 @@ class Provider {
 
   async status() {
     try {
-      const result = await axios.get(
-        `${config.REMOTE_PROVIDER}api/sensor/cities`
-      );
+      const result = await axios.get(`${config.REMOTE_PROVIDER}api/sensor/cities`);
       if (result.status === 200) {
         return true;
       }
@@ -70,9 +68,9 @@ class Provider {
     this.end = end;
   }
 
-  lastValuesForPeriod(start, end) {
+  lastValuesForPeriod(start, end, type) {
     return api
-      .get(`/last/${start}/${end}`)
+      .get(`/last/${start}/${end}/${type}`)
       .then((result) => {
         return result.data.result;
       })

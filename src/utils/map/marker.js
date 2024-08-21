@@ -7,12 +7,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import config from "../../config";
 import { getMeasurementByName } from "../../measurements/tools";
 import sensors from "../../sensors";
-import generate, {
-  getColor,
-  getColorDarken,
-  getColorDarkenRGB,
-  getColorRGB,
-} from "../../utils/color";
+import generate, { getColor, getColorDarkenRGB, getColorRGB } from "../../utils/color";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -61,17 +56,13 @@ export async function init(map, type, cb) {
         await import(`../../assets/message/msg-${messageTypes[index]}.png`)
       ).default;
     } catch (error) {
-      messageIconType[index] = (
-        await import(`../../assets/message/msg-text.png`)
-      ).default;
+      messageIconType[index] = (await import(`../../assets/message/msg-text.png`)).default;
     }
     messageIconName[messageTypes[index]] = messageIconType[index];
   }
   handlerClickMarker = (event) => {
     if (
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      )
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     ) {
       map.setActiveArea({
         position: "absolute",
@@ -138,10 +129,7 @@ function iconCreate(cluster) {
   let childCountCalc = 0;
   let sum = 0;
   markers.forEach((marker) => {
-    if (
-      marker.options.data.value === undefined &&
-      marker.options.data.value !== ""
-    ) {
+    if (marker.options.data.value === undefined && marker.options.data.value !== "") {
       return;
     }
     childCountCalc++;
@@ -217,9 +205,7 @@ function createIconMsg(type = 0) {
 function createIconArrow(dir, speed, color) {
   return L.divIcon({
     className: "",
-    html: `<div class="icon-arrow-container" style="transform: rotate(${
-      dir + 90
-    }deg);">
+    html: `<div class="icon-arrow-container" style="transform: rotate(${dir + 90}deg);">
       <div class="icon-arrow" style="border-color: ${color} ${color} transparent transparent;">
         <div style="background-color: ${color};"></div>
       </div>
@@ -307,9 +293,7 @@ function updateMarker(marker, point, colors) {
     marker.options.typeMarker === "arrow" &&
     Object.prototype.hasOwnProperty.call(point.data, "windang")
   ) {
-    marker.setIcon(
-      createIconArrow(point.data.windang, point.data.windspeed, colors.basic)
-    );
+    marker.setIcon(createIconArrow(point.data.windang, point.data.windspeed, colors.basic));
   } else {
     marker.setIcon(iconCreateCircle(colors));
   }
@@ -320,14 +304,14 @@ function updateMarker(marker, point, colors) {
 }
 
 export async function addPoint(point) {
-  if(point.sensor_id === 'ab9de1c7a82d9b193fd9f169d8af1b64ce4f7b391d9f50f9ac127a49615a9693') {
-    console.log('GRAY PM10', point);
+  if (point.sensor_id === "ab9de1c7a82d9b193fd9f169d8af1b64ce4f7b391d9f50f9ac127a49615a9693") {
+    console.log("GRAY PM10", point);
   }
 
-  if(point.sensor_id === '3eb468d90d6640bcef0b0b792a947d05bcc4da1b11316b283dda59e79336fdaa') {
-    console.log('GREEN PM10', point);
+  if (point.sensor_id === "3eb468d90d6640bcef0b0b792a947d05bcc4da1b11316b283dda59e79336fdaa") {
+    console.log("GREEN PM10", point);
   }
-  
+
   queue.add(makeRequest.bind(queue, point));
   async function makeRequest(point) {
     try {
@@ -359,12 +343,12 @@ function markercolor(value) {
   const unit = localStorage.getItem("currentUnit") ?? null;
   const zones = measurements[unit].zones;
 
-  if(unit) {
-    const match = zones.find(i => value <= i?.value);
-    if(match) {
+  if (unit) {
+    const match = zones.find((i) => value <= i?.value);
+    if (match) {
       color = match?.color;
     } else {
-      if(!zones[zones.length - 1]?.value) {
+      if (!zones[zones.length - 1]?.value) {
         color = zones[zones.length - 1]?.color;
       }
     }
@@ -388,9 +372,7 @@ async function addMarker(point) {
     // colors.rgb = getColorRGB(scale, point.value);
   }
   const marker = await findMarker(point.sensor_id);
-  if (marker) {
-    updateMarker(marker, point, colors);
-  } else {
+  if (!marker) {
     const marker = createMarker(point, colors);
     marker.on("click", handlerClickMarker);
     if (markersLayer) {
@@ -398,6 +380,8 @@ async function addMarker(point) {
     } else {
       console.log("Not found markersLayer");
     }
+  } else if (!point.isEmpty) {
+    updateMarker(marker, point, colors);
   }
 }
 
@@ -494,10 +478,7 @@ async function addMarkerUser(point) {
   if (!marker) {
     const marker = createMarker(point, colors);
     marker.on("click", handlerClickMarker);
-    if (
-      messageTypes[point.data.type] &&
-      messagesLayers[messageTypes[point.data.type]]
-    ) {
+    if (messageTypes[point.data.type] && messagesLayers[messageTypes[point.data.type]]) {
       messagesLayers[messageTypes[point.data.type]].addLayer(marker);
     }
   }

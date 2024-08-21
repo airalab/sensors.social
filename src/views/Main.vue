@@ -105,10 +105,10 @@ export default {
     },
     type(value) {
       /* save current active unit for another js scripts */
-      if(value) {
+      if (value) {
         localStorage.setItem("currentUnit", value);
       }
-    }
+    },
   },
   methods: {
     async handlerHistory({ start, end }) {
@@ -122,7 +122,7 @@ export default {
       const startDate = moment.unix(start).format("YYYY-MM-DD");
       let sensors;
       if (today === startDate) {
-        sensors = await this.providerObj.lastValuesForPeriod(start, end);
+        sensors = await this.providerObj.lastValuesForPeriod(start, end, this.type);
       } else {
         sensors = await this.providerObj.maxValuesForPeriod(start, end, this.type);
       }
@@ -194,7 +194,6 @@ export default {
         address,
         log: [...log],
       };
-
     },
     async handlerHistoryLog({ sensor_id, start, end }) {
       if (this.status === "history") {
@@ -307,7 +306,7 @@ export default {
     }
 
     /* save current active unit for another js scripts */
-    if(this.type) {
+    if (this.type) {
       localStorage.setItem("currentUnit", this.type);
     }
 
