@@ -123,6 +123,15 @@ class Provider {
       });
   }
 
+  static async getMeasurements(start, end) {
+    try {
+      const result = await api.get(`/measurements/${start}/${end}`);
+      return result.data.result;
+    } catch {
+      return [];
+    }
+  }
+
   watch(cb) {
     if (cb) {
       this.socket.on("update", (result) => {
