@@ -22,46 +22,27 @@ export default {
   },
   computed: {
     series() {
-      const data = this.log.map((e) => {
-        return [e.timestamp, e.data];
-      });
-      let result = [];
-
-      data.forEach((e) => {
-        const timestamp = e[0] ?? null;
-
-        if (e[1]) {
-          for (const [unit, unitdata] of Object.entries(e[1])) {
-            /* check/add unit name */
-            if (!result.find((r) => r.name.toLowerCase() === unit.toLowerCase())) {
-              result.push({ name: unit.toLowerCase() });
-            }
-
-            /* find unit by name to add data */
-            const unitind = result.findIndex((e) => e.name.toLowerCase() === unit.toLowerCase());
-
-            if (unitind > -1 && unitdata) {
-              /* + add time & measures numbers */
-              if (!result[unitind]?.data) {
-                result[unitind].data = [];
-              }
-              result[unitind].data.push([timestamp * 1000, parseFloat(unitdata)]);
-              /* - add time & measures numbers */
-
-              /* + add color zones */
-              for (const [unitset, unitdataset] of Object.entries(unitsettings)) {
-                if (unit.toLowerCase() === unitset.toLowerCase()) {
-                  if (unitdataset?.zones && !result[unitind]?.zones) {
-                    result[unitind].zones = unitdataset.zones;
-                  }
-                }
-              }
-              /* - add color zones */
+      const unitsettingsLowerCase = Object.fromEntries(
+        Object.entries(unitsettings).map(([k, v]) => [k.toLowerCase(), v])
+      );
+      const result = [];
+      for (const item of this.log) {
+        if (item.data) {
+          for (let keyname of Object.keys(item.data)) {
+            keyname = keyname.toLowerCase();
+            const i = result.findIndex((m) => m.name === keyname);
+            if (i >= 0) {
+              result[i].data.push([item.timestamp * 1000, item.data[keyname]]);
+            } else {
+              result.push({
+                name: keyname,
+                data: [[item.timestamp * 1000, parseFloat(item.data[keyname])]],
+                zones: unitsettingsLowerCase[keyname]?.zones,
+              });
             }
           }
         }
-      });
-
+      }
       return result;
     },
 
