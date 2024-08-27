@@ -121,29 +121,32 @@ export default {
       yAxis: {
         title: false,
       },
-      plotOptions: {
-        series: {
-          lineWidth: 2,
-          states: {
-            hover: {
-              lineWidth: 3,
-            },
-          },
-          pointStart: this.startpoint,
-          // marker: {
-          //     enabled: false
-          // },
-          dataLabels: {
-            enabled: true,
-            allowOverlap: true,
-            formatter() {
-              if (this.point.index == this.series.points.length - 1) {
-                return `<span style="color:${this.color}">${this.series.name}</span>`;
-              }
-            },
-          },
-        },
+      tooltip: {
+        valueDecimals: 2,
       },
+      // plotOptions: {
+      //   series: {
+      //     lineWidth: 2,
+      //     states: {
+      //       hover: {
+      //         lineWidth: 3,
+      //       },
+      //     },
+      //     pointStart: this.startpoint,
+      //     // marker: {
+      //     //     enabled: false
+      //     // },
+      //     dataLabels: {
+      //       enabled: true,
+      //       allowOverlap: true,
+      //       formatter() {
+      //         if (this.point.index == this.series.points.length - 1) {
+      //           return `<span style="color:${this.color}">${this.series.name}</span>`;
+      //         }
+      //       },
+      //     },
+      //   },
+      // },
     };
   },
 };
