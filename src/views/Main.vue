@@ -174,7 +174,8 @@ export default {
       }
     },
     async handlerClick(point) {
-      let log;
+      this.point = null;
+      let log = [];
       if (this.status === "history") {
         log = await this.providerObj.getHistoryPeriodBySensor(
           point.sensor_id,
