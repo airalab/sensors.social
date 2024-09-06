@@ -192,11 +192,13 @@ export default {
 
     addressformatted() {
       let bufer = "";
-      if (this.address.country) {
-        bufer += this.address.country;
-      }
-      if (this.address.address.length > 0) {
-        bufer += ", " + this.address.address.join(", ");
+      if (this.address) {
+        if (this.address.country) {
+          bufer += this.address.country;
+        }
+        if (this.address.address.length > 0) {
+          bufer += ", " + this.address.address.join(", ");
+        }
       }
       return bufer;
     },
