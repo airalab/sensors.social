@@ -36,7 +36,7 @@ const messageTypes = {
   3: "water",
   4: "fire",
   5: "forest",
-  6: "alert ",
+  6: "alert",
   7: "notif",
   8: "recycle",
   9: "parking",
@@ -265,7 +265,7 @@ function createMarkerCircle(coord, data, colors) {
 
 function createMarkerUser(coord, data) {
   return L.marker(new L.LatLng(coord[0], coord[1]), {
-    icon: createIconMsg(data.data.type),
+    icon: createIconMsg(data.measurement?.type || 0),
     data: data,
     typeMarker: "msg",
   });
@@ -478,8 +478,12 @@ async function addMarkerUser(point) {
   if (!marker) {
     const marker = createMarker(point, colors);
     marker.on("click", handlerClickMarker);
-    if (messageTypes[point.data.type] && messagesLayers[messageTypes[point.data.type]]) {
-      messagesLayers[messageTypes[point.data.type]].addLayer(marker);
+    if (
+      point.measurement &&
+      messageTypes[point.measurement.type] &&
+      messagesLayers[messageTypes[point.measurement.type]]
+    ) {
+      messagesLayers[messageTypes[point.measurement.type]].addLayer(marker);
     }
   }
 }

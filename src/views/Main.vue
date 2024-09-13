@@ -3,7 +3,11 @@
   <Header />
 
   <template v-if="point">
-    <MessagePopup v-if="point.data.message" @close="handlerClose" :data="point.data" />
+    <MessagePopup
+      v-if="point.measurement && point.measurement.message"
+      @close="handlerClose"
+      :data="point.measurement"
+    />
     <SensorPopup
       v-else
       :currentProvider="provider"
