@@ -8,6 +8,12 @@ import { Chart } from "highcharts-vue";
 import stockInit from "highcharts/modules/stock";
 import unitsettings from "../../measurements";
 
+Highcharts.seriesTypes.spline.prototype.drawLegendSymbol = function (legend, item) {
+  this.options.marker.enabled = true;
+  Highcharts.LegendSymbol.lineMarker?.call(this, legend, item);
+  this.options.marker.enabled = false;
+};
+
 stockInit(Highcharts);
 
 export default {
@@ -165,6 +171,7 @@ export default {
 
 .highcharts-legend-item .highcharts-point {
   fill: #000 !important;
+  stroke-width: 2;
 }
 
 .highcharts-legend-item-hidden text {
