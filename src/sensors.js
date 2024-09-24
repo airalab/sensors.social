@@ -8,7 +8,7 @@ import qvantorium from "./assets/qvantorium.jpg";
 import sun from "./assets/sun.png";
 import beon from "./assets/beon.png";
 import owlcat from "./assets/owlcatgames.jpg";
-import harats from "./assets/harats.svg";
+import harats from "./assets/harats.jpg";
 import polkadot from "./assets/polkadot.png";
 import webzeor from "./assets/webzero.png";
 
