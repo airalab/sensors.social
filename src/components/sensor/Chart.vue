@@ -70,7 +70,12 @@ export default {
       remote - setData */
 
       v.forEach((newdata, i) => {
-        this.chartObj.series[i].setData(newdata.data, false);
+        const id = this.chartObj.series.findIndex((m) => m.name === newdata.name);
+        if (id >= 0) {
+          this.chartObj.series[i].setData(newdata.data, false);
+        } else {
+          this.chartObj.addSeries(newdata);
+        }
       });
 
       this.chartObj.redraw();
