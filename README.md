@@ -1,44 +1,53 @@
-# Create open sensors networks without centralization problems
+# Open Map for Altruist Civil Station
 
-Decentralized Open Sensors Map. Don't forget to your IFPS ID into `src/agents.json` in case you set up your own [Sensors Connectivity module](https://github.com/airalab/sensors-connectivity/tree/master).
+This repository contains the source code for the interface of Robonomics Sensor Network and Altruist Civil Station. The interface is a map with sensors located according to their coordinates. Data is aggregated in real-time via IPFS pub-sub. To obtain a historical data summary, the [RoSeMAN](https://github.com/airalab/RoSeMAN) long-term storage module is used.
 
-## Setup your own Map
+## Connect to Your Connectivity
 
-To deploy your own instance of the map using GitHub Pages, start by forking the [repository](https://github.com/airalab/sensors.robonomics.network) and clone it. To enable GitHub Actions, go to the repository page, click on the `Actions` tab, and set up a workflow if you haven't done so already.
-To successfully deploy the map, you will need to modify certain files:
+You need to add your IPFS ID into `src/agents.json` if you have deployed your own [Sensors Connectivity module](https://github.com/airalab/sensors-connectivity/).
 
-### Option 1: you don't have Domain
+## Setup Your Map
 
-1. In `.github/workflows/main.yaml` remove `cname: sensors.robonomics.network`.
-2.  Add the following code right below `runs-on: ubuntu-latest` in `.github/workflows/main.yaml`: 
+To deploy your own instance of the map using GitHub Pages, start by forking the [repository](https://github.com/airalab/sensors.social) and cloning it. To enable GitHub Actions, go to the repository page, click on the `Actions` tab, and set up a workflow if you haven't done so already. To successfully deploy the map, you will need to modify certain files.
+
+### Option 1: You don't have a domain
+
+1. In `.github/workflows/main.yaml`, remove `cname: sensors.social`.
+
+2. Add the following code right below `runs-on: ubuntu-latest` in `.github/workflows/main.yaml`:
+
 ```
-permissions: 
-    contents: write
-```
-3. In `vite.config.js` add `base: "/<repository name>/",` to the `defineConfig` object just above the `plugins` section , replacing `<repository_name>` with the name of your fork (default will be `sensors.robonomics.network`)
-
-### Option 2: you have Domanin
-
-1. In `.github/workflows/main.yaml` change `cname: sensors.robonomics.network` to your `CNAME`.
-2.  Add the following code right below `runs-on: ubuntu-latest` in `.github/workflows/main.yaml`: 
-```
-permissions: 
+permissions:
     contents: write
 ```
 
-### Manage Github Pages
+3. In `vite.config.js`, add `base: "/<repository_name>/"` to the `defineConfig` object just above the `plugins` section, replacing `<repository_name>` with the name of your fork (default will be `sensors.social`).
+
+
+### Option 2: You have a domain
+
+1. In `.github/workflows/main.yaml`, change `cname: sensors.social` to your `CNAME`.
+2. Add the following code right below `runs-on: ubuntu-latest` in `.github/workflows/main.yaml`:
+
+```
+permissions:
+    contents: write
+```
+
+### Manage GitHub Pages
 
 After making modifications to the files, you can deploy your instance of the map by following these steps:
 
-1. Commit and push the changes to your forked repository. 
+1. Commit and push the changes to your forked repository.
 2. Wait until the actions have successfully completed.
 3. Go to the `Pages` section of your repository `Settings`.
-4. Enable GitHub Pages by selecting `Deploy from a branch` as the source
+4. Enable GitHub Pages by selecting `Deploy from a branch` as the source.
 5. Choose the `gh-pages` branch and the `root` folder.
-6. Save the settings, and GitHub Pages will deploy your instance of the map. 
-7. Access it using the provided GitHub Pages URL. 
+6. Save the settings, and GitHub Pages will deploy your instance of the map.
+7. Access it using the provided GitHub Pages URL.
 
-> If you dont see the GitHub Pages URL try to reload the page.
+> If you don't see the GitHub Pages URL, try reloading the page.
+
 
 ## Project setup
 
