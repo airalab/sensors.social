@@ -135,6 +135,13 @@ export default {
       tooltip: {
         valueDecimals: 2,
       },
+      plotOptions: {
+        series: {
+          dataGrouping: {
+            enabled: false,
+          },
+        },
+      },
       // plotOptions: {
       //   series: {
       //     lineWidth: 2,
