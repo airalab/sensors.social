@@ -55,4 +55,8 @@ export default {
     icon: iconroute + "webzero.png",
     link: "https://symmetry.theblockspace.net/",
   },
+  "4FfcLUpH2ADwAuaWZFULiTs7Ap6BKv2Cwg1MZcymnUk9iHk4": {
+    icon: iconroute + "smash-academy.jpg",
+    link: "https://www.instagram.com/smashpadeltennis",
+  },
 };
