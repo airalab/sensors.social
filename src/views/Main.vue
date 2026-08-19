@@ -239,17 +239,21 @@ const handleMessageClick = (data) => {
   });
 };
 
-/* + Realtime watch */
 let unwatchRealtime = null;
 let liveFeedPromise = null;
 
 function startLiveFeed() {
   if (unwatchRealtime) return Promise.resolve(unwatchRealtime);
   if (!liveFeedPromise) {
-    liveFeedPromise = ensureRealtimeSubscription(onRealtimePoint).then((unwatch) => {
-      unwatchRealtime = unwatch;
-      return unwatch;
-    });
+    liveFeedPromise = ensureRealtimeSubscription(onRealtimePoint)
+      .then((unwatch) => {
+        unwatchRealtime = unwatch;
+        return unwatch;
+      })
+      .catch(() => {
+        liveFeedPromise = null;
+        return null;
+      });
   }
   return liveFeedPromise;
 }
@@ -268,12 +272,7 @@ const onRealtimePoint = async (point) => {
     streamData = await redecryptDataBag(sensorId, streamData, ownerAccount);
   }
 
-  const inRealtimeTab =
-    mapState.currentProvider.value === "realtime" &&
-    mapState.timelineMode.value === "realtime";
-
-  // Realtime map: keep the existing live marker/list feed.
-  if (inRealtimeTab) {
+  if (mapState.currentProvider.value === "realtime") {
     setSensorData(point.sensor_id, {
       geo: point.geo,
       model: point.model,
@@ -362,8 +361,6 @@ function appendLiveLogToPopup(point, streamData) {
   if (point.geo) prevPopup.geo = point.geo;
   prevPopup.logs = [...prevLogs, entry];
 }
-
-/* - Realtime watch */
 
 function livePointInViewedPeriod(timestamp) {
   const raw = Number(timestamp);

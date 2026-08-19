@@ -776,26 +776,20 @@ async function loadMarkersListRaw(start, end, isoDate, timelineMode = "day") {
   return sensors;
 }
 
-/**
- * Map sensors for marker layer (remote: markers API + bounds filter).
- * @param {number} start - start unix timestamp
- * @param {number} end - end unix timestamp
- * @param {string} provider - 'remote' | 'realtime'
- * @param {Object} [cacheContext]
- * @param {string} [cacheContext.isoDate] - selected map date (enables IDB cache)
- * @param {string} [cacheContext.timelineMode] - day | week | month | realtime
- * @returns {{ sensors: Array, sensorsNoLocation: Array }}
- */
-export async function getSensors(start, end, provider = "remote", cacheContext = null) {
-  if (provider === "realtime") {
-    // Realtime sensors arrive via WebSocket in Main.vue — nothing to fetch here.
-    return { sensors: [], sensorsNoLocation: [] };
+async function latestRealtimeHistoryPoints() {
+  const historyBySensor = await LIBP2P_PROVIDER.getHistoryPeriod();
+  if (!historyBySensor || typeof historyBySensor !== "object") return [];
+
+  const latest = [];
+  for (const sensorId of Object.keys(historyBySensor)) {
+    const rows = historyBySensor[sensorId];
+    if (!Array.isArray(rows) || rows.length === 0) continue;
+    latest.push(rows[rows.length - 1]);
   }
+  return latest;
+}
 
-  const historyData = cacheContext?.isoDate
-    ? await loadMarkersListRaw(start, end, cacheContext.isoDate, cacheContext.timelineMode)
-    : await REMOTE_PROVIDER.getSensorsForPeriod(start, end);
-
+function markerRowsFromSensorData(historyData, { includeLiveData = false } = {}) {
   const sensors = [];
   const sensorsNoLocation = [];
 
@@ -822,6 +816,10 @@ export async function getSensors(start, end, provider = "remote", cacheContext =
           : null,
     };
 
+    if (includeLiveData && sensorData.data && typeof sensorData.data === "object") {
+      sensorInfo.data = sensorData.data;
+    }
+
     if (!hasValidCoordinates({ lat, lng })) {
       sensorsNoLocation.push(sensorInfo);
     } else {
@@ -831,12 +829,35 @@ export async function getSensors(start, end, provider = "remote", cacheContext =
 
   const filteredSensors = filterSensorsByConfig(sensors);
   const filteredSensorsNoLocation = filterSensorsByConfig(sensorsNoLocation);
-
   const bounds = getConfigBounds(settings);
   return {
     sensors: filterByBounds(filteredSensors, bounds),
     sensorsNoLocation: filterByBounds(filteredSensorsNoLocation, bounds),
   };
+}
+
+/**
+ * Map sensors for marker layer (remote: markers API + bounds filter).
+ * Realtime: seed from libp2p session history so switching back does not wait
+ * for the next pubsub tick (already-seen timestamps are not re-emitted).
+ * @param {number} start - start unix timestamp
+ * @param {number} end - end unix timestamp
+ * @param {string} provider - 'remote' | 'realtime'
+ * @param {Object} [cacheContext]
+ * @param {string} [cacheContext.isoDate] - selected map date (enables IDB cache)
+ * @param {string} [cacheContext.timelineMode] - day | week | month | realtime
+ * @returns {{ sensors: Array, sensorsNoLocation: Array }}
+ */
+export async function getSensors(start, end, provider = "remote", cacheContext = null) {
+  if (provider === "realtime") {
+    return markerRowsFromSensorData(await latestRealtimeHistoryPoints(), { includeLiveData: true });
+  }
+
+  const historyData = cacheContext?.isoDate
+    ? await loadMarkersListRaw(start, end, cacheContext.isoDate, cacheContext.timelineMode)
+    : await REMOTE_PROVIDER.getSensorsForPeriod(start, end);
+
+  return markerRowsFromSensorData(historyData);
 }
 
 /**
