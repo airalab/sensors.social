@@ -114,6 +114,13 @@ export default {
   "Where to buy Altruist": "Where to buy Altruist",
   "Official and partner purchase options for Altruist devices by region.": "Official and partner purchase options for Altruist devices by region.",
   "Where to buy air monitor Altruist": "Where to buy air monitor Altruist",
+  "Altruist Dual": "Altruist Dual",
+  "Other accessories": "Other accessories",
+  "Cyberpunks.shop (Worldwide)": "Cyberpunks.shop (Worldwide)",
+  "Amazon USA": "Amazon USA",
+  "Amazon DE (available for Cyprus)": "Amazon DE (available for Cyprus)",
+  "Altruist Air Quality Sensors with Installation & Setup on Cyprus":
+    "Altruist Air Quality Sensors with Installation & Setup on Cyprus",
   "Buy ready-to-use air quality monitors for indoor and outdoor use. Measure dust, noise, and CO₂, and choose what to share with the sensors.social community.": "Buy ready-to-use air quality monitors for indoor and outdoor use. Measure dust, noise, and CO₂, and choose what to share with the sensors.social community.",
   "Two-module environment monitoring kit for indoors and outdoors — for those who care about health.": "Two-module environment monitoring kit for indoors and outdoors — for those who care about health.",
   "Coming soon": "Coming soon",

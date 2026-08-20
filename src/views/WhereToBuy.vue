@@ -1,48 +1,41 @@
 <template>
   <MetaInfo
-    :pageTitle="$t('Where to buy Altruist')"
-    :pageDescription="$t('Official and partner purchase options for Altruist devices by region.')"
+    :pageTitle="$t('Where to buy air monitor Altruist')"
+    :pageDescription="$t('Official and pinout purchase options for Altruist devices by region.')"
     pageImage="/og-default.webp"
   />
   <PageTextLayout>
     <div class="pagetext-header">
-      <h1 class="pagetext-title">{{ $t("Where to buy") }}</h1>
+      <h1 class="pagetext-title">{{ $t("Where to buy air monitor Altruist") }}</h1>
       <p class="pagetext-subtitle">
         {{
           $t(
-            "Buy ready-to-use air quality monitors for indoor and outdoor use. Measure dust, noise, and CO₂, and choose what to share with the sensors.social community."
+            "Two-module environment monitoring kit for indoors and outdoors — for those who care about health. You track your pulse, HRV, sleep phases. To achieve the best recovery results — you need to account for sleep conditions and the environment you live in."
           )
         }}
       </p>
     </div>
 
-    <section class="shops">
-      <a
-        v-for="shop in shops"
-        :key="shop.id"
-        class="shop ui-surface"
-        :class="{ 'shop--disabled': shop.comingSoon }"
-        :data-tone="shop.tone"
-        :href="shop.href || undefined"
-        :target="shop.href ? '_blank' : undefined"
-        :rel="shop.href ? 'noopener' : undefined"
-        :aria-disabled="shop.comingSoon ? 'true' : 'false'"
-        @click="shop.comingSoon ? $event.preventDefault() : null"
-      >
-        <div class="shop__header">
-          <span class="shop__pill">{{ shop.regionLabel }}</span>
-          <span v-if="shop.comingSoon" class="shop__pill shop__pill--soon">
-            {{ $t("Coming soon") }}
-          </span>
+    <section class="catalog">
+      <article v-for="product in products" :key="product.id" class="product">
+        <div class="product__media">
+          <img :src="product.image" :alt="product.title" loading="lazy" />
         </div>
-
-        <div class="shop__logo">
-          <img :src="shop.logo" :alt="shop.logoAlt" loading="lazy" />
-        </div>
-
-        <p class="shop__desc">{{ shop.description }}</p>
-      </a>
+        <h2 class="product__title">{{ product.title }}</h2>
+        <ul class="product__links">
+          <li v-for="link in product.links" :key="`${product.id}-${link.label}`">
+            <a :href="link.href" target="_blank" rel="noopener">{{ link.label }}</a>
+          </li>
+        </ul>
+      </article>
     </section>
+
+    <a class="pinout" :href="pinout.href" target="_blank" rel="noopener">
+      <span class="pinout__brand">
+        <img class="pinout__mark" :src="pinout.image" alt="pinout logo" />
+      </span>
+      <span class="pinout__link">{{ pinout.label }}</span>
+    </a>
   </PageTextLayout>
 </template>
 
@@ -52,181 +45,202 @@ import { useI18n } from "vue-i18n";
 import MetaInfo from "../components/MetaInfo.vue";
 import PageTextLayout from "../components/layouts/PageText.vue";
 
+import dualImage from "@/assets/images/altruist-device/altruist-dual.webp";
+import urbanImage from "@/assets/images/altruist-device/altruist-urban.webp";
+import insightImage from "@/assets/images/altruist-device/altruist-insight.webp";
+import accessoriesImage from "@/assets/images/altruist-device/repair-kit-for-urban.webp";
 import pinoutLogo from "@/assets/images/logos/pinout-logo.png";
-import yandexLogo from "@/assets/images/logos/yandex-logo.svg";
-import cyberpunksShopLogo from "@/assets/images/logos/cyberpunks-shop-logo.svg";
-import amazonLogo from "@/assets/images/logos/amazon-logo.svg";
 
 const { t } = useI18n();
 
-const shops = computed(() => [
+const productCatalog = [
   {
-    id: "worldwide",
-    regionLabel: t("Worldwide"),
-    comingSoon: false,
-    tone: "primary",
-    href: "https://cyberpunks.shop/?utm_source=sensors.social&utm_medium=referral&utm_campaign=where-to-buy&utm_content=cyberpunks",
-    logo: cyberpunksShopLogo,
-    logoAlt: t("Cyberpunks Shop"),
-    title: t("Cyberpunks Shop"),
-    description: t("Our online-shop with various options available"),
+    id: "dual",
+    titleKey: "Altruist Dual",
+    image: dualImage,
+    links: {
+      cyberpunks: "https://cyberpunks.shop/altruist-dual",
+      amazonUs: "https://www.amazon.com/dp/B0GXKZG4D4?th=1",
+      amazonDe: "https://www.amazon.de/dp/B0GXKZG4D4?th=1",
+    },
   },
   {
-    id: "europe",
-    regionLabel: t("DE"),
-    comingSoon: false,
-    tone: "primary",
-    href: "https://www.amazon.de/-/en/Assistant-Integration-sensors-social-Community-Owned-Subscriptions/dp/B0GXF3Q127/ref=sr_1_1?crid=3VPHQPHQZ9RU4&dib=eyJ2IjoiMSJ9.SMCp3qkyJXH6cQoVFrFeGWx7vzIJfauoYLSEgwZRJmO_VQJorYjKGeYJJwPAqELySrntJuhU3BJN3qO_4A3JrGk-SWw0Po0aPuhLFP-yoi5l5THWvGHcant_PcVbPuijz4VTLEPATGKt-1Lu3dR69Qvv4x7r1V7Az9LgMqlHK_Cpo8-EFtz3VMEAwoTv09TQf92TNjo07B7yu5W1bmD0IK7osB4yZ90jKueqPmsnwyp0BPOvDcpQeTsz6G7EVXc2XbmJOHQLHhdu75ueFWrpGkA6XyGqE1xadoFcUaX8Qyk.wbDqcVCSrL4aOo3wFK1Q69X86FBDExjxkCkjvzDKg9U",
-    logo: amazonLogo,
-    logoAlt: "Amazon",
-    title: "Amazon",
-    description: t("Amazon DE: Altruist Urban, German delivery"),
+    id: "urban",
+    titleKey: "Altruist Urban",
+    image: urbanImage,
+    links: {
+      cyberpunks: "https://cyberpunks.shop/altruist-urban",
+      amazonUs: "https://www.amazon.com/dp/B0GWR3HDPD?th=1",
+      amazonDe: "https://www.amazon.de/dp/B0GXF54G56",
+    },
   },
   {
-    id: "cyprus",
-    regionLabel: t("CY"),
-    comingSoon: false,
-    tone: "primary",
-    href: "https://pinout.cloud/shop/altruist?utm_source=sensors.social&utm_medium=referral&utm_campaign=where-to-buy&utm_content=pinout",
-    logo: pinoutLogo,
-    logoAlt: "Pinout",
-    title: "Pinout",
-    description: t("Altruist air quality sensors with installation and setup in Cyprus"),
-  }
-]);
+    id: "insight",
+    titleKey: "Altruist Insight",
+    image: insightImage,
+    links: {
+      cyberpunks: "https://cyberpunks.shop/altruist-insight",
+      amazonUs: "https://www.amazon.com/dp/B0HCCMWJVW?th=1",
+      amazonDe: "https://www.amazon.de/dp/B0HCCKJ2YN?th=1",
+    },
+  },
+  {
+    id: "accessories",
+    titleKey: "Other accessories",
+    image: accessoriesImage,
+    links: {
+      cyberpunks: "https://cyberpunks.shop/",
+    },
+  },
+];
+
+const linkLabels = {
+  cyberpunks: () => t("Cyberpunks.shop (Worldwide)"),
+  amazonUs: () => t("Amazon USA"),
+  amazonDe: () => t("Amazon DE (available for Cyprus)"),
+};
+
+const products = computed(() =>
+  productCatalog.map((item) => ({
+    id: item.id,
+    title: t(item.titleKey),
+    image: item.image,
+    links: Object.entries(item.links).map(([key, href]) => ({
+      href,
+      label: linkLabels[key]?.() ?? key,
+    })),
+  }))
+);
+
+const pinout = computed(() => ({
+  name: "Pinout",
+  href: "https://pinout.cloud/",
+  image: pinoutLogo,
+  label: t("Altruist Air Quality Sensors with Installation & Setup on Cyprus"),
+}));
 </script>
 
 <style scoped>
-.shops {
+.catalog {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: stretch;
-  gap: calc(var(--gap) * 1.2);
-  margin-top: calc(var(--gap) * 1.2);
+  column-gap: calc(var(--gap) * 3);
+  row-gap: calc(var(--gap) * 1.8);
+  margin-top: calc(var(--gap) * 0.5);
+  margin-bottom: calc(var(--gap) * 1.5) !important;
 }
 
-@supports (grid-template-rows: subgrid) {
-  .shops {
-    grid-template-rows: repeat(2, auto minmax(88px, auto) auto);
-  }
-}
-
-.shop {
-  --shop-accent: var(--color-link);
-  --ui-surface-border: color-mix(in srgb, var(--shop-accent), transparent 55%);
-  --ui-surface-bg: color-mix(in srgb, var(--app-bodybg), transparent 6%);
-  --ui-surface-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-
-  display: grid;
-  grid-template-rows: auto minmax(88px, auto) auto;
-  gap: calc(var(--gap) * 0.65);
-  padding: calc(var(--gap) * 1.1);
-  text-decoration: none;
-  color: inherit;
-  min-height: 0;
-}
-
-@supports (grid-template-rows: subgrid) {
-  .shop {
-    grid-template-rows: subgrid;
-    grid-row: span 3;
-  }
-}
-
-.shop.ui-surface:hover,
-.shop.ui-surface:focus-visible {
-  background: var(--ui-surface-bg);
-  border-color: var(--ui-surface-border);
-  box-shadow: var(--ui-surface-shadow);
-  transform: none;
-  text-decoration: none;
-}
-
-.shop[data-tone="neutral"] {
-  --shop-accent: color-mix(in srgb, var(--app-textcolor), transparent 45%);
-  --ui-surface-border: color-mix(in srgb, var(--app-textcolor), transparent 72%);
-  --ui-surface-bg: color-mix(in srgb, var(--app-bodybg), transparent 2%);
-  --ui-surface-shadow: 0 10px 26px rgba(0, 0, 0, 0.05);
-}
-
-.shop--disabled {
-  cursor: default;
-  opacity: 0.85;
-}
-
-.shop__header {
-  display: flex;
-  align-items: flex-end;
-  flex-direction: column;
-  justify-items: flex-end;
-  gap: calc(var(--gap) * 0.5);
-}
-
-.shop__pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: calc(var(--font-size) * 0.82);
-  letter-spacing: 0.02em;
-  background: color-mix(in srgb, var(--shop-accent), transparent 0%);
-  color: var(--color-light);
-}
-
-.shop[data-tone="neutral"] .shop__pill {
-  background-color: var(--color-dark);
-}
-
-.shop[data-tone="neutral"] .shop__pill--soon {
-  background-color: var(--color-orange);
-}
-
-.shop__logo {
+.product__media {
   display: grid;
   place-items: center;
-  align-self: stretch;
-  width: 100%;
+  min-height: 280px;
+  padding: calc(var(--gap) * 1.15) calc(var(--gap) * 1.4);
+  background: var(--color-light-gray-shop);
+  border-radius: 10px;
 }
 
-.shop__logo img {
-  max-width: min(340px, 100%);
-  max-height: 80px;
-  width: auto;
-  height: auto;
+.product__media img {
+  max-width: 100%;
   object-fit: contain;
+  image-rendering: auto;
   border: none;
   margin: 0;
 }
 
-.shop__desc {
-  margin: 0;
-  max-width: 46ch;
-  justify-self: center;
+.product__title {
+  margin: calc(var(--gap) * 0.85) 0 0;
+  font-size: calc(var(--font-size) * 1.5);
+  font-weight: 900;
   text-align: center;
-  color: var(--color-blue);
-  font-size: calc(var(--font-size) * 0.95);
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.shop[data-tone="neutral"] .shop__desc {
   color: var(--color-dark);
 }
 
+.product__links {
+  list-style: none;
+  margin: calc(var(--gap) * 0.35) auto 0;
+  padding: 0;
+  font-weight: 700;
+}
+
+.product__links li:not(:last-child) {
+  border-bottom: 3px dashed var(--color-middle-gray);
+}
+
+.product__links a {
+  display: block;
+  padding: 0.55rem 0.4rem;
+  text-align: center;
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.product__links a:hover,
+.product__links a:focus-visible {
+  color: var(--color-link-hover);
+}
+
+.pinout {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--gap) * 1.2);
+  margin-top: calc(var(--gap) * 2);
+  padding: 0.95rem 1.25rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 10px;
+  background: var(--color-light);
+  text-decoration: none;
+  color: inherit;
+}
+
+.pinout:hover,
+.pinout:focus-visible {
+  text-decoration: none;
+}
+
+.pinout__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.pinout__mark {
+  width: 100%;
+  max-width: 210px;
+  object-fit: contain;
+  object-position: left center;
+  border: none;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.pinout__link {
+  margin-left: auto;
+  font-size: calc(var(--font-size) * 1.3);
+  color: var(--color-link);
+  font-weight: 600;
+}
+
+.pinout:hover .pinout__link,
+.pinout:focus-visible .pinout__link {
+  color: var(--color-link-hover);
+}
+
 @media (max-width: 900px) {
-  .shops {
+  .catalog {
     grid-template-columns: 1fr;
+    column-gap: 0;
   }
 
-  @supports (grid-template-rows: subgrid) {
-    .shops {
-      grid-template-rows: repeat(4, auto minmax(88px, auto) auto);
-    }
+  .pinout {
+    flex-wrap: wrap;
   }
 
-  .shop__logo img {
-    max-width: min(300px, 100%);
+  .pinout__link {
+    flex: 1 1 100%;
+    text-align: left;
+    margin-left: 0;
+    font-size: calc(var(--font-size) * 1);
   }
 }
 </style>
