@@ -58,6 +58,7 @@ jobs:
           VITE_CONFIG_ENV: ${{ vars.VITE_CONFIG_ENV }}
           VITE_CONTACTS_FORM_SCRIPT_ID: ${{ secrets.VITE_CONTACTS_FORM_SCRIPT_ID }}
           VITE_HCAPTCHA_SITE_KEY: ${{ secrets.VITE_HCAPTCHA_SITE_KEY }}
+          VITE_CARTO_API_KEY: ${{ secrets.VITE_CARTO_API_KEY }}
 
       - name: Write CNAME if provided
         run: |

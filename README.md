@@ -235,6 +235,23 @@ You can configure map backgrounds using the following keys in `MAP.theme.light` 
 - **esri-topo** – Esri World Topo Map (streets + terrain).
 - **cyclosm** – Bicycle-focused map with cycling routes and infrastructure.
 
+##### CARTO API key
+
+The `carto-light` / `carto-dark` tiles are served watermarked with
+**"API KEY REQUIRED"** unless the request carries a key. The map still works — the
+watermark is a notice, not a shutdown.
+
+Get a free key at <https://carto.com/basemaps/apikey> (no CARTO account needed,
+5M tile requests per calendar month) and put it in `.env`:
+
+```env
+VITE_CARTO_API_KEY=your-carto-basemaps-key
+```
+
+Keep the CARTO + OpenStreetMap attribution and do not reuse one key across
+unrelated projects. If you would rather not depend on a key at all, switch
+`MAP.theme` to `osm` or another provider.
+
 If a theme key is missing or invalid:
 
 - For **light** → falls back to OpenStreetMap (default style).
