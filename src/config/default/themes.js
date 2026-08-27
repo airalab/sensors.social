@@ -4,6 +4,18 @@ const attrs = {
 };
 
 /*
+  CARTO raster basemaps are watermarked ("API KEY REQUIRED") unless the tile
+  request carries a key. A key is free (5M tile requests per month) and needs no
+  CARTO account: https://carto.com/basemaps/apikey
+  Put it in .env as VITE_CARTO_API_KEY to drop the watermark; without it the
+  tiles still load, just watermarked.
+*/
+const CARTO_KEY = (import.meta.env?.VITE_CARTO_API_KEY || "").trim();
+const cartoUrl = (style) =>
+  `https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}{r}.png` +
+  (CARTO_KEY ? `?key=${encodeURIComponent(CARTO_KEY)}` : "");
+
+/*
   Public basemap themes registry.
   Each key can be referenced from settings.MAP.theme.{light,dark}.
   Users can also define their own custom themes in config.
@@ -17,7 +29,7 @@ const THEMES = {
 
   // CARTO light basemap (clean light background, good for overlays)
   "carto-light": {
-    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    url: cartoUrl("light_all"),
     options: {
       ...attrs,
       subdomains: "abcd",
@@ -28,7 +40,7 @@ const THEMES = {
 
   // CARTO dark basemap (dark background, useful for dashboards/night mode)
   "carto-dark": {
-    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    url: cartoUrl("dark_all"),
     options: {
       ...attrs,
       subdomains: "abcd",
