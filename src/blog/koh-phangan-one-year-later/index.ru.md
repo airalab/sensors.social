@@ -11,7 +11,20 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 
 Год назад мы поехали на далёкий остров в Сиамском заливе, чтобы выяснить: могут ли обычные люди собрать себе сеть мониторинга воздуха. Не подать заявку на неё, не дождаться её — собрать.
 
-Условия задавались нарочно скромные. Пять человек. Открытое железо меньше чем на $1000 суммарно. Расставить приборы по острову за один день, настроить, а на второй день сесть и читать данные сети, которая принадлежит сообществу и не зависит ни от одной компании.
+Началось это на DevCon 7, где мы познакомились с ребятами с Ко Пхангана. Весной 2025-го мы отправили им пять «Альтруистов». В августе приехали сами — вторым этапом маршрута Бангкок — Гонконг, и опубликовали план накануне работ:
+
+<div class="tweet-card">
+  <div class="tweet-card__head">
+    <span class="tweet-card__author">Airalab · Robonomics</span>
+    <span class="tweet-card__handle">@AIRA_Robonomics · 20 August 2025</span>
+  </div>
+  <p class="tweet-card__text">Experiment Two: The journey from Bangkok to Hong Kong via Koh Phangan.<br><br>Between the two megacities, we made a stop on #Kohphangan. Back in the spring of 2025, our team sent five Altruists here to help the local islanders (whom we met after DevCon 7) establish local air quality monitoring. However, the main purpose of our stop on Koh Phangan is to demonstrate how small communities can acquire Altruists to take part in environmental matters on their own — whether it's a cottage village, a neighborhood, or, as in today's case, an entire island!<br><br>Ahead of us is a preparation day during which we will drive around the island, install and configure five Altruist Urban devices in just one day, and then carry out the actual air quality experiment.</p>
+  <a class="tweet-card__link" href="https://x.com/AIRA_Robonomics/status/1958124636262252896" target="_blank" rel="noopener">View the post on X</a>
+</div>
+
+*Перевод: эксперимент второй — путь из Бангкока в Гонконг через Ко Пханган. Между двумя мегаполисами мы сделали остановку на острове. Весной 2025 года наша команда отправила сюда пять «Альтруистов», чтобы помочь местным жителям (с которыми мы познакомились после DevCon 7) наладить мониторинг воздуха. Но главная цель остановки — показать, что небольшие сообщества могут взяться за экологию сами: дачный посёлок, район или, как сегодня, целый остров. Впереди день подготовки: объедем остров, за сутки установим и настроим пять Altruist Urban, а затем проведём сам эксперимент.*
+
+Условия задавались нарочно скромные. Пять человек. Открытое железо меньше чем на $1000 суммарно. Объехать остров, за один день расставить и настроить приборы, а на второй сесть и читать данные сети, которая принадлежит сообществу и не зависит ни от одной компании.
 
 Получилось, и мы это сняли:
 
@@ -27,13 +40,13 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 
 *За два дня сеть датчиков может появиться в любой точке планеты* — второй фильм из путешествия «Альтруистов» по Азии.
 
-Полевые тесты мы [публиковали по ходу дела](https://x.com/AIRA_Robonomics/status/1958124636262252896), в августе 2025-го, пока сеть поднималась.
-
 Это приквел. А дальше — то, что было потом, потому что самое интересное в двухдневном эксперименте не второй день. Двенадцатый месяц.
 
 ## Сеть на месте — и вот где именно
 
-Она всё ещё отчитывается. Четыре датчика Altruist Urban с севера острова до юга, непрерывный поток измерений, и никто не прилетал их обслуживать.
+В августе 2025-го поднялись пять приборов. **Четыре из них есть в архиве, который мы можем запросить** — он начинается 1 апреля 2026 года; пятого в нём нет, и по этим данным нельзя сказать, когда он замолчал. Оставшиеся четыре стоят с севера острова до юга, отчитываются непрерывно, и никто не прилетал их обслуживать. Расположены они вот так:
+
+![Четыре работающих датчика на Ко Пхангане, как они выглядят на карте sensors.social](./images/map.png)
 
 Этот разбор охватывает **всё, что мы сейчас можем запросить: с 1 апреля по 3 сентября 2026 года, 156 дней, чуть больше 400 000 отдельных измерений**, оба канала пыли в каждом. Те же данные можно открыть на [карте](https://sensors.social/?type=pm10&date=2026-09-03&provider=remote&lat=9.75&lng=100.02&zoom=10) и пройти по ним самому.
 
@@ -118,7 +131,7 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 <div class="tweet-card">
   <div class="tweet-card__head">
     <span class="tweet-card__author">Local activists on Koh Phangan</span>
-    <span class="tweet-card__handle">on X</span>
+    <span class="tweet-card__handle">on X · 21 июля 2026</span>
   </div>
   <p class="tweet-card__text">We are helping the local Ko Pha Ngan 🇹🇭🏝️ community collect evidence of pollution on a public blockchain, directly from air quality sensors. This is the hardest and longest step in fixing the biggest issue in this hippie paradise — trash burning every day, and even more after the legendary parties 😶‍🌫️</p>
   <a class="tweet-card__link" href="https://x.com/EnsRationis/status/2079631800331096501" target="_blank" rel="noopener">View the post on X</a>
@@ -140,7 +153,7 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 
 **Мы не можем доказать горение по одному размеру частиц.** Учебниковый способ — соотношение крупной и мелкой фракции, у нас его медиана 1,85, то есть «смешанный», а не отчётливо мелкодисперсный. Известно, что номинально «крупный» канал этого сенсора откликается в основном на частицы заметно меньше 2,5 мкм ([Kuula et al., 2020](https://doi.org/10.5194/amt-13-2413-2020)), поэтому на таком железе соотношение — слабый различитель, и мы на него не опираемся. Аргумент несёт абсолютная нагрузка мелкой фракции: поднятая ветром почва не даёт 1000 мкг/м³ мелких частиц.
 
-**Покрытие неровное, поэтому любое число — нижняя граница.** Один датчик пропустил 34 дня подряд, другой 45, а у одного из четырёх датчик влажности застыл на 100%, из-за чего большая часть его показаний непригодна для скорректированного фона. Реальное число эпизодов на острове больше 1199 — мы просто не везде слушали одновременно.
+**Покрытие неровное, поэтому любое число — нижняя граница.** Одного прибора из пяти в архиве нет вовсе. Из оставшихся четырёх один пропустил 34 дня подряд, другой 45, а у одного датчик влажности застыл на 100%, из-за чего большая часть его показаний непригодна для скорректированного фона. Реальное число эпизодов на острове больше 1199 — мы просто не везде слушали одновременно.
 
 ## Так эксперимент удался?
 

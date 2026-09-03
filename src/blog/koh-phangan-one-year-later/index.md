@@ -11,7 +11,18 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 
 A year ago we went to a remote island in the Gulf of Thailand to find out whether a group of ordinary people could build their own air quality network — not apply for one, not wait for one, build one.
 
-The premise was deliberately modest. Five people. Open hardware for under $1,000 in total. Install the devices around the island in a single day, configure them, and by the second day sit down and read data from a sensor network that belongs to the community running it and depends on no company to stay alive.
+It began at DevCon 7, where we met a group of islanders from Koh Phangan. In the spring of 2025 we shipped five Altruists out to them. That August we came ourselves, as the second leg of a journey from Bangkok to Hong Kong, and posted the plan the day before the work started:
+
+<div class="tweet-card">
+  <div class="tweet-card__head">
+    <span class="tweet-card__author">Airalab · Robonomics</span>
+    <span class="tweet-card__handle">@AIRA_Robonomics · 20 August 2025</span>
+  </div>
+  <p class="tweet-card__text">Experiment Two: The journey from Bangkok to Hong Kong via Koh Phangan.<br><br>Between the two megacities, we made a stop on #Kohphangan. Back in the spring of 2025, our team sent five Altruists here to help the local islanders (whom we met after DevCon 7) establish local air quality monitoring. However, the main purpose of our stop on Koh Phangan is to demonstrate how small communities can acquire Altruists to take part in environmental matters on their own — whether it's a cottage village, a neighborhood, or, as in today's case, an entire island!<br><br>Ahead of us is a preparation day during which we will drive around the island, install and configure five Altruist Urban devices in just one day, and then carry out the actual air quality experiment.</p>
+  <a class="tweet-card__link" href="https://x.com/AIRA_Robonomics/status/1958124636262252896" target="_blank" rel="noopener">View the post on X</a>
+</div>
+
+The premise was deliberately modest. Five people. Open hardware for under $1,000 in total. Drive around the island, install and configure the devices in a single day, and by the second day sit down and read data from a sensor network that belongs to the community running it and depends on no company to stay alive.
 
 It worked, and we filmed it:
 
@@ -27,13 +38,13 @@ It worked, and we filmed it:
 
 *In just 2 days, a sensor network can emerge anywhere on the planet* — the second film from the Altruists' journey across Asia.
 
-We also [posted the field tests as they happened](https://x.com/AIRA_Robonomics/status/1958124636262252896), in August 2025, while the network was going up.
-
 That is the prequel. This post is what happened next, because the interesting part of a two-day experiment is not day two. It is month twelve.
 
 ## The network is still there — and here is exactly where
 
-It is still reporting. Four Altruist Urban sensors spread from the north of the island to the south, sending measurements continuously, with no one flying in to maintain them.
+Five devices went up in August 2025. **Four of them appear in the archive we can query**, which begins on 1 April 2026 — the fifth does not, and this data cannot tell us when it went quiet. The four that remain run from the north of the island to the south, reporting continuously, with no one flying in to maintain them. They sit exactly here:
+
+![The four reporting sensors on Koh Phangan, as they appear on the sensors.social map](./images/map.png)
 
 This post covers **everything we can currently query: 1 April to 3 September 2026, 156 days, just over 400,000 individual measurements**, both particulate channels on every reading. You can open the same data on the [map](https://sensors.social/?type=pm10&date=2026-09-03&provider=remote&lat=9.75&lng=100.02&zoom=10) and go through it yourself.
 
@@ -118,7 +129,7 @@ We did not discover this problem. The people who live on the island did, and the
 <div class="tweet-card">
   <div class="tweet-card__head">
     <span class="tweet-card__author">Local activists on Koh Phangan</span>
-    <span class="tweet-card__handle">on X</span>
+    <span class="tweet-card__handle">on X · 21 July 2026</span>
   </div>
   <p class="tweet-card__text">We are helping the local Ko Pha Ngan 🇹🇭🏝️ community collect evidence of pollution on a public blockchain, directly from air quality sensors. This is the hardest and longest step in fixing the biggest issue in this hippie paradise — trash burning every day, and even more after the legendary parties 😶‍🌫️</p>
   <a class="tweet-card__link" href="https://x.com/EnsRationis/status/2079631800331096501" target="_blank" rel="noopener">View the post on X</a>
@@ -139,7 +150,7 @@ Four things, stated plainly, because a citizen network earns its credibility by 
 
 **We cannot prove combustion from particle size alone.** The textbook method is the coarse-to-fine ratio, and ours sits at a median of 1.85 — mixed, rather than clearly fine-dominated. The sensor's nominal coarse channel is known to respond mostly to particles well under 2.5 µm ([Kuula et al., 2020](https://doi.org/10.5194/amt-13-2413-2020)), so on this hardware the ratio is a weak discriminator and we do not lean on it. What carries the argument is the absolute fine-dust load: soil lifted by wind does not produce 1000 µg/m³ of fine particles.
 
-**Coverage is uneven, so every count is a floor.** One sensor missed 34 days in a row, another 45, and one of the four has a humidity probe stuck at 100% that makes most of its readings unusable for the corrected background. The island's real episode count is higher than 1,199 — we simply were not listening everywhere at once.
+**Coverage is uneven, so every count is a floor.** One of the five devices is missing from the archive altogether. Of the four that remain, one missed 34 days in a row, another 45, and one has a humidity probe stuck at 100% that makes most of its readings unusable for the corrected background. The island's real episode count is higher than 1,199 — we simply were not listening everywhere at once.
 
 ## So, did the experiment work?
 
