@@ -161,3 +161,9 @@ They can. And a year later that network is doing something no one else on the is
 The devices are open hardware, the code is [open source](https://github.com/airalab), the measurements carry their own record of where they came from, and nobody has to take our word for any of it.
 
 If you want to do the same thing where you live, that is the entire point. [Start here](https://sensors.social).
+
+## Thank you
+
+None of this exists without the people on the island. The devices sit on their roofs and balconies, run on their electricity and their wifi, and stay online because someone local cares whether they do. Our thanks to [Green Pill Koh Phangan](https://x.com/GreenPillKPG) and to everyone in the community who took one in, put it up and kept it running for a year.
+
+They also know the island in a way no dataset does. Every time the numbers turned out to mean something, it was because somebody there could tell us what was happening at that spot.
