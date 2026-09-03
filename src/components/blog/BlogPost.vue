@@ -208,6 +208,64 @@ watch(
   cursor: pointer;
 }
 
+/* A 16:9 embed that keeps its ratio while the column resizes. The padding-bottom
+   trick is used rather than aspect-ratio because the surrounding layout already
+   relies on percentage padding elsewhere and this matches it. */
+.blog-post .video-embed {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  margin: calc(var(--gap) * 1.25) 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-dark);
+}
+
+.blog-post .video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* A quoted post from X, rendered statically. The official embed is not usable
+   here: a <script> inside compiled Markdown never executes, and a widget that
+   fetches its own content would leave the prerendered page empty. */
+.blog-post .tweet-card {
+  border: 1px solid var(--surface-border-soft);
+  border-radius: var(--radius-md);
+  padding: calc(var(--gap) * 1.1) calc(var(--gap) * 1.25);
+  margin: calc(var(--gap) * 1.25) 0;
+}
+
+.blog-post .tweet-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.blog-post .tweet-card__author {
+  font-weight: 600;
+}
+
+.blog-post .tweet-card__handle {
+  color: color-mix(in srgb, var(--app-textcolor), transparent 45%);
+  font-size: 0.9em;
+}
+
+.blog-post .tweet-card__text {
+  margin: 0;
+}
+
+.blog-post .tweet-card__link {
+  display: inline-block;
+  margin-top: 0.7rem;
+  font-size: 0.9em;
+  color: var(--color-link);
+}
+
 .blog-post .grid > p {
   display: grid;
   grid-template-columns: 1fr 1fr;
