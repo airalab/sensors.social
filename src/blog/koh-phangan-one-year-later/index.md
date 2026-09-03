@@ -15,7 +15,17 @@ The premise was deliberately modest. Five people. Open hardware for under $1,000
 
 It worked, and we filmed it:
 
-**[In just 2 days, a sensor network can emerge anywhere on the planet](https://www.youtube.com/watch?v=DBNREYFKpcI)** — the second film from the Altruists' journey across Asia.
+<div class="video-embed">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/DBNREYFKpcI"
+    title="In just 2 days, a sensor network can emerge anywhere on the planet"
+    loading="lazy"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
+
+*In just 2 days, a sensor network can emerge anywhere on the planet* — the second film from the Altruists' journey across Asia.
 
 We also [posted the field tests as they happened](https://x.com/AIRA_Robonomics/status/1958124636262252896), in August 2025, while the network was going up.
 
@@ -103,9 +113,17 @@ Across days of the week the pattern is flat, with nothing meaningful between the
 
 ## What the community already knew
 
-We did not discover this problem. The people who live on the island did, and they have been saying so publicly for a long time. Local activists working with us [put it plainly](https://x.com/EnsRationis/status/2079631800331096501):
+We did not discover this problem. The people who live on the island did, and they have been saying so publicly for a long time. Local activists working with us put it plainly:
 
-> We are helping the local Ko Pha Ngan community collect evidence of pollution on a public blockchain, directly from air quality sensors. This is the hardest and longest step in fixing the biggest issue in this hippie paradise — trash burning every day, and even more after the legendary parties.
+<div class="tweet-card">
+  <div class="tweet-card__head">
+    <span class="tweet-card__author">Local activists on Koh Phangan</span>
+    <span class="tweet-card__handle">on X</span>
+  </div>
+  <p class="tweet-card__text">We are helping the local Ko Pha Ngan 🇹🇭🏝️ community collect evidence of pollution on a public blockchain, directly from air quality sensors. This is the hardest and longest step in fixing the biggest issue in this hippie paradise — trash burning every day, and even more after the legendary parties 😶‍🌫️</p>
+  <a class="tweet-card__link" href="https://x.com/EnsRationis/status/2079631800331096501" target="_blank" rel="noopener">View the post on X</a>
+</div>
+
 
 That is what the network is for. It turns *everyone knows they burn rubbish here* into 1,199 events with a timestamp, a location and a record nobody can quietly revise later. Evidence is slower than outrage, and it is the part that survives an argument.
 

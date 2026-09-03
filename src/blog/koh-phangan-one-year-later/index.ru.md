@@ -15,7 +15,17 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 
 Получилось, и мы это сняли:
 
-**[За два дня сеть датчиков может появиться в любой точке планеты](https://www.youtube.com/watch?v=DBNREYFKpcI)** — второй фильм из путешествия «Альтруистов» по Азии.
+<div class="video-embed">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/DBNREYFKpcI"
+    title="In just 2 days, a sensor network can emerge anywhere on the planet"
+    loading="lazy"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+  ></iframe>
+</div>
+
+*За два дня сеть датчиков может появиться в любой точке планеты* — второй фильм из путешествия «Альтруистов» по Азии.
 
 Полевые тесты мы [публиковали по ходу дела](https://x.com/AIRA_Robonomics/status/1958124636262252896), в августе 2025-го, пока сеть поднималась.
 
@@ -103,9 +113,18 @@ tags: ["case-study", "koh-phangan", "citizen-network", "air-quality"]
 
 ## Что сообщество знало и без нас
 
-Эту проблему открыли не мы. Её открыли те, кто там живёт, и говорят о ней публично давно. Местные активисты, с которыми мы работаем, [формулируют так](https://x.com/EnsRationis/status/2079631800331096501):
+Эту проблему открыли не мы. Её открыли те, кто там живёт, и говорят о ней публично давно. Местные активисты, с которыми мы работаем, формулируют так:
 
-> Мы помогаем сообществу Ко Пхангана собирать доказательства загрязнения в публичном блокчейне, напрямую с датчиков качества воздуха. Это самый трудный и самый долгий шаг к решению главной проблемы этого хиппи-рая — мусор жгут каждый день, а после легендарных вечеринок ещё больше.
+<div class="tweet-card">
+  <div class="tweet-card__head">
+    <span class="tweet-card__author">Local activists on Koh Phangan</span>
+    <span class="tweet-card__handle">on X</span>
+  </div>
+  <p class="tweet-card__text">We are helping the local Ko Pha Ngan 🇹🇭🏝️ community collect evidence of pollution on a public blockchain, directly from air quality sensors. This is the hardest and longest step in fixing the biggest issue in this hippie paradise — trash burning every day, and even more after the legendary parties 😶‍🌫️</p>
+  <a class="tweet-card__link" href="https://x.com/EnsRationis/status/2079631800331096501" target="_blank" rel="noopener">View the post on X</a>
+</div>
+
+*Перевод: мы помогаем сообществу Ко Пхангана собирать доказательства загрязнения в публичном блокчейне, напрямую с датчиков качества воздуха. Это самый трудный и самый долгий шаг к решению главной проблемы этого хиппи-рая — мусор жгут каждый день, а после легендарных вечеринок ещё больше.*
 
 Ровно для этого сеть и нужна. Она превращает «да все знают, что здесь жгут мусор» в 1199 событий со временем, местом и записью, которую потом тихо не перепишешь. Доказательство собирается медленнее, чем возмущение, — и только оно переживает спор.
 
