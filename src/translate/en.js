@@ -268,6 +268,7 @@ export default {
   "Altruist timeline": "Altruist timeline",
   "Altruist compare": "Altruist compare",
   "Altruist comparison table": "Altruist comparison table",
+  "Buy on Cyberpunks.shop": "Buy on Cyberpunks.shop",
   "Air Sensor Comparison Table": "Air Sensor Comparison Table",
   "Map data": "Map data",
   "OpenStreetMap contributors": "OpenStreetMap contributors",

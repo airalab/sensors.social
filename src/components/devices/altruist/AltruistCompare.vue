@@ -50,10 +50,11 @@
                 </div>
               </template>
 
-              <template v-if="row.feature === 'Price'">
-                <a :href="priceLinks[i]" target="_blank"
-                  ><b>{{ formatValue(value) }}</b></a
-                >
+              <template v-if="row.feature === 'Price' && i === 0">
+                <a :href="storeLink"><b>{{ formatValue(value) }}</b></a>
+              </template>
+              <template v-else-if="row.feature === 'Price'">
+                <b>{{ formatValue(value) }}</b>
               </template>
               <template v-else>
                 {{ formatValue(value) }}
@@ -63,11 +64,15 @@
         </tbody>
       </table>
     </div>
+
+    <p class="compare-cta">
+      <a :href="storeLink" class="button">{{ $t("Buy on Cyberpunks.shop") }}</a>
+    </p>
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 
 import altruistImg from "@/assets/images/altruist-device/Altruist-bundle.webp";
 import purpleAirImg from "@/assets/images/compare-table/purpleAir-device.webp";
@@ -90,18 +95,33 @@ const deviceHeaders = [
   { name: $t("AirVisual Pro & Outdoor"), img: airVisualImg },
 ];
 
-const priceLinks = [
-  "https://www.indiegogo.com/projects/altruist-air-quality-bundle-urban-insight?utm_source=sensors.social&utm_medium=compare",
-  "https://www2.purpleair.com/products/purpleair-zen",
-  "https://www.airgradient.com",
-  "https://www.netatmo.com/en-gb/weather-station-original-sand",
-  "https://www.iqair.com/us/air-quality-monitors",
-];
+const STORE_URL = "https://cyberpunks.shop/en/altruist-dual";
+
+// Метки клика переносим из адреса страницы в ссылку на магазин: замер стоит
+// там, а не здесь, и без gclid платный клик не свяжется с заказом.
+const PASS_THROUGH = ["gclid", "gbraid", "wbraid", "msclkid", "fbclid"];
+
+const storeLink = computed(() => {
+  const incoming = new URLSearchParams(window.location.search);
+  const url = new URL(STORE_URL);
+  for (const key of PASS_THROUGH) {
+    const value = incoming.get(key);
+    if (value) url.searchParams.set(key, value);
+  }
+  for (const [key, value] of incoming.entries()) {
+    if (key.startsWith("utm_")) url.searchParams.set(key, value);
+  }
+  if (!url.searchParams.has("utm_source")) {
+    url.searchParams.set("utm_source", "sensors.social");
+    url.searchParams.set("utm_medium", "compare");
+  }
+  return url.toString();
+});
 
 const tableData = [
   {
     feature: $t("Price"),
-    altruist: { value: "€189 ($221)", mark: " " },
+    altruist: { value: "€360 ($423)", mark: " " },
     purpleair: { value: "€254 ($299)", mark: " " },
     airgradient: { value: "€328 ($385)", mark: " " },
     netatmo: { value: "€152 ($179)", mark: " " },
@@ -439,5 +459,10 @@ h2 {
   display: block;
   width: 100%;
   margin-bottom: calc(var(--gap) * 2);
+}
+
+.compare-cta {
+  margin-top: 2rem;
+  text-align: center;
 }
 </style>
