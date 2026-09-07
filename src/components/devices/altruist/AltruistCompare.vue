@@ -1,5 +1,43 @@
 <template>
   <section>
+    <div class="compare-promo" v-if="promo">
+      <h2>{{ $t("Meet Altruist") }}</h2>
+      <p>
+        {{
+          $t(
+            "Altruist is two devices working as one. Urban goes outside and measures what the street does to your air: PM2.5 and PM10, temperature, humidity, pressure and noise in decibels. Insight stays in the room and measures what you actually breathe: CO2 through an NDIR sensor, shown on an e-ink screen you can read from across the table."
+          )
+        }}
+      </p>
+      <ul>
+        <li>
+          <b>{{ $t("Open from the firmware up.") }}</b>
+          {{
+            $t(
+              "The firmware, the schematics and the open source cloud it talks to are all public. You can read the code, change it, and build on it."
+            )
+          }}
+        </li>
+        <li>
+          <b>{{ $t("Works on its own.") }}</b>
+          {{
+            $t(
+              "Local control over your own network, a native Home Assistant integration and a microSD card for history. The device keeps measuring and showing data with no internet connection at all."
+            )
+          }}
+        </li>
+        <li>
+          <b>{{ $t("Your data, your call.") }}</b>
+          {{
+            $t(
+              "Publish your measurements to the open source cloud and they join a public map, or keep everything inside your own network."
+            )
+          }}
+        </li>
+      </ul>
+      <p>{{ $t("Here is how Altruist measures up, feature by feature.") }}</p>
+    </div>
+
     <h2>{{ $t("Air Sensor Comparison Table") }}</h2>
 
     <img
@@ -85,6 +123,7 @@ const { t: $t } = useI18n();
 
 const props = defineProps({
   gif: { type: Boolean, default: false },
+  promo: { type: Boolean, default: false },
 });
 
 const deviceHeaders = [
@@ -121,11 +160,11 @@ const storeLink = computed(() => {
 const tableData = [
   {
     feature: $t("Price"),
-    altruist: { value: "€360 ($423)", mark: " " },
-    purpleair: { value: "€254 ($299)", mark: " " },
-    airgradient: { value: "€328 ($385)", mark: " " },
-    netatmo: { value: "€152 ($179)", mark: " " },
-    airvisual: { value: "€638 ($748)", mark: " " },
+    altruist: { value: "€360 ($418)", mark: " " },
+    purpleair: { value: "€257 ($299)", mark: " " },
+    airgradient: { value: "€392 ($455)", mark: " " },
+    netatmo: { value: "€150 ($174)", mark: " " },
+    airvisual: { value: "€542 ($630)", mark: " " },
   },
   {
     feature: $t("Type"),
@@ -459,6 +498,19 @@ h2 {
   display: block;
   width: 100%;
   margin-bottom: calc(var(--gap) * 2);
+}
+
+.compare-promo {
+  max-width: 800px;
+  margin: 0 auto calc(var(--gap) * 2);
+}
+
+.compare-promo ul {
+  padding-left: 1.2rem;
+}
+
+.compare-promo li {
+  margin-bottom: 0.6rem;
 }
 
 .compare-cta {
