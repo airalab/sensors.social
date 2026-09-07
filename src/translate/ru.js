@@ -271,6 +271,7 @@ export default {
   "Altruist timeline": "Временной отрезок Альтруиста",
   "Altruist compare": "Сравнение Альтруиста",
   "Altruist comparison table": "Таблица сравнения альтруистов",
+  "Buy on Cyberpunks.shop": "Купить на Cyberpunks.shop",
   "Air Sensor Comparison Table": "Таблица сравнения датчиков воздуха",
   "Map data": "Данные карты",
   "OpenStreetMap contributors": "Участники OpenStreetMap",
