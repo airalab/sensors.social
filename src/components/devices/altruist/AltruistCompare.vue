@@ -1,7 +1,15 @@
 <template>
   <section>
+    <h2>{{ $t("Air Sensor Comparison Table") }}</h2>
+
+    <img
+      alt=""
+      src="@/assets/images/pages/altruist-compare/compare-stand.gif"
+      v-if="gif"
+      class="gif"
+    />
+
     <div class="compare-promo" v-if="promo">
-      <h2>{{ $t("Meet Altruist") }}</h2>
       <p>
         {{
           $t(
@@ -37,15 +45,6 @@
       </ul>
       <p>{{ $t("Here is how Altruist measures up, feature by feature.") }}</p>
     </div>
-
-    <h2>{{ $t("Air Sensor Comparison Table") }}</h2>
-
-    <img
-      alt=""
-      src="@/assets/images/pages/altruist-compare/compare-stand.gif"
-      v-if="gif"
-      class="gif"
-    />
 
     <div class="compare-table">
       <table>
@@ -502,7 +501,7 @@ h2 {
 
 .compare-promo {
   max-width: 800px;
-  margin: 0 auto calc(var(--gap) * 2);
+  margin: calc(var(--gap) * 1.5) auto calc(var(--gap) * 2);
 }
 
 .compare-promo ul {
