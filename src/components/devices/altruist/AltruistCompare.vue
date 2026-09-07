@@ -160,11 +160,11 @@ const storeLink = computed(() => {
 const tableData = [
   {
     feature: $t("Price"),
-    altruist: { value: "€360 ($423)", mark: " " },
-    purpleair: { value: "€254 ($299)", mark: " " },
-    airgradient: { value: "€328 ($385)", mark: " " },
-    netatmo: { value: "€152 ($179)", mark: " " },
-    airvisual: { value: "€638 ($748)", mark: " " },
+    altruist: { value: "€360 ($418)", mark: " " },
+    purpleair: { value: "€257 ($299)", mark: " " },
+    airgradient: { value: "€392 ($455)", mark: " " },
+    netatmo: { value: "€150 ($174)", mark: " " },
+    airvisual: { value: "€542 ($630)", mark: " " },
   },
   {
     feature: $t("Type"),
