@@ -271,7 +271,6 @@ export default {
   "Altruist timeline": "Временной отрезок Альтруиста",
   "Altruist compare": "Сравнение Альтруиста",
   "Altruist comparison table": "Таблица сравнения альтруистов",
-  "Meet Altruist": "Знакомьтесь, Altruist",
   "Altruist is two devices working as one. Urban goes outside and measures what the street does to your air: PM2.5 and PM10, temperature, humidity, pressure and noise in decibels. Insight stays in the room and measures what you actually breathe: CO2 through an NDIR sensor, shown on an e-ink screen you can read from across the table.": "Altruist — это два устройства, которые работают как одно. Urban живёт на улице и измеряет, что делает с воздухом город: PM2.5 и PM10, температуру, влажность, давление и шум в децибелах. Insight стоит в комнате и измеряет то, чем вы дышите на самом деле: CO2 через NDIR-датчик, с показаниями на экране e-ink, который видно через всю комнату.",
   "Open from the firmware up.": "Открыто до самой прошивки.",
   "The firmware, the schematics and the open source cloud it talks to are all public. You can read the code, change it, and build on it.": "Прошивка, схемы и open source облако, с которым говорит устройство, — всё публично. Код можно прочитать, изменить и строить на нём своё.",
