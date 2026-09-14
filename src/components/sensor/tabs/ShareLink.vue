@@ -149,7 +149,8 @@ const selectedSensor = ref("");
 const includeSensor = ref(true);
 const includeProvider = ref(!!route.query.provider);
 const includeType = ref(!!route.query.type);
-const includeDate = ref(!!route.query.date);
+// Date is opt-in: a shared link should show current data unless the user pins a day explicitly.
+const includeDate = ref(false);
 
 // Получаем доступные типы из данных сенсора
 const availableTypes = computed(() => {
@@ -237,7 +238,6 @@ watch(
   (newDate) => {
     if (newDate) {
       selectedDate.value = newDate;
-      includeDate.value = true;
     }
   },
   { immediate: true }
