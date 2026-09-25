@@ -1,0 +1,593 @@
+<!DOCTYPE html><html lang="en" amp="" dir="ltr"><head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style type="text/css">:root, :host {
+  --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Free";
+  --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free";
+  --fa-font-light: normal 300 1em/1 "Font Awesome 6 Pro";
+  --fa-font-thin: normal 100 1em/1 "Font Awesome 6 Pro";
+  --fa-font-duotone: normal 900 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-duotone-regular: normal 400 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-duotone-light: normal 300 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-duotone-thin: normal 100 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands";
+  --fa-font-sharp-solid: normal 900 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-regular: normal 400 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-light: normal 300 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-thin: normal 100 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-duotone-solid: normal 900 1em/1 "Font Awesome 6 Sharp Duotone";
+  --fa-font-sharp-duotone-regular: normal 400 1em/1 "Font Awesome 6 Sharp Duotone";
+  --fa-font-sharp-duotone-light: normal 300 1em/1 "Font Awesome 6 Sharp Duotone";
+  --fa-font-sharp-duotone-thin: normal 100 1em/1 "Font Awesome 6 Sharp Duotone";
+}
+
+svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
+  overflow: visible;
+  box-sizing: content-box;
+}
+
+.svg-inline--fa {
+  display: var(--fa-display, inline-block);
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+}
+.svg-inline--fa.fa-2xs {
+  vertical-align: 0.1em;
+}
+.svg-inline--fa.fa-xs {
+  vertical-align: 0em;
+}
+.svg-inline--fa.fa-sm {
+  vertical-align: -0.0714285705em;
+}
+.svg-inline--fa.fa-lg {
+  vertical-align: -0.2em;
+}
+.svg-inline--fa.fa-xl {
+  vertical-align: -0.25em;
+}
+.svg-inline--fa.fa-2xl {
+  vertical-align: -0.3125em;
+}
+.svg-inline--fa.fa-pull-left {
+  margin-right: var(--fa-pull-margin, 0.3em);
+  width: auto;
+}
+.svg-inline--fa.fa-pull-right {
+  margin-left: var(--fa-pull-margin, 0.3em);
+  width: auto;
+}
+.svg-inline--fa.fa-li {
+  width: var(--fa-li-width, 2em);
+  top: 0.25em;
+}
+.svg-inline--fa.fa-fw {
+  width: var(--fa-fw-width, 1.25em);
+}
+
+.fa-layers svg.svg-inline--fa {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.fa-layers-counter, .fa-layers-text {
+  display: inline-block;
+  position: absolute;
+  text-align: center;
+}
+
+.fa-layers {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  text-align: center;
+  vertical-align: -0.125em;
+  width: 1em;
+}
+.fa-layers svg.svg-inline--fa {
+  transform-origin: center center;
+}
+
+.fa-layers-text {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+
+.fa-layers-counter {
+  background-color: var(--fa-counter-background-color, #ff253a);
+  border-radius: var(--fa-counter-border-radius, 1em);
+  box-sizing: border-box;
+  color: var(--fa-inverse, #fff);
+  line-height: var(--fa-counter-line-height, 1);
+  max-width: var(--fa-counter-max-width, 5em);
+  min-width: var(--fa-counter-min-width, 1.5em);
+  overflow: hidden;
+  padding: var(--fa-counter-padding, 0.25em 0.5em);
+  right: var(--fa-right, 0);
+  text-overflow: ellipsis;
+  top: var(--fa-top, 0);
+  transform: scale(var(--fa-counter-scale, 0.25));
+  transform-origin: top right;
+}
+
+.fa-layers-bottom-right {
+  bottom: var(--fa-bottom, 0);
+  right: var(--fa-right, 0);
+  top: auto;
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: bottom right;
+}
+
+.fa-layers-bottom-left {
+  bottom: var(--fa-bottom, 0);
+  left: var(--fa-left, 0);
+  right: auto;
+  top: auto;
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: bottom left;
+}
+
+.fa-layers-top-right {
+  top: var(--fa-top, 0);
+  right: var(--fa-right, 0);
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: top right;
+}
+
+.fa-layers-top-left {
+  left: var(--fa-left, 0);
+  right: auto;
+  top: var(--fa-top, 0);
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: top left;
+}
+
+.fa-1x {
+  font-size: 1em;
+}
+
+.fa-2x {
+  font-size: 2em;
+}
+
+.fa-3x {
+  font-size: 3em;
+}
+
+.fa-4x {
+  font-size: 4em;
+}
+
+.fa-5x {
+  font-size: 5em;
+}
+
+.fa-6x {
+  font-size: 6em;
+}
+
+.fa-7x {
+  font-size: 7em;
+}
+
+.fa-8x {
+  font-size: 8em;
+}
+
+.fa-9x {
+  font-size: 9em;
+}
+
+.fa-10x {
+  font-size: 10em;
+}
+
+.fa-2xs {
+  font-size: 0.625em;
+  line-height: 0.1em;
+  vertical-align: 0.225em;
+}
+
+.fa-xs {
+  font-size: 0.75em;
+  line-height: 0.0833333337em;
+  vertical-align: 0.125em;
+}
+
+.fa-sm {
+  font-size: 0.875em;
+  line-height: 0.0714285718em;
+  vertical-align: 0.0535714295em;
+}
+
+.fa-lg {
+  font-size: 1.25em;
+  line-height: 0.05em;
+  vertical-align: -0.075em;
+}
+
+.fa-xl {
+  font-size: 1.5em;
+  line-height: 0.0416666682em;
+  vertical-align: -0.125em;
+}
+
+.fa-2xl {
+  font-size: 2em;
+  line-height: 0.03125em;
+  vertical-align: -0.1875em;
+}
+
+.fa-fw {
+  text-align: center;
+  width: 1.25em;
+}
+
+.fa-ul {
+  list-style-type: none;
+  margin-left: var(--fa-li-margin, 2.5em);
+  padding-left: 0;
+}
+.fa-ul > li {
+  position: relative;
+}
+
+.fa-li {
+  left: calc(-1 * var(--fa-li-width, 2em));
+  position: absolute;
+  text-align: center;
+  width: var(--fa-li-width, 2em);
+  line-height: inherit;
+}
+
+.fa-border {
+  border-color: var(--fa-border-color, #eee);
+  border-radius: var(--fa-border-radius, 0.1em);
+  border-style: var(--fa-border-style, solid);
+  border-width: var(--fa-border-width, 0.08em);
+  padding: var(--fa-border-padding, 0.2em 0.25em 0.15em);
+}
+
+.fa-pull-left {
+  float: left;
+  margin-right: var(--fa-pull-margin, 0.3em);
+}
+
+.fa-pull-right {
+  float: right;
+  margin-left: var(--fa-pull-margin, 0.3em);
+}
+
+.fa-beat {
+  animation-name: fa-beat;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, ease-in-out);
+}
+
+.fa-bounce {
+  animation-name: fa-bounce;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+}
+
+.fa-fade {
+  animation-name: fa-fade;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+}
+
+.fa-beat-fade {
+  animation-name: fa-beat-fade;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+}
+
+.fa-flip {
+  animation-name: fa-flip;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, ease-in-out);
+}
+
+.fa-shake {
+  animation-name: fa-shake;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, linear);
+}
+
+.fa-spin {
+  animation-name: fa-spin;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 2s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, linear);
+}
+
+.fa-spin-reverse {
+  --fa-animation-direction: reverse;
+}
+
+.fa-pulse,
+.fa-spin-pulse {
+  animation-name: fa-spin;
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, steps(8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fa-beat,
+.fa-bounce,
+.fa-fade,
+.fa-beat-fade,
+.fa-flip,
+.fa-pulse,
+.fa-shake,
+.fa-spin,
+.fa-spin-pulse {
+    animation-delay: -1ms;
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    transition-delay: 0s;
+    transition-duration: 0s;
+  }
+}
+@keyframes fa-beat {
+  0%, 90% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(var(--fa-beat-scale, 1.25));
+  }
+}
+@keyframes fa-bounce {
+  0% {
+    transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9)) translateY(0);
+  }
+  30% {
+    transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1)) translateY(var(--fa-bounce-height, -0.5em));
+  }
+  50% {
+    transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95)) translateY(0);
+  }
+  57% {
+    transform: scale(1, 1) translateY(var(--fa-bounce-rebound, -0.125em));
+  }
+  64% {
+    transform: scale(1, 1) translateY(0);
+  }
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+}
+@keyframes fa-fade {
+  50% {
+    opacity: var(--fa-fade-opacity, 0.4);
+  }
+}
+@keyframes fa-beat-fade {
+  0%, 100% {
+    opacity: var(--fa-beat-fade-opacity, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(var(--fa-beat-fade-scale, 1.125));
+  }
+}
+@keyframes fa-flip {
+  50% {
+    transform: rotate3d(var(--fa-flip-x, 0), var(--fa-flip-y, 1), var(--fa-flip-z, 0), var(--fa-flip-angle, -180deg));
+  }
+}
+@keyframes fa-shake {
+  0% {
+    transform: rotate(-15deg);
+  }
+  4% {
+    transform: rotate(15deg);
+  }
+  8%, 24% {
+    transform: rotate(-18deg);
+  }
+  12%, 28% {
+    transform: rotate(18deg);
+  }
+  16% {
+    transform: rotate(-22deg);
+  }
+  20% {
+    transform: rotate(22deg);
+  }
+  32% {
+    transform: rotate(-12deg);
+  }
+  36% {
+    transform: rotate(12deg);
+  }
+  40%, 100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.fa-rotate-90 {
+  transform: rotate(90deg);
+}
+
+.fa-rotate-180 {
+  transform: rotate(180deg);
+}
+
+.fa-rotate-270 {
+  transform: rotate(270deg);
+}
+
+.fa-flip-horizontal {
+  transform: scale(-1, 1);
+}
+
+.fa-flip-vertical {
+  transform: scale(1, -1);
+}
+
+.fa-flip-both,
+.fa-flip-horizontal.fa-flip-vertical {
+  transform: scale(-1, -1);
+}
+
+.fa-rotate-by {
+  transform: rotate(var(--fa-rotate-angle, 0));
+}
+
+.fa-stack {
+  display: inline-block;
+  vertical-align: middle;
+  height: 2em;
+  position: relative;
+  width: 2.5em;
+}
+
+.fa-stack-1x,
+.fa-stack-2x {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: var(--fa-stack-z-index, auto);
+}
+
+.svg-inline--fa.fa-stack-1x {
+  height: 1em;
+  width: 1.25em;
+}
+.svg-inline--fa.fa-stack-2x {
+  height: 2em;
+  width: 2.5em;
+}
+
+.fa-inverse {
+  color: var(--fa-inverse, #fff);
+}
+
+.sr-only,
+.fa-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:not(:focus),
+.fa-sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.svg-inline--fa .fa-primary {
+  fill: var(--fa-primary-color, currentColor);
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa .fa-secondary {
+  fill: var(--fa-secondary-color, currentColor);
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-primary {
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-secondary {
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa mask .fa-primary,
+.svg-inline--fa mask .fa-secondary {
+  fill: black;
+}</style><link rel="icon" href="/favicon.ico">
+    <meta name="description" content="Why does the air around your home smell smoky in autumn and winter? Learn how garden fires, fireplaces, wood-burning stoves and the heating season affect PM2.5 and PM10 — and why local air quality monitoring matters.">
+    <link rel="apple-touch-icon" href="/app-icon-120.png" sizes="120x120">
+    <link rel="mask-icon" href="/app-icon-512.png" color="#FFFFFF">
+    <meta name="theme-color" content="#ffffff">
+    <title>Neighbor’s Smoke, Fireplaces and Heating Season: PM2.5 and PM10 Around Your Home</title>
+
+    <script>
+      // Only load Matomo if user hasn't opted out
+      if (!localStorage.getItem("matomoOptOut")) {
+        // Initialize _paq BEFORE loading matomo.js
+        window._paq = window._paq || [];
+        window._paq.push(["setTrackerUrl", "https://matomo.robonomics.network/matomo.php"]);
+        window._paq.push(["setSiteId", "5"]);
+        window._paq.push(["enableLinkTracking"]);
+
+        // Inject Matomo script
+        const g = document.createElement("script");
+        g.async = true;
+        g.defer = true;
+        g.src = "https://matomo.robonomics.network/matomo.js";
+        document.head.appendChild(g);
+      }
+    </script><script async="" defer="" src="https://matomo.robonomics.network/matomo.js"></script>
+    <script type="module" crossorigin="" src="/assets/index-d9a1abf6.js"></script>
+    <link rel="stylesheet" href="/assets/index-49f37f7b.css">
+  <style>.vue-notification-group{display:block;position:fixed;z-index:5000}.vue-notification-wrapper{display:block;overflow:hidden;width:100%;margin:0;padding:0}.notification-title{font-weight:600}.vue-notification-template{display:block;box-sizing:border-box;background:white;text-align:left}.vue-notification{display:block;box-sizing:border-box;text-align:left;font-size:12px;padding:10px;margin:0 5px 5px;color:#fff;background:#44A4FC;border-left:5px solid #187FE7}.vue-notification.warn{background:#ffb648;border-left-color:#f48a06}.vue-notification.error{background:#E54D42;border-left-color:#b82e24}.vue-notification.success{background:#68CD86;border-left-color:#42a85f}.vn-fade-enter-active,.vn-fade-leave-active,.vn-fade-move{transition:all .5s}.vn-fade-enter-from,.vn-fade-leave-to{opacity:0}</style><meta property="og:type" content="website"><meta property="og:site_name" content="Sensors.social"><meta property="og:title" content="Neighbor’s Smoke, Fireplaces and Heating Season: PM2.5 and PM10 Around Your Home"><meta property="og:description" content="Why does the air around your home smell smoky in autumn and winter? Learn how garden fires, fireplaces, wood-burning stoves and the heating season affect PM2.5 and PM10 — and why local air quality monitoring matters."><meta property="og:image" content="https://sensors.social/blog/autumn-winter-smoke-pm25-pm10-heating-season/images/cover.webp"><meta property="og:image:width" content="1280"><meta property="og:image:height" content="765"><meta property="og:url" content="https://sensors.social/blog/autumn-winter-smoke-pm25-pm10-heating-season"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Neighbor’s Smoke, Fireplaces and Heating Season: PM2.5 and PM10 Around Your Home"><meta name="twitter:image" content="https://sensors.social/blog/autumn-winter-smoke-pm25-pm10-heating-season/images/cover.webp"><meta name="twitter:description" content="Why does the air around your home smell smoky in autumn and winter? Learn how garden fires, fireplaces, wood-burning stoves and the heating season affect PM2.5 and PM10 — and why local air quality monitoring matters."><meta name="twitter:site" content="@AIRA_Robonomics"><meta name="twitter:creator" content="@AIRA_Robonomics"></head>
+  <body>
+    <div id="app" data-v-app=""><!----><header data-v-2142f965="" data-v-fdfe58e6="" class="route-blog-post"><div data-v-2142f965="" class="header-content flexline space-between"><div data-v-2142f965="" class="flexline align-start"><a data-v-2142f965="" href="/" class="appicon"><img data-v-2142f965="" alt="Map of independent air quality sensors" src="/assets/app-icon-512-c18bf4f0.png"></a><!----></div><div data-v-2142f965="" class="flexline header-actions"><a data-v-2142f965="" href="/where-to-buy/" class="button button-outlined narrow-hide button-round-outline-brightgreen"><svg data-v-2142f965="" class="svg-inline--fa fa-bag-shopping" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bag-shopping" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M160 112c0-35.3 28.7-64 64-64s64 28.7 64 64l0 48-128 0 0-48zm-48 48l-64 0c-26.5 0-48 21.5-48 48L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-208c0-26.5-21.5-48-48-48l-64 0 0-48C336 50.1 285.9 0 224 0S112 50.1 112 112l0 48zm24 48a24 24 0 1 1 0 48 24 24 0 1 1 0-48zm152 24a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z"></path></svg><span data-v-2142f965="">Shop sensors</span></a><button data-v-2142f965="" class="popovercontrol button-round-outline" popovertarget="about"><svg data-v-2142f965="" class="svg-inline--fa fa-bars" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"></path></svg></button><button data-v-2142f965="" class="popovercontrol button-round-outline bookmarksbutton" popovertarget="bookmarks"><svg data-v-2142f965="" class="svg-inline--fa fa-bookmark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bookmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path class="" fill="currentColor" d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"></path></svg><!----></button><a data-v-1a0b56b1="" data-v-2142f965="" href="/login/" class="button button-round-outline" title="Login"><svg data-v-1a0b56b1="" class="svg-inline--fa fa-user" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"></path></svg></a></div></div><div data-v-2142f965="" id="about" class="popover popover-top-right" popover=""><h3 data-v-2142f965="">Web3 public sensors map</h3><p data-v-2142f965="">Welcome to the decentralized opensource sensors map which operates with the sole intent of serving <a data-v-2142f965="" href="https://www.fsf.org/campaigns/priority-projects/decentralization-federation" target="_blank" rel="noopener">the free will of individuals</a> , without any beneficiaries. It offers two distinct layers of decentralization at your choise: peer-to-peer connectivity for direct access to sensor data, and the federative concept for accumulating sensor data and displaying measurement history. Click <a data-v-2142f965="" href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensors-connectivity-module/" target="_blank" rel="noopener">here</a> for further technical details.</p><p data-v-2142f965="">Map data © <a data-v-2142f965="" href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a></p><section data-v-2142f965="" class="navlinks"><a data-v-2142f965="" href="/altruist-device-info/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-circle-info navfa" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-info" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path class="" fill="currentColor" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"></path></svg><span data-v-2142f965="">Altruist device info</span></a><a data-v-2142f965="" href="/where-to-buy/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-credit-card navfa" aria-hidden="true" focusable="false" data-prefix="far" data-icon="credit-card" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path class="" fill="currentColor" d="M512 80c8.8 0 16 7.2 16 16l0 32L48 128l0-32c0-8.8 7.2-16 16-16l448 0zm16 144l0 192c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16l0-192 480 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24l48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l112 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-112 0z"></path></svg><span data-v-2142f965="">Where to buy</span></a><a data-v-2142f965="" href="/altruist-use-cases/" class="navtile"><img data-v-2142f965="" class="navimg" src="/assets/Urban-74da70b0.svg" alt="" aria-hidden="true"><span data-v-2142f965="">Altruist use cases</span></a><a data-v-2142f965="" href="/altruist-timeline/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-infinity navfa" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="infinity" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="" fill="currentColor" d="M0 241.1C0 161 65 96 145.1 96c38.5 0 75.4 15.3 102.6 42.5L320 210.7l72.2-72.2C419.5 111.3 456.4 96 494.9 96C575 96 640 161 640 241.1l0 29.7C640 351 575 416 494.9 416c-38.5 0-75.4-15.3-102.6-42.5L320 301.3l-72.2 72.2C220.5 400.7 183.6 416 145.1 416C65 416 0 351 0 270.9l0-29.7zM274.7 256l-72.2-72.2c-15.2-15.2-35.9-23.8-57.4-23.8C100.3 160 64 196.3 64 241.1l0 29.7c0 44.8 36.3 81.1 81.1 81.1c21.5 0 42.2-8.5 57.4-23.8L274.7 256zm90.5 0l72.2 72.2c15.2 15.2 35.9 23.8 57.4 23.8c44.8 0 81.1-36.3 81.1-81.1l0-29.7c0-44.8-36.3-81.1-81.1-81.1c-21.5 0-42.2 8.5-57.4 23.8L365.3 256z"></path></svg><span data-v-2142f965="">Altruist timeline</span></a><a data-v-2142f965="" href="/altruist-compare/" class="navtile"><img data-v-2142f965="" class="navimg" src="/assets/Altruist-17953169.svg" alt="" aria-hidden="true"><span data-v-2142f965="">Altruist comparison table</span></a><a data-v-2142f965="" href="/altruist-setup/" class="navtile"><img data-v-2142f965="" class="navimg" src="/assets/DIY-70909212.svg" alt="" aria-hidden="true"><span data-v-2142f965="">Altruist setup</span></a><a data-v-2142f965="" href="/air-measurements/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-chart-simple navfa" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chart-simple" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M160 80c0-26.5 21.5-48 48-48l32 0c26.5 0 48 21.5 48 48l0 352c0 26.5-21.5 48-48 48l-32 0c-26.5 0-48-21.5-48-48l0-352zM0 272c0-26.5 21.5-48 48-48l32 0c26.5 0 48 21.5 48 48l0 160c0 26.5-21.5 48-48 48l-32 0c-26.5 0-48-21.5-48-48L0 272zM368 96l32 0c26.5 0 48 21.5 48 48l0 288c0 26.5-21.5 48-48 48l-32 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48z"></path></svg><span data-v-2142f965="">Measurements guide</span></a><a data-v-2142f965="" href="/construction-monitoring/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-helmet-safety navfa" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="helmet-safety" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path class="" fill="currentColor" d="M256 32c-17.7 0-32 14.3-32 32l0 2.3 0 99.6c0 5.6-4.5 10.1-10.1 10.1c-3.6 0-7-1.9-8.8-5.1L157.1 87C83 123.5 32 199.8 32 288l0 64 512 0 0-66.4c-.9-87.2-51.7-162.4-125.1-198.6l-48 83.9c-1.8 3.2-5.2 5.1-8.8 5.1c-5.6 0-10.1-4.5-10.1-10.1l0-99.6 0-2.3c0-17.7-14.3-32-32-32l-64 0zM16.6 384C7.4 384 0 391.4 0 400.6c0 4.7 2 9.2 5.8 11.9C27.5 428.4 111.8 480 288 480s260.5-51.6 282.2-67.5c3.8-2.8 5.8-7.2 5.8-11.9c0-9.2-7.4-16.6-16.6-16.6L16.6 384z"></path></svg><span data-v-2142f965="">Construction monitoring</span></a><a data-v-2142f965="" href="/blog/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-newspaper navfa" aria-hidden="true" focusable="false" data-prefix="far" data-icon="newspaper" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path class="" fill="currentColor" d="M168 80c-13.3 0-24 10.7-24 24l0 304c0 8.4-1.4 16.5-4.1 24L440 432c13.3 0 24-10.7 24-24l0-304c0-13.3-10.7-24-24-24L168 80zM72 480c-39.8 0-72-32.2-72-72L0 112C0 98.7 10.7 88 24 88s24 10.7 24 24l0 296c0 13.3 10.7 24 24 24s24-10.7 24-24l0-304c0-39.8 32.2-72 72-72l272 0c39.8 0 72 32.2 72 72l0 304c0 39.8-32.2 72-72 72L72 480zM176 136c0-13.3 10.7-24 24-24l96 0c13.3 0 24 10.7 24 24l0 80c0 13.3-10.7 24-24 24l-96 0c-13.3 0-24-10.7-24-24l0-80zm200-24l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 80l32 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-32 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zM200 272l208 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-208 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm0 80l208 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-208 0c-13.3 0-24-10.7-24-24s10.7-24 24-24z"></path></svg><span data-v-2142f965="">Blog</span></a><a data-v-2142f965="" href="/noise-data-real-estate/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-volume-high navfa" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="volume-high" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path class="" fill="currentColor" d="M533.6 32.5C598.5 85.2 640 165.8 640 256s-41.5 170.7-106.4 223.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C557.5 398.2 592 331.2 592 256s-34.5-142.2-88.7-186.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM473.1 107c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C475.3 341.3 496 301.1 496 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C434.1 199.1 448 225.9 448 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C393.1 284.4 400 271 400 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM301.1 34.8C312.6 40 320 51.4 320 64l0 384c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352 64 352c-35.3 0-64-28.7-64-64l0-64c0-35.3 28.7-64 64-64l67.8 0L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3z"></path></svg><span data-v-2142f965="">Noise data for real estate</span></a><a data-v-2142f965="" href="/privacy-policy/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-file-lines navfa" aria-hidden="true" focusable="false" data-prefix="far" data-icon="file-lines" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path class="" fill="currentColor" d="M64 464c-8.8 0-16-7.2-16-16L48 64c0-8.8 7.2-16 16-16l160 0 0 80c0 17.7 14.3 32 32 32l80 0 0 288c0 8.8-7.2 16-16 16L64 464zM64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-293.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0L64 0zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"></path></svg><span data-v-2142f965="">Privacy policy</span></a><a data-v-2142f965="" href="/support/" class="navtile"><svg data-v-2142f965="" class="svg-inline--fa fa-comment navfa" aria-hidden="true" focusable="false" data-prefix="far" data-icon="comment" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path class="" fill="currentColor" d="M123.6 391.3c12.9-9.4 29.6-11.8 44.6-6.4c26.5 9.6 56.2 15.1 87.8 15.1c124.7 0 208-80.5 208-160s-83.3-160-208-160S48 160.5 48 240c0 32 12.4 62.8 35.7 89.2c8.6 9.7 12.8 22.5 11.8 35.5c-1.4 18.1-5.7 34.7-11.3 49.4c17-7.9 31.1-16.7 39.4-22.7zM21.2 431.9c1.8-2.7 3.5-5.4 5.1-8.1c10-16.6 19.5-38.4 21.4-62.9C17.7 326.8 0 285.1 0 240C0 125.1 114.6 32 256 32s256 93.1 256 208s-114.6 208-256 208c-37.1 0-72.3-6.4-104.1-17.9c-11.9 8.7-31.3 20.6-54.3 30.6c-15.1 6.6-32.3 12.6-50.1 16.1c-.8 .2-1.6 .3-2.4 .5c-4.4 .8-8.7 1.5-13.2 1.9c-.2 0-.5 .1-.7 .1c-5.1 .5-10.2 .8-15.3 .8c-6.5 0-12.3-3.9-14.8-9.9c-2.5-6-1.1-12.8 3.4-17.4c4.1-4.2 7.8-8.7 11.3-13.5c1.7-2.3 3.3-4.6 4.8-6.9l.3-.5z"></path></svg><span data-v-2142f965="">Support</span></a></section><section data-v-e311bfae="" data-v-2142f965=""><p data-v-e311bfae=""><a data-v-e311bfae="" href="https://github.com/airalab/sensors.social/releases/tag/v4.1.0" target="_blank" rel="noopener"><b data-v-e311bfae="">airalab/sensors.social v4.1.0</b></a></p><div data-v-e311bfae=""><b data-v-e311bfae="">Secured by</b></div><img data-v-e311bfae="" alt="" src="/assets/polkadot-new-dot-logo-horizontal-5c15bc80.svg" class="polkadotLogo"></section><div data-v-2142f965="" class="locale-select-container"><select data-v-2142f965=""><option data-v-2142f965="" value="en">EN</option><option data-v-2142f965="" value="ru">RU</option></select></div></div><div data-v-2142f965="" id="bookmarks" class="popover-top-right popover" popover=""><h3 data-v-2142f965="">Your bookmarked sensors</h3><div data-v-2142f965="" class="bookmarks-content">Save any sensor from the map here for quicker access</div></div></header><section data-v-fdfe58e6="" class="container-pagetext"><article data-v-aba40f4a="" class="blog-post"><header data-v-aba40f4a="" class="blog-post__hero"><a data-v-aba40f4a="" href="/blog/" class="blog-post__backlink">← Back to Blog</a><img data-v-aba40f4a="" src="/blog/autumn-winter-smoke-pm25-pm10-heating-season/images/cover.webp" class="blog-post__cover"><div data-v-aba40f4a="" class="blog-post__hero-content"><h1 data-v-aba40f4a="">Neighbor’s Smoke, Fireplaces and Heating Season: PM2.5 and PM10 Around Your Home</h1><p data-v-aba40f4a="" class="blog-post__meta">today • 17 min read</p><ul data-v-aba40f4a="" class="blog-tags blog-tags--post"><li data-v-aba40f4a="" class="blog-tag">altruist</li><li data-v-aba40f4a="" class="blog-tag">pm</li><li data-v-aba40f4a="" class="blog-tag">heating</li></ul></div></header><!----><div data-v-aba40f4a="" class="blog-post__content text-all"><div data-v-aba40f4a="" class="markdown-body"><h2>Smoke Around Your Home in Autumn and Winter: Garden Fires, Fireplaces and Heating Season</h2><p>Autumn changes the air around our homes more than it may seem. First, there is the occasional smell of burning leaves and branches. Then the evenings get colder, and fireplaces and wood-burning stoves are used more frequently. A few weeks later, the full heating season begins — often together with calm weather and temperature inversions that can keep pollution close to the ground for several hours or even days. We notice smoke easily with our noses, but smell tells us surprisingly little about what is actually happening in the air. Visible smoke may disappear while microscopic particles remain, and a strong smell alone does not tell us how high their concentration is. This is why the air quality reported for an entire city and the air directly outside one particular home can tell very different stories.</p><h2>1. Autumn Smoke Around Your Home: What Remains in the Air After a Garden Fire</h2><p><img src="/assets/1-f3687995.webp" alt="examples of local sources of smoke"></p><p>Autumn brings more local sources of smoke: garden fires, burning leaves and branches, and outdoor fire pits. Smoke can travel with the wind far beyond the property where the fire is burning.</p><p><strong>Even a small source of smoke can temporarily and noticeably change the air quality around your home.</strong></p><p>Burning garden waste may seem harmless because it is natural material, but wet leaves and freshly cut branches burn poorly. They are more likely to smolder at relatively low temperatures and with insufficient oxygen, producing much more smoke. Germany’s Umweltbundesamt recommends avoiding the open burning of garden waste and notes that particulate pollution from such fires can affect the air <strong>several kilometers away from the source</strong>. This means that the fire you smell outside your home may not be burning at your nearest neighbor’s property at all: wind, terrain and surrounding buildings can carry smoke between streets and neighborhoods, while calm weather can allow it to linger much longer. (<a href="https://www.umweltbundesamt.de/themen/wohin-dem-laub" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><h3>What Are PM2.5 and PM10, in Simple Terms?</h3><p><img src="/assets/2-022b06f7.webp" alt="particles in autumn and winter"></p><p>PM stands for <em>Particulate Matter</em> — microscopic solid particles and droplets suspended in the air. They can include dust, soot, smoke, salts, metals and many other substances. <strong>PM10</strong> refers to particles up to 10 micrometers in diameter, while <strong>PM2.5</strong> refers to even smaller particles up to 2.5 micrometers. In everyday terms, the easiest way to imagine them is as almost invisible fine dust floating around us, except that the sources of this “dust” can include not only ordinary dust, but also fireplaces, garden fires, traffic and heating systems. The smaller the particles are, the deeper they can penetrate into the respiratory system, which is why PM2.5 receives particular attention when discussing air pollution and health. (<a href="https://www.rivm.nl/houtrook/stoffen-en-concentraties-houtstook" target="_blank" rel="noopener noreferrer">RIVM</a>)</p><p>For context, the World Health Organization recommends a 24-hour average concentration of <strong>15 µg/m³ for PM2.5</strong> and <strong>45 µg/m³ for PM10</strong>. These are 24-hour averages, so a short spike on a sensor graph cannot automatically be considered an exceedance of the WHO daily guideline. Nevertheless, short peaks can be very useful because they show that something has changed in the local environment. (<a href="https://www.who.int/teams/environment-climate-change-and-health/air-quality-and-health/health-impacts/types-of-pollutants" target="_blank" rel="noopener noreferrer">WHO</a>)</p><p>This creates one of the main paradoxes of smoke: <strong>your nose can detect a fire, but it cannot measure the amount of particulate matter</strong>. Two evenings may smell equally smoky while showing completely different PM2.5 and PM10 levels.</p><h2>2. Wood-Burning Season: The Fireplace Next Door</h2><p><img src="/assets/3-f17c7c30.webp" alt="wood burning examples"></p><p>As temperatures fall, fireplaces and wood-burning stoves are used more frequently. What creates warmth and comfort inside one home becomes smoke outside, and air currents can carry it toward neighboring homes.</p><p><strong>The fireplace may belong to your neighbor, but the air around it is shared.</strong></p><p>Wood combustion produces fine particles of smoke and soot, including PM2.5, which can remain in the air even after the visible smoke has disappeared. An ordinary PM sensor cannot determine that one particular fireplace caused one particular spike: the same reading may be influenced at the same time by traffic, other stoves, regional background pollution and weather. What continuous local monitoring can reveal, however, is a <strong>recurring pattern</strong>. PM2.5 and PM10 may begin rising at roughly the same time every evening, peaks may become stronger when the wind comes from a certain direction and disappear when the wind changes. This provides a completely different level of understanding compared with simply noticing that “it smells smoky again.”</p><h3>Germany: Millions of Household Fireplaces and Stoves Become Part of the Winter Air</h3><p>In Germany, wood heating is far from a rare exception. According to Umweltbundesamt, in 2023 the country had around <strong>11.7 million individual room-heating appliances</strong> — including fireplaces, fireplace stoves, tiled stoves, open fireplaces and pellet stoves. Many of them are used as supplementary rather than primary heating, which means they are particularly likely to be used on cool evenings. (<a href="https://www.umweltbundesamt.de/system/files/medien/11850/publikationen/2026-05/62_2026_TEXTE.pdf" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><p>Their combined contribution is clearly visible in the winter air-quality picture. Measurements using specific chemical tracers show that particles from wood burning typically account for around <strong>10–20% of winter particulate pollution in Germany</strong> — and similar values are observed in both urban and rural areas. To reliably distinguish wood smoke from other sources, researchers use specific markers such as levoglucosan. (<a href="https://www.umweltbundesamt.de/themen/luft/luftschadstoffe/feinstaub/feinstaubemission-aus-kaminen-holzoefen" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><p>The national emissions inventory shows the scale from another perspective: in 2024, small combustion installations in Germany emitted around <strong>15.4 thousand tonnes of PM2.5</strong>, of which <strong>14.2 thousand tonnes came from wood heating</strong>. This does not mean that every German home with a fireplace will necessarily have high PM2.5 levels nearby, but it does show why wood smoke is not simply an isolated problem caused by one neighbor — it is a noticeable part of the broader winter air-quality picture. (<a href="https://www.umweltbundesamt.de/daten/umweltzustand-trends/luft/emissionen-emissionsminderung-bei" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><h3>The Netherlands: A Country With Its Own Fireplace Forecast</h3><p>The Netherlands provides a striking example of how significant residential wood smoke can become even in a country that is not associated with severe winters. According to RIVM, around <strong>95% of particles produced by residential wood burning fall into the PM2.5 category</strong>. In 2023, fireplaces and stoves used mainly for atmosphere and supplementary heating accounted for around <strong>23% of national PM2.5 emissions</strong>, while residential wood burning as a whole accounted for more than a quarter. Emissions and actual concentrations in the air are different measures: on average over the year, wood burning contributes slightly more than <strong>5% of PM2.5 concentrations</strong>, but in cities this share can exceed 8%, and on winter evenings it can rise above <strong>30%</strong>. (<a href="https://www.rivm.nl/houtrook/bijdrage-houtstook-aan-uitstoot-en-luchtkwaliteit" target="_blank" rel="noopener noreferrer">RIVM</a>)</p><p>The country even has a dedicated service called <strong>Stookwijzer</strong>, which combines local weather conditions and air-quality data and advises residents whether it is a good idea to use a fireplace, wood-burning stove or outdoor fire. One of its most unusual features is that <strong>there is no green level at all</strong>: the scale starts with yellow and moves through orange to red. Wind is especially important. During the 2024–2025 heating season, <strong>79% of wood-smoke complaints submitted through Stookwijzer occurred during periods with wind speeds of only 1–2 on the Beaufort scale</strong>, while the service itself received more than <strong>1.75 million visits</strong>, compared with around 500,000 visits the previous year. (<a href="https://www.rivm.nl/houtrook/stookwijzer/terugblik-overlastmeldingen-stookseizoen-2024-2025" target="_blank" rel="noopener noreferrer">RIVM</a>)</p><p>So the question is not only whether someone nearby is using a fireplace today. Just as important is <strong>where the smoke will go today</strong>. And sometimes the impact of wood smoke is not an abstract environmental issue at all. It is simply the question of whether you can open your bedroom window without filling the room with smoke. RIVM notes that actual exposure depends on all nearby wood-burning sources, weather conditions and even the person’s level of physical activity. (<a href="https://www.rivm.nl/houtrook/effecten-van-houtrook-op-gezondheid" target="_blank" rel="noopener noreferrer">RIVM</a>)</p><h3>Canada: Winter Wood Smoke Is Not Only About Wildfires</h3><p>In Canada, PM2.5 is often associated primarily with wildfire smoke, but in winter the situation can look different in some communities. Residential wood heating can become a significant local source of fine particles, and Health Canada specifically notes that wood smoke can enter a home <strong>from neighboring homes using wood-burning appliances</strong>. Wood smoke contains particulate matter, carbon monoxide, volatile organic compounds and other pollutants. (<a href="https://www.canada.ca/en/health-canada/services/air-quality/indoor-air-contaminants/avoid-wood-smoke.html" target="_blank" rel="noopener noreferrer">Health Canada</a>)</p><p>Whitehorse in Yukon provides a particularly clear example. In a study of the Riverdale residential neighborhood, source analysis showed that during winter <strong>around 70–84% of measured PM2.5 was attributable to wood smoke</strong>. This is not a figure for Canada as a whole, but the result from one specific neighborhood — and that is exactly why it is especially relevant for understanding hyperlocal air quality. The highest concentrations were observed during low winds, low temperatures and temperature inversions, while the wood-smoke signal was particularly noticeable early in the morning and late in the evening. (<a href="https://www.canada.ca/en/environment-climate-change/services/air-pollution/publications/residential-wood-combustion-2-5-sampling-project/summary.html" target="_blank" rel="noopener noreferrer">Environment and Climate Change Canada</a>)</p><p>The familiar equation “PM2.5 in Canada = wildfire smoke” therefore reflects only part of the picture. In winter, the source of fine particles may sometimes be much closer — literally the house next door.</p><h2>3. Heating Season Starts: Why Does the Air Change When Temperatures Drop?</h2><p><img src="/assets/4-3a6bf40f.webp" alt="heating season starts"></p><p>When the heating season begins, the number of operating heating sources increases at the same time. At the same time, winter weather often makes it more difficult for pollution to disperse properly.</p><p><strong>There are more pollution sources, while the atmosphere becomes less effective at dispersing them.</strong></p><p>Cold weather itself does not create PM2.5 or PM10. What changes is human activity and the behavior of the atmosphere: heating demand increases, stoves and fireplaces are used more often, while calm weather and stable air masses can keep pollution closer to the surface. One of the most important mechanisms is a <strong>temperature inversion</strong>. Under normal conditions, warm air near the ground rises and helps the atmosphere mix. During an inversion, cold air remains near the surface while a warmer layer sits above it almost like a lid. Emissions from heating, traffic and other sources continue to enter the air, but they disperse much more slowly. Germany’s Umweltbundesamt specifically identifies winter inversions, valleys and basins as conditions in which emissions from small combustion installations can add to an already existing pollution background. (<a href="https://www.umweltbundesamt.de/daten/umweltzustand-trends/luft/emissionen-emissionsminderung-bei" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><p>As a result, the same neighborhood can look completely different on two consecutive days. In windy weather, pollution may disperse quickly. On a cold, calm evening, the very same sources can create much higher local PM2.5 and PM10 levels.</p><h3>Austria: When Geography Helps Trap Pollution</h3><p>Austria demonstrates this effect particularly well because of its many valleys and basins. In November 2024, a combination of fog and weak winds led to elevated particulate concentrations in several regions. At monitoring stations in Vienna, Lower Austria, Linz, Traun, Eisenstadt and Graz, daily average PM10 levels exceeded <strong>50 µg/m³</strong>. Austria’s Umweltbundesamt described the situation as pollution accumulating in the lower atmosphere almost <strong>“under a lid.”</strong> (<a href="https://www.umweltbundesamt.at/news241112-feinstaub" target="_blank" rel="noopener noreferrer">Umweltbundesamt Österreich</a>)</p><p>Vienna also shows why identifying the origin of local particulate pollution can be difficult. According to city data based on Umweltbundesamt research, around <strong>75% of the sources contributing fine particles to Vienna’s air are located outside the city itself</strong>: around 60% come from outside Austria and another 15% from other regions of the country. Fine particles can travel hundreds of kilometers with air masses. (<a href="https://www.wien.gv.at/umwelt/luft-schadstoff-import" target="_blank" rel="noopener noreferrer">Stadt Wien</a>)</p><p>This is why a local PM spike cannot automatically be explained by the nearest chimney. The air around us is a mixture of local, urban and regional pollution. A local sensor is very good at answering the question <strong>“What is happening here?”</strong>, while answering <strong>“Where exactly did these particles come from?”</strong> may sometimes require a full scientific investigation.</p><h2>The Same Air, a Different Dose: Cycling, Running and Walking</h2><p><img src="/assets/5-f7210daf.webp" alt="different air during activities"></p><p>There is another detail that is easy to overlook when looking at an air-quality reading: exposure depends not only on the concentration of particles, but also on <strong>what a person is doing while breathing that air</strong>. This is particularly relevant in the Netherlands, where around <strong>27% of all trips are made by bicycle</strong>. (<a href="https://www.government.nl/themes/transport/bicycles/bicycle-policy-in-the-netherlands" target="_blank" rel="noopener noreferrer">Government of the Netherlands</a>)</p><p>During physical activity, breathing becomes faster and deeper, so a larger volume of air passes through the respiratory system over the same period of time. RIVM notes that, under otherwise similar conditions, higher physical activity increases the amount of wood smoke a person inhales. A relaxed walk and an intense bicycle ride through the same smoky neighborhood are therefore not exactly the same exposure scenario. (<a href="https://www.rivm.nl/houtrook/effecten-van-houtrook-op-gezondheid" target="_blank" rel="noopener noreferrer">RIVM</a>)</p><p>Canadian guidance recommends choosing lower-traffic routes for walking, running and cycling when pollution is elevated, using parks and green spaces away from major roads where possible, and considering the local <strong>AQHI — Air Quality Health Index</strong> when planning outdoor activity. The point is not to stop walking, cycling or exercising. Quite the opposite: <strong>more precise data helps you choose a better time and place for the activity you already want to do.</strong> (<a href="https://www.canada.ca/en/health-canada/services/air-quality/outdoor-pollution-health/minimizing-effects.html" target="_blank" rel="noopener noreferrer">Health Canada</a>)</p><h2>Why a City Air-Quality Map and Your Balcony Can Tell Different Stories</h2><p><img src="/assets/6-fd462743.webp" alt="air-quality map"></p><p>Official monitoring stations remain the foundation of air-quality assessment. They allow authorities to compare regions, track long-term trends and monitor compliance with standards, but no professional network can place a reference station outside every home, courtyard and balcony. Germany’s Umweltbundesamt explicitly notes that complete spatial coverage with monitoring stations is neither possible nor required by European regulations. Some stations represent heavily trafficked locations, while others represent typical urban background conditions. (<a href="https://www.umweltbundesamt.de/themen/luft/messenbeobachtenueberwachen/luftmessnetz-wo-wie-wird-gemessen" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><p>Short local events are particularly easy to lose in the broader picture. A garden fire may burn for forty minutes, a fireplace may operate only in the evening, and the wind may blow toward one particular home for just an hour. At city scale, such an event may barely change the overall reading, while directly outside one home the air may change noticeably. Official and local measurements therefore do not compete with one another — they answer questions at different scales. The official network describes the broader situation, while local monitoring shows what is happening in the specific place where you live.</p><h2>Why a History of PM2.5 and PM10 Is More Useful Than a Single Number</h2><p>A single measurement is a photograph, while a measurement history is a film. One PM2.5 or PM10 value at 2 p.m. tells you almost nothing about what happened in the morning, what the previous evening looked like or whether there was a short smoke episode during the night. After several weeks of continuous measurements, patterns begin to emerge: cold and warm days, daytime and evening, strong and weak winds.</p><p>The numbers also need to be interpreted correctly. The WHO recommendation of <strong>15 µg/m³ for PM2.5 refers to a 24-hour average</strong>, while the 24-hour recommendation for PM10 is <strong>45 µg/m³</strong>. A short-term spike therefore cannot automatically be described as an exceedance of the WHO daily guideline. But such a spike is still useful: it shows that <strong>something happened in the local environment</strong>. Over time, the data stops being a simple “good / bad” indicator and begins to reveal the environmental character of a specific place. (<a href="https://www.who.int/teams/environment-climate-change-and-health/air-quality-and-health/health-impacts/types-of-pollutants" target="_blank" rel="noopener noreferrer">WHO</a>)</p><h2>What Can You Do With Local PM2.5 and PM10 Data?</h2><p>The value of monitoring does not lie in the number itself, but in what that number allows you to change in everyday life. If a short particle peak caused by smoke appears outside your home, you can keep the window closed and ventilate later. A walk, run or bicycle trip can sometimes be moved to another time or taken along a different route. Health Canada recommends reducing strenuous outdoor activity during elevated pollution and choosing lower-traffic routes or green spaces away from major roads for walking and cycling where possible. (<a href="https://www.canada.ca/en/health-canada/services/air-quality/outdoor-pollution-health/minimizing-effects.html" target="_blank" rel="noopener noreferrer">Health Canada</a>)</p><p>The most useful information often comes from the history itself. If particle levels regularly rise in the evening, during cold and calm weather or when the wind comes from a particular direction, the data begins to answer very practical questions: <strong>When is the best time to open the windows? When should we go for a walk? Which cycling route makes more sense today? And when is it better simply to wait for a local pollution episode to pass?</strong></p><h2>Altruist Urban: Measure the Place Where You Actually Live</h2><p><strong>Altruist Urban</strong> is designed for outdoor environmental monitoring and allows continuous observation of <strong>PM2.5 and PM10 — fine particles in the air</strong> — directly outside your home, on a balcony, in a garden or at another location that matters to you. It also measures ambient noise levels, temperature, humidity and barometric pressure, providing a broader picture of the environment around the place where you live.</p><p>Its purpose is not to replace an official reference station or identify a specific person as the source of pollution. The value of local monitoring is different: it connects environmental data with everyday life. You smell smoke and can see whether particle levels changed. The temperature drops — you can compare the new data with the previous warmer week. A peak appears every evening — you can check whether the pattern really repeats and how it relates to weather conditions.</p><p>Over time, the question changes from <strong>“What is the air quality in my city today?”</strong> to something much more personal and practical: <strong>“What is happening in the air where I actually live?”</strong></p><p>That is the question <strong>Altruist Urban</strong> is designed to help answer.</p><h2>Frequently Asked Questions About Smoke, Fireplaces, PM2.5 and PM10</h2><h3>What Are PM2.5 and PM10?</h3><p>PM2.5 and PM10 are microscopic particles suspended in the air. PM10 includes particles up to 10 micrometers in diameter, while PM2.5 includes particles up to 2.5 micrometers. In simple terms, these are extremely small particles of dust, soot, smoke and other substances that can come from wood burning, heating systems, traffic and many other sources.</p><h3>Can Smoke From Burning Leaves Reach My Home?</h3><p>Yes. How far it travels depends on wind, terrain, buildings and weather conditions. Germany’s Umweltbundesamt notes that smoke from garden fires can affect air quality with fine particles several kilometers away from the fire itself. (<a href="https://www.umweltbundesamt.de/themen/wohin-dem-laub" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><h3>Why Can PM2.5 and PM10 Be Higher in the Evening?</h3><p>Fireplaces and wood-burning stoves are often used more frequently in the evening during autumn and winter, while weak winds and temperature inversions can slow the dispersal of pollution. In the Netherlands, for example, the contribution of residential wood burning to PM2.5 concentrations can exceed 30% on winter evenings. (<a href="https://www.rivm.nl/houtrook/bijdrage-houtstook-aan-uitstoot-en-luchtkwaliteit" target="_blank" rel="noopener noreferrer">RIVM</a>)</p><h3>Can Smoke From a Neighbor’s Wood-Burning Stove Enter My Home?</h3><p>Yes. Health Canada specifically notes that wood smoke can enter indoor spaces from nearby homes using wood-burning appliances. (<a href="https://www.canada.ca/en/health-canada/services/air-quality/indoor-air-contaminants/avoid-wood-smoke.html" target="_blank" rel="noopener noreferrer">Health Canada</a>)</p><h3>Can a PM2.5 and PM10 Sensor Tell Exactly Where the Smoke Came From?</h3><p>No. A PM sensor measures the amount of particulate matter in the air, but not its exact origin. When researchers need to distinguish wood smoke from other particle sources, they use additional chemical markers and analytical methods. (<a href="https://www.umweltbundesamt.de/themen/luft/luftschadstoffe/feinstaub/feinstaubemission-aus-kaminen-holzoefen" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><h3>Why Can a City Monitoring Station Show Something Different From a Local Sensor?</h3><p>Because they measure the air in different places and at different spatial scales. A short local event — such as a garden fire or an operating fireplace — can noticeably affect a few homes while barely appearing at all at a monitoring station located several kilometers away. (<a href="https://www.umweltbundesamt.de/themen/luft/messenbeobachtenueberwachen/luftmessnetz-wo-wie-wird-gemessen" target="_blank" rel="noopener noreferrer">Umweltbundesamt</a>)</p><h3>What Should I Do if PM2.5 or PM10 Is High Around My Home?</h3><p>The main goal is to reduce exposure. Depending on the situation, that may mean rescheduling strenuous outdoor activity, choosing a lower-traffic route, keeping windows closed during a short smoke episode and following official local air-quality guidance. A history of local measurements adds another layer of context by showing when air quality around your particular home usually improves. (<a href="https://www.canada.ca/en/health-canada/services/air-quality/outdoor-pollution-health/minimizing-effects.html" target="_blank" rel="noopener noreferrer">Health Canada</a>)</p></div></div></article></section><footer data-v-fdfe58e6=""><nav data-v-fdfe58e6="" class="footer-section"><ul data-v-fdfe58e6="" class="footer-section-in"><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/altruist-device-info" class="">Altruist device info</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/altruist-use-cases" class="">Altruist use cases</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/altruist-timeline" class="">Altruist timeline</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/altruist-compare" class="">Altruist compare</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/altruist-setup" class="">Altruist setup</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/air-measurements" class="">Measurements guide</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/construction-monitoring" class="">Construction monitoring</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/noise-data-real-estate" class="">Noise data for real estate</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/privacy-policy" class="">Privacy policy</a></li><li data-v-fdfe58e6=""><a data-v-fdfe58e6="" href="/support" class="">Support</a></li></ul></nav><section data-v-fdfe58e6="" class="footer-section separate"><div data-v-fdfe58e6="" class="footer-section-in"><p data-v-fdfe58e6="">Welcome to the decentralized opensource sensors map which operates with the sole intent of serving <a data-v-fdfe58e6="" href="https://www.fsf.org/campaigns/priority-projects/decentralization-federation" target="_blank" rel="noopener">the free will of individuals</a> , without any beneficiaries. It offers two distinct layers of decentralization at your choise: peer-to-peer connectivity for direct access to sensor data, and the federative concept for accumulating sensor data and displaying measurement history. Click <a data-v-fdfe58e6="" href="https://robonomics.academy/en/learn/sensors-connectivity-course/sensors-connectivity-module/" target="_blank" rel="noopener">here</a> for further technical details.</p><section data-v-e311bfae="" data-v-fdfe58e6=""><p data-v-e311bfae=""><a data-v-e311bfae="" href="https://github.com/airalab/sensors.social/releases/tag/v4.1.0" target="_blank" rel="noopener"><b data-v-e311bfae="">airalab/sensors.social v4.1.0</b></a></p><div data-v-e311bfae=""><b data-v-e311bfae="">Secured by</b></div><img data-v-e311bfae="" alt="" src="/assets/polkadot-new-dot-logo-horizontal-5c15bc80.svg" class="polkadotLogo"></section></div></section></footer><div class="vue-notification-group" style="width: 300px; top: 0px; right: 0px;"><span></span></div></div>
+    
+  
+
+</body></html>
