@@ -1,15 +1,5 @@
 <template>
-  <!-- <div class="maintenance-banner">
-    <a
-      href="https://cyberpunks.shop/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="maintenance-banner-link"
-    >
-      <span>Buy a map-ready air quality sensor <i>[Track your local environment]</i></span>
-      <font-awesome-icon icon="fa-solid fa-arrow-right" class="maintenance-banner-arrow" aria-hidden="true" />
-    </a>
-  </div> -->
+  <div class="maintenance-banner">Technical maintenance: some sensors may be temporarily unavailable. <a href="/support" class="link">Support</a></div>
   <RouterView />
   <notifications :classes="['notify', 'vue-notification']" />
 </template>
@@ -130,7 +120,7 @@ onMounted(async () => {
   font-weight: bold;
 }
 
-/* .maintenance-banner {
+.maintenance-banner {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -139,9 +129,19 @@ onMounted(async () => {
   text-align: center;
   padding: 0.5rem var(--gap);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 900;
+  font-size: 0.9rem;
 }
 
-.maintenance-banner-link {
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light);
+  text-decoration: underline;
+}
+
+/* .maintenance-banner-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -149,11 +149,8 @@ onMounted(async () => {
   width: 100%;
   color: var(--color-light);
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 700;
   transition: opacity 0.2s ease;
-  font-weight: 900;
-}
+} */
 
 .maintenance-banner-link:hover {
   color: var(--color-light);
@@ -175,5 +172,5 @@ onMounted(async () => {
   .maintenance-banner i {
     display: block;
   }
-} */
+}
 </style>
