@@ -1,6 +1,6 @@
 <template>
   <MetaInfo
-    :pageTitle="$t('7 Years of Altruism - Altruist Timeline')"
+    :pageTitle="$t('8 Years of Altruism - Altruist Timeline')"
     :pageDescription="
       $t(
         'At the end of July 2025, a team of open source developers working on a smart home device ecosystem will present their first product in a planned line of smart home devices for the year — a consumer device called “Altruist”.'
@@ -12,7 +12,7 @@
     <div class="pagetext-prose">
       <div class="pagetext-header">
         <div class="pagetext-eyebrow">sensors.social</div>
-        <h1 class="pagetext-title">{{ $t("7 Years of Altruism") }}</h1>
+        <h1 class="pagetext-title">{{ $t("8 Years of Altruism") }}</h1>
         <p class="pagetext-subtitle">
           {{
             $t(
