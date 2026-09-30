@@ -235,7 +235,7 @@
       </section>
 
       <section>
-        <h2>{{ $t("7 Years of Altruism") }}</h2>
+        <h2>{{ $t("8 Years of Altruism") }}</h2>
 
         <div class="table-scroll">
           <table>
