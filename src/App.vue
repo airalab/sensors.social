@@ -1,15 +1,17 @@
 <template>
-  <!-- <div class="maintenance-banner">
-    <a
-      href="https://cyberpunks.shop/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="maintenance-banner-link"
-    >
-      <span>Buy a map-ready air quality sensor <i>[Track your local environment]</i></span>
-      <font-awesome-icon icon="fa-solid fa-arrow-right" class="maintenance-banner-arrow" aria-hidden="true" />
-    </a>
-  </div> -->
+  <div v-if="route.name !== 'altruist-timeline'" class="maintenance-banner">
+    <router-link to="/altruist-timeline/" class="maintenance-banner-link">
+      <span
+        >{{ $t("We've updated the Altruist timeline") }}
+        <i>[{{ $t("See what 8 years of our work look like") }}]</i></span
+      >
+      <font-awesome-icon
+        icon="fa-solid fa-arrow-right"
+        class="maintenance-banner-arrow"
+        aria-hidden="true"
+      />
+    </router-link>
+  </div>
   <RouterView />
   <notifications :classes="['notify', 'vue-notification']" />
 </template>
@@ -130,7 +132,7 @@ onMounted(async () => {
   font-weight: bold;
 }
 
-/* .maintenance-banner {
+.maintenance-banner {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -175,5 +177,5 @@ onMounted(async () => {
   .maintenance-banner i {
     display: block;
   }
-} */
+}
 </style>
