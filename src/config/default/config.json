@@ -12,7 +12,8 @@
     "url": "https://eccharts.ecmwf.int/wms/?token=public",
     "layer": "composition_duaod550",
     "style": "sh_Oranges_aod",
-    "opacity": 0.85,
+    "opacity": 0.9,
+    "alphaBoost": 2.2,
     "daysBack": 4,
     "attribution": "Contains modified Copernicus Atmosphere Monitoring Service information"
   },

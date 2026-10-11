@@ -6,7 +6,7 @@
  * dust mass is and where it is heading. The WMS has a `time` dimension in 3 h steps from
  * ~5 days back to ~5 days of forecast, so the layer follows the date picked on the map.
  *
- * Config (`settings.AOD_WMS`): { url, layer, style, opacity, daysBack, attribution }
+ * Config (`settings.AOD_WMS`): { url, layer, style, opacity, alphaBoost, daysBack, attribution }
  */
 
 import L from "leaflet";
@@ -50,11 +50,31 @@ export function isAodAvailable(date) {
   return !date || date >= oldest;
 }
 
+// The WMS palette fades light dust (AOD 0.1–0.3) almost to nothing. An SVG filter
+// multiplies tile alpha so a light plume stays visible while the palette is kept.
+function ensureAlphaBoostFilter(boost) {
+  const id = "aod-alpha-boost";
+  if (!document.getElementById(id)) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "0");
+    svg.setAttribute("height", "0");
+    svg.style.position = "absolute";
+    svg.innerHTML = `<filter id="${id}" color-interpolation-filters="sRGB">
+      <feComponentTransfer><feFuncA type="linear" slope="${boost}" /></feComponentTransfer>
+    </filter>`;
+    document.body.appendChild(svg);
+  }
+  return `url(#${id})`;
+}
+
 function ensurePane(map) {
   if (!map.getPane(PANE)) {
     // between base tiles (200) and markers/overlays (400)
-    map.createPane(PANE).style.zIndex = 350;
-    map.getPane(PANE).style.pointerEvents = "none";
+    const pane = map.createPane(PANE);
+    pane.style.zIndex = 350;
+    pane.style.pointerEvents = "none";
+    const boost = cfg().alphaBoost ?? 1;
+    if (boost !== 1) pane.style.filter = ensureAlphaBoostFilter(boost);
   }
 }
 
@@ -104,7 +124,7 @@ export function switchAodLayer(map, enabled, date) {
       transparent: true,
       version: "1.3.0",
       time,
-      opacity: c.opacity ?? 0.85,
+      opacity: c.opacity ?? 1,
       pane: PANE,
       attribution: c.attribution,
     });
