@@ -46,9 +46,9 @@ export async function initWindLayer() {
       colorScale: ["rgb(78, 132, 248)", "rgb(37, 99, 235)", "rgb(29, 78, 216)", "rgb(30, 58, 138)"],
       particleAge: 20, // Короткое время жизни частиц
       particleMultiplier: 0.001, // Мало частиц
-      lineWidth: 1.5,
+      lineWidth: 1,
       frameRate: 10, // Малый FPS
-      opacity: 0.25, // Полупрозрачный для видимости карты
+      opacity: 0.2, // Полупрозрачный для видимости карты
       displayValues: false, // Отключаем отображение значений
     });
   } catch (error) {
