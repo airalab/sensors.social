@@ -8,6 +8,15 @@
   },
   "REMOTE_PROVIDER": "https://roseman.robonomics.network/",
   "WIND_PROVIDER": "https://wind.sensors.social/latest",
+  "AOD_WMS": {
+    "url": "https://eccharts.ecmwf.int/wms/?token=public",
+    "layer": "composition_duaod550",
+    "style": "sh_Oranges_aod",
+    "opacity": 0.9,
+    "alphaBoost": 2.2,
+    "daysBack": 4,
+    "attribution": "Contains modified Copernicus Atmosphere Monitoring Service information"
+  },
   "MAP": {
     "zoom": "3",
     "boundsDelta": {

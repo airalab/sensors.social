@@ -12,6 +12,17 @@
       />
 
       <ToggleButton
+        v-if="settings.AOD_WMS"
+        :model-value="aod"
+        @update:modelValue="onAodToggle"
+        icon-class="fa-solid fa-smog"
+        class="aod-toggle"
+        :disabled="!aodAllowed"
+        :label="$t('layer.aod')"
+        :title="aodAllowed ? $t('layer.aodHint') : $t('layer.aodUnavailable')"
+      />
+
+      <ToggleButton
         v-if="hasMessagesData"
         v-model="messages"
         :icon-class="messages ? 'fa-solid fa-comment' : 'fa-regular fa-comment'"
@@ -78,6 +89,17 @@
                 class="wind-toggle"
                 :disabled="!windAllowed"
                 :label="$t('layer.wind')"
+              />
+
+              <ToggleButton
+                v-if="settings.AOD_WMS"
+                :model-value="aod"
+                @update:modelValue="onAodToggle"
+                icon-class="fa-solid fa-smog"
+                class="aod-toggle"
+                :disabled="!aodAllowed"
+                :label="$t('layer.aod')"
+                :title="aodAllowed ? $t('layer.aodHint') : $t('layer.aodUnavailable')"
               />
 
               <ToggleButton
@@ -159,6 +181,7 @@ import ToggleButton from "../controls/ToggleButton.vue";
 import { instanceMap } from "../../utils/map/map";
 import { resolveMapColorScheme } from "../../utils/map/themeScheme";
 import { initWindLayer, switchWindLayer, destroyWindLayer } from "../../utils/map/wind";
+import { switchAodLayer, isAodAvailable } from "../../utils/map/aod";
 import measurements from "../../measurements";
 import { sortMapLayerUnits } from "../../measurements/tools";
 // import { getTypeProvider } from "../../utils/utils"; // deprecated
@@ -223,6 +246,15 @@ const wind = ref(readWindPref());
 const isToday = computed(() => start.value === dayISO());
 const windAllowed = computed(() => realtime.value || isToday.value);
 const messages = ref(settings.SERVICES?.messages || false);
+const readAodPref = () => {
+  try {
+    return localStorage.getItem("aod") === "true";
+  } catch (e) {
+    return false;
+  }
+};
+const aod = ref(readAodPref());
+const aodAllowed = computed(() => isAodAvailable(start.value));
 
 // Computed для проверки, есть ли данные сообщений для отображения
 const hasMessagesData = computed(() => {
@@ -307,6 +339,15 @@ const loadAvailableUnits = async () => {
     ensureValidUnitSelection(availableUnits.value);
   } catch (e) {
     console.error("Failed to load available measurements:", e);
+  }
+};
+
+const onAodToggle = (enabled) => {
+  aod.value = enabled;
+  try {
+    localStorage.setItem("aod", String(enabled));
+  } catch (e) {
+    // Если localStorage недоступен — работаем без сохранения
   }
 };
 
@@ -395,6 +436,22 @@ watch(
   { immediate: true }
 );
 
+// Слой AOD (пыль из CAMS): следует за выбранной датой, WMS хранит только последние дни
+watch(
+  [aod, start],
+  ([enabled, date]) => {
+    let map = null;
+    try {
+      map = instanceMap();
+    } catch {
+      // Map isn't ready yet; onMounted retries.
+      return;
+    }
+    switchAodLayer(map, enabled, date);
+  },
+  { immediate: true }
+);
+
 // watch(messages, (v) => switchMessagesLayer(instanceMap(), v));
 
 watch(
@@ -441,6 +498,16 @@ onMounted(async () => {
           }
         }
       }, 500); // Увеличиваем задержку для гарантии инициализации карты
+    }
+
+    if (aod.value && settings.AOD_WMS) {
+      setTimeout(() => {
+        try {
+          switchAodLayer(instanceMap(), aod.value, start.value);
+        } catch (error) {
+          console.error("Failed to initialize AOD layer on mount:", error);
+        }
+      }, 500);
     }
 
     // Инициализируем слой сообщений если поддерживается
@@ -607,6 +674,46 @@ defineExpose({
 
 .popovercontrol.active path {
   fill: var(--color-blue) !important;
+}
+
+/* AOD legend: Leaflet control, lifted above the footer controls */
+.leaflet-bottom.leaflet-right .aod-legend {
+  margin-bottom: calc(var(--app-inputheight) + var(--app-controlsgap) * 2);
+  margin-right: var(--app-controlsgap);
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-light) 85%, transparent);
+  color: var(--color-dark);
+  font-size: 11px;
+  line-height: 1.3;
+  width: 170px;
+}
+
+.aod-legend-title {
+  font-weight: 600;
+}
+
+.aod-legend-time {
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.aod-legend-scale {
+  height: 8px;
+  margin: 4px 0 2px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #fff5eb, #fdd0a2, #fd8d3c, #d94801, #7f2704);
+}
+
+.aod-legend-labels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.aod-legend-attr {
+  margin-top: 3px;
+  font-size: 9px;
+  opacity: 0.7;
 }
 </style>
 
