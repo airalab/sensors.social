@@ -7,7 +7,7 @@ export default {
   "header.text3": "for further technical details.",
   "measures.title": "Air quality measurements information",
   "layer.wind": "Wind",
-  "layer.aod": "Dust (AOD)",
+  "layer.aod": "Dust from space",
   "layer.aodHint": "Dust over the whole air column, CAMS forecast",
   "layer.aodUnavailable": "Dust layer covers only the last few days",
   "layer.messages": "Messages",

@@ -7,7 +7,7 @@ export default {
   "header.text3": "можно ознакомиться более подробно с технической стороной.",
   "measures.title": "Информация об измерениях воздуха",
   "layer.wind": "Ветер",
-  "layer.aod": "Пыль (AOD)",
+  "layer.aod": "Пыль из космоса",
   "layer.aodHint": "Пыль во всём столбе воздуха, прогноз CAMS",
   "layer.aodUnavailable": "Слой пыли доступен только за последние дни",
   "layer.messages": "Сообщения",
