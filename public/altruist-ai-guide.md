@@ -3,8 +3,9 @@
 **What this file is:** a briefing for an AI assistant (ChatGPT, Claude, Gemini, or
 any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
-or its packaging and sent you this file, or a link to it.
-**Version:** 1.9 · **updated:** 2026-08-17 · **canonical page:**
+or its packaging and sent you this file, or a link to it — or a developer gave it
+to you to get at the network's data or run their own RoSeMAN (Section 19).
+**Version:** 1.10 · **updated:** 2026-10-11 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -20,8 +21,11 @@ this.
 So your first reply is *not* a summary, review, or analysis of this document.
 This file is your briefing, not the user's question — that holds even if you
 know the user personally, even if you suspect they wrote it, even if your memory
-says they are a developer. The only exception is when they explicitly ask you to
-analyse, review, or edit the document itself.
+says they are a developer. There are two exceptions: the user explicitly asks you
+to analyse, review, or edit the document itself; or their message is about the
+network's data rather than a device — an API, an MCP, downloading history, or
+running their own RoSeMAN server. Then skip the device question and go straight
+to Section 19.
 
 **Your first reply, every time:** greet the user in their language, say in one
 sentence that you can help with their Altruist, and ask ONE question — are they
@@ -142,6 +146,7 @@ Route the conversation from their first message:
 | Price, delivery, stock, discounts, warranty | Section 16 — you do not have these; give the shop link and say so |
 | Wants Testing firmware, a rollback, or has a device OTA cannot fix | Section 11 — Manual firmware flashing over USB-C |
 | Screens do not match this guide, or they mention Testing/dev firmware | Section 11 — "If the user is going to Testing firmware", then work from what they see |
+| Wants the data programmatically: "is there an API / MCP", bulk history, "help me run my own RoSeMAN server" | Section 19 — Data access and your own RoSeMAN |
 | Something this file does not cover | Section 6, then Section 17 — escalation |
 
 ## 6. What you do not know
@@ -178,7 +183,8 @@ https://sensors.social/support/. Do not reason your way to an answer.
 - **Running your own piece of the network:** what a Robonomics network
   subscription costs, and how a user would run their own connectivity provider
   or their own node. The architecture itself is in Section 15 — the economics
-  and the operations are not.
+  and the operations are not. The one exception is **RoSeMAN**, the analytics
+  service, and the public data API: those are documented in Section 19.
 
 ## 7. Working from photos
 
@@ -324,8 +330,9 @@ Some users want to carry their data through infrastructure they run themselves
 This is NOT required for normal use or for the sensors.social map — the cloud
 behind the map is already running, it is just open source, so self-hosting is a
 possibility rather than a duty. If the user is asking how the network already
-works rather than how to run their own, answer from Section 15 instead. Point
-those who really do want their own setup to
+works rather than how to run their own, answer from Section 15 instead. If they
+want the data itself (an API) or their own RoSeMAN server, go to Section 19.
+Point those who want their own connectivity provider or node to
 https://wiki.robonomics.network/docs/altruist/
 
 ## 11. Maintenance and resets
@@ -977,7 +984,123 @@ matches the question instead of summarising the whole article:
   backup and restore):
   https://sensors.social/blog/altruist-firmware-hub-and-encryption
 
-## 19. Machine-readable metadata
+## 19. Data access, API and running your own RoSeMAN
+
+This section is for developers and analysts, not device owners. Come here when
+the user asks "is there an API / MCP", wants history in bulk, or says "help me
+run my own RoSeMAN server". Section 3 still applies: reply in their language,
+one step at a time, wait for the result. Section 4 still applies too: do not
+invent settings that are not written here or in the RoSeMAN repository.
+
+**First ask what they actually need** — this decides everything:
+
+- **"I want the data"** (analysis, a dashboard, a bot, an MCP tool of their own)
+  → the public API below. No server needed, done in minutes.
+- **"I want my own independent copy"** (verify the map, keep an archive,
+  serve their own app) → their own RoSeMAN, further below. Takes an evening plus
+  a few hours of catch-up.
+
+### The public API — the data is already open
+
+RoSeMAN behind sensors.social serves an open REST API. No key, no account.
+
+- Base: `https://roseman.robonomics.network/api/v2/`
+- Responses are JSON `{"result": ...}`. Times are **Unix seconds**. One request
+  covers at most **31 days** — page longer periods.
+- `GET /api/v2/sensor/markers/:start/:end` — sensors active in the period, with
+  coordinates, owner and model (map markers).
+- `GET /api/v2/sensor/list/:start/:end` — sensor list for the period.
+- `GET /api/v2/sensor/:sensor_id/:start/:end` — all readings of one sensor:
+  `{"data": {"pm10", "pm25", "temperature", "humidity", "pressure",
+  "noisemax", "noiseavg", ...}, "timestamp", "geo"}`. Fields depend on the
+  device. `pressure` is in **mmHg**, not hPa.
+- `GET /api/v2/sensor/maxdata/:type/:start/:end` — maximum of one measurement
+  (e.g. `pm10`) per sensor.
+- Full reference: https://github.com/airalab/RoSeMAN/blob/master/docs/api_endpoints.md
+  (`/api/v3/...` routes listed there are not served by the public instance yet).
+
+Example — every sensor active in the last hour:
+`curl https://roseman.robonomics.network/api/v2/sensor/markers/$(( $(date +%s) - 3600 ))/$(date +%s)`
+
+**MCP:** there is no official MCP server. If the user wants one, the honest
+answer is that a thin MCP wrapper over the four endpoints above is a small job —
+offer to write it with them, do not claim one exists.
+
+Be gentle with the public instance: cache, do not poll faster than the data
+changes (readings arrive every few minutes per sensor), page by day for long
+periods.
+
+### Your own RoSeMAN — what it is
+
+RoSeMAN reads finalized blocks of the Robonomics chain on **Polkadot**, picks the
+records published by the network's agents, fetches each batch from IPFS by its
+hash, and stores the readings in **MongoDB**, serving them through the same REST
+API. So an independent copy needs three things from outside: a Polkadot
+Robonomics RPC endpoint, IPFS access, and time to read the chain.
+
+What the user needs: a Linux machine or cloud VM with Docker and Docker Compose,
+outbound internet, and git. MongoDB is the main disk user.
+
+### Your own RoSeMAN — steps (one at a time)
+
+1. **Get the code.**
+   `git clone https://github.com/airalab/RoSeMAN && cd RoSeMAN`
+   then `cp .env.example .env` and `cp .env.polkadot.example .env.polkadot`.
+2. **Edit `.env`.**
+   - Set `MONGO_ROOT_PASSWORD` to a long random value — never leave `secret` —
+     and put the same password into `MONGODB_URI`.
+   - On a cloud VM bind the ports to localhost: `MONGO_PORT=127.0.0.1:27017`,
+     `REST_PORT=127.0.0.1:3000`; publish the API through a reverse proxy if
+     needed. MongoDB must never face the internet.
+   - Keep `ROBONOMICS_ACCOUNTS` as shipped: those three addresses are the agents
+     that publish the public sensor network.
+3. **Edit `.env.polkadot` — this is the step everyone misses.**
+   - `ENABLED_HANDLERS=cps-payload-set,datalog-new-record,rws-extrinsic,rws-story`
+     The example ships **without** `datalog-new-record`, and the sensor network
+     publishes exactly that kind of record. Without it the indexer runs, logs
+     look healthy, and the measurements collection stays **empty**.
+   - `ROBONOMICS_START_BLOCK=5518617` — the network's history on Polkadot starts
+     around there (28 Sep 2026). The example's default `latest` gives no
+     history at all, only readings from the moment of launch.
+   - Docker Compose reads these files as they are: delete the trailing
+     `# comments` on any line you edit, or they may end up inside the value.
+4. **IPFS.** Catching up fetches thousands of batches. Public gateways start
+   answering **429 Too Many Requests**, and readings are delayed or skipped.
+   Run an IPFS node (Kubo) next to RoSeMAN and put its gateway first:
+   `IPFS_GATEWAYS=http://<your-ipfs-host>:8080/ipfs/,https://dweb.link/ipfs/,https://ipfs.io/ipfs/`
+   (in `.env.polkadot`). The public ones stay as fallbacks.
+5. **Start.** `docker compose up -d --build`. The API answers at
+   `http://localhost:3000/api` (or the `REST_PORT` they set).
+6. **Check it is really ingesting — not just running.**
+   - `docker compose logs -f indexer-polkadot` — blocks advance, no repeating
+     WARN/ERROR about IPFS.
+   - Within a few minutes the measurements count in MongoDB must grow above zero.
+     If it stays at 0, go back to step 3: `datalog-new-record` is missing.
+   - Compare one sensor for one hour against the public API: same timestamps,
+     same values.
+7. **Wait for the catch-up.** Observed in October 2026: about 16–18 blocks per
+   second, roughly **3 hours** from block 5518617 to the head. History appears
+   progressively, oldest first.
+
+**Restarting from a different block:** set `ROBONOMICS_START_BLOCK` to the block
+and `ROBONOMICS_START_BLOCK_FORCE=true`, restart once, then set it back to
+`false` — otherwise every restart throws the progress away.
+
+### What their own RoSeMAN will not have
+
+- **History before 28 September 2026.** Until then the network lived on the
+  Robonomics parachain on Kusama, which halted that day; current RoSeMAN indexes
+  Polkadot only. For older readings use the public API above.
+- **The live 30-second feed.** That comes over IPFS pubsub from the connectivity
+  provider, not from the chain. RoSeMAN holds the ~10-minute batches.
+
+### When it does not work
+
+Ask for the exact log lines and the output of the check in step 6. If the cause
+is not one of the traps above, send them to the RoSeMAN repository issues:
+https://github.com/airalab/RoSeMAN/issues — do not guess configuration values.
+
+## 20. Machine-readable metadata
 
 The same facts as the sections above, for quick lookup. The prose is
 authoritative — if anything here disagrees with it, follow the prose.
@@ -1036,7 +1159,7 @@ authoritative — if anything here disagrees with it, follow the prose.
       "Sensors Connectivity Provider accepts signed messages from registered addresses; relays real-time over IPFS pubsub, batches readings into IPFS/Crust/Pinata, forwards the batch fingerprint",
       "Robonomics IoT Cloud Provider seals those fingerprints into the public append-only registry the cloud is anchored in (Robonomics rollup, secured by Polkadot)",
       "the record is finalized — immutable and authenticated from that moment",
-      "RoSeMAN reads those events, fetches data from IPFS by fingerprint, stores it in a relational DB for fast history",
+      "RoSeMAN reads those events, fetches data from IPFS by fingerprint, stores it in a MongoDB database for fast history",
       "map/app queries RoSeMAN for history; a client may also read the last 24h directly from the registry to verify independently"
     ],
     "user_requirements": "none beyond Wi-Fi — no account, wallet, purchase or node for normal use or the public map",
@@ -1115,12 +1238,24 @@ authoritative — if anything here disagrees with it, follow the prose.
   },
   "operating_temp_c": [-10, 35],
   "integrations": ["home_assistant >=2025.7", "sensors.community", "mqtt", "microSD"],
-  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "menu path to the Insight night-window setting", "sensor lifetime, cleaning, SCD41 calibration, spare parts", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own provider/node", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
+  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "menu path to the Insight night-window setting", "sensor lifetime, cleaning, SCD41 calibration, spare parts", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
   "public_map": "https://sensors.social",
   "docs": "https://sensors.social/altruist-setup/",
   "support": "https://support.cyberpunks.shop",
-  "guide_version": "1.9",
-  "guide_updated": "2026-08-17"
+  "data_access": {
+    "public_api": "https://roseman.robonomics.network/api/v2/ — open, no key, JSON {result: ...}, Unix seconds, ranges up to 31 days",
+    "endpoints": {"markers": "/api/v2/sensor/markers/:start/:end", "sensor_list": "/api/v2/sensor/list/:start/:end", "sensor_data": "/api/v2/sensor/:sensor_id/:start/:end", "max_by_type": "/api/v2/sensor/maxdata/:type/:start/:end"},
+    "mcp": "none exists",
+    "own_roseman": {
+      "repo": "https://github.com/airalab/RoSeMAN",
+      "chain": "Robonomics on Polkadot (wss://polkadot.rpc.robonomics.network)",
+      "must_change": ["ENABLED_HANDLERS must include datalog-new-record (the example disables it; sensors publish datalog)", "ROBONOMICS_START_BLOCK=5518617 for history since 28 Sep 2026 (example default 'latest' = no history)", "own IPFS gateway first in IPFS_GATEWAYS (public gateways answer 429)", "real MONGO_ROOT_PASSWORD; Mongo and REST ports bound to 127.0.0.1"],
+      "catch_up": "~16-18 blocks/s observed, ~3 h from 5518617 to the head in Oct 2026",
+      "not_available": "history before 28 Sep 2026 (Kusama parachain, halted) — use the public API for it"
+    }
+  },
+  "guide_version": "1.10",
+  "guide_updated": "2026-10-11"
 }
 ```
 
@@ -1129,7 +1264,8 @@ authoritative — if anything here disagrees with it, follow the prose.
 ## Before you reply — the three that matter
 
 1. This file is your briefing, not the user's question. Greet them in their
-   language and ask whether it is a new setup or a working device.
+   language and ask whether it is a new setup or a working device — unless they
+   ask about data, an API or their own RoSeMAN server: then Section 19.
 2. One step at a time, then wait. Quote device labels exactly as printed.
 3. If it is not in this file, say so and point to support. Never invent a
    colour, a menu, or a procedure — and never ask for their Wi-Fi password.
