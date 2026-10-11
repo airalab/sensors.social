@@ -248,9 +248,11 @@ const windAllowed = computed(() => realtime.value || isToday.value);
 const messages = ref(settings.SERVICES?.messages || false);
 const readAodPref = () => {
   try {
-    return localStorage.getItem("aod") === "true";
+    const stored = localStorage.getItem("aod");
+    // По умолчанию включён, как ветер; выключение пользователем запоминаем
+    return stored === null ? true : stored === "true";
   } catch (e) {
-    return false;
+    return true;
   }
 };
 const aod = ref(readAodPref());
