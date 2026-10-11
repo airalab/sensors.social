@@ -1,5 +1,5 @@
 <template>
-  <div v-if="route.name !== 'altruist-timeline'" class="maintenance-banner">
+  <!-- <div v-if="route.name !== 'altruist-timeline'" class="maintenance-banner">
     <router-link to="/altruist-timeline/" class="maintenance-banner-link">
       <span
         >{{ $t("We've updated the Altruist timeline") }}
@@ -11,7 +11,7 @@
         aria-hidden="true"
       />
     </router-link>
-  </div>
+  </div> -->
   <RouterView />
   <notifications :classes="['notify', 'vue-notification']" />
 </template>
@@ -132,7 +132,7 @@ onMounted(async () => {
   font-weight: bold;
 }
 
-.maintenance-banner {
+/* .maintenance-banner {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -177,5 +177,5 @@ onMounted(async () => {
   .maintenance-banner i {
     display: block;
   }
-}
+} */
 </style>
