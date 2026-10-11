@@ -48,7 +48,7 @@ export async function initWindLayer() {
       particleMultiplier: 0.001, // Мало частиц
       lineWidth: 1.5,
       frameRate: 10, // Малый FPS
-      opacity: 0.35, // Полупрозрачный для видимости карты
+      opacity: 0.25, // Полупрозрачный для видимости карты
       displayValues: false, // Отключаем отображение значений
     });
   } catch (error) {
