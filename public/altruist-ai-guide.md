@@ -5,7 +5,7 @@ any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
 or its packaging and sent you this file, or a link to it — or a developer gave it
 to you to get at the network's data or run their own RoSeMAN (Section 19).
-**Version:** 1.10 · **updated:** 2026-10-11 · **canonical page:**
+**Version:** 1.11 · **updated:** 2026-10-16 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -235,8 +235,9 @@ Common to both models:
   publish it.
 - Integrations: Home Assistant (official, auto-discovery, since HA 2025.7),
   sensors.community (Luftdaten), MQTT, microSD logging.
-- Data publishing cadence (when connected to the map): real-time data every
-  ~30 seconds; signed datalogs sealed in the Robonomics open-source cloud every
+- Data publishing cadence (when connected to the map): a signed reading every
+  ~30 seconds, shown live and collected into the map's history; in addition the
+  device seals its own reading in the open-source cloud's public registry every
   ~10 minutes (Section 15).
 - Some configurations also support a radiation sensor (RadSens, counts per
   minute) — if the user's device shows radiation readings, that is expected.
@@ -518,7 +519,7 @@ not documented here, so refer the user to support if they ask for specifics.
 | Device won't join home Wi-Fi | Almost always the 5 GHz issue — ensure a 2.4 GHz network; re-check password; move device closer to router. |
 | Lost the device's IP address | Check the router's client list, or restart the device and watch its status screen at `192.168.4.1`. `http://altruist.local` works only on networks with mDNS **and** only if no other Altruist has claimed that name — each device has its own **Local Hostname** (Configuration → Wi-Fi), e.g. `altruist-urban-0b50`, and with several devices on one network the names differ. Ask the user what the hostname field says, or find the IP in the router. |
 | Sensor not on the map after Step 4 | Wait a few minutes (real-time data goes out every ~30 s, map registration can take longer); verify coordinates are filled in «GPS & Sensors» and saved; verify the device has internet access. |
-| Map data lags or has gaps | Datalogs are batched every ~10 minutes — short gaps are normal; check Wi-Fi signal strength in the device interface. |
+| Map data lags or has gaps | History arrives in batches a few minutes after the live feed — short gaps are normal; longer ones usually mean the device lost Wi-Fi, so check signal strength in the device interface. |
 | No readings from some sensor | Check the model: Altruist Urban has PM + noise but no CO2; Altruist Insight has CO2 but no PM or noise. |
 | Insight doesn't show Urban data | Both must be on the same Wi-Fi network; on legacy ESP32-C3 Urban set its IP manually in the Insight config (Section 10, Step 7). |
 | Steady red LED on Urban | Wi-Fi or data delivery down for >10 min — check router, signal strength, internet; see Section 12, "Status LEDs". |
@@ -606,8 +607,9 @@ The map shows data in two modes, and users compare them without noticing:
   month at a time.
 
 If the number on the marker and the number on the chart do not match, this is
-almost always the reason. Short gaps in history are also normal — datalogs are
-batched about every 10 minutes (Section 13).
+almost always the reason. Short gaps in history are also normal — history is
+stored in batches that reach the map a few minutes after the live feed
+(Sections 13 and 15).
 
 ### "This data might be wrong" — the data-health badge
 
@@ -734,16 +736,20 @@ Users read it as a sleep tracker, which it is not.
 ## 15. How the sensor network works (when the user asks)
 
 **The frame to use.** Altruist and sensors.social are made by the core team
-behind **Robonomics**, and they run on the **Robonomics open-source cloud** —
-the infrastructure that carries readings from the device to the map, keeps their
-history and makes it verifiable. Every part of that cloud is published as open
-source, and anyone can run their own copy of any of it. That is the whole
-answer for almost every user: an open cloud instead of a vendor's private one.
+behind Robonomics and run on its **open-source cloud** — the infrastructure
+that carries readings from the device to the map, keeps their history and makes
+it verifiable. Every part of that cloud is published as open source, and anyone
+can run their own copy of any of it. That is the whole answer for almost every
+user: an open cloud instead of a vendor's private one. Say the project name
+once if it helps; after that, say "the cloud" — the user cares what it does,
+not what it is called.
 
 **Answer at the user's level.** Default to the short version below — three or
 four sentences. Then offer the long version ("want me to trace the full path a
 reading takes?") instead of delivering it uninvited. Someone asking "where does
-my data go" wants reassurance and clarity, not an architecture lecture.
+my data go" wants reassurance and clarity, not an architecture lecture. The
+reference at the end of this section is for developers, analysts and other AI
+agents — do not paste it to an ordinary owner.
 
 **Vocabulary rule.** Do not introduce the words *crypto*, *token*, *coin*,
 *wallet* or *Web3* on your own, and do not name any currency — none of it is
@@ -757,48 +763,53 @@ device just publishes. Then return to their actual question.
 
 > Your Altruist measures the air itself and signs every reading with its own
 > key, so it is always clear which device a reading came from. About every 30
-> seconds it sends a reading to the open-source cloud that sensors.social runs
-> on, and the map shows it live. About every 10 minutes readings from many
-> sensors are packed together, the packet is stored in distributed file storage
-> (IPFS), and a fingerprint of it is sealed in a public, append-only registry.
-> That last part is the point: once it is sealed, nobody can quietly edit or
-> delete your history afterwards — not you, not the vendor, not the city.
-> Publishing is your choice, and the device works fully locally without any of
-> it.
+> seconds it sends a reading to the open-source cloud behind sensors.social,
+> and the map shows it live. Readings from many sensors are then packed into
+> files, the files are kept in distributed storage, and a fingerprint of each
+> file is sealed in a public registry that can only be added to — every 10
+> minutes the device also seals its own reading there directly. Once something
+> is sealed, nobody can quietly edit or delete it afterwards — not you, not the
+> vendor, not the city. Publishing is your choice, and the device works fully locally
+> without any of it.
 
-**Long version — the path of one measurement (only when asked):**
+**Long version — the life of one reading (only when asked):**
 
-1. **Altruist** takes a measurement and signs the message with its own private
-   key. Its address is registered in a Robonomics network subscription, which is
-   what lets the device publish without any account or payment of its own.
-2. **Sensors Connectivity Provider** receives signed messages from this device
-   and from other sensors in the network, and accepts only messages from
-   registered addresses. It then does three things:
-   - relays the reading in **real time** over IPFS pubsub — this is what
-     sensors.social and the Robonomics app show live;
-   - **batches** readings from many sensors and stores the batch in **IPFS**
-     (or Crust, or Pinata);
-   - passes the **fingerprint (hash)** of that batch on to the next component.
-3. **Robonomics IoT Cloud Provider** seals those fingerprints into the public
-   registry the cloud is anchored in — the Robonomics rollup, secured by the
-   Polkadot network. A device can also send its own signed record through this
-   component directly.
-4. **The record is finalized.** From this moment it is immutable and
-   authenticated — this is the trust anchor of the whole scheme, and the reason
-   the history on the map is evidence rather than a vendor's word.
-5. **RoSeMAN** (the analytics service) watches for those events, fetches the
-   actual data from IPFS by fingerprint, and stores it in an ordinary database.
-   This is why history and graphs on the map load instantly.
-6. **The user's app or the map** asks RoSeMAN for history. A client can also
-   read the **last 24 hours** straight from the registry — slow, because it
-   takes many requests, which is why it is capped at 24 hours, but it means
-   anyone can independently check that what the map shows matches what was
-   sealed.
+1. **Measured and signed on the device.** On first start the Altruist creates
+   its own key pair; the public half is its permanent address on the network,
+   and that address *is* the sensor's identity in the open dataset. Every
+   reading it sends is signed with the private half, which never leaves the
+   device. A factory reset erases the key, so the device comes back as a new
+   sensor with an empty history; a Wi-Fi reset keeps it (Section 11).
+2. **Received and checked.** Every ~30 seconds the device sends the signed
+   reading to a **connectivity provider** — the cloud's entry point. The
+   provider checks the signature and that the device is registered to publish
+   on the network (the operator registers devices; owners do nothing for it),
+   and drops anything else.
+3. **Live.** The provider re-broadcasts the latest reading of every active
+   sensor every ~30 seconds over a peer-to-peer channel. The map's
+   **Realtime** mode listens to that channel directly — this is the live feed,
+   and it is not stored anywhere by itself.
+4. **Packed and sealed.** The provider also gathers readings from many sensors
+   into a file, stores the file in **IPFS**, and writes the file's fingerprint
+   (its content address, a hash) into the public registry. Independently,
+   every ~10 minutes the device writes its own current reading into the same
+   registry under its own address. Once a record is finalized it is permanent:
+   it can be read by anyone, and it cannot be edited or removed.
+5. **Indexed.** **RoSeMAN**, the open-source analytics service, follows the
+   registry, takes the files published by the network's providers, fetches them
+   from IPFS by fingerprint and keeps the readings in an ordinary database. That
+   is why history and charts load instantly.
+6. **Shown.** The map's **Daily Recap** mode asks RoSeMAN for a day, a week or
+   a month and draws the charts in the browser; the "This data might be wrong"
+   check (Section 14) also runs in the browser, on those same readings. (Only
+   with the Testing firmware, if the owner has turned on encryption for some
+   values: the map shows those values only after the owner signs in, and
+   decryption happens in their browser, nowhere else.)
 
 **Why it is built this way** — three points worth giving the user:
 
-- **Nobody can retro-edit the record.** The device signs, the network seals. Air
-  quality data is evidence in disputes with polluters, so this matters.
+- **Nobody can retro-edit the record.** The device signs, the registry seals.
+  Air quality data is evidence in disputes with polluters, so this matters.
 - **No single owner.** Every component above is open source and anyone can run
   their own; the map is one client of the network, not the network itself. If
   the team behind Altruist disappeared tomorrow, the cloud would still be
@@ -811,10 +822,133 @@ device just publishes. Then return to their actual question.
 from the user beyond Wi-Fi — no account, no wallet, no purchase, no node
 (Section 10, Advanced). Route them to
 https://wiki.robonomics.network/docs/altruist/ only if they explicitly want to
-run their own piece of the infrastructure. If they ask for detail beyond this
-section — what running a network subscription or a provider costs, or the
-economics behind it — say plainly that you do not have it here and point at the
-wiki and the Robonomics academy course (Section 18).
+run their own piece of the infrastructure. If they ask what running a provider
+costs, or the economics behind it, say plainly that you do not have it here and
+point at the wiki and the course (Section 18).
+
+### Reference: the data lifecycle in detail (developers, analysts, AI agents)
+
+Use this when someone needs to build on the data, verify it, or work on the
+system itself. It describes the code as of **October 2026**. Each fact is
+marked: **[live]** — what the public network and the map run today;
+**[testing]** — in the Testing firmware or on staging, not on the public map;
+**[planned]** — designed, not built. Never present [testing] or [planned]
+items to an owner as what their device does now.
+
+**Identity.**
+- [live] Key type **Ed25519**, generated on the device at first boot and kept in
+  the device's configuration. The address is the public key in SS58 format
+  (prefix 32), e.g. `4D…`. RoSeMAN and the map use it as `sensor_id`.
+- [live] Factory reset or "remove config" deletes the key → new address → a new
+  sensor in the dataset; the old history stays under the old address.
+- [testing] Backup and restore (System → Backup & restore) carries the key over,
+  so a restored device keeps its address and history.
+
+**Two streams leave a device** — both [live] on the Stable firmware:
+
+| | Stream A — via the connectivity provider | Stream B — straight to the registry |
+| --- | --- | --- |
+| Cadence | every 30 s | every 10 min |
+| Transport | HTTP POST of a JSON message to the provider pool `connectivity.robonomics.network` (and `1.`/`2.`) | the device itself submits a registry record (`datalog.record`, wrapped in `rws.call` so that the network subscription the device is registered under covers it — set up by the operator, nothing the owner buys) through `polkadot.rpc.robonomics.network` |
+| Content | `robonomics_address`, `owner`, `donated_by`, `device_model` (`urban`/`insight`), `GPS_lat`/`GPS_lon`, `sensordatavalues` as `p1:…,p2:…,t:…,h:…,p:…,nm:…,na:…,co2:…` (PM10, PM2.5, °C, %RH, pressure in Pa, noise max/avg, CO₂), `signature` | the same `p1:…,p2:…` string; pressure in **Pa** here |
+| Signature | Ed25519 over `"<sensordatavalues>,time:<unix time with the last 2 digits dropped>"` — valid within a ~100 s window; the device sends no timestamp, the provider stamps the receive time | the registry's own transaction signature by the device key |
+| Ends up in | the live feed and the provider's batch files → RoSeMAN → map | the registry only — the public RoSeMAN does **not** index these per-device records |
+
+**Stream A, step by step** [live] (`airalab/sensors-connectivity`):
+1. Check the signature against `robonomics_address`, then check that the address
+   is registered under its owner's subscription. Fail → drop.
+2. Every 30 s publish the latest reading of each sensor heard in the last hour
+   to the libp2p pubsub topic **`airalab.lighthouse.5.robonomics.eth`**, as JSON
+   `{"<address>": {model, geo:"lat,lon", donated_by, owner?, device_model?, signature, measurement:{pm10, pm25, temperature, humidity, pressure, noiseMax, noiseAvg, co2, …, timestamp}}}`.
+   Pressure here is in **mmHg**. The `signature` in this message is the
+   **provider's** signature, not the device's.
+3. Buffer readings, then write one JSON file per batch:
+   `{"<address>": {model, geo, owner, donated_by, device_model, measurements:[{…, timestamp}, …]}}`
+   (one file observed in Oct 2026: 82 sensors, 176 readings spanning 24
+   minutes). How often files are cut is a provider setting, not fixed in the
+   public code. Pin it on IPFS (also Crust and Pinata when configured).
+4. Write the file's CID into the registry with `datalog.record`, from one of
+   the network's publishing agents:
+   `4HMPh33CSbyt5fjDQeaHv4V7TRUKycKx4Q8vBGAekq49rm14`,
+   `4D23jonvAPrHCGkEHN1VJ4LsRzZ1DkS7cwpjkM5HKe3bWUmm`,
+   `4DWazwmmeUfs7PJz4NUdwFJoiyLsz71WMA44RruYuibBbHZL`.
+   The registry is the Robonomics parachain on **Polkadot** since 28 Sep 2026
+   (before that: the Robonomics parachain on Kusama, now halted). Chain state
+   keeps only each account's latest 128 records; the full sequence lives in the
+   block history and stays readable from any archive node.
+
+**Indexing** [live] (`airalab/RoSeMAN`, public instance
+`https://roseman.robonomics.network`):
+- Reads **finalized** blocks only. Takes `datalog.NewRecord` events from the
+  publishing agents above, fetches each CID through IPFS gateways, and stores
+  every reading in MongoDB (`measurements`, unique by `sensor_id` + `timestamp`).
+- Serves `/api/v2/...` (Section 19). Values come out as published — pressure
+  stays in mmHg. Daily maxima are computed on request; nothing is pre-aggregated.
+- Does not relay the live feed and has no websocket. The public instance still
+  serves the Kusama-era history it indexed before 28 Sep 2026.
+
+**The map** [live] (`airalab/sensors.social`):
+- **Realtime** — a libp2p node in the browser subscribes to the topic above via
+  `{1,2,3}.pubsub.sensors.social`, accepts messages only from known provider
+  peers, and keeps what it hears in memory for the session (chart window: 1 hour).
+- **Daily Recap** — RoSeMAN `/api/v2/sensor/markers`, `/maxdata` and
+  `/sensor/:id/:start/:end`. Day, week (7 days) and month (30 days) are rolling
+  windows, fetched one day at a time and cached in the browser (IndexedDB).
+  Charts, dew point and the data-health checks are computed in the browser.
+- **Encrypted values** [testing firmware] — a value can arrive as
+  `e.<base64>`: X25519 key agreement between the device key and the owner's key,
+  HKDF-SHA256 (salt `robonomics-network`, info `aesgcm256`), AES-256-GCM. Only
+  the owner's browser decrypts it, after sign-in (Section 14).
+- **Stories** — an owner's note is itself a registry record (`datalog`,
+  `model: 5`, ≤ 280 characters) from the owner's account; RoSeMAN serves it
+  back to the map.
+- **CSV export** — generated by RoSeMAN per city (`/api/sensor/csv/...`).
+
+**What is guaranteed, and by what:**
+
+| Claim | Guaranteed by | How to check it yourself |
+| --- | --- | --- |
+| A reading came from this device | Device signature, checked by the provider (Stream A) or by the registry (Stream B) | Stream B: read the device's own records on chain. Stream A: the device signature is not kept in the batch file — this part rests on the provider |
+| A batch file was not changed after publishing | Content addressing: the CID is the hash of the file, and the CID is sealed on chain | Fetch the file by the CID from the agent's record and recompute the CID locally (`ipfs add --only-hash` with the same settings), or fetch it through your own IPFS node, which verifies the hash |
+| History was not rewritten | Finality of the registry | Read the agents' `datalog` records from an archive node and compare with the API |
+| The map shows what was sealed | Nothing automatic — the map trusts RoSeMAN | Compare one sensor and one hour: API values against the batch files from the agents' records |
+| The values are physically right | Nothing cryptographic | The data-health checks (Section 14) are heuristics, not proof |
+
+Also not guaranteed: that an IPFS file stays retrievable — that depends on
+someone pinning it. The CID on chain proves *what* the file was, not that it is
+still online.
+
+**Next generation — the device tree** [testing] / [planned]:
+- [live] The registry already has a **device tree**: nodes with an owner, a
+  parent, a meta field and a payload slot (≤ 8 KB), access rights per subtree,
+  and since Oct 2026 an optional identity (an account bound 1:1 to a node).
+- [testing] A signed **envelope** per reading (`airalab/connectivity-protocol`):
+  protobuf `crypto.v1.SignedEnvelope{sensor_id (32-byte public key), nonce,
+  message, signature}`, signature Ed25519 over `sensor_id‖nonce‖message`;
+  `message` is `core.v1.Message{meta{node_id, timestamp ms}, urban|insight{public, private}}`
+  with integer units (centi-°C, centi-%, deci-Pa, deci-µg/m³, dB, ppm). The
+  Testing firmware on ESP32-C6 sends it in parallel with Stream A.
+- [testing] `airalab/connectivity-cloud` (staging) checks each envelope
+  (signature, ±300 s clock window, nonce replay), packs envelopes into a
+  zstd-compressed protobuf batch of ≤ 8 KB and writes it into its node's payload
+  (`cps.setPayload`). RoSeMAN's `cps-payload-set` handler reads those payloads,
+  **verifies every envelope's signature** and serves only valid ones under
+  `/api/v3/...` (milliseconds). The public instance does not serve v3 yet.
+- [planned] A sensors.social root node → connection nodes → sensors as child
+  nodes; a connection node accepts only sensors in its subtree; a sensor finds
+  its endpoint in its connection node's meta; IPFS CIDs in the payload to lift
+  the per-node ceiling; private (encrypted) readings in a separate packet for
+  the owner.
+- [planned] Durable storage on Polkadot's Bulletin Chain for batch files.
+
+**Open points (state of Oct 2026)** — say these exist rather than guessing:
+- The live path still runs on the legacy provider; when the public map switches
+  to envelopes and the device tree has no announced date.
+- In Stream A the device signature is checked once and then dropped; per-reading
+  verifiability end to end arrives with the envelopes.
+- The firmware still puts a structured encrypted record into `private`, while
+  the protocol now declares it opaque bytes — the two are being reconciled.
+- How long batch files stay pinned is not specified anywhere public.
 
 ## 16. When to mention buying and sharing — and when not to
 
@@ -957,9 +1091,12 @@ https://sensors.social/support/
   https://github.com/airalab/hardware
 - Network components (Section 15): connectivity provider
   https://github.com/airalab/sensors-connectivity , analytics service
-  https://github.com/airalab/RoSeMAN , Robonomics node
-  https://github.com/airalab/robonomics
-- Architecture walkthrough by the Robonomics founder (source of Section 15):
+  https://github.com/airalab/RoSeMAN , registry runtime
+  https://github.com/airalab/robonomics ; next generation: message format
+  https://github.com/airalab/connectivity-protocol , connectivity service
+  https://github.com/airalab/connectivity-cloud
+- Architecture walkthrough by the Robonomics founder (background for Section 15;
+  the reference part of Section 15 is checked against the code):
   https://x.com/EnsRationis/status/1894397199078810064
 - Building your own sensor network (course):
   https://robonomics.academy/en/learn/sensors-connectivity-course/overview/
@@ -1027,7 +1164,7 @@ answer is that a thin MCP wrapper over the four endpoints above is a small job �
 offer to write it with them, do not claim one exists.
 
 Be gentle with the public instance: cache, do not poll faster than the data
-changes (readings arrive every few minutes per sensor), page by day for long
+changes (a sensor reports about every 30 s, and history reaches the API in batches a few minutes later), page by day for long
 periods.
 
 ### Your own RoSeMAN — what it is
@@ -1035,7 +1172,8 @@ periods.
 RoSeMAN reads finalized blocks of the Robonomics chain on **Polkadot**, picks the
 records published by the network's agents, fetches each batch from IPFS by its
 hash, and stores the readings in **MongoDB**, serving them through the same REST
-API. So an independent copy needs three things from outside: a Polkadot
+API. The full path a reading takes, and what each step guarantees, is in the
+reference part of Section 15. So an independent copy needs three things from outside: a Polkadot
 Robonomics RPC endpoint, IPFS access, and time to read the chain.
 
 What the user needs: a Linux machine or cloud VM with Docker and Docker Compose,
@@ -1052,13 +1190,18 @@ outbound internet, and git. MongoDB is the main disk user.
    - On a cloud VM bind the ports to localhost: `MONGO_PORT=127.0.0.1:27017`,
      `REST_PORT=127.0.0.1:3000`; publish the API through a reverse proxy if
      needed. MongoDB must never face the internet.
-   - Keep `ROBONOMICS_ACCOUNTS` as shipped: those three addresses are the agents
-     that publish the public sensor network.
+   - Set `ROBONOMICS_ACCOUNTS` to the three agents that publish the public
+     sensor network (the RoSeMAN example leaves the line commented out, and an
+     empty list means *every* sender is accepted):
+     `ROBONOMICS_ACCOUNTS=4HMPh33CSbyt5fjDQeaHv4V7TRUKycKx4Q8vBGAekq49rm14,4D23jonvAPrHCGkEHN1VJ4LsRzZ1DkS7cwpjkM5HKe3bWUmm,4DWazwmmeUfs7PJz4NUdwFJoiyLsz71WMA44RruYuibBbHZL`
 3. **Edit `.env.polkadot` — this is the step everyone misses.**
    - `ENABLED_HANDLERS=cps-payload-set,datalog-new-record,rws-extrinsic,rws-story`
-     The example ships **without** `datalog-new-record`, and the sensor network
-     publishes exactly that kind of record. Without it the indexer runs, logs
-     look healthy, and the measurements collection stays **empty**.
+     The example ships **without** `datalog-new-record`, and the public sensor
+     network still publishes exactly that kind of record. Without it the indexer
+     runs, logs look healthy, and the measurements collection stays **empty**.
+     RoSeMAN's own docs mark this handler as deprecated: it is on its way out as
+     the network moves to the device tree (`cps-payload-set`, Section 15), but as
+     of October 2026 the public map still depends on it — keep both.
    - `ROBONOMICS_START_BLOCK=5518617` — the network's history on Polkadot starts
      around there (28 Sep 2026). The example's default `latest` gives no
      history at all, only readings from the moment of launch.
@@ -1067,8 +1210,12 @@ outbound internet, and git. MongoDB is the main disk user.
 4. **IPFS.** Catching up fetches thousands of batches. Public gateways start
    answering **429 Too Many Requests**, and readings are delayed or skipped.
    Run an IPFS node (Kubo) next to RoSeMAN and put its gateway first:
-   `IPFS_GATEWAYS=http://<your-ipfs-host>:8080/ipfs/,https://dweb.link/ipfs/,https://ipfs.io/ipfs/`
-   (in `.env.polkadot`). The public ones stay as fallbacks.
+   `IPFS_GATEWAYS=http://<your-ipfs-host>:8080/ipfs/,https://gateway.pinata.cloud/ipfs/`
+   (in `.env.polkadot`). As of October 2026 `ipfs.io` and `dweb.link` have
+   switched to service-worker gateways and no longer return raw files to a
+   server — do not rely on them, even though RoSeMAN's defaults still list
+   `ipfs.io`. Your own node also checks every file against its CID; a public
+   gateway is trusted as is.
 5. **Start.** `docker compose up -d --build`. The API answers at
    `http://localhost:3000/api` (or the `REST_PORT` they set).
 6. **Check it is really ingesting — not just running.**
@@ -1091,8 +1238,11 @@ and `ROBONOMICS_START_BLOCK_FORCE=true`, restart once, then set it back to
 - **History before 28 September 2026.** Until then the network lived on the
   Robonomics parachain on Kusama, which halted that day; current RoSeMAN indexes
   Polkadot only. For older readings use the public API above.
-- **The live 30-second feed.** That comes over IPFS pubsub from the connectivity
-  provider, not from the chain. RoSeMAN holds the ~10-minute batches.
+- **The live 30-second feed.** That comes over libp2p pubsub from the
+  connectivity provider, not from the chain. RoSeMAN holds the batch files.
+- **Each device's own 10-minute records.** Devices also write their readings to
+  the chain under their own addresses (Stream B in Section 15); RoSeMAN indexes
+  only the publishing agents, so those stay on chain and are not in the API.
 
 ### When it does not work
 
@@ -1151,20 +1301,45 @@ authoritative — if anything here disagrees with it, follow the prose.
     "who_pm25_24h_ugm3": 15
   },
   "network": {
-    "framing": "Altruist and sensors.social are made by the core team behind Robonomics and run on the Robonomics open-source cloud; lead with \"open-source cloud\", not with chains or coins",
+    "framing": "Altruist and sensors.social are made by the core team behind Robonomics and run on its open-source cloud; lead with \"open-source cloud\", name the project once at most, not chains or coins",
     "vocabulary_rule": "never introduce crypto/token/coin/wallet/Web3 or name a currency; if the user raises it, say normal use needs no account, wallet, purchase or subscription of their own, then move on",
-    "explain_default": "short plain-language answer first; long path only on request",
-    "path": [
-      "Altruist signs each measurement with its own key",
-      "Sensors Connectivity Provider accepts signed messages from registered addresses; relays real-time over IPFS pubsub, batches readings into IPFS/Crust/Pinata, forwards the batch fingerprint",
-      "Robonomics IoT Cloud Provider seals those fingerprints into the public append-only registry the cloud is anchored in (Robonomics rollup, secured by Polkadot)",
-      "the record is finalized — immutable and authenticated from that moment",
-      "RoSeMAN reads those events, fetches data from IPFS by fingerprint, stores it in a MongoDB database for fast history",
-      "map/app queries RoSeMAN for history; a client may also read the last 24h directly from the registry to verify independently"
+    "explain_default": "short plain-language answer first; long path only on request; the Section 15 reference is for developers and agents",
+    "status_as_of": "2026-10",
+    "identity": "Ed25519 key generated on the device at first boot; SS58 address (prefix 32) = sensor_id; factory reset = new key = new sensor; backup/restore (testing) keeps it",
+    "stream_a_live": [
+      "device -> HTTP POST JSON every 30 s to connectivity.robonomics.network (pool 1./2.); fields robonomics_address, owner, donated_by, device_model, GPS_lat, GPS_lon, sensordatavalues 'p1:,p2:,t:,h:,p:,nm:,na:,co2:', signature",
+      "signature: Ed25519 over '<sensordatavalues>,time:<unix time without last 2 digits>' (~100 s window); provider stamps receive time",
+      "provider (airalab/sensors-connectivity) verifies signature and the owner's registration, drops the rest",
+      "live: latest reading per sensor every 30 s on libp2p pubsub topic airalab.lighthouse.5.robonomics.eth, JSON keyed by address, pressure in mmHg, signed by the provider (not the device)",
+      "batch: JSON file {address: {model, geo, owner, donated_by, device_model, measurements[]}} pinned on IPFS (+Crust/Pinata)",
+      "anchor: datalog.record(CID) on Robonomics on Polkadot from agents 4HMPh33…rm14, 4D23jon…WUmm, 4DWazwm…bHZL; chain state keeps the last 128 records per account, full history in blocks"
     ],
+    "stream_b_live": "device itself writes datalog.record('p1:…' CSV, pressure in Pa, whole record encrypted if owner encryption is on) every 10 min via rws.call under the owner's subscription; not indexed by the public RoSeMAN",
+    "indexing": "RoSeMAN reads finalized blocks, datalog.NewRecord from the agents, fetches CIDs via IPFS gateways, stores MongoDB measurements unique by sensor_id+timestamp, serves /api/v2 (seconds, values as published); no realtime, no websocket; public instance still serves Kusama-era history",
+    "map": {
+      "realtime": "browser libp2p via {1,2,3}.pubsub.sensors.social, accepts only known provider peers, session memory only, 1 h chart",
+      "daily_recap": "RoSeMAN /api/v2 markers, maxdata, sensor/:id; rolling day/7 days/30 days fetched per day and cached in IndexedDB; charts and data-health checks computed in the browser",
+      "encrypted_values": "e.<base64>; X25519 + HKDF-SHA256 (salt robonomics-network, info aesgcm256) + AES-256-GCM; decrypted only in the owner's browser after sign-in",
+      "stories": "datalog record with model 5 from the owner's account",
+      "csv": "RoSeMAN /api/sensor/csv per city"
+    },
+    "guarantees": {
+      "origin": "device signature checked by the provider (stream A) or the chain (stream B); not kept inside batch files",
+      "batch_integrity": "CID sealed on chain = hash of the file; recompute the CID or fetch via your own IPFS node",
+      "history": "chain finality",
+      "map_matches_chain": "not automatic; compare API against batch files from the agents' records",
+      "physical_correctness": "not guaranteed; data-health checks are heuristics",
+      "availability": "depends on pinning; a CID proves content, not that it is still online"
+    },
+    "next_generation": {
+      "device_tree_live": "nodes with owner, parent, meta, payload <= 8 KB, scoped access, optional identity (since Oct 2026)",
+      "envelope_testing": "protobuf crypto.v1.SignedEnvelope{sensor_id 32 B pubkey, nonce, message, signature}, Ed25519 over sensor_id||nonce||message; core.v1.Message{meta{node_id, timestamp ms}, urban|insight{public, private}}; integer units; ESP32-C6 testing firmware sends it in parallel",
+      "ingest_testing": "airalab/connectivity-cloud on staging: signature, +-300 s, nonce replay; zstd protobuf batch <= 8 KB written with cps.setPayload; RoSeMAN cps-payload-set verifies every envelope, serves /api/v3 (ms), not on the public instance yet",
+      "planned": ["sensors.social root -> connection nodes -> sensors", "connection node accepts only its subtree", "endpoint discovery from connection node meta", "IPFS CID in payload to raise the per-node ceiling", "private readings as a separate packet for the owner", "Bulletin Chain storage for batch files"]
+    },
     "user_requirements": "none beyond Wi-Fi — no account, wallet, purchase or node for normal use or the public map",
     "why": ["history cannot be retro-edited", "every component of the cloud is open source and self-hostable, so nothing depends on one vendor", "publishing is optional, local operation needs none of it"],
-    "source": "https://x.com/EnsRationis/status/1894397199078810064"
+    "source": "code of altruist-firmware, sensors-connectivity, connectivity-protocol, connectivity-cloud, RoSeMAN, sensors.social as of 2026-10-16; background https://x.com/EnsRationis/status/1894397199078810064"
   },
   "pairing": {"insight_to_urban": "mDNS altruist._tcp (ESP32-C6) or manual Urban IP (legacy ESP32-C3)"},
   "wifi_reset": {"urban_c6": "hold reset button >10s while running", "insight": "hold SET+DOWN 4s", "effect": "clears Wi-Fi + web password, preserves identity"},
@@ -1249,13 +1424,13 @@ authoritative — if anything here disagrees with it, follow the prose.
     "own_roseman": {
       "repo": "https://github.com/airalab/RoSeMAN",
       "chain": "Robonomics on Polkadot (wss://polkadot.rpc.robonomics.network)",
-      "must_change": ["ENABLED_HANDLERS must include datalog-new-record (the example disables it; sensors publish datalog)", "ROBONOMICS_START_BLOCK=5518617 for history since 28 Sep 2026 (example default 'latest' = no history)", "own IPFS gateway first in IPFS_GATEWAYS (public gateways answer 429)", "real MONGO_ROOT_PASSWORD; Mongo and REST ports bound to 127.0.0.1"],
+      "must_change": ["ENABLED_HANDLERS must include datalog-new-record (the example disables it; the public network still publishes datalog, though RoSeMAN marks it deprecated)", "ROBONOMICS_ACCOUNTS set to the three publishing agents (the example leaves it commented = accept every sender)", "IPFS_GATEWAYS: own Kubo first, then gateway.pinata.cloud; ipfs.io and dweb.link no longer return raw files (Oct 2026)", "ROBONOMICS_START_BLOCK=5518617 for history since 28 Sep 2026 (example default 'latest' = no history)", "real MONGO_ROOT_PASSWORD; Mongo and REST ports bound to 127.0.0.1"],
       "catch_up": "~16-18 blocks/s observed, ~3 h from 5518617 to the head in Oct 2026",
       "not_available": "history before 28 Sep 2026 (Kusama parachain, halted) — use the public API for it"
     }
   },
-  "guide_version": "1.10",
-  "guide_updated": "2026-10-11"
+  "guide_version": "1.11",
+  "guide_updated": "2026-10-16"
 }
 ```
 
