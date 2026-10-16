@@ -15,6 +15,8 @@ We chose the other way. sensors.social is building an open air dataset of the pl
 
 ## Open by architecture, not by promise
 
+![Every part of the stack on GitHub: firmware, hardware, flasher, connectivity, Robonomics open-source cloud, indexer, offline OS and the map](./images/open-by-architecture.gif)
+
 A promise to keep data open can change with a new owner or a new pricing page. So we made openness part of the structure:
 
 - **The device signs every reading.** Altruist firmware and hardware are open source.
@@ -24,6 +26,8 @@ A promise to keep data open can change with a new owner or a new pricing page. S
 Even we cannot close it. That is the point. Each owner decides whether their sensor publishes; what is published becomes common ground.
 
 ## Already in the dataset
+
+![The sensors.social map on notable days: Cyprus, Koh Phangan, Togliatti, Réunion and Bali](./images/already-in-the-dataset.gif)
 
 Since April: about 18 million records from more than 200 home sensors in 22 countries. A few places worth opening:
 
