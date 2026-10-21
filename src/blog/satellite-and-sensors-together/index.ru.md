@@ -12,7 +12,7 @@ tags: ["dust", "satellite", "cyprus", "citizen-network", "air-quality"]
 21 октября слой спутниковой пыли на sensors.social загорелся: плотное облако над Ливаном и Сирией, совсем рядом с Кипром. В тот же момент датчики жителей по всему острову показывали у земли чистый воздух. Правы были оба, и именно поэтому им место на одной карте.
 
 <div class="video-embed">
-  <video src="./images/dust-map.mp4" controls muted playsinline preload="metadata" poster="./images/cover.png"></video>
+  <video src="./images/dust-map.mp4" controls muted playsinline preload="metadata" poster="./images/poster.jpg"></video>
 </div>
 
 ## Спутник — это предупреждение, а не приговор

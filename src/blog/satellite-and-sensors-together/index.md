@@ -12,7 +12,7 @@ tags: ["dust", "satellite", "cyprus", "citizen-network", "air-quality"]
 On 21 October the satellite dust layer on sensors.social lit up: a dense cloud over Lebanon and Syria, right next to Cyprus. At the same moment, residents' sensors across the island showed clean air at street level. Both were right, and that is exactly why they belong on one map.
 
 <div class="video-embed">
-  <video src="./images/dust-map.mp4" controls muted playsinline preload="metadata" poster="./images/cover.png"></video>
+  <video src="./images/dust-map.mp4" controls muted playsinline preload="metadata" poster="./images/poster.jpg"></video>
 </div>
 
 ## The satellite is a warning, not a verdict
