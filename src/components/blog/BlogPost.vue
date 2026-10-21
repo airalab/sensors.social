@@ -221,7 +221,8 @@ watch(
   background: var(--color-dark);
 }
 
-.blog-post .video-embed iframe {
+.blog-post .video-embed iframe,
+.blog-post .video-embed video {
   position: absolute;
   inset: 0;
   width: 100%;
