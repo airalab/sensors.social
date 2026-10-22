@@ -42,6 +42,9 @@
       <div class="chart-wrapper">
         <Chart ref="chartRef" constructor-type="stockChart" :options="chartOptions" />
       </div>
+      <p v-for="(hint, hintIndex) in scaleHints" :key="hintIndex" class="chart-scale-hint">
+        {{ hint }}
+      </p>
 
       <div class="custom-legend">
         <span
@@ -69,6 +72,8 @@ import { MEASUREMENT_GROUPS, MEASUREMENT_GROUP_LOOKUP } from "../../../measureme
 import { settings } from "@config";
 import { useMap } from "@/composables/useMap";
 import { getPeriodBounds } from "@/utils/date";
+import { applyReadableScale, formatScaleValue } from "@/utils/chart/readableScale";
+import { canonicalMeasurementId, measurementValue } from "@/measurements/aliases";
 
 stockInit(Highcharts);
 
@@ -127,6 +132,7 @@ watch(() => Array.from(UNITS_FOUND.value).sort().join("|"), clearLegendCache);
 const REALTIME_VIEW_TIMELINE_MS = 60 * 60 * 1000;
 
 const chartSeries = ref([]);
+const yScalesByUnit = ref(new Map());
 
 // Цветовые зоны отформатированные для Highcharts
 const HIGHCHARTS_COLOR_ZONES = Object.fromEntries(
@@ -216,15 +222,201 @@ const preparedSeries = computed(() =>
   }))
 );
 
-// Конфигурация осей Y
-const yAxisConfig = computed(() =>
-  uniqueUnits.value.map((unit) => ({
+const cssColor = (color) => {
+  if (!color || typeof document === "undefined") return color;
+  const match = String(color).match(/^var\((--[\w-]+)\)$/);
+  if (!match) return color;
+  const resolved = getComputedStyle(document.documentElement).getPropertyValue(match[1]).trim();
+  return resolved || color;
+}
+
+const spikeOutlineSeries = (item, scale) => {
+  if (!scale || !item.custom?.readableScale || !item.data?.length) return null;
+  const above = item.data.map((point) => {
+    const real = Array.isArray(point) ? null : point?.custom?.realY;
+    return typeof real === "number" && real > scale.knee;
+  });
+  if (!above.some(Boolean)) return null;
+
+  return {
+    id: `${item.id}__outline`,
+    type: item.type || "spline",
+    name: "",
+    unit: item.unit,
+    yAxis: item.yAxis,
+    color: "#ffffff",
+    lineWidth: 4.5,
+    zIndex: 1,
+    enableMouseTracking: false,
+    showInLegend: false,
+    showInNavigator: false,
+    marker: { enabled: false },
+    dataLabels: { enabled: false },
+    dataGrouping: { enabled: false },
+    states: { inactive: { opacity: 1 }, hover: { enabled: false } },
+    data: item.data.map((point, index) => {
+      const x = Array.isArray(point) ? point[0] : point.x;
+      const y = Array.isArray(point) ? point[1] : point.y;
+      const near = above[index] || above[index - 1] || above[index + 1];
+      if (!near || y == null) return [x, null];
+      return [x, y];
+    }),
+  };
+}
+
+const parseRgb = (hex) => {
+  const match = String(hex || "").match(/^#([\da-f]{6})$/i);
+  const n = match ? parseInt(match[1], 16) : 0xfd4c1f;
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+const peakBandPaint = (hex) => {
+  const [r, g, b] = parseRgb(hex);
+  const rgba = (alpha) => `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  return {
+    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+    stops: [
+      [0, rgba(0.32)],
+      [0.42, rgba(0.16)],
+      [1, rgba(0.03)],
+    ],
+  };
+}
+
+const breakCaption = (scale) => {
+  const detailTicks = scale.ticks.filter((tick) => tick <= scale.knee + 1e-6);
+  const value = detailTicks.length ? detailTicks[detailTicks.length - 1] : scale.knee;
+  return formatScaleValue(value);
+}
+
+const axisOptionsFor = (unit, scale) => {
+  const labelFormatter = function () {
+    if (!scale) {
+      const text = this.axis.defaultLabelFormatter.call(this);
+      return unit ? `${text} ${unit}` : `${text}`;
+    }
+    return `${formatScaleValue(scale.fromDisplay(this.value))} ${unit}`.trim();
+  };
+
+  if (!scale) {
+    return {
+      title: false,
+      opposite: true,
+      visible: true,
+      min: null,
+      max: null,
+      startOnTick: true,
+      endOnTick: true,
+      tickPositions: null,
+      plotLines: [],
+      plotBands: [],
+      labels: { formatter: labelFormatter },
+      custom: { unit, readableScale: false },
+    };
+  }
+
+  const breakColor = cssColor(scale.peakColor) || cssColor("var(--measure-red)") || "#fd4c1f";
+  const breakValue = breakCaption(scale);
+
+  return {
     title: false,
-    labels: { format: `{value} ${unit}` },
     opposite: true,
     visible: true,
-  }))
+    min: 0,
+    max: 1,
+    minPadding: 0,
+    maxPadding: 0,
+    startOnTick: false,
+    endOnTick: false,
+    alignTicks: false,
+    tickPositions: scale.ticks.map((tick) => scale.toDisplay(tick)),
+    labels: { formatter: labelFormatter },
+    plotLines: [
+      {
+        id: "readable-scale-break",
+        value: scale.detailShare,
+        color: breakColor,
+        dashStyle: "Dash",
+        width: 1.5,
+        zIndex: 4,
+        label: {
+          useHTML: true,
+          text: `<span class="chart-scale-break-label">${tr("chart.scaleBreak", {
+            value: breakValue,
+            unit,
+          })}</span>`,
+          align: "center",
+          x: 0,
+          y: 18,
+        },
+      },
+    ],
+    plotBands: [
+      {
+        id: "readable-scale-band",
+        from: scale.detailShare,
+        to: 1,
+        color: peakBandPaint(breakColor),
+        zIndex: 0,
+        label: {
+          useHTML: true,
+          text: `<span class="chart-scale-above-label" style="color:${breakColor}">${tr(
+            "chart.scaleAbove",
+            { value: breakValue, unit }
+          )}</span>`,
+          align: "left",
+          verticalAlign: "top",
+          x: 8,
+          y: 18,
+        },
+      },
+    ],
+    custom: { unit, readableScale: true },
+  };
+}
+
+const mainYAxes = (chartInstance) =>
+  (chartInstance.yAxis || []).filter((axis) => axis.options?.id !== "navigator-y-axis");
+
+const syncYAxes = (chartInstance, units) => {
+  if (!chartInstance?.addAxis) return;
+  units.forEach((unit, index) => {
+    const options = axisOptionsFor(unit, yScalesByUnit.value.get(unit) || null);
+    const axis = mainYAxes(chartInstance)[index];
+    if (axis) {
+      axis.update(options, false);
+    } else {
+      chartInstance.addAxis(options, false, false);
+    }
+  });
+};
+
+const trimYAxes = (chartInstance, units) => {
+  if (!chartInstance?.yAxis) return;
+  const keep = Math.max(units.length, 1);
+  const removable = chartInstance.yAxis.filter((axis) => axis.options?.id !== "navigator-y-axis");
+  for (let index = removable.length - 1; index >= keep; index -= 1) {
+    removable[index].remove(false);
+  }
+};
+
+// Конфигурация осей Y
+const yAxisConfig = computed(() =>
+  uniqueUnits.value.map((unit) => axisOptionsFor(unit, yScalesByUnit.value.get(unit) || null))
 );
+
+const scaleHints = computed(() => {
+  const hints = [];
+  yScalesByUnit.value.forEach((scale, unit) => {
+    hints.push(
+      tr("chart.scaleCompressed", {
+        value: breakCaption(scale),
+        unit,
+      })
+    );
+  });
+  return hints;
+});
 
 const activeLegendUnits = computed(() => {
   const legendKey = activeLegendKey.value;
@@ -434,20 +626,59 @@ watchEffect(() => {
   tooltipContext.addressFn = props.addressForTimestamp;
 });
 
+const tooltipValue = (point) => {
+  const source = point.point || point;
+  const real = source.custom?.realY ?? source.options?.custom?.realY;
+  return real != null && Number.isFinite(real) ? real : point.y;
+}
+
+// Скачок часто одна точка. Курсор на линии рядом с ней ближе по X к соседнему
+// низкому значению, и тултип показывает его вместо пика.
+const readingNearSpike = (point) => {
+  const source = point.point || point;
+  const direct = tooltipValue(point);
+  const series = source.series;
+  const x = source.x;
+  if (!series?.points || x == null || !Number.isFinite(direct)) {
+    return { y: direct, x };
+  }
+
+  const windowMs = 10 * 60 * 1000;
+  let peak = null;
+  for (const candidate of series.points) {
+    if (candidate?.x == null || candidate.isNull) continue;
+    if (Math.abs(candidate.x - x) > windowMs) continue;
+    const real = candidate.custom?.realY;
+    if (real == null || !Number.isFinite(real)) continue;
+    if (!peak || real > peak.y) peak = { y: real, x: candidate.x };
+  }
+
+  if (peak && peak.y > direct * 4 && peak.y - direct > 30) return peak;
+  return { y: direct, x };
+}
+
 // Конфигурация тултипа
 const tooltipConfig = computed(() => ({
   shared: true,
   valueDecimals: 2,
   xDateFormat: "%Y-%m-%d %H:%M:%S",
   formatter() {
-    const xStr = new Date(this.x).toLocaleString();
-    const rows = this.points.map(
-      (point) =>
+    const rows = this.points.map((point) => ({
+      point,
+      reading: readingNearSpike(point),
+    }));
+    const header = rows.reduce(
+      (best, row) => (row.reading.y > best.y ? row.reading : best),
+      { y: -Infinity, x: this.x }
+    );
+    const xStr = new Date(header.x ?? this.x).toLocaleString();
+    const lines = rows.map(
+      ({ point, reading }) =>
         `<span style="color:${point.color}">●</span> ${
           point.series.userOptions.fullLabel || point.series.name
-        }: <b>${point.y.toFixed(2)}</b>`
+        }: <b>${Number(reading.y).toFixed(2)}</b>`
     );
-    let html = `<b>${xStr}</b><br/>${rows.join("<br/>")}`;
+    let html = `<b>${xStr}</b><br/>${lines.join("<br/>")}`;
     if (tooltipContext.showGeo && typeof tooltipContext.addressFn === "function") {
       const addr = tooltipContext.addressFn(this.x);
       if (addr) {
@@ -474,6 +705,12 @@ const chartOptions = computed(() => ({
   chart: {
     type: "spline",
     height: 400,
+    spacingTop: yScalesByUnit.value.size ? 26 : 10,
+    events: {
+      render() {
+        hideNavigatorPeakLabels(this);
+      },
+    },
   },
   rangeSelector: { enabled: false },
   scrollbar: { enabled: false },
@@ -507,6 +744,9 @@ const chartOptions = computed(() => ({
     enabled: true,
     height: 40,
     adaptToUpdatedData: true,
+    series: {
+      dataLabels: { enabled: false },
+    },
   },
   plotOptions: {
     series: {
@@ -543,6 +783,36 @@ const chartOptions = computed(() => ({
  * @param {Array} log - Данные лога сенсора
  * @param {string} legendKey - Ключ легенды (если null, используется activeLegendKey или первый доступный)
  */
+const seriesPointX = (point) => {
+  return Array.isArray(point) ? point?.[0] : point?.x;
+}
+
+const presentSeries = (log, legendKey) => {
+  const built = buildSeriesArray(log, legendKey).sort((a, b) => a.name.localeCompare(b.name));
+  const { series, scales } =
+    legendKey === "climate" ? { series: built, scales: new Map() } : applyReadableScale(built);
+  const units = [...new Set(series.map((item) => item.unit || ""))];
+  const axisIndex = Object.fromEntries(units.map((unit, index) => [unit, index]));
+  const painted = series.map((item) => {
+    const next = {
+      ...item,
+      yAxis: axisIndex[item.unit || ""] ?? 0,
+      lineWidth: item.custom?.readableScale ? 2.5 : item.lineWidth || 2,
+      zones: (item.zones || []).map((zone) => ({ ...zone, color: cssColor(zone.color) })),
+    };
+    if (item.custom?.readableScale) next.zIndex = 2;
+    return next;
+  });
+  return {
+    units,
+    scales,
+    series: painted.flatMap((item) => {
+      const outline = spikeOutlineSeries(item, scales.get(item.unit || ""));
+      return outline ? [outline, item] : [item];
+    }),
+  };
+}
+
 const updateChart = async (log, legendKey = null) => {
   if (!chartRef.value || !Array.isArray(log) || log.length === 0) return;
 
@@ -558,13 +828,16 @@ const updateChart = async (log, legendKey = null) => {
 
     if (!chart.value) return;
 
-    if (isRealtime.value) {
-      // Realtime режим: инкрементальное обновление
-      const raw = buildSeriesArray(log, currentLegendKey).sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
+    const presented = presentSeries(log, currentLegendKey);
+    yScalesByUnit.value = presented.scales;
+    const raw = presented.series;
+    const chartWasScaled = (chart.value.series || []).some(
+      (series) => series.options?.custom?.readableScale
+    );
+    syncYAxes(chart.value, presented.units);
 
-      // Обновляем chartSeries для реактивности
+    if (isRealtime.value && presented.scales.size === 0 && !chartWasScaled) {
+      // Realtime без выброса: добавляем только новые точки
       chartSeries.value = raw;
 
       // Сохраняем состояние видимости серий
@@ -591,6 +864,8 @@ const updateChart = async (log, legendKey = null) => {
               name: ns.name,
               zones: ns.zones,
               dataGrouping: ns.dataGrouping,
+              yAxis: ns.yAxis ?? 0,
+              custom: ns.custom || { readableScale: false },
             },
             false
           );
@@ -631,11 +906,30 @@ const updateChart = async (log, legendKey = null) => {
       }
 
       chart.value.redraw(false);
+      trimYAxes(chart.value, presented.units);
     } else {
-      // Remote режим: полное обновление графика
-      const all = buildSeriesArray(log, currentLegendKey);
-      applySeriesDiffToChart(chart.value, all);
-      chartSeries.value = all;
+      // День / неделя / месяц, либо realtime с выбросом: полная перерисовка
+      // в шкале с изломом, чтобы старые точки не остались в старом масштабе.
+      applySeriesDiffToChart(chart.value, raw);
+      trimYAxes(chart.value, presented.units);
+      chartSeries.value = raw;
+
+      if (isRealtime.value) {
+        let maxTime = 0;
+        raw.forEach((ns) => {
+          const x = seriesPointX(ns.data[ns.data.length - 1]);
+          if (x > maxTime) maxTime = x;
+        });
+        if (maxTime && chart.value.xAxis?.[0]) {
+          chart.value.xAxis[0].setExtremes(
+            maxTime - REALTIME_VIEW_TIMELINE_MS,
+            maxTime,
+            false,
+            false
+          );
+        }
+        chart.value.redraw(false);
+      }
 
       // Принудительно устанавливаем границы периода только для завершенных периодов
       // Для незаконченных периодов позволяем графику автоматически расширяться
@@ -796,7 +1090,14 @@ function buildSeriesArray(log, legendKey) {
     }
 
     for (const [paramKey, paramValue] of Object.entries(data)) {
-      const paramId = paramKey.toLowerCase();
+      const rawId = paramKey.toLowerCase();
+      if (
+        rawId === "radiation" &&
+        Object.keys(data).some((key) => key.toLowerCase() === "gc")
+      ) {
+        continue;
+      }
+      const paramId = canonicalMeasurementId(rawId);
       const paramGroup = GROUPS_LOOKUP[paramId];
       const paramSettings = unitsettings[paramId] || {};
 
@@ -819,6 +1120,7 @@ function buildSeriesArray(log, legendKey) {
             type: chartType,
             unit: paramSettings.unit || "",
             name: paramGroup ? tr(GROUPS[paramGroup].labelKey) : shortName,
+            shortName,
             fullLabel: paramSettings.namelong?.[locale.value] || shortName,
             data: [],
             zones: HIGHCHARTS_COLOR_ZONES[paramId] || [],
@@ -847,7 +1149,7 @@ function buildSeriesArray(log, legendKey) {
         }
 
         const seriesEntry = seriesCollection.get(paramId);
-        const numericValue = Number(paramValue);
+        const numericValue = Number(measurementValue(rawId, paramValue));
 
         if (
           gapThresholdMs &&
@@ -1012,6 +1314,15 @@ function buildSeriesArray(log, legendKey) {
  * @param {Object} chart - Экземпляр диаграммы Highcharts
  * @param {Array} nextSeries - Массив новых серий
  */
+const hideNavigatorPeakLabels = (chartInstance) => {
+  const navSeries = chartInstance?.navigator?.series || [];
+  navSeries.forEach((series) => {
+    (series.points || []).forEach((point) => {
+      if (point.dataLabel) point.dataLabel.hide();
+    });
+  });
+}
+
 function applySeriesDiffToChart(chartInstance, newSeries) {
   if (!chartInstance) return;
   const raw = newSeries.sort((a, b) => a.name.localeCompare(b.name));
@@ -1036,8 +1347,16 @@ function applySeriesDiffToChart(chartInstance, newSeries) {
       existing.update(
         {
           name: ns.name,
+          ...(ns.color ? { color: ns.color } : {}),
           zones: ns.zones,
+          lineWidth: ns.lineWidth || 2,
+          ...(ns.zIndex == null ? {} : { zIndex: ns.zIndex }),
+          enableMouseTracking: ns.enableMouseTracking !== false,
+          showInNavigator: ns.showInNavigator !== false,
           dataGrouping: ns.dataGrouping,
+          yAxis: ns.yAxis ?? 0,
+          custom: ns.custom || { readableScale: false },
+          dataLabels: ns.dataLabels || { enabled: false },
         },
         false
       );
@@ -1074,6 +1393,7 @@ function clearChartInstantly() {
 
   seriesCache.clear();
   chartSeries.value = [];
+  yScalesByUnit.value = new Map();
 
   try {
     // Временно отключаем все анимации
@@ -1232,7 +1552,12 @@ watch(
     const newUnits = new Set();
     for (const point of newLog) {
       if (!point.data) continue;
-      Object.keys(point.data).forEach((id) => newUnits.add(id.toLowerCase()));
+      const hasGc = Object.keys(point.data).some((id) => id.toLowerCase() === "gc");
+      Object.keys(point.data).forEach((id) => {
+        const rawId = id.toLowerCase();
+        if (rawId === "radiation" && hasGc) return;
+        newUnits.add(canonicalMeasurementId(rawId));
+      });
     }
     UNITS_FOUND.value = newUnits;
 
@@ -1408,5 +1733,38 @@ onMounted(async () => {
 
 .chart-wrapper {
   position: relative;
+}
+
+.chart-scale-above-label,
+.chart-scale-break-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.chart-scale-above-label {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.94);
+  outline: 1px solid currentColor;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.chart-scale-break-label {
+  color: #8a8a8a;
+}
+
+.chart-scale-hint {
+  margin: 0.45rem 0 0 0.6rem;
+  padding: 0.35rem 0.6rem;
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #1c1c1c;
+  background: var(--color-light-gray);
+  border-radius: var(--radius-sm);
 }
 </style>

@@ -7,6 +7,7 @@ import { peekUserSensorsCache } from "@/composables/useAccounts";
 import { resolveSensorType } from "@/composables/sensorDeviceTypes";
 import { hasValidCoordinates } from "../utils/utils";
 import { dayISO } from "@/utils/date";
+import { measurementValue } from "@/measurements/aliases";
 import {
   filterOwnerBundleNearAnchor,
   getCachedSensorMeta,
@@ -262,16 +263,27 @@ export function unitValueFromBag(bag, unit) {
   if (!bag || unit == null) return null;
   const u = String(unit).toLowerCase();
   let raw = bag[u];
+  let rawKey = u;
   if (raw === undefined) {
     for (const [k, v] of Object.entries(bag)) {
       if (String(k).toLowerCase() === u) {
         raw = v;
+        rawKey = u;
+        break;
+      }
+    }
+  }
+  if (raw === undefined && u === "gc") {
+    for (const [k, v] of Object.entries(bag)) {
+      if (String(k).toLowerCase() === "radiation") {
+        raw = v;
+        rawKey = "radiation";
         break;
       }
     }
   }
   if (raw === null || raw === undefined) return null;
-  const num = Number(raw);
+  const num = Number(measurementValue(rawKey, raw));
   if (!Number.isFinite(num)) return null;
   if (PM_LOG_KEYS.includes(u) && num === -1) return null;
   return num;

@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { settings } from "@config";
 import { dayISO } from "@/utils/date";
 import { getDefaultMapView } from "@/utils/map/defaultView";
+import { canonicalMeasurementId } from "@/measurements/aliases";
 
 const initialMapView = getDefaultMapView();
 
@@ -71,7 +72,7 @@ export function useMap() {
   };
 
   const setCurrentUnit = (unit) => {
-    const u = String(unit || "").toLowerCase();
+    const u = canonicalMeasurementId(unit);
     currentUnit.value = u;
     try {
       localStorage.setItem("currentUnit", u);
@@ -205,12 +206,9 @@ export function useMap() {
    * Синхронизирует настройки карты между URL, composable и localStorage
    */
   const syncMapSettings = (route, router) => {
-    const currentUnitValue = getPriorityValue(
-      route.query.type,
-      currentUnit.value,
-      "currentUnit",
-      "pm10"
-    ).toLowerCase();
+    const currentUnitValue = canonicalMeasurementId(
+      getPriorityValue(route.query.type, currentUnit.value, "currentUnit", "pm10")
+    );
 
     const currentDateValue = getPriorityValue(route.query.date, currentDate.value, null, dayISO());
 

@@ -70,6 +70,10 @@ export default {
   "scales.title": "Единицы измерения",
   "scales.upto": "до",
   "scales.above": "выше",
+  "chart.scaleAbove": "> {value} {unit}",
+  "chart.scaleBreak": "ниже {value} {unit}",
+  "chart.scaleCompressed":
+    "Верхняя полоса — сжатая шкала выше {value} {unit}: пик остаётся на графике, и обычный день тоже можно сравнить. Числа на пике настоящие.",
   "showlocation": "Показать моё местоположение",
   "locationloading": "Пытаемся получить вашу геопозицию",
   "geolocationdefault": "Геолокация установлена ​​по умолчанию",

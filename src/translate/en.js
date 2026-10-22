@@ -70,6 +70,10 @@ export default {
   "scales.title": "Units of measurement",
   "scales.upto": "up to",
   "scales.above": "above",
+  "chart.scaleAbove": "> {value} {unit}",
+  "chart.scaleBreak": "below {value} {unit}",
+  "chart.scaleCompressed":
+    "The top band is a compressed scale above {value} {unit}, so the peak stays visible and the rest of the day stays readable. Numbers on the peak are the real values.",
   "showlocation": "Show my location",
   "locationloading": "Trying to get your location",
   "geolocationdefault": "Geolocation is set default data",
