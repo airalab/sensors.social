@@ -173,8 +173,8 @@ const EMPTY = { lat: [], lng: [], frp: [] };
 
 // Glow radius in px: grows with FRP (MW) and with zoom
 function radiusFor(frp, zoom) {
-  const base = 1.5 + Math.log2(1 + frp) * 0.8;
-  return base * Math.min(Math.max((zoom - 2) / 5, 0.25), 1.8);
+  const base = 1 + Math.log2(1 + frp) * 0.55;
+  return base * Math.min(Math.max((zoom - 2) / 6, 0.25), 1.5);
 }
 
 // A weak field burn is a faint spark, a large fire a clear glow; zoomed out to a
