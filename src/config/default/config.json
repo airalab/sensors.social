@@ -17,6 +17,18 @@
     "daysBack": 4,
     "attribution": "Contains modified Copernicus Atmosphere Monitoring Service information"
   },
+  "FIRES": {
+    "tiles": "https://gibs.earthdata.nasa.gov/wmts/epsg4326/best/{layer}/default/{date}/500m/{z}/{y}/{x}.mvt",
+    "layers": [
+      "VIIRS_NOAA20_Thermal_Anomalies_375m_All",
+      "VIIRS_NOAA21_Thermal_Anomalies_375m_All",
+      "VIIRS_SNPP_Thermal_Anomalies_375m_All"
+    ],
+    "overviewLayers": ["VIIRS_NOAA20_Thermal_Anomalies_375m_All"],
+    "overviewMaxZoom": 4,
+    "since": "2025-07-08",
+    "attribution": "NASA FIRMS / GIBS, VIIRS 375 m"
+  },
   "MAP": {
     "zoom": "3",
     "boundsDelta": {
