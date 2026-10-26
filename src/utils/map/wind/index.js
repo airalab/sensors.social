@@ -4,7 +4,7 @@
  */
 
 import L from "leaflet";
-import "leaflet-velocity";
+import "./leaflet-velocity";
 import "leaflet-velocity/dist/leaflet-velocity.css";
 import { settings } from "@config";
 
