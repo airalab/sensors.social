@@ -230,6 +230,14 @@ watch(
   border: 0;
 }
 
+/* A vertical phone recording: 9:16 box, narrow and centred instead of letterboxed in 16:9 */
+.blog-post .video-embed.video-embed-portrait {
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: min(177.78%, 640px);
+}
+
 /* A quoted post from X, rendered statically. The official embed is not usable
    here: a <script> inside compiled Markdown never executes, and a widget that
    fetches its own content would leave the prerendered page empty. */
