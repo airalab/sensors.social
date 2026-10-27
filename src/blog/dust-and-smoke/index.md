@@ -22,8 +22,19 @@ The map also moves more smoothly when you pan and zoom.
 ## How to use it
 
 - Switch on Dust & smoke at the bottom of the map. On a phone it sits under the gear button.
+
+  ![Dust & smoke button at the bottom of the map, next to Wind and Fires](./images/step1-desktop-en.webp)
+
+  ![On a phone: the gear button opens Map settings with the Dust & smoke switch](./images/step1-phone-en.webp)
+
 - Add Fires to see where the grey haze starts. Thick smoke usually hangs right above the fire points.
+
+  ![Smoke over Sumatra and Kalimantan, right above the fire points](./images/step2-smoke-fires.webp)
+
 - Keep Wind on. The moving streaks show where dust and smoke are heading.
+
+  ![Saharan dust with the wind streaks over West Africa](./images/step3-dust-wind-en.webp)
+
 - Look at the sensors under the haze. They show what actually reaches the street.
 
 ## Good to know
