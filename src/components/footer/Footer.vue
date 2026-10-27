@@ -480,7 +480,7 @@ watch(
   { immediate: true }
 );
 
-// Слой AOD (пыль из CAMS): следует за выбранной датой, WMS хранит только последние дни
+// Слой AOD (пыль и дым из CAMS): следует за выбранной датой, WMS хранит только последние дни
 watch(
   [aod, start],
   ([enabled, date]) => {
@@ -768,9 +768,20 @@ defineExpose({
   opacity: 0.7;
 }
 
+.aod-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.aod-legend-name {
+  width: 38px;
+}
+
 .aod-legend-scale {
+  flex: 1;
   height: 8px;
-  margin: 4px 0 2px;
   border-radius: 2px;
   background: linear-gradient(to right, #fff5eb, #fdd0a2, #fd8d3c, #d94801, #7f2704);
 }
@@ -778,6 +789,7 @@ defineExpose({
 .aod-legend-labels {
   display: flex;
   justify-content: space-between;
+  margin: 2px 0 0 44px;
 }
 
 .aod-legend-attr {

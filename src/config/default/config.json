@@ -10,7 +10,14 @@
   "WIND_PROVIDER": "https://wind.sensors.social/latest",
   "AOD_WMS": {
     "url": "https://eccharts.ecmwf.int/wms/?token=public",
-    "layer": "composition_duaod550",
+    "layers": [
+      { "key": "dust", "layer": "composition_duaod550" },
+      {
+        "key": "smoke",
+        "layer": "composition_bbaod550",
+        "ramp": ["#3a404a", "#4f5662", "#7b838f", "#b8bec7", "#eef0f3"]
+      }
+    ],
     "style": "sh_Oranges_aod",
     "opacity": 0.9,
     "alphaBoost": 2.2,
