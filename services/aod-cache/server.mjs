@@ -32,7 +32,7 @@ const prefetchTimer = config.prefetchEnabled
 prefetchTimer?.unref();
 
 const pruneTimer = setInterval(() => {
-  cache.prune().catch((error) => console.error("Scheduled cache prune failed", error));
+  cache.prune(true).catch((error) => console.error("Scheduled cache prune failed", error));
 }, PRUNE_INTERVAL_MS);
 pruneTimer.unref();
 

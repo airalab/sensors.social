@@ -10,7 +10,6 @@ Requires Node.js 20 or newer and has no npm dependencies.
 
 ```sh
 cd services/aod-cache
-npm test
 npm start
 curl http://127.0.0.1:3081/health
 ```
