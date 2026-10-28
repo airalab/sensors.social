@@ -5,7 +5,7 @@ any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
 or its packaging and sent you this file, or a link to it — or a developer gave it
 to you to get at the network's data or run their own RoSeMAN (Section 19).
-**Version:** 1.11 · **updated:** 2026-10-16 · **canonical page:**
+**Version:** 1.12 · **updated:** 2026-10-28 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -40,7 +40,8 @@ open sensor map **sensors.social**.
 
 A setup conversation is finished when all of this is true:
 
-- the device is connected to home Wi-Fi and reports status **«CONNECTED!»**;
+- the device is connected to home Wi-Fi and its setup page shows **CONNECTED**
+  with an IP address (previous firmware: «CONNECTED!»);
 - if the user wants to publish data, the sensor is visible on
   https://sensors.social;
 - the user knows where to see their own readings (device web interface by IP)
@@ -63,7 +64,8 @@ they ever see it on their sensor. Section 14 is that conversation.
    use for setup, they lose internet (and you) while connected to the Altruist
    access point. Before they switch Wi-Fi, give Steps 2 and 3 TOGETHER as one
    compact block they can follow offline, and tell them to come back when the
-   device shows «CONNECTED!».
+   device shows **CONNECTED** — and to save the IP address from that screen
+   first.
    **Ask before you assume it.** The exception applies only once the user has
    told you they are setting up from this same phone. Do not infer it and do not
    pre-emptively hand over two steps "just in case" — ask the one question
@@ -76,7 +78,7 @@ they ever see it on their sensor. Section 14 is that conversation.
    two-module bundle.
 4. **Quote device labels verbatim.** Network names, passwords, addresses and
    button names must be reproduced exactly as they appear on the device or
-   screen (`Altruist-xxxxxxxxx`, `192.168.4.1`, «WIFI SETTINGS», `SET`), because
+   screen (`Altruist-xxxxxxxxx`, `192.168.4.1`, «WiFi credentials», `SET`), because
    the user is comparing your text with what they see. The firmware ships in
    English and Russian variants — for Russian-speaking users, give the English
    label and its Russian equivalent.
@@ -145,7 +147,9 @@ Route the conversation from their first message:
 | Owner asks about a second module, the UV Cover, sharing, or getting neighbours involved | Section 16 — If their device already works |
 | Price, delivery, stock, discounts, warranty | Section 16 — you do not have these; give the shop link and say so |
 | Wants Testing firmware, a rollback, or has a device OTA cannot fix | Section 11 — Manual firmware flashing over USB-C |
-| Screens do not match this guide, or they mention Testing/dev firmware | Section 11 — "If the user is going to Testing firmware", then work from what they see |
+| Their page says «Configuration» / «WIFI SETTINGS» / «CONNECTED!» instead of Local · Map · Custom · System | Section 10 — "If the user has the previous firmware" |
+| Asks where a setting is in the device's web interface | Section 14 — The device web interface, screen by screen |
+| Screens match neither interface, or they mention Testing/dev firmware | Section 11 — "If the user is going to Testing firmware", then work from what they see |
 | Wants the data programmatically: "is there an API / MCP", bulk history, "help me run my own RoSeMAN server" | Section 19 — Data access and your own RoSeMAN |
 | Something this file does not cover | Section 6, then Section 17 — escalation |
 
@@ -165,8 +169,9 @@ https://sensors.social/support/. Do not reason your way to an answer.
   port problems are all in Section 11): what remains undocumented is how to
   force a device into USB flashing mode when the browser cannot see it at all.
 - **Insight e-ink screens:** the full list of screens and what each one shows —
-  the Sleep Analytics screen is the single exception, documented in Section 14;
-  LED brightness or night-mode settings beyond switching indication off.
+  the Sleep Analytics screen is the single exception, documented in Section 14.
+  (The LED and sleep-report settings in the web interface are documented there
+  too.)
 - **Sensor service life and maintenance:** SDS011 lifetime and signs of
   degradation, whether the dust intake needs cleaning, whether SCD41 CO2
   calibration is automatic, whether sensors can be replaced by the user and
@@ -228,7 +233,9 @@ Common to both models:
 - Power: **USB-C, 5V / 1A minimum**.
 - Wireless: **Wi-Fi 2.4 GHz only** (802.11 b/g/n) — cannot join 5 GHz networks.
 - Processor: ESP32-C6 (RISC-V). Fully open source (hardware, firmware, map).
-- Firmware updates: through the browser (Web Serial API) — no special tools.
+- Firmware updates: over the air, automatically or from the device's own web
+  interface (Local → Firmware Update); manual flashing through the browser (Web
+  Serial API) only for special cases (Section 11).
 - Local control via built-in web interface over HTTP; no cloud account and no
   proprietary cloud anywhere in the path — the map runs on the Robonomics
   open-source cloud (Section 15). The user owns the data and decides whether to
@@ -274,30 +281,67 @@ On a phone or computer, find the Wi-Fi network **`Altruist-xxxxxxxxx`** and
 connect to it. Password: **`123456789`**.
 
 ### Step 3 — Connect it to home Wi-Fi
-1. Open a browser and go to **`192.168.4.1`**.
-2. In **«WIFI SETTINGS»** enter the home Wi-Fi network name and password.
+1. On a phone the setup page usually opens by itself once it joins the
+   Altruist network (on an iPhone it is a «Captive Wi-Fi» window). If it does
+   not, open a browser and go to **`192.168.4.1`**. The header shows the model,
+   the device ID and the firmware version.
+2. In **«WiFi credentials»** pick the home network from the list and type its
+   password (a checkbox covers networks without one).
    **Important:** must be a 2.4 GHz network — the device cannot join 5 GHz.
    If connection fails later, this is the first thing to check.
-3. Click **«Save configuration and restart»**.
-4. After restart the device shows status **«CONNECTED!»** and a new IP address
-   (e.g. `192.168.10.3`). Tell the user to copy this IP address — they will
-   need it in the next step.
+   The same block has **Local Hostname** (`altruist-urban-<id>` /
+   `altruist-insight-<id>` — change it only if several Altruists share one
+   network), **Timezone** and **Region** (used for the sensors.social
+   connection; filled automatically from the coordinates unless changed).
+3. Below are **Connected sensors** and **Publish to map** checkboxes, with
+   «Additional sensors (optional)»: Carbon monoxide (CO), Radiation, Ozone (O3),
+   Nitrogen dioxide (NO2), FAST AQI, EPA AQI. Tell the user to leave the
+   defaults; an Urban or Insight does not measure CO, O3 or NO2, so those stay
+   unticked unless their configuration really has such a sensor.
+4. Click **«Save configuration and restart»**. (The same page has **Backup &
+   restore → Restore from backup** — that is for bringing back a device after a
+   reset, Section 11; a new device skips it.)
+5. When the device has joined, the page shows **CONNECTED** with the **IP
+   address** and the **Robonomics address**, buttons **Save device info** (on an
+   iPhone: Save → Share → Save to Files) and **Copy as text**, and a countdown
+   to the restart. **Tell the user to save the IP address now** — they need it
+   in the next step and the page disappears after the restart. Then **Finish
+   setup**; the page says «Finishing setup — restarting…».
 
 ### Step 4 — Connect to the sensor map (sensors.social)
-1. Open the new IP address in a browser (device and phone/PC must be on the
-   same network). Click **«Configuration»**.
-2. Go to **«GPS & Sensors»** and enter the GPS coordinates of the device's
-   location. To find coordinates by address, suggest
+1. Open the IP address in a browser (device and phone/PC must be on the same
+   network). The interface has four areas: **Local** (readings and device
+   settings), **Map** (everything that goes to sensors.social), **Custom** (Home
+   Assistant and other integrations) and **System** (backup, restart, resets) —
+   a sidebar on a computer, tabs on a phone.
+2. Go to **Map → GPS & Sensors** and enter the coordinates in **GPS: Latitude,
+   Longitude** — one line, the two numbers separated by a comma. A small world
+   map underneath shows the marker, so the user can check the point. To find
+   coordinates by address, suggest
    https://www.latlong.net/convert-address-to-lat-long.html — or compute them
    yourself if the user tells you the address.
    **Privacy note — tell the user proactively:** the coordinates become
    publicly visible on the open map. If they prefer not to reveal their exact
    home, they can enter a point ~100 m away (a nearby intersection); air
    quality data stays just as useful.
+   The same screen holds temperature and pressure corrections, units and the
+   SDS measuring interval — leave them alone unless the user asks.
 3. Click **«Save configuration and restart»**.
 4. Done! Within a few minutes the sensor appears on the open map at
    **https://sensors.social**. Congratulate the user — they are now part of a
    community of citizen environmental monitoring.
+
+### If the user has the previous firmware
+Some devices still run the earlier interface, until a guide to moving from it
+is published. They recognise it by a page with **«Configuration»** instead of
+the four areas. Map the steps:
+- Step 3: **«WIFI SETTINGS»** → network and password → **«Save configuration
+  and restart»** → status **«CONNECTED!»** and the new IP.
+- Step 4: open the IP → **«Configuration»** → **«GPS & Sensors»** →
+  coordinates → **«Save configuration and restart»**.
+Everything else in this file — what to ask, what never to do, the privacy note
+— applies unchanged. Do not quote the new screens' labels to such a user; work
+from what they read out.
 
 Publishing to the map is optional — the device is fully functional locally
 without it.
@@ -319,11 +363,18 @@ guide: https://wiki.robonomics.network/docs/altruist/#home-assistant
 If the user has both modules, the Insight display can show the Urban's outdoor
 readings:
 - Both devices must be on the same Wi-Fi network.
-- On current hardware (ESP32-C6) the Insight discovers the Urban
-  automatically via mDNS (service `altruist._tcp`) — usually no action needed.
-- **Legacy Urban units (ESP32-C3) have no mDNS**: in the Insight
-  configuration, set the Urban's LAN IP address manually ("custom Urban IP").
-  If auto-discovery fails, this manual IP method works on any hardware.
+- The Insight's setup page asks one extra question: run **standalone**, or
+  **with an Urban**.
+- **The main Urban** shares the first page of the e-ink screen with the
+  Insight's own readings. On current hardware (ESP32-C6) the Insight finds it
+  on the network via mDNS (service `altruist._tcp`) — usually no action
+  needed; otherwise type its IP ("custom IP").
+- **Legacy Urban units (ESP32-C3) have no mDNS**: set the Urban's LAN IP
+  address manually. If auto-discovery fails, this manual IP method works on
+  any hardware.
+- **More Urbans:** **Local → Other Urbans** adds a second or third one (Add
+  Urban, Scan, or an IP typed by hand). Each gets a name for the screen
+  (kitchen, balcony) and a page of its own. The main Urban is not added here.
 
 ### Advanced (optional) — running your own piece of the Robonomics cloud
 Some users want to carry their data through infrastructure they run themselves
@@ -338,11 +389,38 @@ https://wiki.robonomics.network/docs/altruist/
 
 ## 11. Maintenance and resets
 
-- **Firmware updates** happen over the air automatically on the Stable
-  channel. Normal users never need to flash anything by hand. The device's
-  status page shows the current firmware version and channel. Manual flashing
-  over USB-C is described just below.
-- **Wi-Fi reset (keeps device identity and its map history):**
+- **Firmware updates** happen over the air on the Stable channel. Normal users
+  never need to flash anything by hand. **Local → Firmware Update** shows the
+  current version, the channel (`stable` / `testing`), the last OTA check and
+  the latest version available; **Check for update**, then **Update**, with a
+  progress bar. Tell the user to keep the device powered until it restarts.
+  The same screen has **Switch language**: the device downloads and installs
+  the firmware in the chosen language. Automatic updates are the **Auto update
+  firmware** checkbox in **Local → System**. Manual flashing over USB-C is
+  described below.
+- **Backup — suggest it once the device works.** **System → Backup & restore
+  → Download backup** saves one `backup.json`: Wi-Fi, location, settings and
+  the device key. Tell the user to keep it away from the device (a password
+  manager is a good place) and never to paste it into a chat — it holds the
+  key (Section 4). **Restore from backup** on the same screen: choose the file,
+  confirm, and the device restarts with everything back, its address on the
+  map included. Right after a reset, before the device joins the home network,
+  the setup page itself offers **Backup & restore → Restore from backup**
+  (also reachable at `/guest-restore`), so nothing has to be set up again.
+- **Resets from the web interface** — **System → Delete configuration**,
+  confirmed with «This cannot be undone»:
+  - **Wi-Fi only** — forgets the saved network and keeps everything else; the
+    device reopens its setup page (Section 10, Step 2). Use this for a new
+    router or a new password.
+  - **All settings** — erases everything stored on the device, the key
+    included. It is the factory reset below, by another road: the same warning,
+    the same explicit confirmation, and offer a backup first.
+- **System → Restart** restarts the device, after a confirmation.
+- **System → Install sensor key → Open key install** replaces the device key
+  with one derived from a Sensors.Social master seed (hard derivation `//N`).
+  Advanced and rare; if a user goes there, Section 4 still holds — never ask
+  for, read or repeat the seed.
+- **Wi-Fi reset with the buttons (keeps device identity and its map history):**
   - *Altruist Urban (ESP32-C6):* while the device is running, hold the reset
     button for **more than 10 seconds**, then release. LEDs turn blue briefly,
     Wi-Fi credentials and the web UI password are cleared, and the device
@@ -442,8 +520,10 @@ The symptom of both is the port appearing in the browser's list and then
 
 ### If the user is going to Testing firmware
 
-Everything else in this file describes **Stable**. Testing is a genuinely
-different build, and a user on it will see screens this guide does not describe.
+Everything else in this file describes **Stable** — the interface with Local ·
+Map · Custom · System (Section 10). Testing is the channel where the next
+changes appear first, and a user on it may see screens this guide does not
+describe yet.
 
 **Say this before they flash — all four points:**
 
@@ -451,47 +531,11 @@ different build, and a user on it will see screens this guide does not describe.
    change without notice.
 2. Automatic OTA will **not** bring them back to Stable. Returning is a manual
    act: flash Stable in the webflasher, or trigger `/ota`.
-3. If their firmware already has **System → Backup & restore**, take a backup
-   **before** flashing.
+3. Take a backup **before** flashing: **System → Backup & restore → Download
+   backup** (Section 11).
 4. From that point on, when what they see disagrees with this guide, **believe
    the user, not the file.** Ask what is on their screen and work from that.
    Never invent a screen you have not been told about.
-
-**What Testing changes as of 2026-08-11** (builds `R-URB_2026-07-08` /
-`R-INS_2026-07-08`). This list drifts — treat it as "what to expect", not as a
-specification:
-
-- **A new web interface**, laid out like a mobile app, with four areas:
-  **altruist.local** (readings and device settings), **sensors.social**
-  (everything map-related), **Custom** (Home Assistant, API, Influx, CSV) and
-  **System** (debug, restart, backup, delete config). Sidebar on a desktop,
-  bottom tabs on a phone. The first-time Wi-Fi captive portal means the same
-  thing but is split into steps 1 → 2 with a **Finish setup** button.
-  **Consequence for you:** the Section 10 wording ("Configuration" →
-  "GPS & Sensors") will not match. Navigate by these four areas instead, and
-  ask the user to read out what they see.
-- **Backup and restore** at System → Backup & restore: a full settings backup,
-  including the owner key if there is one; restoring replaces the config and
-  reboots the device. The same file can be used to log in on the map. Right
-  after a reset, while the device is still on its own guest Wi-Fi, restore is
-  reachable at `/guest-restore` before it joins the home network.
-- **Encrypted measurements.** Values can be encrypted for an owner
-  (`owner` / `rws_owner` in the config), so only the owner's key can read them
-  on the map. A standalone or group-master device encrypts to itself; a device
-  that joined a group encrypts to the master's address, so one key opens the
-  whole group. On the map, reading them means logging in with the owner's
-  mnemonic or importing an owner-access JSON or a device backup.
-  **The trap worth warning about:** with a manual or external owner, the
-  device's own backup will **not** decrypt the measurements — the backup holds
-  the device key, while the data is encrypted to the external owner, so that
-  owner's key is required. The backup still restores device settings.
-  Follow the rule in Section 4: never ask for the mnemonic itself.
-- **Each device has its own network name** — `altruist-urban-<id>` /
-  `altruist-insight-<id>`, editable in Configuration → Wi-Fi as **Local
-  Hostname**. `altruist.local` is not a reliable address: on a network with
-  more than one Altruist only the first can hold it, so ask the user what
-  their hostname field says instead of guessing.
-- A bug where the config was not saved after Wi-Fi setup is fixed.
 
 ## 12. Status LEDs (Altruist Urban, ESP32-C6)
 
@@ -505,9 +549,13 @@ Both pixels of the LED ring show the same color:
 | **Red** (~3 s flash) | Last data send failed (a one-off failure is not a problem). |
 | **Red** (steady) | Wi-Fi disconnected or data delivery unhealthy for over 10 minutes — check Wi-Fi first. |
 
-LED indication can be disabled in the web configuration. On Altruist Insight,
-the perimeter LEDs indicate the air quality level — the exact colour scale is
-not documented here, so refer the user to support if they ask for specifics.
+**Local → LEDs** turns the indication on or off and sets the brightness. On
+Altruist Insight, the perimeter LEDs indicate the air quality level — the exact
+colour scale is not documented here, so refer the user to support if they ask
+for specifics. Insight's LEDs also have night hours: a switch-off and a
+switch-on hour (whole hours, local time); for about two hours before switching
+off they dim gradually, and the same hour in both fields keeps them on all
+night.
 
 ## 13. Troubleshooting
 
@@ -517,17 +565,17 @@ not documented here, so refer the user to support if they ask for specifics.
 | Asks for a password to join the device's network | It is `123456789`. |
 | Setup page did not open | Open `http://192.168.4.1` manually in a browser while connected to the Altruist network. |
 | Device won't join home Wi-Fi | Almost always the 5 GHz issue — ensure a 2.4 GHz network; re-check password; move device closer to router. |
-| Lost the device's IP address | Check the router's client list, or restart the device and watch its status screen at `192.168.4.1`. `http://altruist.local` works only on networks with mDNS **and** only if no other Altruist has claimed that name — each device has its own **Local Hostname** (Configuration → Wi-Fi), e.g. `altruist-urban-0b50`, and with several devices on one network the names differ. Ask the user what the hostname field says, or find the IP in the router. |
-| Sensor not on the map after Step 4 | Wait a few minutes (real-time data goes out every ~30 s, map registration can take longer); verify coordinates are filled in «GPS & Sensors» and saved; verify the device has internet access. |
+| Lost the device's IP address | If they saved it from the **CONNECTED** screen (Save device info / Copy as text), it is there. Otherwise check the router's client list, or restart the device and watch its status screen at `192.168.4.1`. `http://altruist.local` works only on networks with mDNS **and** only if no other Altruist has claimed that name — each device has its own **Local Hostname** (Local → WiFi Credentials; also on the first setup page), e.g. `altruist-urban-0b50`, and with several devices on one network the names differ. Ask the user what the hostname field says, or find the IP in the router. |
+| Sensor not on the map after Step 4 | Wait a few minutes (real-time data goes out every ~30 s, map registration can take longer); verify coordinates are filled in **Map → GPS & Sensors** and saved, and that **Map → Publish to map** has values ticked; **Local → Status** shows whether the last send reached the map; verify the device has internet access. |
 | Map data lags or has gaps | History arrives in batches a few minutes after the live feed — short gaps are normal; longer ones usually mean the device lost Wi-Fi, so check signal strength in the device interface. |
 | No readings from some sensor | Check the model: Altruist Urban has PM + noise but no CO2; Altruist Insight has CO2 but no PM or noise. |
 | Insight doesn't show Urban data | Both must be on the same Wi-Fi network; on legacy ESP32-C3 Urban set its IP manually in the Insight config (Section 10, Step 7). |
 | Steady red LED on Urban | Wi-Fi or data delivery down for >10 min — check router, signal strength, internet; see Section 12, "Status LEDs". |
 | Unclear LED pattern not in the table | Do not guess what it means; ask support. |
-| Wants to change Wi-Fi network (moved / new router) | Use the Wi-Fi reset (Section 11) and redo setup from Step 2 — device identity and map history survive. |
+| Wants to change Wi-Fi network (moved / new router) | If the old network still works, **System → Delete configuration → Wi-Fi only**; if they cannot reach the device any more, the button Wi-Fi reset (Section 11). Then redo setup from Step 2 — device identity and map history survive. |
 | Forgot the web UI password | The Wi-Fi reset also clears it (Section 11). |
 | Flashing: port is listed but `Failed to execute 'open' on 'SerialPort'` | Linux permissions or ModemManager — see Section 11, manual flashing. |
-| Device is online but `altruist.local` does not resolve | Its Local Hostname is something else — `altruist-urban-<id>` / `altruist-insight-<id>` or whatever the owner set (Configuration → Wi-Fi). Verified on 2026-08-11: `altruist-urban-0b50.local` resolved while `altruist.local` timed out on the same network. |
+| Device is online but `altruist.local` does not resolve | Its Local Hostname is something else — `altruist-urban-<id>` / `altruist-insight-<id>` or whatever the owner set (Local → WiFi Credentials). Verified on 2026-08-11: `altruist-urban-0b50.local` resolved while `altruist.local` timed out on the same network. |
 | Anything unresolved | Hand over to support — see Section 17. |
 
 ## 14. Answering questions later
@@ -595,6 +643,61 @@ the way to 1000 ppm, and ~1000 ppm is already the point where ventilation is
 advised; above 2000 ppm expect drowsiness and headaches. These are general
 reference values, never medical advice — and never diagnose a symptom from a
 reading.
+
+### The device web interface, screen by screen
+
+Open the device's IP in a browser. Answer "where is it" with the path below,
+one screen at a time. Owners on the previous firmware see «Configuration»
+instead (Section 10).
+
+- **Local → Readings** — every value, grouped by sensor. An Insight also shows
+  an **Urban data** block: signal, temperature, humidity, pressure, noise,
+  PM2.5, PM10 and the Urban's IP.
+- **Local → Status** — online or not, when the last data went to the map and
+  to the registry log, IP, device address, uptime, the reason for the last
+  restart, firmware, SD card, free memory. **Technical details → Copy all**
+  copies all of it: ask for that text when a problem goes to support
+  (Section 17).
+- **Local → WiFi Credentials** — network, password, Local Hostname.
+- **Local → LEDs** — on/off and brightness; on an Insight also the night hours
+  (Section 12).
+- **Local → Other Urbans** (Insight) — extra Urbans for the screen (Section 10,
+  Step 7).
+- **Local → Sleep analytics** (Insight) — the night window, the morning report
+  and Urban data in the score (see "Insight Sleep Analytics" below).
+- **Local → System** — Timezone; **Date format** (MM/DD/YYYY, DD.MM.YYYY or
+  YYYY-MM-DD — the e-ink header and the Status page follow it); Region; **Auto
+  update firmware**; Insight standalone. On an Urban also **Send to Meshtastic
+  (LoRa UART)** with its sending interval and destination (`!xxxxxxxx`) — for
+  owners who run a Meshtastic radio; nobody else needs it.
+- **Local → Firmware Update** — Section 11.
+- **Map → GPS & Sensors** — coordinates, corrections, units (Section 10,
+  Step 4).
+- **Map → Publish to map** — one checkbox per value: what goes to the open
+  map. Unticking everything keeps the sensor fully local.
+- **Map → Encrypt map values** — one checkbox per value: ticked values leave
+  the device encrypted and open only for the owner after signing in on
+  https://sensors.social/login/ (Section 14, "What the owner can do on the
+  map"). A standalone or group-master device encrypts to itself; a device that
+  joined a group encrypts to the master's address, so one key opens the whole
+  group. Reading the values on the map means signing in with the owner's key
+  or importing an owner-access JSON or the device backup. **The trap worth
+  warning about:** with a manual or external owner, the device's own backup
+  will **not** decrypt the measurements — the data is encrypted to that
+  owner, so that owner's key is required. The backup still restores the
+  device's settings. Section 4 still holds: never ask for the key or the
+  phrase. The screen has an **Open Backup & restore** button for owners who
+  have no phrase and log in with the backup file.
+- **Map → Robonomics** — advanced; most owners never touch it. **RWS Owner
+  Address (legacy)** is the address of the RWS subscription, not the device
+  key and not a seed; CPS node ID; **Datalog sending interval (sec)** (the
+  registry write, Stream B in Section 15); Robonomics Public Node; the map host
+  (connectivity); how data goes to the map — JSON/CSV (current) and/or
+  protobuf (new protocol) with its URL. If a user is changing these without a
+  reason, suggest leaving the defaults.
+- **Map → Device group (RWS)** — the device group's status.
+- **System** — Backup & restore, Delete configuration, Restart, Install
+  sensor key (Section 11), and debug output.
 
 ### Realtime and Daily Recap — why two numbers disagree
 
@@ -711,14 +814,16 @@ Users read it as a sleep tracker, which it is not.
 - **Targets** (general / biohacking): CO2 ≤750 / ≤600 ppm · temperature
   19–22 / 17–20 °C · humidity 40–60 / 40–50 % · PM2.5 ≤5 / ≤3 µg/m³ · noise
   ≤5 h / ≤1 h with a peak above 45 dB.
-- **PM2.5 and noise appear only if an Urban is paired** (Section 10, Step 7).
+- **PM2.5 and noise appear only if an Urban is paired** (Section 10, Step 7)
+  and **Add Urban data to sleep analytics** is ticked.
   An Insight on its own scores CO2, temperature and humidity.
-- **The night window** is configurable in the web interface, by default
-  **22:00 to 07:00** (end exclusive, about nine hours). Setting start equal to
-  end means 24/7. A window crossing midnight is combined across the two
-  calendar days automatically. **The exact menu path to that setting is not in
-  this file** — do not invent one. Ask the user to open the device's web
-  interface and read out what they see, and work from that.
+- **The night window** is set in **Local → Sleep analytics** (start and end,
+  HH:MM), by default **22:00 to 07:00** (end exclusive, about nine hours).
+  Setting start equal to end means 24/7. A window crossing midnight is
+  combined across the two calendar days automatically. The same screen decides
+  whether the report opens on the e-ink screen every morning (from 06:00 until
+  an hour the user picks) and has **Add Urban data to sleep analytics (PM2.5 &
+  noise)**.
 - **"Night data is collecting"** means the report has not got enough hours yet,
   and shows how many it has against how many it expects. It needs two thirds of
   the window — six hours out of nine. Someone who powered the device on after
@@ -801,10 +906,10 @@ device just publishes. Then return to their actual question.
    is why history and charts load instantly.
 6. **Shown.** The map's **Daily Recap** mode asks RoSeMAN for a day, a week or
    a month and draws the charts in the browser; the "This data might be wrong"
-   check (Section 14) also runs in the browser, on those same readings. (Only
-   with the Testing firmware, if the owner has turned on encryption for some
-   values: the map shows those values only after the owner signs in, and
-   decryption happens in their browser, nowhere else.)
+   check (Section 14) also runs in the browser, on those same readings. (If
+   the owner has ticked some values in **Map → Encrypt map values**, the map
+   shows those values only after the owner signs in, and decryption happens in
+   their browser, nowhere else.)
 
 **Why it is built this way** — three points worth giving the user:
 
@@ -841,7 +946,7 @@ items to an owner as what their device does now.
   (prefix 32), e.g. `4D…`. RoSeMAN and the map use it as `sensor_id`.
 - [live] Factory reset or "remove config" deletes the key → new address → a new
   sensor in the dataset; the old history stays under the old address.
-- [testing] Backup and restore (System → Backup & restore) carries the key over,
+- [live] Backup and restore (System → Backup & restore) carries the key over,
   so a restored device keeps its address and history.
 
 **Two streams leave a device** — both [live] on the Stable firmware:
@@ -895,7 +1000,7 @@ items to an owner as what their device does now.
   `/sensor/:id/:start/:end`. Day, week (7 days) and month (30 days) are rolling
   windows, fetched one day at a time and cached in the browser (IndexedDB).
   Charts, dew point and the data-health checks are computed in the browser.
-- **Encrypted values** [testing firmware] — a value can arrive as
+- **Encrypted values** [live, owner's choice in Map → Encrypt map values] — a value can arrive as
   `e.<base64>`: X25519 key agreement between the device key and the owner's key,
   HKDF-SHA256 (salt `robonomics-network`, info `aesgcm256`), AES-256-GCM. Only
   the owner's browser decrypts it, after sign-in (Section 14).
@@ -1076,6 +1181,9 @@ https://sensors.social/support/
 ## 18. Official sources (share these with the user when needed)
 
 - Setup guide (canonical, with pictures): https://sensors.social/altruist-setup/
+- Short silent videos of every screen of the device's web interface, Urban and
+  Insight — give the one that matches the step the user is on:
+  https://sensors.social/blog/altruist-video-guides
 - PDF manuals: https://sensors.social/altruist-urban-setup.pdf , https://sensors.social/altruist-insight-setup.pdf
 - Device info & tech stack: https://sensors.social/altruist-device-info/
 - Use cases: https://sensors.social/altruist-use-cases/
@@ -1282,7 +1390,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   "power": "USB-C 5V/1A min",
   "wifi": "2.4GHz only (802.11 b/g/n)",
   "ap": {"ssid_pattern": "Altruist-*", "password": "123456789", "setup_url": "http://192.168.4.1"},
-  "map_connection": "Configuration -> GPS & Sensors -> coordinates -> save",
+  "map_connection": "Map -> GPS & Sensors -> GPS: Latitude, Longitude -> Save configuration and restart (previous firmware: Configuration -> GPS & Sensors)",
   "coordinates_privacy": "public on map; ~100m offset OK",
   "publish_cadence": {"realtime_s": 30, "datalog_min": 10},
   "map_scales": {
@@ -1346,7 +1454,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   "factory_reset": {"urban_c6": "hold reset button while powering on", "insight": "hold SET+DOWN while powering on", "effect": "erases everything incl. Robonomics identity"},
   "insight_buttons": {"UP": "prev screen", "DOWN": "next screen", "SET_long": "sleep"},
   "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min"},
-  "firmware_update": "OTA automatic on stable channel; manual via browser webflasher (Web Serial API)",
+  "firmware_update": "OTA on stable channel (Local -> System -> Auto update firmware); manual check in Local -> Firmware Update (Check for update -> Update, Switch language); USB flashing via browser webflasher (Web Serial API) only for special cases",
   "webflasher": {
     "url": "https://webflasher.robonomics.network/",
     "title": "Robonomics ESP Installer",
@@ -1360,14 +1468,19 @@ authoritative — if anything here disagrees with it, follow the prose.
     "preserves_when_not_erasing": "verified 2026-08-11 on Urban C6 via boot log: config, saved Wi-Fi credentials and Robonomics address all survive",
     "linux_port_errors": "Failed to execute 'open' on 'SerialPort' => user not in dialout group, or ModemManager holding /dev/ttyACM0"
   },
-  "testing_channel_2026-08-11": {
-    "warning": "Stable is what the rest of this file describes; on Testing believe the user's screen over this file",
-    "ui": "app-like UI with four areas: altruist.local (readings/settings), sensors.social (map), Custom (HA/API/Influx/CSV), System (debug/restart/backup/delete config); captive portal split into steps 1-2 + Finish setup",
-    "backup": "System -> Backup & restore; includes owner key; restore replaces config and reboots; same file logs in on the map; /guest-restore available on the device's guest Wi-Fi",
-    "encryption": "values encrypted to owner/rws_owner pubkey; standalone or master = self-owner, group member = master's address; decrypt on the map via owner mnemonic or owner-access JSON / device backup",
+  "web_interface": {
+    "areas": "Local (readings, status, device settings), Map (sensors.social), Custom (Home Assistant and other integrations), System (backup, restart, resets); sidebar on desktop, tabs on phone — Stable since 2026-10",
+    "setup_page": "captive portal or http://192.168.4.1: WiFi credentials (network, password, Local Hostname, Timezone, Region), Connected sensors, Publish to map, Save configuration and restart, Backup & restore -> Restore from backup; then CONNECTED with IP + Robonomics address, Save device info / Copy as text, Finish setup",
+    "previous_firmware": "page with Configuration / WIFI SETTINGS / CONNECTED!; same steps under the old labels",
+    "screens": {"readings": "Local -> Readings", "status": "Local -> Status (Technical details -> Copy all for support)", "wifi": "Local -> WiFi Credentials", "leds": "Local -> LEDs (Insight: night hours, dims ~2 h before off, same hour twice = on all night)", "other_urbans": "Local -> Other Urbans (Insight)", "sleep_analytics": "Local -> Sleep analytics (Insight: window HH:MM, morning report from 06:00 until a chosen hour, Add Urban data)", "system": "Local -> System (Timezone, Date format MM/DD/YYYY | DD.MM.YYYY | YYYY-MM-DD, Region, Auto update firmware, Insight standalone, Urban: Meshtastic LoRa)", "firmware": "Local -> Firmware Update", "gps": "Map -> GPS & Sensors", "publish": "Map -> Publish to map", "encrypt": "Map -> Encrypt map values", "robonomics": "Map -> Robonomics (RWS Owner Address (legacy) = subscription address, not the device key; datalog interval; node; JSON/CSV and/or protobuf)", "device_group": "Map -> Device group (RWS)"},
+    "backup": "System -> Backup & restore -> Download backup = backup.json (Wi-Fi, location, settings, device key); Restore from backup there or on the setup page right after a reset (/guest-restore); same file logs in on the map",
+    "delete_configuration": "System -> Delete configuration: Wi-Fi only (keeps identity and history) | All settings (= factory reset, warn + offer backup first)",
+    "other_system": ["Restart", "Install sensor key (derived from a Sensors.Social master seed, //N) — advanced, never ask for the seed"],
+    "encryption": "values encrypted to owner/rws_owner pubkey; standalone or master = self-owner, group member = master's address; decrypt on the map via owner key or owner-access JSON / device backup",
     "encryption_trap": "with a manual/external owner the device backup does NOT decrypt measurements — the external owner's key is required; the backup still restores settings",
-    "mdns": "per-device name altruist-urban-<id> / altruist-insight-<id>, editable as Local Hostname in Configuration -> Wi-Fi; altruist.local resolves only if no other Altruist holds it"
+    "mdns": "per-device name altruist-urban-<id> / altruist-insight-<id>, editable as Local Hostname in Local -> WiFi Credentials; altruist.local resolves only if no other Altruist holds it"
   },
+  "testing_channel": "the channel where changes appear first; on Testing believe the user's screen over this file",
   "map_features": {
     "modes": {"realtime": "live feed, ~30s", "daily_recap": "stored history; charts, daily max and health checks; day/week/month"},
     "bookmark": "save a sensor under a personal name",
@@ -1413,7 +1526,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   },
   "operating_temp_c": [-10, 35],
   "integrations": ["home_assistant >=2025.7", "sensors.community", "mqtt", "microSD"],
-  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "menu path to the Insight night-window setting", "sensor lifetime, cleaning, SCD41 calibration, spare parts", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
+  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "sensor lifetime, cleaning, SCD41 calibration, spare parts", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
   "public_map": "https://sensors.social",
   "docs": "https://sensors.social/altruist-setup/",
   "support": "https://support.cyberpunks.shop",
@@ -1429,8 +1542,8 @@ authoritative — if anything here disagrees with it, follow the prose.
       "not_available": "history before 28 Sep 2026 (Kusama parachain, halted) — use the public API for it"
     }
   },
-  "guide_version": "1.11",
-  "guide_updated": "2026-10-16"
+  "guide_version": "1.12",
+  "guide_updated": "2026-10-28"
 }
 ```
 
