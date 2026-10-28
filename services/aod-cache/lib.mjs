@@ -41,9 +41,9 @@ export function configFromEnv(env = process.env) {
     concurrency: Math.floor(numberFromEnv(env.PREFETCH_CONCURRENCY, 8, 1)),
     minZoom: Math.floor(numberFromEnv(env.PREFETCH_MIN_ZOOM, 2, 0)),
     maxZoom: Math.floor(numberFromEnv(env.PREFETCH_MAX_ZOOM, 6, 0)),
-    requestMaxZoom: Math.floor(numberFromEnv(env.REQUEST_MAX_ZOOM, 20, 0)),
+    requestMaxZoom: Math.floor(numberFromEnv(env.REQUEST_MAX_ZOOM, 6, 0)),
     leadMinutes: numberFromEnv(env.PREFETCH_LEAD_MINUTES, 60, 0),
-    prefetchEnabled: booleanFromEnv(env.PREFETCH_ENABLED, false),
+    prefetchEnabled: booleanFromEnv(env.PREFETCH_ENABLED, true),
     upstream: env.UPSTREAM_WMS || "https://eccharts.ecmwf.int/wms/?token=public",
     requestTimeoutMs: numberFromEnv(env.REQUEST_TIMEOUT_MS, 20_000, 1000),
     retries: Math.floor(numberFromEnv(env.UPSTREAM_RETRIES, 2, 0)),
@@ -346,12 +346,9 @@ export class AodCache {
       if (next.getTime() - now.getTime() <= this.config.leadMinutes * 60_000) {
         targets.push(isoStep(next));
       }
-      let changed = false;
       for (const target of targets) {
-        const result = await this.prefetch(target);
-        changed ||= !result.skipped;
+        await this.prefetch(target);
       }
-      await this.prune(changed);
     })().finally(() => {
       this.prefetchPromise = null;
     });

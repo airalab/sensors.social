@@ -18,8 +18,9 @@ curl http://127.0.0.1:3081/health
 For parity with the public URL, the local server also accepts `/aod/wms` and `/aod/health`.
 
 The main settings are `PORT` (3081), `CACHE_DIR` (`./cache`), `CACHE_MAX_BYTES` (10 GiB),
-`CACHE_DAYS` (6), `PREFETCH_CONCURRENCY` (8), `PREFETCH_ENABLED` (true), and `UPSTREAM_WMS`
-(ECMWF public WMS).
+`CACHE_DAYS` (6), `REQUEST_MAX_ZOOM` (6), `PREFETCH_CONCURRENCY` (8),
+`PREFETCH_ENABLED` (true), and `UPSTREAM_WMS` (ECMWF public WMS). Cache pruning runs at
+startup and every six hours, independently of prefetching.
 
 ```nginx
 location /aod/ {
