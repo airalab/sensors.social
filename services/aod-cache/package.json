@@ -1,0 +1,8 @@
+{
+  "name": "sensors-social-aod-cache",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}
