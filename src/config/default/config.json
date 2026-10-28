@@ -19,6 +19,7 @@
       }
     ],
     "style": "sh_Oranges_aod",
+    "maxNativeZoom": 6,
     "opacity": 0.9,
     "alphaBoost": 2.2,
     "daysBack": 4,

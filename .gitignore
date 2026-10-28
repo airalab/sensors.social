@@ -34,3 +34,7 @@ commit.txt
 # share-og VPS disk cache (runtime data)
 services/share-og/cache/geo/
 services/share-og/cache/og/
+
+# AOD tile cache runtime data
+services/aod-cache/cache/*
+!services/aod-cache/cache/.gitkeep

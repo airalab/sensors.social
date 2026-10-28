@@ -228,6 +228,7 @@ export function switchAodLayer(map, enabled, date) {
       version: "1.3.0",
       time,
       opacity: c.opacity ?? 1,
+      maxNativeZoom: c.maxNativeZoom ?? 6,
       pane: PANE,
       attribution: c.attribution,
       sources: defs.map((def) => ({ layer: def.layer, lut: def.ramp ? rampLut(def.ramp) : null })),
