@@ -275,16 +275,29 @@ watch(
   color: var(--color-link);
 }
 
-.blog-post .grid > p {
+/* The grid is the wrapper, not the paragraph. Markdown puts images inside one
+   <p>, but a Vue block such as InstagramEmbed is a sibling of that <p>, so a
+   grid on the paragraph never sees it. display: contents lets the images join
+   the same row as the component. */
+.blog-post .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap);
+  align-items: start;
 }
 
-.blog-post .grid.grid-3 > p {
-  grid-template-columns: 1fr 1fr;
+.blog-post .grid > p {
+  display: contents;
+}
+
+.blog-post .grid.grid-3 {
   justify-items: center;
-  align-items: start;
+}
+
+.blog-post .grid .instagram {
+  width: 100%;
+  max-width: none;
+  margin: calc(var(--gap) * 1) 0;
 }
 
 /* Phone screenshots: keep portrait shots readable but not huge on desktop */
@@ -306,8 +319,8 @@ watch(
 }
 
 @media (max-width: 630px) {
-  .blog-post .grid > p,
-  .blog-post .grid.grid-3 > p {
+  .blog-post .grid,
+  .blog-post .grid.grid-3 {
     grid-template-columns: 1fr;
   }
 
