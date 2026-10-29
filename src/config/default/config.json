@@ -9,7 +9,7 @@
   "REMOTE_PROVIDER": "https://roseman.robonomics.network/",
   "WIND_PROVIDER": "https://wind.sensors.social/latest",
   "AOD_WMS": {
-    "url": "https://eccharts.ecmwf.int/wms/?token=public",
+    "url": "https://wind.sensors.social/aod/wms",
     "layers": [
       { "key": "dust", "layer": "composition_duaod550" },
       {
