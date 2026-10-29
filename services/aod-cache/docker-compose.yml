@@ -1,0 +1,18 @@
+services:
+  aod-cache:
+    build: .
+    container_name: aod-cache
+    # server.mjs binds to 127.0.0.1, so the container shares the host network
+    # and the service stays reachable only locally (put nginx in front of it).
+    network_mode: host
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ${CACHE_PATH:-./cache}:/data/cache
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
