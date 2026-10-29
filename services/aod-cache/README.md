@@ -29,3 +29,17 @@ location /aod/ {
     proxy_read_timeout 30s;
 }
 ```
+
+## Docker
+
+```sh
+cd services/aod-cache
+cp .env.example .env
+docker compose up -d --build
+curl http://127.0.0.1:3081/health
+```
+
+The container uses `network_mode: host` because the server listens on `127.0.0.1` only, so
+the port is not exposed publicly and nginx proxies to it as shown above. Tiles are stored in
+`CACHE_PATH` (default `./cache`), which must be writable by uid 1000, the `node` user in the
+image. All settings above can be set in `.env`.
