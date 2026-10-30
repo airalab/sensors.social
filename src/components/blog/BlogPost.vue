@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
@@ -150,10 +150,25 @@ function applyBlogImagePaths() {
   }
 }
 
+/* A video folded into a <details> keeps playing when the reader closes it.
+   "toggle" does not bubble, so it is caught on the way down. */
+function pauseVideoInClosedDetails(event) {
+  const details = event.target;
+  if (!(details instanceof HTMLDetailsElement) || details.open) return;
+  if (!details.closest(".blog-post__content")) return;
+
+  for (const video of details.querySelectorAll("video")) video.pause();
+}
+
 onMounted(async () => {
+  document.addEventListener("toggle", pauseVideoInClosedDetails, true);
   await nextTick();
   applyExternalLinkTargets();
   applyBlogImagePaths();
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("toggle", pauseVideoInClosedDetails, true);
 });
 
 watch(
@@ -236,6 +251,45 @@ watch(
   margin-left: auto;
   margin-right: auto;
   padding-bottom: min(177.78%, 640px);
+}
+
+/* A list of short guides folded into <details>: the reader scans the titles
+   and opens one, so the videos (preload="none") load only when asked for. */
+.blog-post details.video-guide {
+  border: 1px solid var(--surface-border-soft);
+  border-radius: var(--radius-md);
+  margin: calc(var(--gap) * 0.5) 0;
+  padding: 0 calc(var(--gap) * 1);
+}
+
+.blog-post details.video-guide > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: calc(var(--gap) * 0.75) 0;
+  font-weight: 600;
+}
+
+.blog-post details.video-guide > summary::-webkit-details-marker {
+  display: none;
+}
+
+.blog-post details.video-guide > summary::before {
+  content: "▶";
+  flex: none;
+  font-size: 0.7em;
+  color: var(--color-link);
+  transition: transform 0.15s ease;
+}
+
+.blog-post details.video-guide[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.blog-post details.video-guide > .video-embed {
+  margin-top: calc(var(--gap) * 0.75);
 }
 
 /* A quoted post from X, rendered statically. The official embed is not usable
