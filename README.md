@@ -582,6 +582,17 @@ npm run autotranslate:md
 
 ---
 
+## 📄 License
+
+- **Code** — [GNU AGPL v3.0](LICENSE), Copyright (C) 2026 Pinout Limited. Code released before this change stays available under [BSD 3-Clause](LICENSES/BSD-3-Clause-Airalab.txt), Copyright (c) 2018, Airalab.
+- **Blog content** (`src/blog/`) — [CC BY 4.0](src/blog/LICENSE.md).
+- **Open measurement data** — [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/), attribution "© sensors.social contributors".
+- The names "sensors.social" and "Altruist" are not covered by these licences.
+
+Details — [NOTICE](NOTICE).
+
+---
+
 ## ❓ Support
 
 For questions or suggestions, create an **issue** in the repository.
