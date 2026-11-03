@@ -89,6 +89,13 @@
             $t("OpenStreetMap contributors")
           }}</a>
         </p>
+        <p>
+          {{ $t("Sensor data") }} ©
+          {{ $t("sensors.social contributors") }},
+          <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a>.
+          {{ $t("Code") }}:
+          <a href="https://github.com/airalab/sensors.social/blob/master/NOTICE" target="_blank" rel="noopener">AGPL-3.0</a>
+        </p>
 
         <section class="navlinks">
           <router-link class="navtile" to="/altruist-device-info/">
