@@ -23,7 +23,7 @@ page with `npm run preview`.
 - Keep a pull request to one topic. Follow-up fixes go in a new pull request.
 - Follow the repository's ESLint and Prettier config. Note that `npm run lint`
   runs `eslint --fix` and rewrites files — don't reformat files you didn't change.
-- Blog posts: see the blog section of the README for the file layout and the
+- Blog posts: see [docs/blog.md](docs/blog.md) for the file layout and the
   publishing checklist.
 
 ## Licence of contributions
