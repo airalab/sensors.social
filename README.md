@@ -1,5 +1,9 @@
 # sensors.social
 
+[![License: AGPL-3.0](https://img.shields.io/github/license/airalab/sensors.social)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/airalab/sensors.social)](https://github.com/airalab/sensors.social/releases)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fsensors.social&label=sensors.social)](https://sensors.social)
+
 ---
 
 ## 📌 Overview
