@@ -13,6 +13,7 @@
 import { computed, ref, toValue, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import measurements from "../measurements";
+import { measurementValue } from "../measurements/aliases";
 import { findZoneForValue, zoneLabelForLocale } from "../measurements/tools";
 import { MEASUREMENT_GROUP_LOOKUP } from "@/measurements/groups";
 import { isEncryptedSensorValue } from "@/utils/sensorValueCrypto";
@@ -33,6 +34,7 @@ const DISPLAY_ORDER = [
   "noiseavg",
   "pressure",
   "gc",
+  "dose_rate_nsv_h",
 ];
 
 const NOISE_KEYS = ["noisemax", "noiseavg", "noise"];
@@ -46,6 +48,7 @@ const DEMO_OUTDOOR_ORDER = [
   "noiseavg",
   "noise",
   "pressure",
+  "dose_rate_nsv_h",
   "pm25",
   "pm10",
 ];
@@ -63,6 +66,7 @@ const DEMO_ICONS = {
   noisemax: "fa-solid fa-volume-high",
   noiseavg: "fa-solid fa-volume-high",
   pressure: "fa-solid fa-gauge-high",
+  dose_rate_nsv_h: "fa-solid fa-radiation",
 };
 
 /** One hint per zone index, aligned with `measurement.zones` in src/measurements/. */
@@ -404,7 +408,8 @@ export function useDemoReadings(log, point) {
     for (const key of sortByOrder(uniqueKeys, DISPLAY_ORDER)) {
       if (key === "airtemp" && hasTemperature) continue;
 
-      const value = numericValue(bagValue(bag, key));
+      const raw = bagValue(bag, key);
+      const value = numericValue(key === "dose_rate_nsv_h" ? measurementValue(key, raw) : raw);
       if (value == null) continue;
 
       const sourceKey = ZONE_SOURCE_ALIAS[key] || key;

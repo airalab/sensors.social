@@ -30,7 +30,9 @@
             :style="{ backgroundColor: zone.color }"
           >
             <div class="expanded-text">
-              <span class="chart-unit-zone-label">{{ zone.label }}: </span>
+              <span class="chart-unit-zone-label">
+                {{ zone.label }}<template v-if="zone.range">: </template>
+              </span>
               <span class="chart-unit-zone-range" v-if="zone.range">{{ zone.range }}</span>
             </div>
           </div>
@@ -44,6 +46,12 @@
       </div>
       <p v-for="(hint, hintIndex) in scaleHints" :key="hintIndex" class="chart-scale-hint">
         {{ hint }}
+      </p>
+      <p v-if="unitsettings[activeLegendKey]?.scaleNote" class="chart-scale-hint">
+        {{
+          unitsettings[activeLegendKey].scaleNote[locale] ||
+          unitsettings[activeLegendKey].scaleNote.en
+        }}
       </p>
 
       <div class="custom-legend">
@@ -507,7 +515,7 @@ const activeLegendUnits = computed(() => {
           return {
             color: zone.color || "var(--color-dark)",
             label,
-            range,
+            range: settingsEntry.zoneLabelsAreRanges ? "" : range,
           };
         }),
       },
@@ -1556,6 +1564,8 @@ watch(
       Object.keys(point.data).forEach((id) => {
         const rawId = id.toLowerCase();
         if (rawId === "radiation" && hasGc) return;
+        if (["count_rate_cps", "dose_rate_error_pct", "count_rate_error_pct"].includes(rawId))
+          return;
         newUnits.add(canonicalMeasurementId(rawId));
       });
     }

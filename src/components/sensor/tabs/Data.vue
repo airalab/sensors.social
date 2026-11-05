@@ -226,13 +226,18 @@
                   <b>
                     {{ zone.label[localeComputed] ? zone.label[localeComputed] : zone.label.en }}
                   </b>
-                  (<template v-if="typeof zone.valueMax === 'number'">
-                    {{ t("scales.upto") }} {{ zone.valueMax }}
+                  <template v-if="!item.zoneLabelsAreRanges">
+                    (<template v-if="typeof zone.valueMax === 'number'">
+                      {{ t("scales.upto") }} {{ zone.valueMax }}
+                    </template>
+                    <template v-else>{{ t("scales.above") }}</template
+                    >)
                   </template>
-                  <template v-else>{{ t("scales.above") }}</template
-                  >)
                 </div>
               </template>
+              <p v-if="item.scaleNote" class="textsmall">
+                {{ item.scaleNote[localeComputed] || item.scaleNote.en }}
+              </p>
             </template>
           </div>
         </div>

@@ -17,6 +17,16 @@ export function canonicalMeasurementId(id) {
 }
 
 export function measurementValue(rawId, rawValue) {
+  if (String(rawId || "").toLowerCase() === "dose_rate_nsv_h") {
+    if (typeof rawValue === "string" && rawValue.startsWith("e.")) return rawValue;
+    if (
+      (typeof rawValue !== "number" && typeof rawValue !== "string") ||
+      (typeof rawValue === "string" && rawValue.trim() === "")
+    )
+      return NaN;
+    const n = Number(rawValue);
+    return Number.isFinite(n) && n >= 0 ? n : NaN;
+  }
   if (String(rawId || "").toLowerCase() !== "radiation") return rawValue;
   const n = Number(rawValue);
   if (!Number.isFinite(n) || Math.abs(n) < RADIATION_SCALE_MIN) return rawValue;
