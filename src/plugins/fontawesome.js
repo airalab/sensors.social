@@ -47,6 +47,7 @@ import {
   faGaugeHigh,
   faChartLine,
   faChartSimple,
+  faRadiation,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faBookmark as faBookmarkRegular,
@@ -112,6 +113,7 @@ library.add(
   faGaugeHigh,
   faChartLine,
   faChartSimple,
+  faRadiation,
   faNewspaper,
   faFileLines,
   faXTwitter,

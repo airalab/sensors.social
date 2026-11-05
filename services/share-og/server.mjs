@@ -157,6 +157,7 @@ const MEASUREMENT_LABELS = {
   temperature: "Temperature",
   humidity: "Humidity",
   pressure: "Pressure",
+  dose_rate_nsv_h: "Radiation dose rate",
   noise: "Noise",
   noiseavg: "Noise Avg",
   noisemax: "Noise Max",

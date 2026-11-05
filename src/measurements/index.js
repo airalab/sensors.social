@@ -6,6 +6,7 @@ import aqi from "./aqi";
 import co from "./co";
 import co2 from "./co2";
 import gc from "./gc";
+import dose_rate_nsv_h from "./dose_rate_nsv_h";
 import humidity from "./humidity";
 import nh3 from "./nh3";
 import no2 from "./no2";
@@ -35,6 +36,7 @@ export default {
   co,
   co2,
   gc,
+  dose_rate_nsv_h,
   humidity,
   nh3,
   no2,
