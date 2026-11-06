@@ -1,0 +1,6 @@
+Third-party logos and trademarks
+
+The logos, photos and marks of partners, platforms and other organisations in
+this repository belong to their respective owners. They are included only to
+identify those organisations and are not licensed under the AGPL-3.0, CC BY 4.0
+or any other licence of this project.
