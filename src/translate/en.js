@@ -623,5 +623,17 @@ export default {
   "Show data warnings again": "Show data warnings again",
   "Sending…": "Sending…",
   "Thanks! Your message was sent.": "Thanks! Your message was sent.",
-  "\\n": "\\n"
+  "\\n": "\\n",
+  "Service status": "Service status",
+  "service.ok": "working",
+  "service.degraded": "partly working",
+  "service.down": "not working",
+  "service.unknown": "checking",
+  "service.justNow": "just now",
+  "service.minutesAgo": "{n} min ago",
+  "service.hoursAgo": "{n} h ago",
+  "service.agentsWriting": "{active} of {total} agents writing",
+  "service.lastRecord": "last record",
+  "service.blocksBehind": "{n} blocks behind the chain",
+  "service.lastBlock": "last block",
 };
