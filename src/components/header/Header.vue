@@ -5,35 +5,7 @@
         <router-link to="/" class="appicon">
           <img :alt="settings.TITLE" src="../../../public/app-icon-512.png" />
         </router-link>
-        <!-- Если есть sensorsNoLocation - показываем details с полным содержимым -->
-        <details
-          v-if="mapSensorsCountDisplay > 0 && mapNoLocationCount > 0"
-          tabindex="0"
-          class="sensors details-popup"
-        >
-          <summary class="sensors-counter">
-            <IconSensor class="sensors-mainicon" />
-            {{ mapSensorsCountDisplay }}
-          </summary>
-          <div class="details-content nogeo">
-            <section>
-              <h4>{{ sensorsNoLocation?.length }} sensors without geolocation</h4>
-              <ul class="sensors-list">
-                <li v-for="sensor in sensorsNoLocation" :key="sensor.sensor_id">
-                  <a :href="getSensorLink(sensor)">
-                    <b>{{ formatSensorId(sensor.sensor_id) }}</b>
-                  </a>
-                </li>
-              </ul>
-            </section>
-          </div>
-        </details>
-
-        <!-- Если sensorsNoLocation пуст - показываем только div.sensors-counter -->
-        <div v-else-if="mapSensorsCountDisplay > 0" class="sensors-counter">
-          <IconSensor class="sensors-mainicon" />
-          {{ mapSensorsCountDisplay }}
-        </div>
+        <ServiceStatus />
       </div>
 
       <div class="flexline header-actions">
@@ -169,19 +141,17 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, reactive } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { languages } from "@/translate";
-import { settings, excluded_sensors } from "@config";
+import { settings } from "@config";
 import { useI18n } from "vue-i18n";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
-import { useMap } from "@/composables/useMap";
 import { useBookmarks } from "@/composables/useBookmarks";
-import { useSensors } from "@/composables/useSensors";
 
-import IconSensor from "../icons/Sensor.vue";
 import ReleaseInfo from "../ReleaseInfo.vue";
 import Login from "./Login.vue";
+import ServiceStatus from "./ServiceStatus.vue";
 import Bookmarks from "@/components/Bookmarks.vue";
 
 import diyIcon from "@/assets/images/sensorTypes/DIY.svg";
@@ -189,74 +159,14 @@ import urbanIcon from "@/assets/images/sensorTypes/Urban.svg";
 import altruistIcon from "@/assets/images/sensorTypes/Altruist.svg";
 
 const { locale: i18nLocale } = useI18n();
-const router = useRouter();
 const route = useRoute();
 
 const locale = ref(localStorage.getItem("locale") || i18nLocale.value || "en");
 const locales = languages || ["en"];
-const mapState = useMap();
 const { idbBookmarks } = useBookmarks();
 const localeComputed = computed(() => locale.value || "en");
-const sensorsData = reactive(useSensors());
-
-/**
- * Фильтрует сенсоры согласно конфигурации excluded_sensors
- * @param {Array} sensors - массив сенсоров для фильтрации
- * @returns {Array} отфильтрованный массив сенсоров
- */
-const filterSensors = (sensors) => {
-  if (!excluded_sensors || !excluded_sensors.sensors || excluded_sensors.sensors.length === 0) {
-    return sensors || [];
-  }
-
-  const { mode, sensors: configSensors } = excluded_sensors;
-  const sensorIdsSet = new Set(configSensors);
-
-  if (!Array.isArray(sensors)) return [];
-
-  if (mode === "include-only") {
-    // Whitelist: показываем только сенсоры из списка
-    return sensors.filter((sensor) => sensorIdsSet.has(sensor.sensor_id));
-  } else {
-    // Blacklist (exclude): скрываем сенсоры из списка
-    return sensors.filter((sensor) => !sensorIdsSet.has(sensor.sensor_id));
-  }
-};
-
-const sensorsNoLocation = computed(() => filterSensors(sensorsData.sensorsNoLocation));
-
-/** No-geo sensors in the counter total (each device row). */
-const mapNoLocationCount = computed(() => (sensorsNoLocation.value || []).length);
-
-/** Total sensors with geo from the loaded list (single source: useSensors). */
-const mapSensorsCountDisplay = computed(() => sensorsData.mapSensorsCount ?? 0);
-
 // Количество закладок
 const bookmarksCount = computed(() => idbBookmarks.value?.length || 0);
-
-// Make a link for sensor. E.g. origin/#/provider/pm10/20/lat/lng/sensor_id
-const getSensorLink = (sensor) => {
-  return router.resolve({
-    name: "main",
-    query: {
-      provider: mapState.currentProvider.value,
-      type: mapState.currentUnit.value,
-      zoom: settings.MAP.zoom,
-      lat: sensor.geo.lat,
-      lng: sensor.geo.lng,
-      sensor: sensor.sensor_id,
-    },
-  }).href;
-};
-
-// Функция форматирования sensor_id: первые 6 символов, троеточие, последние 6
-const formatSensorId = (id) => {
-  id = String(id);
-  if (id.length > 12) {
-    return id.substring(0, 6) + "..." + id.substring(id.length - 6);
-  }
-  return id;
-};
 
 watch(
   locale,
@@ -410,35 +320,6 @@ header > .popover {
   display: block;
 }
 
-/* + sensors list */
-
-.sensors-counter {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--color-dark);
-  background-color: var(--color-light);
-  border-radius: 5px;
-  padding: 4px 5px;
-  font-weight: bold;
-  border: var(--app-borderwidth) solid var(--app-bordercolor);
-}
-
-.sensors-mainicon {
-  width: 19px;
-}
-
-.sensors-list a {
-  display: block;
-  padding: 5px;
-}
-
-.sensors-list li {
-  display: block;
-  border-top: 1px dotted var(--app-bordercolor);
-  margin: 0;
-}
-/* - sensors list */
 
 /* - bookmarks button */
 .bookmarksbutton.active {
@@ -525,16 +406,6 @@ header > .popover {
 
   .hidemobiles {
     display: none;
-  }
-}
-
-@media screen and (width > 900px) {
-  .nogeo {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    max-width: calc(100vw - var(--gap) * 2) !important;
-    /* min-width: min(800px, calc(100vw - (var(--gap) * 2))) !important; */
-    gap: calc(var(--gap) * 2);
   }
 }
 

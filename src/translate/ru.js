@@ -635,5 +635,17 @@ export default {
   "sensor_picker_shop_prefix": "Купить датчики и аксессуары на",
   "Show data warnings again": "Снова показывать предупреждения о данных",
   "Sending…": "Отправка…",
-  "Thanks! Your message was sent.": "Спасибо! Ваше сообщение было отправлено."
+  "Thanks! Your message was sent.": "Спасибо! Ваше сообщение было отправлено.",
+  "Service status": "Состояние сервисов",
+  "service.ok": "работает",
+  "service.degraded": "работает частично",
+  "service.down": "не работает",
+  "service.unknown": "проверяем",
+  "service.justNow": "только что",
+  "service.minutesAgo": "{n} мин назад",
+  "service.hoursAgo": "{n} ч назад",
+  "service.agentsWriting": "пишут {active} из {total} агентов",
+  "service.lastRecord": "последняя запись",
+  "service.blocksBehind": "отставание от цепи: {n} блоков",
+  "service.lastBlock": "последний блок",
 };
