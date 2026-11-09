@@ -9,509 +9,350 @@
     pageImage="/og-altruist-setup.webp"
   />
   <PageTextLayout>
-    <div class="pagetext-prose">
-      <div class="pagetext-header">
-        <div class="pagetext-eyebrow">sensors.social</div>
-        <h1 class="pagetext-title">{{ $t("Altruist Setup Guide") }}</h1>
-        <p class="pagetext-subtitle">
-          {{
-            $t(
-              "Follow these steps to set up your Altruist sensor and connect it to the open sensor network at sensors.social."
-            )
-          }}
-        </p>
-      </div>
+    <div class="setup">
+      <section class="st-hero">
+        <div class="st-hero-text">
+          <div class="st-eyebrow">{{ $t("setup.eyebrow") }}</div>
+          <h1>{{ $t("setup.title") }}</h1>
+          <p>{{ $t("setup.subtitle") }}</p>
+          <ul class="st-needs">
+            <li v-for="need in needs" :key="need.key">
+              <svg viewBox="0 0 24 24" class="st-icon" aria-hidden="true">
+                <path :d="need.icon" />
+              </svg>
+              {{ $t(`setup.need.${need.key}`) }}
+            </li>
+          </ul>
+        </div>
+        <div class="st-picker">
+          <h2>{{ $t("setup.which") }}</h2>
+          <div class="st-picker-options">
+            <button
+              v-for="option in DEVICES"
+              :id="option.id"
+              :key="option.id"
+              type="button"
+              :aria-pressed="device === option.id"
+              :class="{ 'is-selected': device === option.id }"
+              @click="device = option.id"
+            >
+              <img :src="option.image" alt="" />
+              <b>{{ option.name }}</b>
+              <span>{{ $t(`setup.${option.id}.kind`) }}</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
-      <nav class="setup-nav">
-        <a class="setup-navlink" href="#urban">{{ $t("Altruist Urban") }}</a>
-        <a class="setup-navlink" href="#insight">{{ $t("Altruist Insight") }}</a>
-        <a class="setup-navlink" href="#uv-cover">{{ $t("UV Cover") }}</a>
-        <a class="setup-navlink" href="#specs">{{ $t("Technical Specifications") }}</a>
+      <nav class="st-steps-nav" :aria-label="$t('setup.stepsNav')">
+        <a
+          v-for="step in 4"
+          :key="step"
+          :href="`#step-${step}`"
+          @click.prevent="scrollToStep(step)"
+          >{{ $t(`setup.nav.step${step}`) }}</a
+        >
       </nav>
 
-      <!-- ==================== URBAN SETUP ==================== -->
-      <section id="urban">
-        <h2>{{ $t("Set Up Your Altruist Urban") }}</h2>
-
-        <div class="setup-intro">
-          <div>
-            <p>
-              {{
-                $t(
-                  "Altruist Urban is an outdoor air quality monitor measuring particulate matter (PM2.5 / PM10), temperature, humidity, atmospheric pressure, and noise level."
-                )
-              }}
-            </p>
-            <a href="/altruist-urban-setup.pdf" target="_blank" class="button">
-              <font-awesome-icon icon="fa-solid fa-download" />
-              {{ $t("Download PDF instruction") }}
-            </a>
+      <section class="st-steps">
+        <article id="step-1" class="st-step">
+          <div class="st-step-text">
+            <span class="st-number">1</span>
+            <h2>{{ $t("setup.step1.title") }}</h2>
+            <p>{{ $t("setup.step1.text") }}</p>
           </div>
-          <img :src="urbanHero" :alt="$t('Altruist Urban device')" class="setup-hero" />
-        </div>
+          <img class="st-step-small" :src="images.power" :alt="$t('setup.step1.alt')" />
+        </article>
 
-        <details class="setup-fulldiagram" open>
-          <summary>{{ $t("Full setup diagram") }}</summary>
-          <img
-            :src="urbanFullDiagram"
-            :alt="$t('Altruist Urban full setup diagram')"
-            class="setup-diagram"
-          />
-        </details>
-
-        <h3>{{ $t("Step 1 — Power") }}</h3>
-        <div class="step-with-image">
-          <div>
-            <p>
-              {{ $t("Connect the sensor to a USB-C power source. Minimum requirement: 5V / 1A.") }}
-            </p>
+        <article id="step-2" class="st-step">
+          <div class="st-step-text">
+            <span class="st-number">2</span>
+            <h2>{{ $t("setup.step2.title") }}</h2>
+            <ol>
+              <li>{{ $t("setup.step2.scan") }}</li>
+              <li>{{ $t("setup.step2.password") }}</li>
+            </ol>
+            <code class="st-password">123456789</code>
           </div>
-          <img
-            :src="urbanStep1"
-            :alt="$t('Power connection')"
-            class="step-image step-image--small"
-          />
-        </div>
+          <img class="st-step-small" :src="images.join" :alt="$t('setup.step2.alt')" />
+        </article>
 
-        <h3>{{ $t("Step 2 — Connect to the Altruist") }}</h3>
-        <div class="step-with-image">
-          <div>
+        <article id="step-3" class="st-step">
+          <div class="st-step-text">
+            <span class="st-number">3</span>
+            <h2>{{ $t("setup.step3.title") }}</h2>
             <ol>
               <li>
-                {{
-                  $t(
-                    "Scan the QR code with your phone camera, or find the Wi-Fi network «Altruist-xxxxxxxxx» in your device settings."
-                  )
-                }}
+                {{ $t("setup.step3.open") }}
+                <code>192.168.4.1</code>
               </li>
-              <li>{{ $t("The access point becomes active shortly after powering on.") }}</li>
-              <li>{{ $t("Enter the password:") }} <code>123456789</code></li>
+              <li>{{ $t("setup.step3.wifi") }}</li>
+              <li>{{ $t("setup.save") }}</li>
+              <li>{{ $t("setup.step3.connected") }}</li>
             </ol>
+            <div class="st-tip">
+              <b>{{ $t("setup.step3.tipTitle") }}</b> {{ $t("setup.step3.tip") }}
+            </div>
           </div>
-          <img :src="urbanStep2" :alt="$t('Connect to Altruist Wi-Fi')" class="step-image" />
-        </div>
+          <img :src="images.wifi" :alt="$t('setup.step3.alt')" />
+        </article>
 
-        <h3>{{ $t("Step 3 — Connect to Your Wi-Fi") }}</h3>
-        <img :src="urbanStep3" :alt="$t('Wi-Fi configuration')" class="step-image-wide" />
-        <ol>
-          <li><b>3.1</b> {{ $t("Open your browser and go to") }} <code>192.168.4.1</code></li>
-          <li>{{ $t("Enter your home Wi-Fi network name and password in «WIFI SETTINGS».") }}</li>
-          <li>{{ $t("Click «Save configuration and restart».") }}</li>
-          <li>
-            <b>3.2</b>
-            {{
-              $t(
-                "After restart the device shows status «CONNECTED!» and a new IP address (e.g. 192.168.10.3)."
-              )
-            }}
-          </li>
-          <li>{{ $t("Copy the new IP address of the Altruist.") }}</li>
-        </ol>
+        <article id="step-4" class="st-step st-step-wide">
+          <div class="st-step-head">
+            <span class="st-number">4</span>
+            <h2>{{ $t("setup.step4.title") }}</h2>
+          </div>
+          <div class="st-tip">
+            <b>{{ $t("setup.step4.tipTitle") }}</b> {{ $t("setup.step4.tip") }}
+          </div>
+          <div class="st-step-pair">
+            <div>
+              <p>{{ $t("setup.step4.open") }}</p>
+              <img :src="images.config" :alt="$t('setup.step4.configAlt')" />
+            </div>
+            <div>
+              <p>
+                {{ $t("setup.step4.gps") }}
+                <a
+                  href="https://www.latlong.net/convert-address-to-lat-long.html"
+                  target="_blank"
+                  rel="noopener"
+                  >latlong.net</a
+                >. {{ $t("setup.save") }}
+              </p>
+              <img :src="images.gps" :alt="$t('setup.step4.gpsAlt')" />
+            </div>
+          </div>
+        </article>
 
-        <h3>{{ $t("Step 4 — Connect to the Sensor Map") }}</h3>
-        <div class="step-images-row">
-          <img :src="urbanStep4map" :alt="$t('Sensor map configuration')" class="step-image-wide" />
-          <img :src="urbanStep4gps" :alt="$t('GPS configuration')" class="step-image-wide" />
-        </div>
-        <ol>
-          <li>
-            <b>4.1</b> {{ $t("Open the new IP address in your browser. Click «Configuration».") }}
-          </li>
-          <li>
-            <b>4.2</b>
-            {{
-              $t("Go to «GPS & Sensors» and enter the GPS coordinates of your sensor's location.")
-            }}
-          </li>
-          <li>
-            {{ $t("Use") }}
-            <a
-              href="https://www.latlong.net/convert-address-to-lat-long.html"
-              target="_blank"
-              rel="noopener"
-              >latlong.net</a
-            >
-            {{ $t("to find coordinates by address.") }}
-          </li>
-          <li>{{ $t("Click «Save configuration and restart».") }}</li>
-        </ol>
-
-        <p class="pagetext-highlight">
-          {{ $t("Done! After a few minutes your sensor will appear on the open sensor map at") }}
-          <a href="https://sensors.social" target="_blank" rel="noopener">sensors.social</a>
-        </p>
-
-        <h3>{{ $t("Mounting") }}</h3>
-        <div class="step-with-image step-with-image--reverse">
+        <div class="st-done">
           <div>
-            <p>
-              {{ $t("You can mount the sensor on a vertical surface using the included holder.") }}
-            </p>
-            <ul>
-              <li>
-                {{
-                  $t(
-                    "Mounting is optional — the Altruist is stable on any flat horizontal surface."
-                  )
-                }}
-              </li>
-              <li>
-                {{
-                  $t(
-                    "For UV protection from direct sunlight, we recommend an additional sun visor."
-                  )
-                }}
-              </li>
-              <li>
-                {{
-                  $t(
-                    "Wall mount (adhesive sticker): max height 3 m, operating temperature −10 °C to +35 °C."
-                  )
-                }}
-              </li>
-              <li>{{ $t("Recommended installation height: 3 m or above.") }}</li>
-            </ul>
+            <h2>{{ $t("setup.done.title") }}</h2>
+            <p>{{ $t("setup.done.text") }}</p>
           </div>
-          <img :src="urbanMounting" :alt="$t('Mounting instructions')" class="step-image" />
+          <router-link class="st-button st-button-dark" to="/">{{
+            $t("setup.done.map")
+          }}</router-link>
         </div>
 
-        <h3>{{ $t("Connect to Home Assistant") }}</h3>
-        <div class="step-with-image">
-          <div>
-            <p>
-              {{
-                $t(
-                  "Home Assistant integration lets you track air quality directly in your automation system. You can also create automation scenarios with other devices in your home."
-                )
-              }}
-            </p>
-            <p>
-              {{ $t("Step-by-step guide:") }}
-              <a
-                href="https://wiki.robonomics.network/docs/altruist/#home-assistant"
-                target="_blank"
-                rel="noopener"
-              >
-                wiki.robonomics.network/docs/altruist/#home-assistant
-              </a>
-            </p>
-          </div>
-          <img :src="urbanHA" :alt="$t('Home Assistant integration')" class="step-image" />
-        </div>
-      </section>
-
-      <!-- ==================== INSIGHT SETUP ==================== -->
-      <section id="insight">
-        <h2>{{ $t("Set Up Your Altruist Insight") }}</h2>
-
-        <div class="setup-intro">
-          <div>
-            <p>
-              {{
-                $t(
-                  "Altruist Insight is an indoor air quality monitor with an e-ink display, measuring CO2, temperature, humidity, and atmospheric pressure."
-                )
-              }}
-            </p>
-            <a href="/altruist-insight-setup.pdf" target="_blank" class="button">
-              <font-awesome-icon icon="fa-solid fa-download" />
-              {{ $t("Download PDF instruction") }}
-            </a>
-          </div>
-          <img :src="insightHero" :alt="$t('Altruist Insight device')" class="setup-hero" />
-        </div>
-
-        <details class="setup-fulldiagram" open>
-          <summary>{{ $t("Full setup diagram") }}</summary>
-          <img
-            :src="insightFullDiagram"
-            :alt="$t('Altruist Insight full setup diagram')"
-            class="setup-diagram"
-          />
+        <details class="st-diagram">
+          <summary>
+            <span>{{ $t("setup.diagram.summary") }}</span>
+            <svg viewBox="0 0 24 24" class="st-chevron" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </summary>
+          <img :src="images.full" :alt="$t('setup.diagram.alt')" />
+          <a class="st-button" :href="images.pdf" target="_blank">{{ $t("setup.pdf") }}</a>
         </details>
-
-        <h3>{{ $t("Step 1 — Power") }} &amp; {{ $t("Step 2 — Connect to the Altruist") }}</h3>
-        <img :src="insightStep12" :alt="$t('Power and connection')" class="step-image-wide" />
-        <ol>
-          <li>
-            {{ $t("Connect the sensor to a USB-C power source. Minimum requirement: 5V / 1A.") }}
-          </li>
-          <li>
-            {{
-              $t(
-                "Scan the QR code with your phone camera, or find the Wi-Fi network «Altruist-xxxxxxxxx» in your device settings."
-              )
-            }}
-          </li>
-          <li>{{ $t("The access point becomes active shortly after powering on.") }}</li>
-          <li>{{ $t("Enter the password:") }} <code>123456789</code></li>
-        </ol>
-
-        <h3>{{ $t("Step 3 — Connect to Your Wi-Fi") }}</h3>
-        <img :src="insightStep3" :alt="$t('Wi-Fi configuration')" class="step-image-wide" />
-        <ol>
-          <li><b>3.1</b> {{ $t("Open your browser and go to") }} <code>192.168.4.1</code></li>
-          <li>{{ $t("Enter your home Wi-Fi network name and password in «WIFI SETTINGS».") }}</li>
-          <li>{{ $t("Click «Save configuration and restart».") }}</li>
-          <li>
-            <b>3.2</b>
-            {{
-              $t(
-                "After restart the device shows status «CONNECTED!» and a new IP address (e.g. 192.168.10.3)."
-              )
-            }}
-          </li>
-          <li>{{ $t("Copy the new IP address of the Altruist.") }}</li>
-        </ol>
-
-        <h3>{{ $t("Step 4 — Connect to the Sensor Map") }}</h3>
-        <div class="step-images-row">
-          <img
-            :src="insightStep4map"
-            :alt="$t('Sensor map configuration')"
-            class="step-image-wide"
-          />
-          <img :src="insightStep4gps" :alt="$t('GPS configuration')" class="step-image-wide" />
-        </div>
-        <ol>
-          <li>
-            <b>4.1</b> {{ $t("Open the new IP address in your browser. Click «Configuration».") }}
-          </li>
-          <li>
-            <b>4.2</b>
-            {{
-              $t("Go to «GPS & Sensors» and enter the GPS coordinates of your sensor's location.")
-            }}
-          </li>
-          <li>
-            {{ $t("Use") }}
-            <a
-              href="https://www.latlong.net/convert-address-to-lat-long.html"
-              target="_blank"
-              rel="noopener"
-              >latlong.net</a
-            >
-            {{ $t("to find coordinates by address.") }}
-          </li>
-          <li>{{ $t("Click «Save configuration and restart».") }}</li>
-        </ol>
-
-        <p class="pagetext-highlight">
-          {{ $t("Done! After a few minutes your sensor will appear on the open sensor map at") }}
-          <a href="https://sensors.social" target="_blank" rel="noopener">sensors.social</a>
-        </p>
-
-        <h3>{{ $t("E-ink Display") }}</h3>
-        <div class="step-with-image step-with-image--reverse">
-          <div>
-            <p>
-              {{
-                $t(
-                  "The display shows data from your Altruist Insight sensor and a connected Altruist Urban sensor on the same Wi-Fi network."
-                )
-              }}
-            </p>
-            <ul>
-              <li>{{ $t("LEDs around the perimeter indicate the current air quality level.") }}</li>
-              <li>
-                {{ $t("Three buttons on the back panel let you switch screens and browse data.") }}
-              </li>
-            </ul>
-          </div>
-          <img :src="insightEink" :alt="$t('E-ink display')" class="step-image" />
-        </div>
-
-        <h3>{{ $t("Connect to Home Assistant") }}</h3>
-        <div class="step-with-image">
-          <div>
-            <p>
-              {{
-                $t(
-                  "Home Assistant integration lets you track air quality directly in your automation system. You can also create automation scenarios with other devices in your home."
-                )
-              }}
-            </p>
-            <p>
-              {{ $t("Step-by-step guide:") }}
-              <a
-                href="https://wiki.robonomics.network/docs/altruist/#home-assistant"
-                target="_blank"
-                rel="noopener"
-              >
-                wiki.robonomics.network/docs/altruist/#home-assistant
-              </a>
-            </p>
-          </div>
-          <img :src="insightHA" :alt="$t('Home Assistant integration')" class="step-image" />
-        </div>
       </section>
 
-      <!-- ==================== UV COVER ==================== -->
-      <section id="uv-cover">
-        <h2>{{ $t("UV Cover for Altruist Urban") }}</h2>
-        <div class="step-with-image">
-          <div>
-            <p>
-              {{
-                $t(
-                  "Outdoor protection against sun and rain with UV resistance. Made from ASA plastic."
-                )
-              }}
-            </p>
-            <ul>
-              <li>{{ $t("Recommended installation height: 3 m or above.") }}</li>
-              <li>
-                {{
-                  $t(
-                    "Wall mount (adhesive sticker): max height 3 m, operating temperature −10 °C to +35 °C."
-                  )
-                }}
-              </li>
-            </ul>
-            <p>
-              <b>{{ $t("In the box") }}:</b>
-              {{ $t("1 Cover, 1 Wall mount, 2 Screws, 2 Double-sided tapes, 1 User manual") }}
-            </p>
-            <a href="/altruist-uv-cover.pdf" target="_blank" class="button">
-              <font-awesome-icon icon="fa-solid fa-download" />
-              {{ $t("Download UV Cover instruction") }}
-            </a>
-          </div>
-          <img :src="coverDiagram" :alt="$t('UV Cover installation')" class="step-image" />
-        </div>
-      </section>
-
-      <!-- ==================== SPECS ==================== -->
-      <section id="specs">
-        <h2>{{ $t("Technical Specifications") }}</h2>
-
-        <h3>{{ $t("Altruist Urban") }}</h3>
-        <div class="pagetext-table-scroll">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <b>{{ $t("Power") }}</b>
-                </td>
-                <td>5V (USB-C)</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{{ $t("Wireless") }}</b>
-                </td>
-                <td>Wi-Fi 2.4 GHz (802.11 b/g/n)</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{{ $t("Sensors") }}</b>
-                </td>
-                <td>
-                  SDS011 — PM2.5 / PM10 (µg/m³)<br />
-                  BME280 — {{ $t("Temperature (°C/°F), Humidity (%), Pressure (hPa)") }}<br />
-                  ICS43434 — {{ $t("Noise (dB)") }}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{{ $t("In the box") }}</b>
-                </td>
-                <td>
-                  {{
-                    $t(
-                      "Sensor module, USB-A to USB-C cable, wall mount, double-sided tape (×2), external antenna, user manual"
-                    )
-                  }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>{{ $t("Altruist Insight") }}</h3>
-        <div class="pagetext-table-scroll">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <b>{{ $t("Power") }}</b>
-                </td>
-                <td>5V (USB-C)</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{{ $t("Wireless") }}</b>
-                </td>
-                <td>Wi-Fi 2.4 GHz (802.11 b/g/n)</td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{{ $t("Sensors") }}</b>
-                </td>
-                <td>
-                  SCD41 — CO2 (ppm)<br />
-                  BME680 — {{ $t("Temperature (°C/°F), Humidity (%), Pressure (hPa)") }}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <b>{{ $t("In the box") }}</b>
-                </td>
-                <td>
-                  {{ $t("Sensor module with e-ink display, USB-A to USB-C cable, user manual") }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="pagetext-highlight">
-        <p>
-          {{ $t("Need help? Contact support:") }}
-          <a href="https://support.cyberpunks.shop" target="_blank" rel="noopener"
-            >support.cyberpunks.shop</a
+      <section class="st-two">
+        <article v-if="device === 'urban'" class="st-card">
+          <h2>{{ $t("setup.mounting.title") }}</h2>
+          <img :src="images.extra" :alt="$t('setup.mounting.alt')" />
+          <ul>
+            <li v-for="item in MOUNTING" :key="item">{{ $t(`setup.mounting.${item}`) }}</li>
+          </ul>
+        </article>
+        <article v-else class="st-card">
+          <h2>{{ $t("setup.display.title") }}</h2>
+          <img :src="images.extra" :alt="$t('setup.display.alt')" />
+          <p>{{ $t("setup.display.text") }}</p>
+          <ul>
+            <li>{{ $t("setup.display.leds") }}</li>
+            <li>{{ $t("setup.display.buttons") }}</li>
+          </ul>
+        </article>
+        <article class="st-card">
+          <h2>{{ $t("setup.ha.title") }}</h2>
+          <img :src="images.ha" :alt="$t('setup.ha.alt')" />
+          <p>{{ $t("setup.ha.text") }}</p>
+          <a
+            href="https://wiki.robonomics.network/docs/altruist/#home-assistant"
+            target="_blank"
+            rel="noopener"
+            >{{ $t("setup.ha.link") }}</a
           >
-        </p>
+        </article>
+      </section>
+
+      <section v-if="device === 'urban'" id="uv-cover" class="st-step">
+        <div class="st-step-text">
+          <h2>{{ $t("setup.cover.title") }}</h2>
+          <p>{{ $t("setup.cover.text") }}</p>
+          <p>
+            <b>{{ $t("setup.cover.boxLabel") }}</b> {{ $t("setup.cover.box") }}
+          </p>
+          <a class="st-button" href="/altruist-uv-cover.pdf" target="_blank">{{
+            $t("setup.cover.pdf")
+          }}</a>
+        </div>
+        <img class="st-step-small" :src="coverDiagram" :alt="$t('setup.cover.alt')" />
+      </section>
+
+      <section id="specs">
+        <h2 class="st-specs-title">{{ $t("setup.specs.title") }}</h2>
+        <div class="st-two">
+          <div class="st-card st-spec">
+            <h3>Altruist Urban</h3>
+            <dl>
+              <div>
+                <dt>{{ $t("setup.specs.power") }}</dt>
+                <dd>5V (USB-C)</dd>
+              </div>
+              <div>
+                <dt>{{ $t("setup.specs.wireless") }}</dt>
+                <dd>Wi-Fi 2.4 GHz (802.11 b/g/n)</dd>
+              </div>
+              <div>
+                <dt>{{ $t("setup.specs.sensors") }}</dt>
+                <dd>
+                  SDS011: PM2.5 / PM10 (µg/m³)<br />
+                  BME280: {{ $t("setup.specs.climate") }}<br />
+                  ICS43434: {{ $t("setup.specs.noise") }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ $t("setup.specs.box") }}</dt>
+                <dd>{{ $t("setup.specs.urbanBox") }}</dd>
+              </div>
+            </dl>
+          </div>
+          <div class="st-card st-spec">
+            <h3>Altruist Insight</h3>
+            <dl>
+              <div>
+                <dt>{{ $t("setup.specs.power") }}</dt>
+                <dd>5V (USB-C)</dd>
+              </div>
+              <div>
+                <dt>{{ $t("setup.specs.wireless") }}</dt>
+                <dd>Wi-Fi 2.4 GHz (802.11 b/g/n)</dd>
+              </div>
+              <div>
+                <dt>{{ $t("setup.specs.sensors") }}</dt>
+                <dd>
+                  SCD41: CO₂ (ppm)<br />
+                  BME680: {{ $t("setup.specs.climate") }}
+                </dd>
+              </div>
+              <div>
+                <dt>{{ $t("setup.specs.box") }}</dt>
+                <dd>{{ $t("setup.specs.insightBox") }}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="st-help">
+        <div>
+          <h2>{{ $t("setup.help.title") }}</h2>
+          <p>{{ $t("setup.help.text") }}</p>
+        </div>
+        <div class="st-actions">
+          <router-link class="st-button st-button-bright" to="/ai/">{{ $t("nav.ai") }}</router-link>
+          <a
+            class="st-button st-button-light"
+            href="https://support.cyberpunks.shop"
+            target="_blank"
+            rel="noopener"
+            >{{ $t("setup.help.support") }}</a
+          >
+        </div>
       </section>
     </div>
   </PageTextLayout>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import MetaInfo from "../components/MetaInfo.vue";
 import PageTextLayout from "../components/layouts/PageText.vue";
 
-// Product hero images
-import urbanHero from "@/assets/images/pages/altruist-setup/urban-hero.webp";
-import insightHero from "@/assets/images/pages/altruist-setup/insight-hero.webp";
+import urbanProduct from "@/assets/images/altruist-device/altruist-urban.webp";
+import insightProduct from "@/assets/images/altruist-device/altruist-insight.webp";
 
-// Full setup diagrams
-import urbanFullDiagram from "@/assets/images/pages/altruist-setup/altruist-setup-urban.webp";
-import insightFullDiagram from "@/assets/images/pages/altruist-setup/altruist-setup-insight.webp";
+import urbanFull from "@/assets/images/pages/altruist-setup/altruist-setup-urban.webp";
+import urbanPower from "@/assets/images/pages/altruist-setup/urban-1.webp";
+import urbanJoin from "@/assets/images/pages/altruist-setup/urban-2.webp";
+import urbanWifi from "@/assets/images/pages/altruist-setup/urban-3.webp";
+import urbanConfig from "@/assets/images/pages/altruist-setup/urban-4a.webp";
+import urbanGps from "@/assets/images/pages/altruist-setup/urban-4b.webp";
+import urbanHa from "@/assets/images/pages/altruist-setup/urban-ha.webp";
+import urbanMount from "@/assets/images/pages/altruist-setup/urban-mount.webp";
 
-// Urban step images
-import urbanStep1 from "@/assets/images/pages/altruist-setup/urban-step1-power.webp";
-import urbanStep2 from "@/assets/images/pages/altruist-setup/urban-step2-connect.webp";
-import urbanStep3 from "@/assets/images/pages/altruist-setup/urban-step3-wifi.webp";
-import urbanStep4map from "@/assets/images/pages/altruist-setup/urban-step4-map.webp";
-import urbanStep4gps from "@/assets/images/pages/altruist-setup/urban-step4-gps.webp";
-import urbanMounting from "@/assets/images/pages/altruist-setup/urban-mounting.webp";
-import urbanHA from "@/assets/images/pages/altruist-setup/urban-home-assistant.webp";
+import insightFull from "@/assets/images/pages/altruist-setup/altruist-setup-insight.webp";
+import insightPower from "@/assets/images/pages/altruist-setup/insight-1.webp";
+import insightJoin from "@/assets/images/pages/altruist-setup/insight-2.webp";
+import insightWifi from "@/assets/images/pages/altruist-setup/insight-3.webp";
+import insightConfig from "@/assets/images/pages/altruist-setup/insight-4a.webp";
+import insightGps from "@/assets/images/pages/altruist-setup/insight-4b.webp";
+import insightHa from "@/assets/images/pages/altruist-setup/insight-ha.webp";
+import insightDisplay from "@/assets/images/pages/altruist-setup/insight-display.webp";
 
-// Insight step images
-import insightStep12 from "@/assets/images/pages/altruist-setup/insight-step1-2.webp";
-import insightStep3 from "@/assets/images/pages/altruist-setup/insight-step3-wifi.webp";
-import insightStep4map from "@/assets/images/pages/altruist-setup/insight-step4-map.webp";
-import insightStep4gps from "@/assets/images/pages/altruist-setup/insight-step4-gps.webp";
-import insightEink from "@/assets/images/pages/altruist-setup/insight-eink-display.webp";
-import insightHA from "@/assets/images/pages/altruist-setup/insight-home-assistant.webp";
-
-// UV Cover
 import coverDiagram from "@/assets/images/pages/altruist-setup/cover-install-diagram.webp";
 
+const DEVICES = [
+  { id: "urban", name: "Urban", image: urbanProduct },
+  { id: "insight", name: "Insight", image: insightProduct },
+];
+
+const IMAGES = {
+  urban: {
+    full: urbanFull,
+    pdf: "/altruist-urban-setup.pdf",
+    power: urbanPower,
+    join: urbanJoin,
+    wifi: urbanWifi,
+    config: urbanConfig,
+    gps: urbanGps,
+    ha: urbanHa,
+    extra: urbanMount,
+  },
+  insight: {
+    full: insightFull,
+    pdf: "/altruist-insight-setup.pdf",
+    power: insightPower,
+    join: insightJoin,
+    wifi: insightWifi,
+    config: insightConfig,
+    gps: insightGps,
+    ha: insightHa,
+    extra: insightDisplay,
+  },
+};
+
+const needs = [
+  { key: "power", icon: "M13 2L4 14h7l-1 8 9-12h-7z" },
+  {
+    key: "wifi",
+    icon: "M2 9a15 15 0 0 1 20 0M5.5 13a10 10 0 0 1 13 0M9 16.5a5 5 0 0 1 6 0M12 20v.01",
+  },
+  { key: "device", icon: "M7 2h10v20H7zM11 18h2" },
+];
+
+const MOUNTING = ["optional", "height", "tape", "visor"];
+
+const route = useRoute();
 const router = useRouter();
+const device = ref("urban");
+const images = computed(() => IMAGES[device.value]);
+
+watch(
+  () => route.hash,
+  (hash) => {
+    if (hash === "#insight") device.value = "insight";
+    if (hash === "#urban" || hash === "#uv-cover") device.value = "urban";
+  },
+  { immediate: true }
+);
+
+const scrollToStep = (step) => {
+  document.getElementById(`step-${step}`)?.scrollIntoView({ behavior: "smooth" });
+};
 
 onMounted(() => {
   const waitForMatomo = setInterval(() => {
@@ -534,162 +375,403 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.setup-nav {
+.setup {
+  text-align: left;
+}
+
+.setup h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4.6vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.setup h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.setup h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.setup p {
+  margin: 0;
+  color: #333;
+  font-size: 1.05rem;
+}
+
+.setup li {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.setup img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.st-eyebrow {
+  color: #555;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.st-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  align-items: center;
+  gap: 2rem;
+}
+
+.st-hero-text {
   display: flex;
-  gap: calc(var(--gap) * 0.6);
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.setup .st-hero-text p {
+  font-size: 1.2rem;
+}
+
+.st-needs {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.st-needs li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.st-icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.setup .st-picker h2 {
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
+}
+
+.st-picker-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.st-picker-options button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1rem;
+  border: 3px solid var(--color-light-gray);
+  border-radius: 20px;
+  background: var(--color-light-gray);
+  color: var(--color-dark);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.st-picker-options button.is-selected {
+  border-color: var(--color-dark);
+  background: #e9ffc9;
+}
+
+.st-picker-options b {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.setup .st-picker-options img {
+  max-width: 180px;
+}
+
+.st-steps-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: 0.5rem;
+}
+
+.setup .st-steps-nav a {
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: var(--color-dark);
+  color: var(--color-light);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.st-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.st-step {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 20px;
+}
+
+.st-step-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.st-step-text ol {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #333;
+}
+
+.setup .st-step-small {
+  max-width: 400px;
+  justify-self: center;
+}
+
+.st-number {
+  display: flex;
+  flex: none;
   align-items: center;
   justify-content: center;
-  margin-bottom: calc(var(--gap) * 1.2);
-  font-weight: 900;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--color-dark);
+  border-radius: 22px;
+  background: var(--color-green-bright);
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
-.setup-navlink {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 999px;
-  padding: 0.55rem 0.6rem;
-  text-decoration: none;
-  font-size: 1.2rem;
-  text-decoration: none;
-  transition: background 0.15s ease, transform 0.15s ease;
+.st-password {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  background: var(--color-dark);
+  color: var(--color-green-bright);
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 
-.setup-navlink:hover {
-  background: rgba(0, 0, 0, 0.06);
-  transform: translateY(-1px);
-}
-
-/* Intro block: text + hero image side by side */
-.setup-intro {
-  display: flex;
-  gap: var(--gap);
-  align-items: center;
-  margin-bottom: var(--gap);
-}
-
-.setup-intro > div {
-  flex: 1;
-}
-
-.setup-hero {
-  max-width: 300px;
-  width: 100%;
-  height: auto;
+.st-tip {
+  padding: 0.75rem 0.9rem;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff4d6;
+  font-size: 0.95rem;
 }
 
-/* Full diagram in collapsible */
-.setup-fulldiagram {
-  margin: 1.5rem 0;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.setup-fulldiagram summary {
-  padding: 0.8rem 1rem;
-  font-weight: 900;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.03);
-}
-
-.setup-diagram {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Step with image side by side */
-.step-with-image {
+.st-step-wide {
   display: flex;
-  gap: calc(var(---gap) * 2);
   flex-direction: column;
-  padding: calc(var(--gap) * 1);
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--surface-border), transparent 35%);
-  background: color-mix(in srgb, var(--app-bodybg), transparent 6%);
+  align-items: stretch;
+  gap: 1.1rem;
 }
 
-.step-with-image p {
-  hyphens: auto;
-  width: 100%;
+.st-step-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.step-with-image--reverse {
-  flex-direction: column-reverse;
-}
-
-.step-image {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  margin: 0;
-}
-
-.step-image--small {
-  max-width: clamp(180px, 22vw, 240px);
-  margin: 0;
-}
-
-.step-with-image .step-image,
-.step-with-image .step-image--small {
-  display: block;
-  width: 100%;
-}
-
-/* Wide step images (full width) */
-.step-image-wide {
-  display: block;
-  width: 100%;
-  max-width: 700px;
-  height: auto;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-}
-
-/* Two images in a row */
-.step-images-row {
+.st-step-pair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+  gap: 1.25rem;
+}
+
+.st-step-pair > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.st-done,
+.st-help {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+}
+
+.st-done {
+  border: 2px solid var(--color-dark);
+  background: var(--color-green-bright);
+}
+
+.setup .st-done p {
+  color: var(--color-dark);
+}
+
+.st-help {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: 28px;
+  background: var(--color-dark);
+  color: var(--color-light);
+}
+
+.setup .st-help p {
+  color: #d0d0d8;
+}
+
+.st-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.setup a.st-button {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 48px;
+  padding: 0 1.25rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 24px;
+  color: var(--color-dark);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.setup a.st-button-dark {
+  background: var(--color-dark);
+  color: var(--color-light);
+  font-weight: 800;
+}
+
+.setup a.st-button-bright {
+  border-color: var(--color-green-bright);
+  background: var(--color-green-bright);
+  font-weight: 800;
+}
+
+.setup a.st-button-light {
+  border-color: var(--color-light);
+  color: var(--color-light);
+}
+
+.st-diagram {
+  padding: 0.25rem 1.25rem;
+  border-radius: 16px;
+  background: var(--color-light-gray);
+}
+
+.st-diagram summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.st-diagram summary::-webkit-details-marker {
+  display: none;
+}
+
+.st-diagram[open] {
+  padding-bottom: 1.25rem;
+}
+
+.st-diagram[open] img {
+  margin-bottom: 0.9rem;
+}
+
+.st-diagram[open] .st-chevron {
+  transform: rotate(180deg);
+}
+
+.st-chevron {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.st-two {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: 1rem;
-  margin: 1rem 0;
 }
 
-.step-images-row .step-image-wide {
-  max-width: 100%;
+.st-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: var(--color-light-gray);
 }
 
-/* Mobile responsive */
-@media (max-width: 900px) {
-  .step-with-image,
-  .step-with-image--reverse {
-    flex-direction: column;
-  }
-
-  .step-with-image > div {
-    min-width: 0;
-  }
+.st-card img {
+  border-radius: 12px;
 }
 
-@media (max-width: 700px) {
-  .setup-intro,
-  .step-with-image,
-  .step-with-image--reverse {
-    flex-direction: column;
-  }
+.st-card ul {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #333;
+}
 
-  .setup-hero,
-  .step-image,
-  .step-image--small {
-    max-width: 100%;
-  }
+.setup .st-specs-title {
+  margin-bottom: 1rem;
+  font-size: clamp(1.75rem, 3.4vw, 2.4rem);
+}
 
-  .step-images-row {
-    grid-template-columns: 1fr;
-  }
+.st-spec dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.st-spec dt {
+  font-weight: 800;
+}
+
+.st-spec dd {
+  margin: 0;
+  color: #333;
 }
 </style>
