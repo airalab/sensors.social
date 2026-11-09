@@ -4,15 +4,15 @@
       class="service-status__summary button-round-outline button-round-outline-labeled"
       :aria-label="summaryLabel"
     >
-      <span v-for="service in services" :key="service.name" class="service-status__item">
+      <span v-for="service in services" :key="service.tech" class="service-status__item">
         <span class="service-status__dot" :class="`is-${service.state}`" aria-hidden="true"></span>
-        <span class="service-status__name">{{ service.name }}</span>
+        <span class="service-status__name">{{ service.short }}</span>
       </span>
     </summary>
     <div class="details-content">
-      <h4 class="service-status__title">{{ $t("Service status") }}</h4>
+      <h4 class="service-status__title">{{ $t("service.title") }}</h4>
       <ul class="service-status__list">
-        <li v-for="service in services" :key="service.name">
+        <li v-for="service in services" :key="service.tech" :title="service.tech">
           <span
             class="service-status__dot"
             :class="`is-${service.state}`"
@@ -23,7 +23,8 @@
               <b>{{ service.name }}</b>
               <span>{{ stateLabel(service.state) }}</span>
             </div>
-            <div v-if="service.detail" class="service-status__detail">{{ service.detail }}</div>
+            <div class="service-status__detail">{{ service.about }}</div>
+            <div v-if="service.detail">{{ service.detail }}</div>
           </div>
         </li>
       </ul>
@@ -54,38 +55,52 @@ const timeAgo = (time) => {
   return t("service.hoursAgo", { n: Math.floor(minutes / 60) });
 };
 
+// Robonomics makes a block about every 6 seconds.
+const lagLabel = (blocks) => {
+  const minutes = Math.floor((blocks * 6) / 60);
+  if (minutes < 1) return t("service.upToDate");
+  if (minutes < 120) return t("service.behindMinutes", { n: minutes });
+  return t("service.behindHours", { n: Math.floor(minutes / 60) });
+};
+
 const services = computed(() => {
   const { connectivity, roseman, robonomics } = status;
   return [
     {
-      name: "Connectivity",
+      tech: "Connectivity",
+      name: t("service.data"),
+      short: t("service.dataShort"),
+      about: t("service.dataAbout"),
       state: connectivity.state,
       detail: connectivity.total
-        ? `${t("service.agentsWriting", {
-            active: connectivity.active,
-            total: connectivity.total,
-          })}` +
+        ? t("service.dataNow", { active: connectivity.active, total: connectivity.total }) +
           (connectivity.lastRecordAt
-            ? `, ${t("service.lastRecord")} ${timeAgo(connectivity.lastRecordAt)}`
+            ? `, ${t("service.latestEntry", { ago: timeAgo(connectivity.lastRecordAt) })}`
             : "")
         : "",
     },
     {
-      name: "RoSeMAN",
+      tech: "RoSeMAN",
+      name: t("service.database"),
+      short: t("service.databaseShort"),
+      about: t("service.databaseAbout"),
       state: roseman.state,
-      detail: roseman.lag === null ? "" : t("service.blocksBehind", { n: roseman.lag }),
+      detail: roseman.lag === null ? "" : lagLabel(roseman.lag),
     },
     {
-      name: "Robonomics",
+      tech: "Robonomics",
+      name: t("service.chain"),
+      short: t("service.chainShort"),
+      about: t("service.chainAbout"),
       state: robonomics.state,
-      detail: robonomics.blockAt ? `${t("service.lastBlock")} ${timeAgo(robonomics.blockAt)}` : "",
+      detail: robonomics.blockAt ? t("service.newBlock", { ago: timeAgo(robonomics.blockAt) }) : "",
     },
   ];
 });
 
 const summaryLabel = computed(
   () =>
-    `${t("Service status")}: ` +
+    `${t("service.title")}: ` +
     services.value.map((s) => `${s.name} ${stateLabel(s.state)}`).join(", ")
 );
 </script>
