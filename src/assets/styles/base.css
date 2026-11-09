@@ -469,7 +469,9 @@ section:not(:last-child) {
 }
 
 #app.map {
-  overflow: hidden;
+  --map-footer-peek: 44px;
+  overflow: hidden auto;
+  scrollbar-width: none;
 }
 
 .container {
