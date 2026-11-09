@@ -625,6 +625,7 @@ export default {
   "Thanks! Your message was sent.": "Thanks! Your message was sent.",
   "\\n": "\\n",
   "service.title": "How the map is working",
+  "service.sensors24h": "Sensors online in the last 24 h: {n}",
   "service.data": "Data collection",
   "service.dataShort": "Data",
   "service.dataAbout": "Receives readings from the sensors.",

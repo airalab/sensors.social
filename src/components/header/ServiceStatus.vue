@@ -11,6 +11,9 @@
     </summary>
     <div class="details-content">
       <h4 class="service-status__title">{{ $t("service.title") }}</h4>
+      <p v-if="status.sensors24h !== null" class="service-status__sensors">
+        {{ $t("service.sensors24h", { n: status.sensors24h }) }}
+      </p>
       <ul class="service-status__list">
         <li v-for="service in services" :key="service.tech" :title="service.tech">
           <span
@@ -162,6 +165,11 @@ const summaryLabel = computed(
 .service-status__title {
   font-size: 1rem;
   margin-bottom: 4px;
+}
+
+.service-status__sensors {
+  margin: 0 0 4px;
+  font-size: max(var(--font-size), 0.875rem);
 }
 
 .service-status__list {

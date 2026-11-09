@@ -637,6 +637,7 @@ export default {
   "Sending…": "Отправка…",
   "Thanks! Your message was sent.": "Спасибо! Ваше сообщение было отправлено.",
   "service.title": "Как работает карта",
+  "service.sensors24h": "Датчиков на связи за 24 часа: {n}",
   "service.data": "Сбор данных",
   "service.dataShort": "Данные",
   "service.dataAbout": "Принимает показания датчиков.",
