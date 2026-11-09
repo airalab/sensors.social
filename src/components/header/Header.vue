@@ -344,6 +344,12 @@ header > .popover {
   }
 }
 
+@media screen and (width < 400px) {
+  .header-actions .shop-button {
+    padding-inline: 0.6rem;
+  }
+}
+
 @media screen and (width < 500px) {
   #about:popover-open {
     width: calc(100vw - var(--gap) * 2);

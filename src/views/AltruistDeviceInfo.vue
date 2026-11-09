@@ -9,458 +9,159 @@
     pageImage="/og-altruist-info.webp"
   />
   <PageTextLayout>
-    <div class="deviceinfo pagetext-prose">
-      <div class="pagetext-header">
-        <div class="pagetext-eyebrow">sensors.social</div>
-        <h1 class="pagetext-title">{{ $t("Altruist & sensors.social") }}</h1>
-        <div class="pagetext-subtitle">
-          <p>
-            {{
-              $t("You track your pulse and sleep quality. Now learn about your living environment.")
-            }}
-          </p>
-          <p>
-            {{
-              $t(
-                "Two-module environment monitoring kit for indoors and outdoors — for those who care about health."
-              )
-            }}
-          </p>
+    <div class="deviceinfo">
+      <section class="di-hero">
+        <div class="di-hero-text">
+          <div class="di-eyebrow">{{ $t("deviceinfo.eyebrow") }}</div>
+          <h1>{{ $t("deviceinfo.title") }}</h1>
+          <p>{{ $t("deviceinfo.subtitle") }}</p>
+          <div class="di-actions">
+            <router-link class="di-button di-button-buy" to="/where-to-buy/">{{
+              $t("Where to buy")
+            }}</router-link>
+            <router-link class="di-button" to="/altruist-setup/">{{
+              $t("deviceinfo.howSetup")
+            }}</router-link>
+          </div>
         </div>
-      </div>
+        <div class="di-hero-photo">
+          <img :src="bundleImage" :alt="$t('deviceinfo.bundleAlt')" />
+        </div>
+      </section>
 
-      <section>
-        <h2>{{ $t("The Challenge: Measure Your Living Environment") }}</h2>
-
-        <p>
-          {{
-            $t(
-              "You track your pulse, HRV, sleep phases. To achieve the best recovery results — you need to account for sleep conditions and the environment you live in."
-            )
-          }}
-        </p>
-
-        <h3>{{ $t("Indoors") }}</h3>
-        <ul>
-          <li>{{ $t("CO2 — the main indicator of stuffiness and sleep quality") }}</li>
-          <li>{{ $t("Temperature and humidity — comfort and mold prevention") }}</li>
-        </ul>
-
-        <h3>{{ $t("Outdoors") }}</h3>
-        <ul>
-          <li>{{ $t("Dust PM2.5/PM10 — know when it is safe to ventilate") }}</li>
-          <li>{{ $t("Noise — explain awakenings and assess your neighborhood") }}</li>
-          <li>{{ $t("Temperature and humidity — the full picture outside your window") }}</li>
-        </ul>
-
-        <p class="pagetext-highlight">
-          {{
-            $t(
-              "This lets you make data-driven decisions: when to open windows, when to turn on the purifier, how to improve sleep."
-            )
-          }}
-        </p>
+      <section class="di-stats">
+        <div v-for="stat in stats" :key="stat" class="di-stat">
+          <b>{{ $t(`deviceinfo.stat.${stat}.value`) }}</b>
+          <span>{{ $t(`deviceinfo.stat.${stat}.label`) }}</span>
+        </div>
       </section>
 
       <section>
-        <h2>{{ $t("Solution: Altruist Bundle") }}</h2>
+        <h2>{{ $t("deviceinfo.modules") }}</h2>
+        <div class="di-modules">
+          <article v-for="module in modules" :key="module.key" class="di-module">
+            <img :src="module.image" :alt="$t(`deviceinfo.${module.key}.alt`)" />
+            <div class="di-eyebrow">{{ $t(`deviceinfo.${module.key}.place`) }}</div>
+            <h3>{{ $t(`deviceinfo.${module.key}.name`) }}</h3>
+            <p class="di-question">{{ $t(`deviceinfo.${module.key}.question`) }}</p>
+            <ul>
+              <li v-for="[icon, label] in module.metrics" :key="label">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path :d="ICONS[icon]" />
+                </svg>
+                {{ $t(`deviceinfo.${module.key}.${label}`) }}
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
 
-        <p>
-          {{ $t("Two modules — one picture of your living environment:") }}
-        </p>
-
-        <h3>{{ $t("Urban (balcony / roof)") }}</h3>
-        <ul>
-          <li>{{ $t("Dust PM2.5 / PM10 (SDS011)") }}</li>
-          <li>{{ $t("Temperature and humidity") }}</li>
-          <li>{{ $t("Noise level") }}</li>
-          <li>{{ $t("Atmospheric pressure") }}</li>
-        </ul>
-        <p>
-          <i>{{ $t('"What is outside the window right now?"') }}</i>
-        </p>
-
-        <h3>{{ $t("Insight (bedroom / living room)") }}</h3>
-        <ul>
-          <li>{{ $t("CO2") }}</li>
-          <li>{{ $t("Temperature") }}</li>
-          <li>{{ $t("Humidity") }}</li>
-          <li>{{ $t('E-ink display 4.2" + SD card') }}</li>
-        </ul>
-        <p>
-          <i>{{ $t('"What am I breathing at home?"') }}</i>
-        </p>
-
-        <p class="pagetext-highlight">
-          {{
-            $t(
-              "Key feature — indoor/outdoor comparison: when to ventilate and when to close the windows."
-            )
-          }}
-        </p>
+      <section class="di-panel di-panel-dark">
+        <h2>{{ $t("deviceinfo.when") }}</h2>
+        <div class="di-grid">
+          <div v-for="[action, tone] in actions" :key="action" class="di-action" :class="tone">
+            <span>{{ $t(`deviceinfo.action.${action}.if`) }}</span>
+            <b>{{ $t(`deviceinfo.action.${action}.then`) }}</b>
+            <span>{{ $t(`deviceinfo.action.${action}.why`) }}</span>
+          </div>
+        </div>
       </section>
 
       <section>
-        <h2>{{ $t("Market: No Such Product Exists") }}</h2>
+        <h2>{{ $t("deviceinfo.who") }}</h2>
+        <div class="di-grid">
+          <div v-for="item in audiences" :key="item" class="di-card">
+            <h3>{{ $t(`deviceinfo.audience.${item}.title`) }}</h3>
+            <p>{{ $t(`deviceinfo.audience.${item}.text`) }}</p>
+          </div>
+        </div>
+      </section>
 
-        <div class="table-scroll">
+      <section>
+        <h2>{{ $t("deviceinfo.compare") }}</h2>
+        <p>{{ $t("deviceinfo.compareLead") }}</p>
+        <div class="di-table">
           <table>
             <thead>
               <tr>
-                <th>{{ $t("Product") }}</th>
-                <th>{{ $t("Indoor") }}</th>
-                <th>{{ $t("Outdoor") }}</th>
-                <th>{{ $t("Noise") }}</th>
-                <th>{{ $t("Bundle") }}</th>
-                <th>{{ $t("Health link") }}</th>
-                <th>{{ $t("Price") }}</th>
+                <th>{{ $t("deviceinfo.table.product") }}</th>
+                <th>{{ $t("deviceinfo.table.indoor") }}</th>
+                <th>{{ $t("deviceinfo.table.outdoor") }}</th>
+                <th>{{ $t("deviceinfo.table.noise") }}</th>
+                <th>{{ $t("deviceinfo.table.bundle") }}</th>
+                <th>{{ $t("deviceinfo.table.price") }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td><b>Altruist Bundle</b></td>
+              <tr class="di-table-own">
+                <td>Altruist Bundle</td>
                 <td>CO2, t, RH</td>
-                <td>PM2.5/10, t, RH, {{ $t("noise") }}</td>
-                <td>&#10003;</td>
-                <td>&#10003;</td>
-                <td>open API</td>
-                <td>—</td>
+                <td>PM2.5/10, t, RH, {{ $t("deviceinfo.table.noiseWord") }}</td>
+                <td>{{ $t("deviceinfo.table.yes") }}</td>
+                <td>{{ $t("deviceinfo.table.yes") }}</td>
+                <td>
+                  <router-link to="/where-to-buy/">{{ $t("deviceinfo.table.shop") }}</router-link>
+                </td>
               </tr>
-              <tr>
-                <td>Ultrahuman Home</td>
-                <td>CO2, PM, VOC, {{ $t("noise") }}</td>
-                <td>—</td>
-                <td>&#10003; indoor</td>
-                <td>—</td>
-                <td>&#10003; Ring AIR</td>
-                <td>$349</td>
-              </tr>
-              <tr>
-                <td>IQAir Bundle</td>
-                <td>PM2.5, CO2, t, RH</td>
-                <td>PM, t, RH</td>
-                <td>—</td>
-                <td>&#10003;</td>
-                <td>—</td>
-                <td>~$600</td>
-              </tr>
-              <tr>
-                <td>AirGradient (2 {{ $t("pcs") }})</td>
-                <td>PM, CO2, VOC, NOx</td>
-                <td>PM, CO2, VOC, NOx</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>~$455</td>
-              </tr>
-              <tr>
-                <td>Awair Element</td>
-                <td>CO2, PM, VOC, t, RH</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>$150</td>
-              </tr>
-              <tr>
-                <td>Airthings View Plus</td>
-                <td>Radon, PM, CO2, VOC</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>—</td>
-                <td>$299</td>
+              <tr v-for="[name, indoor, outdoor, noise, bundle, price] in competitors" :key="name">
+                <td>{{ name }}</td>
+                <td>{{ indoor }}</td>
+                <td>{{ outdoor || $t("deviceinfo.table.no") }}</td>
+                <td>
+                  {{ noise ? $t("deviceinfo.table.indoorNoise") : $t("deviceinfo.table.no") }}
+                </td>
+                <td>{{ bundle ? $t("deviceinfo.table.yes") : $t("deviceinfo.table.no") }}</td>
+                <td>{{ price }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-
-        <p>
-          {{
-            $t(
-              "WHOOP, Oura, Garmin, Apple Watch — do not work with environmental sensors and have no plans to. Samsung Sleep Environment Report — indoor-only via SmartThings."
-            )
-          }}
-        </p>
       </section>
 
-      <section>
-        <h2>{{ $t("Who Needs Altruist") }}</h2>
-
-        <h3>{{ $t("Health tracking?") }}</h3>
-        <p>
-          {{
-            $t(
-              "Wear a WHOOP, Oura, or sleep tracker — Altruist completes the picture. CO2 in the bedroom affects sleep depth. Outdoor noise explains awakenings. Dust triggers allergies and asthma."
-            )
-          }}
-        </p>
-
-        <h3>{{ $t("Asthma and allergies") }}</h3>
-        <p>
-          {{
-            $t(
-              "PM2.5 < 30 µg/m³ in the bedroom. Rising outdoor dust → signal to close windows and turn on the purifier."
-            )
-          }}
-        </p>
-
-        <h3>{{ $t("Children") }}</h3>
-        <p>
-          {{ $t("CO2 and dust in the nursery. Mold prevention through humidity control.") }}
-        </p>
-
-        <h3>{{ $t("Real estate") }}</h3>
-        <p>
-          {{
-            $t(
-              "Quick environment assessment when moving — data you'll discover over years. Charts boost the appeal of rental housing."
-            )
-          }}
-        </p>
-
-        <h3>{{ $t("Automation") }}</h3>
-        <p>
-          {{ $t("Control air purifiers and air conditioners using indoor/outdoor sensor data.") }}
-        </p>
-
-        <h3>{{ $t("Civic monitoring") }}</h3>
-        <p>
-          {{
-            $t(
-              "Dust storms, industrial emissions, noise background. Data is available to everyone via the open map sensors.social."
-            )
-          }}
-        </p>
-      </section>
-
-      <section>
-        <h2>{{ $t("8 Years of Altruism") }}</h2>
-
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>{{ $t("Year") }}</th>
-                <th>{{ $t("Event") }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2017–2018</td>
-                <td>
-                  {{
-                    $t(
-                      "First R&D — air quality measurement at playgrounds in an industrial city. Professional certified sensors, IoT cloud transmission."
-                    )
-                  }}
-                </td>
-              </tr>
-              <tr>
-                <td>2018</td>
-                <td>
-                  {{
-                    $t(
-                      "Trust problem: society rejects citizen monitoring data. Pivot to the Luftdaten/sensors.community model from Stuttgart — affordable DIY kits instead of expensive stations."
-                    )
-                  }}
-                </td>
-              </tr>
-              <tr>
-                <td>2019</td>
-                <td>
-                  {{
-                    $t(
-                      "Three R&D projects: dozens of sensors on city billboards, a solar water drone for water quality analysis, drones over landfills. Recognition at IoT World Congress in Barcelona."
-                    )
-                  }}
-                </td>
-              </tr>
-              <tr>
-                <td>2021</td>
-                <td>
-                  {{
-                    $t(
-                      "Launch of sensors.social prototype, showcase at UN COP25 platform. Federated sensor network architecture, all code on GitHub."
-                    )
-                  }}
-                </td>
-              </tr>
-              <tr>
-                <td>2022–2025</td>
-                <td>
-                  {{
-                    $t(
-                      "Custom hardware development: ~7 PCB iterations, manufacturing in China, assembly, field tests. By mid-2025 — the two-module Altruist is ready for sale."
-                    )
-                  }}
-                </td>
-              </tr>
-              <tr>
-                <td>2026</td>
-                <td>
-                  {{ $t("Indiegogo, then Amazon and regional distributors. EU/US certification.") }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <section class="di-panel">
+        <h2>{{ $t("deviceinfo.open") }}</h2>
+        <p>{{ $t("deviceinfo.openLead") }}</p>
+        <div class="di-layers">
+          <div v-for="layer in layers" :key="layer" class="di-layer">
+            <span>{{ $t(`deviceinfo.layer.${layer}.step`) }}</span>
+            <b>{{ $t(`deviceinfo.layer.${layer}.name`) }}</b>
+            <span>{{ $t(`deviceinfo.layer.${layer}.tech`) }}</span>
+          </div>
         </div>
-
-        <p class="pagetext-highlight">
-          {{
-            $t(
-              "Dozens of software releases over 4 years to build a user sensor network without corporate clouds. 120+ sensors on 4 continents."
-            )
-          }}
+        <p>
+          {{ $t("deviceinfo.integrations") }}
+          <router-link to="/blog/altruist-open-end-to-end/">{{
+            $t("deviceinfo.openArticle")
+          }}</router-link>
         </p>
       </section>
 
       <section>
-        <h2>{{ $t("Open Stack") }}</h2>
-
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>{{ $t("Layer") }}</th>
-                <th>{{ $t("Technology") }}</th>
-                <th>{{ $t("Repository") }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{ $t("Device") }}</td>
-                <td>ESP32-C6, PlatformIO, Arduino</td>
-                <td>
-                  <a
-                    href="https://github.com/airalab/altruist-firmware"
-                    target="_blank"
-                    rel="noopener"
-                    >airalab/altruist-firmware</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t("Connectivity") }}</td>
-                <td>Python 3.10+, libp2p, IPFS, MQTT</td>
-                <td>
-                  <a
-                    href="https://github.com/airalab/sensors-connectivity"
-                    target="_blank"
-                    rel="noopener"
-                    >airalab/sensors-connectivity</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t("Blockchain") }}</td>
-                <td>Rust, Substrate, Polkadot parachain</td>
-                <td>
-                  <a href="https://github.com/airalab/robonomics" target="_blank" rel="noopener"
-                    >airalab/robonomics</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t("Analytics") }}</td>
-                <td>Node.js, MongoDB, Express, Socket.IO</td>
-                <td>
-                  <a href="https://github.com/airalab/RoSeMAN" target="_blank" rel="noopener"
-                    >airalab/RoSeMAN</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t("dApp") }}</td>
-                <td>Vue 3, Vite, Leaflet, Highcharts, libp2p</td>
-                <td>
-                  <a href="https://github.com/airalab/sensors.social" target="_blank" rel="noopener"
-                    >airalab/sensors.social</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t("Hardware") }}</td>
-                <td>KiCad, 3D {{ $t("models") }}, BOM, {{ $t("certificates") }}</td>
-                <td>
-                  <a href="https://github.com/airalab/hardware" target="_blank" rel="noopener"
-                    >airalab/hardware</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>{{ $t("Firmware (web)") }}</td>
-                <td>Web Serial API</td>
-                <td>
-                  <a href="https://github.com/airalab/webflasher" target="_blank" rel="noopener"
-                    >airalab/webflasher</a
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>{{ $t("Integrations") }}</h3>
-        <ul>
-          <li>{{ $t("Home Assistant (local + Robonomics cloud)") }}</li>
-          <li>{{ $t("sensors.community (Luftdaten compatibility)") }}</li>
-          <li>{{ $t("Nova Wallet (mobile access)") }}</li>
-        </ul>
-
-        <h3>{{ $t("Everything is open") }}</h3>
-        <ul>
-          <li>{{ $t("Board schematics, firmware, backend, frontend") }}</li>
-          <li>{{ $t("Course on Robonomics Academy") }}</li>
-          <li>{{ $t("Data is not sold — open knowledge base") }}</li>
-        </ul>
-      </section>
-      <section>
-        <h2>{{ $t("Architecture: From Sensor to User") }}</h2>
-
-        <div class="pagetext-pre-scroll">
-          <pre>
-Altruist (Urban + Insight)
-    |
-    v
-Robonomics Connectivity Provider — Python, libp2p, IPFS
-    |
-    |—> Real-time (libp2p) —> sensors.social (Vue 3, Leaflet)
-    |
-    └—> Polkadot World Computer —> Digital Twins (immutable)
-                                    |
-                                    v
-                            RoSeMAN (Node.js, MongoDB)
-                                    |
-                                    v
-                            sensors.social + API
-        </pre
-          >
-        </div>
-
-        <h3>{{ $t("Three principles") }}</h3>
-        <ul>
-          <li>{{ $t("No data manipulation (blockchain)") }}</li>
-          <li>{{ $t("No single point of failure") }}</li>
-          <li>{{ $t("Federated provider model") }}</li>
-        </ul>
-
-        <h3>{{ $t("Device") }}</h3>
-        <ul>
-          <li>{{ $t("ESP32-C6 (RISC-V), open source") }}</li>
-          <li>{{ $t("Firmware via browser (Web Serial)") }}</li>
-          <li>{{ $t("IoT subscription via XRT token") }}</li>
-        </ul>
+        <h2>{{ $t("deviceinfo.history") }}</h2>
+        <ol class="di-history">
+          <li v-for="year in history" :key="year">
+            <b>{{ $t(`deviceinfo.year.${year}.when`) }}</b>
+            <span>{{ $t(`deviceinfo.year.${year}.what`) }}</span>
+          </li>
+        </ol>
+        <p>
+          <router-link to="/altruist-timeline/">{{ $t("deviceinfo.fullTimeline") }}</router-link>
+        </p>
       </section>
 
-      <section class="pagetext-highlight">
-        <p>
-          {{ $t("The true picture of your living environment. Open hardware and code. Web3.") }}
-        </p>
-        <p>
-          <a href="https://sensors.social" target="_blank" rel="noopener">sensors.social</a> ·
-          <a href="https://github.com/airalab" target="_blank" rel="noopener">GitHub</a>
-        </p>
+      <section class="di-panel di-panel-cta">
+        <h2>{{ $t("deviceinfo.cta") }}</h2>
+        <router-link class="di-button di-button-dark" to="/where-to-buy/">{{
+          $t("Where to buy")
+        }}</router-link>
       </section>
     </div>
   </PageTextLayout>
@@ -471,6 +172,58 @@ import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 import MetaInfo from "../components/MetaInfo.vue";
 import PageTextLayout from "../components/layouts/PageText.vue";
+import bundleImage from "@/assets/images/altruist-device/Altruist-bundle.webp";
+import urbanImage from "@/assets/images/altruist-device/altruist-urban.webp";
+import insightImage from "@/assets/images/altruist-device/altruist-insight.webp";
+
+const ICONS = {
+  dust: "M6 7h.01M14 5h.01M18 11h.01M9 13h.01M15 18h.01M5 19h.01",
+  temperature: "M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z",
+  noise: "M4 10v4h4l5 4V6L8 10zM17 9a4 4 0 0 1 0 6",
+  pressure: "M4 17a8 8 0 1 1 16 0M12 17l4-6",
+  co2: "M7 19a4 4 0 0 1-.5-8 6 6 0 0 1 11.5-1 4.5 4.5 0 0 1-1 9z",
+  humidity: "M12 3s7 7 7 12a7 7 0 0 1-14 0c0-5 7-12 7-12z",
+  display: "M3 5h18v14H3zM7 9h6M7 13h10",
+};
+
+const stats = ["measured", "sensors", "years", "open"];
+const modules = [
+  {
+    key: "urban",
+    image: urbanImage,
+    metrics: [
+      ["dust", "dust"],
+      ["temperature", "tempHumidity"],
+      ["noise", "noise"],
+      ["pressure", "pressure"],
+    ],
+  },
+  {
+    key: "insight",
+    image: insightImage,
+    metrics: [
+      ["co2", "co2"],
+      ["temperature", "temperature"],
+      ["humidity", "humidity"],
+      ["display", "display"],
+    ],
+  },
+];
+const actions = [
+  ["open", "is-open"],
+  ["close", "is-close"],
+  ["noise", "is-noise"],
+];
+const audiences = ["health", "asthma", "children", "realEstate", "automation", "civic"];
+const competitors = [
+  ["Ultrahuman Home", "CO2, PM, VOC, noise", null, "indoor", false, "$349"],
+  ["IQAir Bundle", "PM2.5, CO2, t, RH", "PM, t, RH", false, true, "~$600"],
+  ["AirGradient (2 pcs)", "PM, CO2, VOC, NOx", "PM, CO2, VOC, NOx", false, false, "~$455"],
+  ["Awair Element", "CO2, PM, VOC, t, RH", null, false, false, "$150"],
+  ["Airthings View Plus", "Radon, PM, CO2, VOC", null, false, false, "$299"],
+];
+const layers = ["device", "delivery", "record", "storage", "you"];
+const history = ["2017", "2019", "2021", "2022", "2026"];
 
 const router = useRouter();
 
@@ -495,7 +248,312 @@ onMounted(() => {
 </script>
 
 <style scoped>
-:global(.container-pagetext) > .deviceinfo {
+.deviceinfo {
+  text-align: left;
+}
+
+.deviceinfo h1 {
+  margin: 0;
+  font-size: clamp(2.3rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.08;
+}
+
+.deviceinfo h2 {
+  margin: 0 0 1.4rem;
+  font-size: clamp(1.75rem, 3.4vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.deviceinfo h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.deviceinfo p {
+  font-size: 1.05rem;
+}
+
+.deviceinfo img {
+  height: auto;
+}
+
+.di-eyebrow {
+  color: #555;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.di-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  align-items: center;
+  gap: 2rem;
+}
+
+.di-hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.di-hero-text p {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.di-hero-photo {
+  display: flex;
+  justify-content: center;
+  padding: 1.75rem;
+  border-radius: 24px;
+  background: var(--color-light-gray);
+}
+
+.di-hero-photo img {
+  width: 100%;
+  max-width: 440px;
+}
+
+.di-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.deviceinfo a.di-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 1.5rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 26px;
+  color: var(--color-dark);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.deviceinfo a.di-button-buy {
+  background: var(--color-green-bright);
+  font-weight: 800;
+}
+
+.deviceinfo a.di-button-dark {
+  background: var(--color-dark);
+  color: var(--color-light);
+  font-weight: 800;
+}
+
+.di-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: 0.75rem;
+}
+
+.di-stat,
+.di-card {
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: var(--color-light-gray);
+}
+
+.di-stat b {
+  display: block;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.di-stat span,
+.di-card p {
+  margin: 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.di-modules,
+.di-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 1rem;
+}
+
+.di-module {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 20px;
+}
+
+.di-module img {
+  width: 320px;
   max-width: 100%;
+  align-self: center;
+}
+
+.deviceinfo .di-module h3 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.deviceinfo .di-question {
+  margin: 0;
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+.di-module ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.di-module li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.di-module svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+
+.di-panel {
+  padding: 2.5rem clamp(1.25rem, 4vw, 2.5rem);
+  border-radius: 24px;
+  background: var(--color-light-gray);
+}
+
+.di-panel-dark {
+  background: var(--color-dark);
+  color: var(--color-light);
+}
+
+.di-panel-cta {
+  background: var(--color-green-bright);
+  text-align: center;
+}
+
+.di-action {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.4rem;
+  border-radius: 16px;
+  background: #17171c;
+  color: #d0d0d8;
+  font-size: 0.95rem;
+}
+
+.di-action b {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.is-open b {
+  color: var(--color-green-bright);
+}
+
+.is-close b {
+  color: #ffb36b;
+}
+
+.is-noise b {
+  color: #8fc6ff;
+}
+
+.di-table {
+  overflow-x: auto;
+}
+
+.di-table table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+.di-table th,
+.di-table td {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.di-table th {
+  border-bottom: 2px solid var(--color-dark);
+}
+
+.di-table-own {
+  background: #e9ffc9;
+  font-weight: 700;
+}
+
+.di-layers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.di-layer {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border: 2px solid var(--color-dark);
+  border-radius: 14px;
+  background: var(--color-light);
+  color: #333;
+  font-size: 0.875rem;
+}
+
+.di-layer:last-child {
+  background: var(--color-green-bright);
+}
+
+.di-layer b {
+  color: var(--color-dark);
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.di-history {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  gap: 0.9rem;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.di-history li {
+  margin: 0;
+  padding-top: 0.6rem;
+  border-top: 3px solid var(--color-dark);
+  color: #333;
+  font-size: 0.875rem;
+}
+
+.di-history b {
+  display: block;
+  color: var(--color-dark);
+  font-size: 1.125rem;
+  font-weight: 800;
 }
 </style>
