@@ -118,7 +118,9 @@ const router = createRouter({
 
 // Support old urls
 (async () => {
-  if (window.location.hash) {
+  // Old hash-mode urls look like #/provider/type/zoom/lat/lng/sensor. Any other
+  // hash is an anchor on the current page and must stay where it is.
+  if (window.location.hash.startsWith("#/")) {
     const routes = router.options.routes.map((item) => item.path.split("/")[1]);
     const [, provider, type, zoom, lat, lng, sensor] = window.location.hash.split("/");
     if (routes.includes(provider)) {
