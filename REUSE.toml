@@ -1,0 +1,37 @@
+# Licensing of files in this repository, in machine-readable form.
+# Spec: https://reuse.software/spec-3.3/  — see also NOTICE and README.
+version = 1
+
+# Code, configuration and site assets
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2026 Pinout Limited", "2018-2026 Airalab"]
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+# Blog posts: texts, images and videos (see src/blog/LICENSE.md)
+[[annotations]]
+path = "src/blog/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2018-2026 sensors.social"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Noto Sans fonts
+[[annotations]]
+path = "src/assets/fonts/**"
+precedence = "override"
+SPDX-FileCopyrightText = "2012 Google Inc."
+SPDX-License-Identifier = "OFL-1.1"
+
+# Logos and photos of partners and third-party platforms
+[[annotations]]
+path = [
+  "src/assets/images/logos/**",
+  "src/assets/images/map-apps-icons/**",
+  "src/assets/images/polkadot-new-dot-logo-horizontal.svg",
+  "src/assets/images/indiegogo.svg",
+  "public/sensors/**",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "Their respective owners"
+SPDX-License-Identifier = "LicenseRef-Third-Party-Logos"
