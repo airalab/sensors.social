@@ -27,6 +27,8 @@
     @clickMarker="handleSensorClick"
     @clickMessage="handleMessageClick"
   />
+
+  <SiteFooter on-map />
 </template>
 
 <script setup>
@@ -44,6 +46,7 @@ import Map from "../components/Map.vue";
 import Sensor from "../components/sensor/Index.vue";
 import MessagePopup from "../components/message/Index.vue";
 import MetaInfo from "../components/MetaInfo.vue";
+import SiteFooter from "../components/layouts/SiteFooter.vue";
 
 import { settings } from "@config";
 import {

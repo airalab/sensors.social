@@ -854,7 +854,7 @@ defineExpose({
 }
 
 .mapcontrols {
-  bottom: 0;
+  bottom: var(--map-footer-peek, 0px);
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
@@ -876,7 +876,7 @@ defineExpose({
 
 .popover-bottom-right,
 .popover-bottom-left {
-  bottom: calc(var(--app-inputheight) + var(--app-controlsgap) * 2);
+  bottom: calc(var(--app-inputheight) + var(--app-controlsgap) * 2 + var(--map-footer-peek, 0px));
   max-width: calc(100vw - var(--app-controlsgap) * 2);
 }
 
