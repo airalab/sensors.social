@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import AiAssistant from "./views/AiAssistant.vue";
 import AirMeasurements from "./views/AirMeasurements.vue";
 import AltruistCompare from "./views/AltruistCompare.vue";
 import AltruistTimeline from "./views/AltruistTimeline.vue";
@@ -41,6 +42,11 @@ const router = createRouter({
       path: "/support/",
       name: "support",
       component: Support,
+    },
+    {
+      path: "/ai/",
+      name: "ai",
+      component: AiAssistant,
     },
     {
       path: "/air-measurements/",
