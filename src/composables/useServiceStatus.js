@@ -20,15 +20,20 @@ const INDEXER_LAG_WARN = 100;
 const INDEXER_LAG_DOWN = 600;
 const BLOCK_AGE_WARN_MS = 2 * 60 * 1000;
 const BLOCK_AGE_DOWN_MS = 10 * 60 * 1000;
+// The sensor list is heavier than the other checks and a 24 h figure barely moves in a minute.
+const SENSORS_POLL_MS = 10 * 60 * 1000;
+const DAY_S = 24 * 60 * 60;
 
 const status = reactive({
   connectivity: { state: "unknown", active: 0, total: 0, lastRecordAt: null },
   roseman: { state: "unknown", lag: null },
   robonomics: { state: "unknown", blockAt: null },
+  sensors24h: null,
 });
 
 let apiPromise = null;
 let timer = null;
+let sensorsCheckedAt = 0;
 
 function connect() {
   if (!apiPromise) {
@@ -92,8 +97,22 @@ async function checkRoseman(head) {
   }
 }
 
+async function checkSensors() {
+  if (Date.now() - sensorsCheckedAt < SENSORS_POLL_MS) return;
+  try {
+    const end = Math.floor(Date.now() / 1000);
+    const sensors = await fetchResult(`api/v2/sensor/list/${end - DAY_S}/${end}`);
+    status.sensors24h = new Set(sensors.map((sensor) => sensor.sensor_id)).size;
+    sensorsCheckedAt = Date.now();
+  } catch {
+    status.sensors24h = null;
+  }
+}
+
 async function check() {
   if (document.hidden) return;
+
+  await checkSensors();
 
   let api = null;
   let head = null;
