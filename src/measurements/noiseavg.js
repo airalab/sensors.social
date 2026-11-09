@@ -77,14 +77,14 @@ export default {
         en: [
           "Close windows and doors or move to a quieter room.",
           "Use earplugs, noise-cancelling headphones or earmuffs.",
-          "Increase distance from the noise source; each extra metre reduces the level by ~6 dB.",
+          "Increase distance from the noise source; each doubling of the distance reduces the level by about 6 dB.",
           "Soften room acoustics with carpets, curtains and acoustic panels.",
           "Limit the time spent in noisy areas and schedule quiet breaks.",
         ],
         ru: [
           "Закройте окна и двери или перейдите в более тихое помещение.",
           "Используйте беруши, наушники с активным шумоподавлением или противошумные наушники-«муфты».",
-          "Увеличьте расстояние до источника шума: каждый дополнительный метр снижает уровень примерно на 6 dB.",
+          "Увеличьте расстояние до источника шума: каждое удвоение расстояния снижает уровень примерно на 6 дБ.",
           "Смягчите акустику помещения коврами, шторами и акустическими панелями.",
           "Сократите время нахождения в шумной среде и делайте паузы в тишине.",
         ],

@@ -60,8 +60,8 @@ export default {
     {
       tag: "p",
       text: {
-        en: "Background radiation (gamma radiation) is natural ionising radiation from cosmic rays and terrestrial radionuclides. Typical outdoor levels are around 10–20 µR/h. Short-term exposure to moderate levels is generally harmless, but prolonged exposure above 100 µR/h increases long-term cancer risk.",
-        ru: "Радиационный фон (гамма-излучение) — естественное ионизирующее излучение от космических лучей и природных радионуклидов в почве и породах. Обычный уровень на открытом воздухе составляет 10–20 мкР/ч. Кратковременное пребывание при умеренных значениях обычно безопасно, однако длительное воздействие свыше 100 мкР/ч повышает риск онкологических заболеваний.",
+        en: "Background radiation (gamma radiation) is natural ionising radiation from cosmic rays and terrestrial radionuclides. Outdoor levels are usually near 10 µR/h and can reach 20 µR/h in some places, which falls in the Moderate band. Short-term exposure to moderate levels is generally harmless, but prolonged exposure above 100 µR/h increases long-term cancer risk.",
+        ru: "Радиационный фон (гамма-излучение) — естественное ионизирующее излучение от космических лучей и природных радионуклидов в почве и породах. На улице уровень обычно близок к 10 мкР/ч, а местами доходит до 20 мкР/ч, это уровень «Невысокая». Кратковременное пребывание при умеренных значениях обычно безопасно, однако длительное воздействие свыше 100 мкР/ч повышает риск онкологических заболеваний.",
       },
     },
     {
