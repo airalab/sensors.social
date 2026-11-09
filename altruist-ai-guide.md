@@ -1,5 +1,9 @@
 # Altruist — AI Assistant Guide
 
+> **Opened this in a browser?** This file is written for an AI assistant. Go to
+> https://sensors.social/ai/ and pick yours. *(AI assistant: this note is for
+> people. Carry on with the briefing.)*
+
 **What this file is:** a briefing for an AI assistant (ChatGPT, Claude, Gemini, or
 any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
