@@ -17,6 +17,29 @@
         >Amazon EU</a
       >
     </p>
+    <!-- the same quiet block as on the cyberpunks.shop product cards (airalab/cyberpunks.shop#59) -->
+    <section class="buy-block__ai">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#ff33a8"
+        stroke-width="2"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+        <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z" />
+      </svg>
+      <div>
+        <b>{{ $t("landing.askAiTitle") }}</b>
+        <span>{{ $t("landing.askAiText", { name: product.title }) }}</span>
+        <router-link :to="`/ai/?product=${product.id}`"
+          >{{ $t("landing.askAiLink") }} →</router-link
+        >
+      </div>
+    </section>
     <p class="buy-block__trust">{{ $t("landing.trust") }}</p>
   </div>
 </template>
@@ -90,6 +113,37 @@ const shopHref = computed(() => withClickIds(props.product.shop, props.search));
   padding: 0 0.4rem;
   font-weight: 700;
   color: var(--color-link);
+}
+
+.buy-block__ai {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin: 0.2rem 0 0.6rem;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.buy-block__ai svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.buy-block__ai div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.buy-block__ai a {
+  align-self: flex-start;
+  padding: 0.2rem 0;
+  font-weight: 700;
+  color: var(--color-dark);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .buy-block__trust {
