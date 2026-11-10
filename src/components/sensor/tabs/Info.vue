@@ -41,6 +41,13 @@
         <a :href="metaUserLink" rel="noopener" target="_blank">{{ metaUserLink }}</a>
       </div>
     </div>
+
+    <QrCode
+      v-if="sensorLink"
+      :value="sensorLink"
+      :label="t('qr.caption')"
+      :filename="`sensor-${sensorId}.png`"
+    />
   </section>
 </template>
 
@@ -48,7 +55,8 @@
 import { computed, getCurrentInstance } from "vue";
 import { useI18n } from "vue-i18n";
 import Copy from "../../controls/Copy.vue";
-import { pinned_sensors } from "@config";
+import QrCode from "../../controls/QrCode.vue";
+import { pinned_sensors, settings } from "@config";
 import appleMapIcon from "@/assets/images/map-apps-icons/Apple-map-icon.svg";
 import googleMapIcon from "@/assets/images/map-apps-icons/Google-map-icon.svg";
 
@@ -70,6 +78,16 @@ const collapsedSensorId = computed(() => {
 const collapsedOwner = computed(() => {
   if (!props.owner) return "";
   return filters?.collapse ? filters.collapse(props.owner) : props.owner;
+});
+
+/** Same shape as the default Share link: owner + sensor on the share host. */
+const sensorLink = computed(() => {
+  if (!props.sensorId) return "";
+  const params = new URLSearchParams();
+  if (props.owner) params.set("owner", props.owner);
+  params.set("sensor", props.sensorId);
+  const base = String(settings?.SHARE_URL || "").replace(/\/$/, "") || `${window.location.origin}/`;
+  return `${base}?${params.toString()}`;
 });
 
 const MAP_ICONS = {
