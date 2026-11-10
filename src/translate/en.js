@@ -755,7 +755,7 @@ export default {
   "setup.help.title": "Stuck on a step?",
   "setup.help.text": "Ask our AI assistant or write to support.",
   "setup.help.support": "Contact support",
-  "service.title": "How the map is working",
+  "service.title": "Map stats",
   "service.sensors24h": "Sensors online in the last 24 h: {n}",
   "service.noGeo": "Without geolocation: {n}",
   "service.data": "Data collection",

@@ -767,7 +767,7 @@ export default {
   "setup.help.title": "Не получается?",
   "setup.help.text": "Спросите ИИ-ассистента или напишите в поддержку.",
   "setup.help.support": "Написать в поддержку",
-  "service.title": "Как работает карта",
+  "service.title": "Статистика карты",
   "service.sensors24h": "Датчиков на связи за 24 часа: {n}",
   "service.noGeo": "Без геопозиции: {n}",
   "service.data": "Сбор данных",
