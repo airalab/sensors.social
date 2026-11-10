@@ -109,7 +109,7 @@ const shortDate = (date) =>
 .ticker-run li::after {
   content: "•";
   padding: 0 20px;
-  color: var(--color-green-bright);
+  color: var(--color-link);
 }
 
 .ticker-run a {
@@ -117,7 +117,7 @@ const shortDate = (date) =>
   align-items: center;
   gap: 10px;
   padding-left: 4px;
-  color: var(--color-light);
+  color: var(--app-textcolor);
   font-size: 0.9rem;
   white-space: nowrap;
   text-decoration: none;
@@ -125,7 +125,7 @@ const shortDate = (date) =>
 
 .ticker-run a:hover,
 .ticker-run a:focus-visible {
-  color: var(--color-green-bright);
+  color: var(--color-link);
 }
 
 .ticker-date {

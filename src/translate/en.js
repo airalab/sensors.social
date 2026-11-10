@@ -427,6 +427,8 @@ export default {
   "nav.setup": "Setup",
   "nav.ai": "AI assistant",
   "footer.more": "About the project",
+  "banner.close": "Close",
+  "ticker.hide": "Hide news",
   "footer.about": "A decentralized map of independent sensors that record their measurements on the blockchain.",
   "footer.device": "About the device",
   "footer.compare": "Comparison",

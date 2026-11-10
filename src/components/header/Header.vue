@@ -1,5 +1,6 @@
 <template>
   <header :class="`route-${route.name || route.path.replaceAll('/', '-')}`">
+    <TopStrip v-if="route.name === 'main'" />
     <div class="header-content flexline space-between">
       <div class="flexline align-start">
         <router-link to="/" class="appicon">
@@ -98,6 +99,7 @@ import { useBookmarks } from "@/composables/useBookmarks";
 import LicenceLine from "../LicenceLine.vue";
 import Login from "./Login.vue";
 import ServiceStatus from "./ServiceStatus.vue";
+import TopStrip from "../TopStrip.vue";
 import Bookmarks from "@/components/Bookmarks.vue";
 
 const { locale: i18nLocale } = useI18n();
