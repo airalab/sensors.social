@@ -877,10 +877,11 @@ Print settings: **PLA, 0.2 mm layer height; most parts need no supports.**
 The weather hood for Urban is printed in **ASA**, not PLA:
 https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban
 
-**Buying a ready case.** Cyberpunks.shop sells the Urban enclosure under
-Accessories, in a choice of colours and emotions. Do not quote its price or
-stock — same rule as for everything else (Section 16); send the user to
-https://cyberpunks.shop and say the case is under Accessories.
+**Buying a ready case.** Cyberpunks.shop sells the whole Urban enclosure —
+case, face panel, antenna, board mounts, M6 bolts and wall mount, without the
+electronics — in a choice of colours and emotions:
+https://cyberpunks.shop/altruist-urban-enclosure . Do not quote its price or
+stock — same rule as for everything else (Section 16).
 
 ## 15. How the sensor network works (when the user asks)
 
@@ -1587,7 +1588,7 @@ authoritative — if anything here disagrees with it, follow the prose.
       "not_available": "history before 28 Sep 2026 (Kusama parachain, halted) — use the public API for it"
     }
   },
-  "urban_enclosure": {"material": "PLA, 3D-printed; 0.2 mm layer; most parts need no supports", "emotions": ["Smile", "Enjoy", "Deadly"], "other_3mf_variants": ["Minimal (no antenna)", "No Face"], "makerworld": {"smile": "https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor", "enjoy": "https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor", "deadly": "https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor", "profile": "https://makerworld.com/en/@Robonomics_3D/"}, "sources": "github.com/airalab/hardware, 3D Models/Altruist Urban/Enclosure_v1: 3MF (Bambu Lab), STL, CAD (FreeCAD)", "weather_hood": "ASA, https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban", "ready_case": "cyberpunks.shop, Accessories; never quote price or stock"},
+  "urban_enclosure": {"material": "PLA, 3D-printed; 0.2 mm layer; most parts need no supports", "emotions": ["Smile", "Enjoy", "Deadly"], "other_3mf_variants": ["Minimal (no antenna)", "No Face"], "makerworld": {"smile": "https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor", "enjoy": "https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor", "deadly": "https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor", "profile": "https://makerworld.com/en/@Robonomics_3D/"}, "sources": "github.com/airalab/hardware, 3D Models/Altruist Urban/Enclosure_v1: 3MF (Bambu Lab), STL, CAD (FreeCAD)", "weather_hood": "ASA, https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban", "ready_case": "https://cyberpunks.shop/altruist-urban-enclosure — full enclosure kit without electronics; never quote price or stock"},
   "guide_version": "1.13",
   "guide_updated": "2026-11-10"
 }
