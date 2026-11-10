@@ -1,17 +1,17 @@
 <template>
   <MetaInfo
-    :pageTitle="$t('ai.pageTitle')"
-    :pageDescription="$t('ai.subtitle')"
+    :pageTitle="productName ? $t('ai.productPageTitle', { name: productName }) : $t('ai.pageTitle')"
+    :pageDescription="subtitle"
     pageImage="/og-altruist-setup.webp"
   />
   <PageTextLayout>
     <div class="ai-page">
       <div class="ai-main">
         <div class="ai-eyebrow">Altruist</div>
-        <h1 class="ai-title">{{ $t("ai.title") }}</h1>
-        <p class="ai-subtitle">{{ $t("ai.subtitle") }}</p>
+        <h1 class="ai-title">{{ title }}</h1>
+        <p class="ai-subtitle">{{ subtitle }}</p>
 
-        <nav class="ai-assistants" :aria-label="$t('ai.title')">
+        <nav class="ai-assistants" :aria-label="title">
           <a
             v-for="assistant in assistants"
             :key="assistant.name"
@@ -45,6 +45,8 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
+import { altruistProducts } from "@/config/altruistProducts";
 import Copy from "../components/controls/Copy.vue";
 import MetaInfo from "../components/MetaInfo.vue";
 import PageTextLayout from "../components/layouts/PageText.vue";
@@ -63,8 +65,33 @@ const assistants = [
   { name: "Qwen", url: (q) => `https://chat.qwen.ai/?q=${encodeURIComponent(q)}` },
 ];
 
-const { t } = useI18n();
-const prompt = computed(() => t("ai.prompt", { url: GUIDE_URL }));
+const { t, locale } = useI18n();
+const route = useRoute();
+
+// ?product=insight|urban|dual comes from the landing pages and the shop cards: the visitor
+// is still deciding, so the prompt sends the assistant to the guide's pre-purchase section.
+const productName = computed(() => altruistProducts[route.query.product]?.title || "");
+
+// ?lang= lets the shop open the page in its own language; only en and ru exist here.
+// Saved like the header's language switch, because the header restores the saved locale
+// when it mounts and would override a value set only on i18n.
+if (route.query.lang) {
+  const lang = route.query.lang === "ru" ? "ru" : "en";
+  localStorage.setItem("locale", lang);
+  locale.value = lang;
+}
+
+const title = computed(() =>
+  productName.value ? t("ai.productTitle", { name: productName.value }) : t("ai.title")
+);
+const subtitle = computed(() =>
+  productName.value ? t("ai.productSubtitle", { name: productName.value }) : t("ai.subtitle")
+);
+const prompt = computed(() =>
+  productName.value
+    ? t("ai.productPrompt", { name: productName.value, url: GUIDE_URL })
+    : t("ai.prompt", { url: GUIDE_URL })
+);
 
 // Not awaited: the link must still open if the browser refuses clipboard access.
 const copyPrompt = () => {

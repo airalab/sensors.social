@@ -2,6 +2,7 @@
 // Prices mirror cyberpunks.shop and must be updated here when the shop changes them.
 export const altruistProducts = {
   dual: {
+    id: "dual",
     title: "Altruist Dual",
     price: "€320",
     shop: "https://cyberpunks.shop/altruist-dual",
@@ -9,6 +10,7 @@ export const altruistProducts = {
     amazonDe: "https://www.amazon.de/dp/B0GXKZG4D4?th=1",
   },
   urban: {
+    id: "urban",
     title: "Altruist Urban",
     price: "€210",
     shop: "https://cyberpunks.shop/altruist-urban",
@@ -16,6 +18,7 @@ export const altruistProducts = {
     amazonDe: "https://www.amazon.de/dp/B0GXF54G56",
   },
   insight: {
+    id: "insight",
     title: "Altruist Insight",
     price: "€110",
     shop: "https://cyberpunks.shop/altruist-insight",
