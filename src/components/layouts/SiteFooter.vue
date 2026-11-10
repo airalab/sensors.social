@@ -18,6 +18,9 @@
 
         <nav aria-label="Altruist">
           <h2>Altruist</h2>
+          <router-link to="/altruist/insight/">Altruist Insight</router-link>
+          <router-link to="/altruist/urban/">Altruist Urban</router-link>
+          <router-link to="/altruist/dual/">Altruist Dual</router-link>
           <router-link to="/altruist-device-info/">{{ $t("footer.device") }}</router-link>
           <router-link to="/altruist-setup/">{{ $t("nav.setup") }}</router-link>
           <router-link to="/ai/">{{ $t("nav.ai") }}</router-link>

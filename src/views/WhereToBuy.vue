@@ -28,12 +28,14 @@
           :class="{ 'product--featured': product.featured }"
         >
           <span v-if="product.featured" class="product__badge">{{ $t("buy.badge") }}</span>
-          <div class="product__media">
+          <router-link :to="product.page" class="product__media" tabindex="-1" aria-hidden="true">
             <img :src="product.image" :alt="product.title" loading="lazy" />
-          </div>
+          </router-link>
           <div class="product__body">
             <p class="product__kind">{{ product.kind }}</p>
-            <h2 class="product__title">{{ product.title }}</h2>
+            <h2 class="product__title">
+              <router-link :to="product.page">{{ product.title }}</router-link>
+            </h2>
             <p class="product__text">{{ product.text }}</p>
             <div class="product__actions">
               <a class="product__buy" :href="product.shop" target="_blank" rel="noopener">
@@ -75,42 +77,22 @@ import dualImage from "@/assets/images/altruist-device/altruist-dual.webp";
 import urbanImage from "@/assets/images/altruist-device/altruist-urban.webp";
 import insightImage from "@/assets/images/altruist-device/altruist-insight.webp";
 import pinoutLogo from "@/assets/images/logos/pinout-logo.png";
+import { altruistProducts } from "@config/altruistProducts";
 
 const { t } = useI18n();
 
 const productCatalog = [
-  {
-    id: "dual",
-    featured: true,
-    titleKey: "Altruist Dual",
-    image: dualImage,
-    shop: "https://cyberpunks.shop/altruist-dual",
-    amazonUs: "https://www.amazon.com/dp/B0GXKZG4D4?th=1",
-    amazonDe: "https://www.amazon.de/dp/B0GXKZG4D4?th=1",
-  },
-  {
-    id: "urban",
-    titleKey: "Altruist Urban",
-    image: urbanImage,
-    shop: "https://cyberpunks.shop/altruist-urban",
-    amazonUs: "https://www.amazon.com/dp/B0GWR3HDPD?th=1",
-    amazonDe: "https://www.amazon.de/dp/B0GXF54G56",
-  },
-  {
-    id: "insight",
-    titleKey: "Altruist Insight",
-    image: insightImage,
-    shop: "https://cyberpunks.shop/altruist-insight",
-    amazonUs: "https://www.amazon.com/dp/B0HCCMWJVW?th=1",
-    amazonDe: "https://www.amazon.de/dp/B0HCCKJ2YN?th=1",
-  },
-];
+  { id: "dual", featured: true, image: dualImage },
+  { id: "urban", image: urbanImage },
+  { id: "insight", image: insightImage },
+].map((item) => ({ ...item, ...altruistProducts[item.id] }));
 
 const products = computed(() =>
   productCatalog.map((item) => ({
     id: item.id,
     featured: item.featured,
-    title: t(item.titleKey),
+    title: t(item.title),
+    page: `/altruist/${item.id}/`,
     kind: t(`buy.${item.id}.kind`),
     text: t(`buy.${item.id}.text`),
     image: item.image,
@@ -245,6 +227,16 @@ const pinout = {
   font-size: calc(var(--font-size) * 1.35);
   font-weight: 900;
   color: var(--color-dark);
+}
+
+.product__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.product__title a:hover,
+.product__title a:focus-visible {
+  text-decoration: underline;
 }
 
 .product__text {

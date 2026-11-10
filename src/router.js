@@ -6,6 +6,7 @@ import AltruistTimeline from "./views/AltruistTimeline.vue";
 import AltruistUseCases from "./views/AltruistUseCases.vue";
 import AltruistDeviceInfo from "./views/AltruistDeviceInfo.vue";
 import AltruistSetup from "./views/AltruistSetup.vue";
+import AltruistLanding from "./views/AltruistLanding.vue";
 import WhereToBuy from "./views/WhereToBuy.vue";
 import ConstructionMonitoring from "./views/ConstructionMonitoring.vue";
 import NoiseDataRealEstate from "./views/NoiseDataRealEstate.vue";
@@ -77,6 +78,24 @@ const router = createRouter({
       path: "/altruist-setup/",
       name: "altruist-setup",
       component: AltruistSetup,
+    },
+    {
+      path: "/altruist/insight/",
+      name: "altruist-insight",
+      component: AltruistLanding,
+      props: { model: "insight" },
+    },
+    {
+      path: "/altruist/urban/",
+      name: "altruist-urban",
+      component: AltruistLanding,
+      props: { model: "urban" },
+    },
+    {
+      path: "/altruist/dual/",
+      name: "altruist-dual",
+      component: AltruistLanding,
+      props: { model: "dual" },
     },
     {
       path: "/where-to-buy/",
