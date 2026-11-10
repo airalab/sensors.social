@@ -1,32 +1,8 @@
-@font-face {
-  font-family: "Noto Sans";
-  src:
-    url("../fonts/NotoSans-Black.woff2") format("woff2"),
-    url("../fonts/NotoSans-Black.woff") format("woff"),
-    url("../fonts/NotoSans-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-display: swap;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Noto Sans";
-  src:
-    url("../fonts/NotoSans-Bold.woff2") format("woff2"),
-    url("../fonts/NotoSans-Bold.woff") format("woff"),
-    url("../fonts/NotoSans-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-display: swap;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Noto Sans";
-  src:
-    url("../fonts/NotoSans-Regular.woff2") format("woff2"),
-    url("../fonts/NotoSans-Regular.woff") format("woff"),
-    url("../fonts/NotoSans-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-display: swap;
-  font-style: normal;
-}
+/*
+  Noto Sans split by script (@fontsource): each face carries a unicode-range, so a page
+  downloads only the alphabets it shows — about 13 KB per weight for English instead of
+  210 KB for the full font with every script.
+*/
+@import "@fontsource/noto-sans/400.css";
+@import "@fontsource/noto-sans/700.css";
+@import "@fontsource/noto-sans/900.css";
