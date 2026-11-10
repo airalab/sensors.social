@@ -1,9 +1,13 @@
 <template>
   <footer ref="root" class="site-footer" :class="{ 'site-footer-on-map': onMap }">
     <div v-if="onMap" class="site-footer-peek">
-      <BlogTicker class="site-footer-ticker" />
-      <button type="button" class="site-footer-more" @click="togglePeek">
-        {{ $t("footer.more") }} <span aria-hidden="true">↑</span>
+      <button
+        type="button"
+        class="site-footer-more"
+        :aria-expanded="footerOpen ? 'true' : 'false'"
+        @click="togglePeek"
+      >
+        {{ $t("footer.more") }} <span aria-hidden="true">{{ footerOpen ? "↑" : "↓" }}</span>
       </button>
     </div>
     <div class="site-footer-in">
@@ -81,15 +85,28 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { settings } from "@config";
 import { version } from "../../../package.json";
 import LicenceLine from "../LicenceLine.vue";
-import BlogTicker from "../BlogTicker.vue";
 
-defineProps({ onMap: { type: Boolean, default: false } });
+const props = defineProps({ onMap: { type: Boolean, default: false } });
 
 const root = ref(null);
+// The blog ticker moved to the strip above the map (TopStrip); down here only the way into the footer.
+const footerOpen = ref(false);
+let page = null;
+const onScroll = () => {
+  footerOpen.value = page.scrollTop > 0;
+};
+
+onMounted(() => {
+  if (!props.onMap) return;
+  page = root.value?.closest("#app");
+  page?.addEventListener("scroll", onScroll, { passive: true });
+});
+
+onBeforeUnmount(() => page?.removeEventListener("scroll", onScroll));
 
 const repos = [
   { name: "sensors.social", label: "footer.repoMap" },
@@ -136,23 +153,18 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
   height: var(--map-footer-peek);
 }
 
-.site-footer-ticker {
-  flex: 1 1 auto;
-}
-
 .site-footer-more {
   display: flex;
-  flex-shrink: 0;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   padding: 0 20px;
   border: 0;
-  border-left: 1px solid #333;
   background: transparent;
   color: var(--color-light);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -160,22 +172,6 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
 .site-footer-more:hover,
 .site-footer-more:focus-visible {
   color: var(--color-green-bright);
-}
-
-@media screen and (max-width: 600px) {
-  .site-footer-peek {
-    flex-direction: column;
-  }
-
-  .site-footer-ticker {
-    flex: 0 0 40px;
-    border-bottom: 1px solid #333;
-  }
-
-  .site-footer-more {
-    flex: 0 0 44px;
-    border-left: 0;
-  }
 }
 
 .site-footer-on-map .site-footer-in {

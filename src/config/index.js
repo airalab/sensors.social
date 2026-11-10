@@ -32,6 +32,7 @@ export const agents = resolve("agents.json");
 export const pinned_sensors = resolve("pinned_sensors.js");
 export const excluded_sensors = resolve("excluded_sensors.js");
 export const themes = resolve("themes.js");
+export const banner = resolve("banner.js");
 
 // Final merged settings
 export const settings = resolveJsonMerged("config.json");
