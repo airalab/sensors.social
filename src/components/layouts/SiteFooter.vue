@@ -40,8 +40,15 @@
           <h2>{{ $t("footer.project") }}</h2>
           <router-link to="/blog/">{{ $t("Blog") }}</router-link>
           <router-link to="/support/">{{ $t("Support") }}</router-link>
-          <a href="https://github.com/airalab/sensors.social" target="_blank" rel="noopener"
-            >GitHub</a
+          <!-- the open-source parts a visitor can run on their own -->
+          <h3>GitHub</h3>
+          <a
+            v-for="repo in repos"
+            :key="repo.name"
+            :href="`https://github.com/airalab/${repo.name}`"
+            target="_blank"
+            rel="noopener"
+            >{{ $t(repo.label) }}</a
           >
         </nav>
 
@@ -79,6 +86,13 @@ import LicenceLine from "../LicenceLine.vue";
 defineProps({ onMap: { type: Boolean, default: false } });
 
 const root = ref(null);
+
+const repos = [
+  { name: "sensors.social", label: "footer.repoMap" },
+  { name: "altruist-firmware", label: "footer.repoFirmware" },
+  { name: "sensors-connectivity", label: "footer.repoConnectivity" },
+  { name: "RoSeMAN", label: "footer.repoRoseman" },
+];
 
 // The map takes wheel and touch for itself, so the strip is the way into the footer there.
 const togglePeek = () => {
@@ -215,6 +229,15 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
   color: var(--color-green-bright);
   font-size: 0.8rem;
   font-weight: 800;
+}
+
+.site-footer h3 {
+  margin: 8px 0 0;
+  color: #9a9aa3;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .site-footer-bottom {
