@@ -26,7 +26,6 @@
           <router-link to="/ai/">{{ $t("nav.ai") }}</router-link>
           <router-link to="/altruist-compare/">{{ $t("footer.compare") }}</router-link>
           <router-link to="/altruist-use-cases/">{{ $t("footer.useCases") }}</router-link>
-          <router-link to="/altruist-timeline/">{{ $t("footer.timeline") }}</router-link>
         </nav>
 
         <nav :aria-label="$t('footer.data')">
@@ -38,6 +37,7 @@
 
         <nav :aria-label="$t('footer.project')">
           <h2>{{ $t("footer.project") }}</h2>
+          <router-link to="/altruist-timeline/">{{ $t("footer.timeline") }}</router-link>
           <router-link to="/blog/">{{ $t("Blog") }}</router-link>
           <router-link to="/support/">{{ $t("Support") }}</router-link>
           <!-- the open-source parts a visitor can run on their own -->
