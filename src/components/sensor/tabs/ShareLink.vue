@@ -10,6 +10,13 @@
       />
       <span class="sharelink-preview-url">{{ generatedLink }}</span>
     </div>
+
+    <QrCode
+      class="sharelink-qr"
+      :value="generatedLink"
+      :label="t('qr.caption')"
+      :filename="`sensor-${selectedSensor || 'link'}.png`"
+    />
   </section>
 
   <Accordion>
@@ -115,6 +122,7 @@ import measurements from "../../../measurements";
 import { settings } from "@config";
 import Copy from "../../controls/Copy.vue";
 import Accordion from "../../controls/Accordion.vue";
+import QrCode from "../../controls/QrCode.vue";
 
 const props = defineProps({
   log: {
@@ -402,6 +410,10 @@ onBeforeUnmount(() => {
 .sharelink-copy {
   display: flex;
   align-items: center;
+}
+
+.sharelink-qr {
+  margin-top: var(--gap);
 }
 
 .sharelink-preview-url {

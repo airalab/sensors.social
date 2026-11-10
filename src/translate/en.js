@@ -35,6 +35,8 @@ export default {
   "sensorpopup.type": "Measurement Type",
   "sensorpopup.date": "Date",
   "sensorpopup.copyLink": "Copy Link",
+  "qr.caption": "Scan with a phone camera to open this sensor.",
+  "qr.download": "Download QR",
   "sensorpopup.allStories": "All stories",
   "sensorpopup.demo": "Demo preview",
   "sensorpopup.demo_toggle": "Kiosk view with large readings",

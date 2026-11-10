@@ -35,6 +35,8 @@ export default {
   "sensorpopup.type": "Тип измерения",
   "sensorpopup.date": "Дата",
   "sensorpopup.copyLink": "Скопировать ссылку",
+  "qr.caption": "Наведите камеру телефона, чтобы открыть этот датчик.",
+  "qr.download": "Скачать QR",
   "sensorpopup.allStories": "Все истории",
   "sensorpopup.demo": "Демо-превью",
   "sensorpopup.demo_toggle": "Экран для заведения с крупными показателями",
