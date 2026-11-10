@@ -69,15 +69,17 @@ const shortDate = (date) =>
 }
 
 .ticker-window {
+  display: flex;
   flex: 1 1 auto;
+  align-items: center;
   min-width: 0;
   overflow: hidden;
 }
 
 .ticker-run {
   display: flex;
+  align-items: center;
   width: max-content;
-  height: 100%;
   animation: ticker-scroll linear infinite;
 }
 
@@ -87,7 +89,8 @@ const shortDate = (date) =>
   animation-play-state: paused;
 }
 
-.ticker-run ul {
+/* .ticker raises specificity over the global ul:not(:last-child) margin, which pushed the first copy up */
+.ticker .ticker-run ul {
   display: flex;
   align-items: center;
   margin: 0;
@@ -95,9 +98,12 @@ const shortDate = (date) =>
   list-style: none;
 }
 
+/* the site-wide li rule adds a bottom margin and its own font size, which lifts the titles off centre */
 .ticker-run li {
   display: flex;
   align-items: center;
+  margin: 0;
+  font-size: inherit;
 }
 
 .ticker-run li::after {
