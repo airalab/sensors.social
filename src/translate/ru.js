@@ -765,6 +765,7 @@ export default {
   "setup.help.support": "Написать в поддержку",
   "service.title": "Как работает карта",
   "service.sensors24h": "Датчиков на связи за 24 часа: {n}",
+  "service.noGeo": "Без геопозиции: {n}",
   "service.data": "Сбор данных",
   "service.dataShort": "Данные",
   "service.dataAbout": "Принимает показания датчиков.",

@@ -14,6 +14,17 @@
       <p v-if="status.sensors24h !== null" class="service-status__sensors">
         {{ $t("service.sensors24h", { n: status.sensors24h }) }}
       </p>
+      <details v-if="sensorsNoLocation.length > 0" class="service-status__nogeo">
+        <summary>{{ $t("service.noGeo", { n: sensorsNoLocation.length }) }}</summary>
+        <ul class="service-status__nogeo-list">
+          <li v-for="sensor in sensorsNoLocation" :key="sensor.sensor_id">
+            <a :href="sensorLink(sensor)" :title="sensor.sensor_id">
+              <b>{{ shortId(sensor.sensor_id) }}</b>
+              <span v-if="sensor.device_model"> · {{ sensor.device_model }}</span>
+            </a>
+          </li>
+        </ul>
+      </details>
       <ul class="service-status__list">
         <li v-for="service in services" :key="service.tech" :title="service.tech">
           <span
@@ -38,10 +49,35 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { useServiceStatus } from "@/composables/useServiceStatus";
+import { useSensors } from "@/composables/useSensors";
+import { useMap } from "@/composables/useMap";
 
 const { t } = useI18n();
 const status = useServiceStatus();
+const router = useRouter();
+const mapState = useMap();
+
+// Sensors reporting lat/lng 0,0 never get a marker; this list is the only way to reach them.
+// Already filtered by excluded_sensors and bounds in the loader (markerRowsFromSensorData).
+const { sensorsNoLocation: noLocationRef } = useSensors();
+const sensorsNoLocation = computed(() => noLocationRef.value || []);
+
+const sensorLink = (sensor) =>
+  router.resolve({
+    name: "main",
+    query: {
+      provider: mapState.currentProvider.value,
+      type: mapState.currentUnit.value,
+      sensor: sensor.sensor_id,
+    },
+  }).href;
+
+const shortId = (id) => {
+  const s = String(id);
+  return s.length > 12 ? `${s.slice(0, 6)}…${s.slice(-6)}` : s;
+};
 
 const stateLabel = (state) =>
   ({
@@ -170,6 +206,34 @@ const summaryLabel = computed(
 .service-status__sensors {
   margin: 0 0 4px;
   font-size: max(var(--font-size), 0.875rem);
+}
+
+.service-status__nogeo {
+  margin: 0 0 8px;
+  font-size: max(var(--font-size), 0.875rem);
+}
+
+.service-status__nogeo summary {
+  cursor: pointer;
+  color: var(--color-link, #0066cc);
+}
+
+.service-status__nogeo-list {
+  margin: 4px 0 0;
+  padding: 0;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.service-status__nogeo-list li {
+  display: block;
+  margin: 0;
+  border-top: 1px dotted var(--app-bordercolor);
+}
+
+.service-status__nogeo-list a {
+  display: block;
+  padding: 5px 0;
 }
 
 .service-status__list {

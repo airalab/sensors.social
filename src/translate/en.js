@@ -753,6 +753,7 @@ export default {
   "setup.help.support": "Contact support",
   "service.title": "How the map is working",
   "service.sensors24h": "Sensors online in the last 24 h: {n}",
+  "service.noGeo": "Without geolocation: {n}",
   "service.data": "Data collection",
   "service.dataShort": "Data",
   "service.dataAbout": "Receives readings from the sensors.",
