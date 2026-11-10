@@ -1,8 +1,11 @@
 <template>
   <footer ref="root" class="site-footer" :class="{ 'site-footer-on-map': onMap }">
-    <button v-if="onMap" type="button" class="site-footer-peek" @click="togglePeek">
-      {{ $t("footer.more") }}
-    </button>
+    <div v-if="onMap" class="site-footer-peek">
+      <BlogTicker class="site-footer-ticker" />
+      <button type="button" class="site-footer-more" @click="togglePeek">
+        {{ $t("footer.more") }} <span aria-hidden="true">↑</span>
+      </button>
+    </div>
     <div class="site-footer-in">
       <div class="site-footer-columns">
         <div class="site-footer-brand">
@@ -82,6 +85,7 @@ import { ref } from "vue";
 import { settings } from "@config";
 import { version } from "../../../package.json";
 import LicenceLine from "../LicenceLine.vue";
+import BlogTicker from "../BlogTicker.vue";
 
 defineProps({ onMap: { type: Boolean, default: false } });
 
@@ -129,12 +133,22 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
 
 .site-footer-peek {
   display: flex;
+  height: var(--map-footer-peek);
+}
+
+.site-footer-ticker {
+  flex: 1 1 auto;
+}
+
+.site-footer-more {
+  display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: var(--map-footer-peek);
-  padding: 0;
+  gap: 6px;
+  padding: 0 20px;
   border: 0;
+  border-left: 1px solid #333;
   background: transparent;
   color: var(--color-light);
   font: inherit;
@@ -143,9 +157,25 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
   cursor: pointer;
 }
 
-.site-footer-peek:hover,
-.site-footer-peek:focus-visible {
+.site-footer-more:hover,
+.site-footer-more:focus-visible {
   color: var(--color-green-bright);
+}
+
+@media screen and (max-width: 600px) {
+  .site-footer-peek {
+    flex-direction: column;
+  }
+
+  .site-footer-ticker {
+    flex: 0 0 40px;
+    border-bottom: 1px solid #333;
+  }
+
+  .site-footer-more {
+    flex: 0 0 44px;
+    border-left: 0;
+  }
 }
 
 .site-footer-on-map .site-footer-in {

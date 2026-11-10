@@ -474,6 +474,13 @@ section:not(:last-child) {
   scrollbar-width: none;
 }
 
+/* on a phone the blog ticker takes its own row above "About the project" */
+@media screen and (max-width: 600px) {
+  #app.map {
+    --map-footer-peek: 84px;
+  }
+}
+
 .container {
   padding: calc(var(--gap) * 0.5) var(--gap);
 }
