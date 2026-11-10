@@ -7,35 +7,61 @@
   <PageTextLayout>
     <div class="pagetext-header">
       <h1 class="pagetext-title">{{ $t("Where to buy air monitor Altruist") }}</h1>
-      <p class="pagetext-subtitle">
-        {{
-          $t(
-            "Two-module environment monitoring kit for indoors and outdoors — for those who care about health. You track your pulse, HRV, sleep phases. To achieve the best recovery results — you need to account for sleep conditions and the environment you live in."
-          )
-        }}
-      </p>
+      <p class="pagetext-subtitle">{{ $t("buy.subtitle") }}</p>
     </div>
 
-    <section class="catalog">
-      <article v-for="product in products" :key="product.id" class="product">
-        <div class="product__media">
-          <img :src="product.image" :alt="product.title" loading="lazy" />
-        </div>
-        <h2 class="product__title">{{ product.title }}</h2>
-        <ul class="product__links">
-          <li v-for="link in product.links" :key="`${product.id}-${link.label}`">
-            <a :href="link.href" target="_blank" rel="noopener">{{ link.label }}</a>
-          </li>
-        </ul>
-      </article>
-    </section>
+    <div class="buy">
+      <a class="local" :href="pinout.href" target="_blank" rel="noopener">
+        <img class="local__logo" :src="pinout.image" alt="Pinout" />
+        <span class="local__text">
+          <strong>{{ $t("buy.cyprus.title") }}</strong>
+          <span>{{ $t("buy.cyprus.text") }}</span>
+        </span>
+        <span class="local__cta">{{ $t("buy.cyprus.cta") }} →</span>
+      </a>
 
-    <a class="pinout" :href="pinout.href" target="_blank" rel="noopener">
-      <span class="pinout__brand">
-        <img class="pinout__mark" :src="pinout.image" alt="pinout logo" />
-      </span>
-      <span class="pinout__link">{{ pinout.label }}</span>
-    </a>
+      <section class="catalog">
+        <article
+          v-for="product in products"
+          :key="product.id"
+          class="product"
+          :class="{ 'product--featured': product.featured }"
+        >
+          <span v-if="product.featured" class="product__badge">{{ $t("buy.badge") }}</span>
+          <div class="product__media">
+            <img :src="product.image" :alt="product.title" loading="lazy" />
+          </div>
+          <div class="product__body">
+            <p class="product__kind">{{ product.kind }}</p>
+            <h2 class="product__title">{{ product.title }}</h2>
+            <p class="product__text">{{ product.text }}</p>
+            <div class="product__actions">
+              <a class="product__buy" :href="product.shop" target="_blank" rel="noopener">
+                {{ $t("Buy on Cyberpunks.shop") }}
+              </a>
+              <div class="product__alt">
+                <span>{{ $t("buy.alsoOn") }}</span>
+                <a
+                  v-for="link in product.amazon"
+                  :key="link.href"
+                  :href="link.href"
+                  target="_blank"
+                  rel="noopener"
+                  :title="link.hint"
+                >
+                  {{ link.label }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <p class="extras">
+        {{ $t("buy.extras") }}
+        <a href="https://cyberpunks.shop/" target="_blank" rel="noopener">Cyberpunks.shop →</a>
+      </p>
+    </div>
   </PageTextLayout>
 </template>
 
@@ -48,7 +74,6 @@ import PageTextLayout from "../components/layouts/PageText.vue";
 import dualImage from "@/assets/images/altruist-device/altruist-dual.webp";
 import urbanImage from "@/assets/images/altruist-device/altruist-urban.webp";
 import insightImage from "@/assets/images/altruist-device/altruist-insight.webp";
-import accessoriesImage from "@/assets/images/altruist-device/repair-kit-for-urban.webp";
 import pinoutLogo from "@/assets/images/logos/pinout-logo.png";
 
 const { t } = useI18n();
@@ -56,191 +81,239 @@ const { t } = useI18n();
 const productCatalog = [
   {
     id: "dual",
+    featured: true,
     titleKey: "Altruist Dual",
     image: dualImage,
-    links: {
-      cyberpunks: "https://cyberpunks.shop/altruist-dual",
-      amazonUs: "https://www.amazon.com/dp/B0GXKZG4D4?th=1",
-      amazonDe: "https://www.amazon.de/dp/B0GXKZG4D4?th=1",
-    },
+    shop: "https://cyberpunks.shop/altruist-dual",
+    amazonUs: "https://www.amazon.com/dp/B0GXKZG4D4?th=1",
+    amazonDe: "https://www.amazon.de/dp/B0GXKZG4D4?th=1",
   },
   {
     id: "urban",
     titleKey: "Altruist Urban",
     image: urbanImage,
-    links: {
-      cyberpunks: "https://cyberpunks.shop/altruist-urban",
-      amazonUs: "https://www.amazon.com/dp/B0GWR3HDPD?th=1",
-      amazonDe: "https://www.amazon.de/dp/B0GXF54G56",
-    },
+    shop: "https://cyberpunks.shop/altruist-urban",
+    amazonUs: "https://www.amazon.com/dp/B0GWR3HDPD?th=1",
+    amazonDe: "https://www.amazon.de/dp/B0GXF54G56",
   },
   {
     id: "insight",
     titleKey: "Altruist Insight",
     image: insightImage,
-    links: {
-      cyberpunks: "https://cyberpunks.shop/altruist-insight",
-      amazonUs: "https://www.amazon.com/dp/B0HCCMWJVW?th=1",
-      amazonDe: "https://www.amazon.de/dp/B0HCCKJ2YN?th=1",
-    },
-  },
-  {
-    id: "accessories",
-    titleKey: "Other accessories",
-    image: accessoriesImage,
-    links: {
-      cyberpunks: "https://cyberpunks.shop/",
-    },
+    shop: "https://cyberpunks.shop/altruist-insight",
+    amazonUs: "https://www.amazon.com/dp/B0HCCMWJVW?th=1",
+    amazonDe: "https://www.amazon.de/dp/B0HCCKJ2YN?th=1",
   },
 ];
-
-const linkLabels = {
-  cyberpunks: () => t("Cyberpunks.shop (Worldwide)"),
-  amazonUs: () => t("Amazon USA"),
-  amazonDe: () => t("Amazon DE (available for Cyprus)"),
-};
 
 const products = computed(() =>
   productCatalog.map((item) => ({
     id: item.id,
+    featured: item.featured,
     title: t(item.titleKey),
+    kind: t(`buy.${item.id}.kind`),
+    text: t(`buy.${item.id}.text`),
     image: item.image,
-    links: Object.entries(item.links).map(([key, href]) => ({
-      href,
-      label: linkLabels[key]?.() ?? key,
-    })),
+    shop: item.shop,
+    amazon: [
+      { href: item.amazonUs, label: "Amazon US", hint: t("buy.amazonUs") },
+      { href: item.amazonDe, label: "Amazon EU", hint: t("buy.amazonDe") },
+    ],
   }))
 );
 
-const pinout = computed(() => ({
-  name: "Pinout",
+const pinout = {
   href: "https://pinout.cloud/",
   image: pinoutLogo,
-  label: t("Altruist Air Quality Sensors with Installation & Setup on Cyprus"),
-}));
+};
 </script>
 
 <style scoped>
+.container-pagetext > .buy {
+  max-width: 1100px;
+}
+
+.local {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--gap) * 1.2);
+  margin: calc(var(--gap) * 0.5) 0 calc(var(--gap) * 1.5);
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  background: var(--color-light-gray-shop);
+  color: var(--color-dark);
+  text-decoration: none;
+}
+
+.local:hover,
+.local:focus-visible {
+  text-decoration: none;
+  outline: 2px solid var(--color-link);
+}
+
+.local__logo {
+  width: 120px;
+  flex-shrink: 0;
+  border: none;
+  margin: 0;
+}
+
+.local__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  line-height: 1.35;
+}
+
+.local__cta {
+  margin-left: auto;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--color-link);
+}
+
 .catalog {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: calc(var(--gap) * 3);
-  row-gap: calc(var(--gap) * 1.8);
-  margin-top: calc(var(--gap) * 0.5);
-  margin-bottom: calc(var(--gap) * 1.5) !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(var(--gap) * 1.2);
+  margin-bottom: calc(var(--gap) * 1.2) !important;
+}
+
+.product {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--color-middle-gray);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-light);
+}
+
+.product--featured {
+  border-color: var(--color-dark);
+}
+
+.product__badge {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-green-bright);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-dark);
 }
 
 .product__media {
   display: grid;
   place-items: center;
-  min-height: 280px;
-  padding: calc(var(--gap) * 1.15) calc(var(--gap) * 1.4);
+  height: 240px;
+  padding: 0;
+  overflow: hidden;
   background: var(--color-light-gray-shop);
-  border-radius: 10px;
 }
 
 .product__media img {
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  transform: scale(1.35);
   object-fit: contain;
-  image-rendering: auto;
   border: none;
   margin: 0;
+}
+
+.product__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+.product__kind {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b6b72;
 }
 
 .product__title {
-  margin: calc(var(--gap) * 0.85) 0 0;
-  font-size: calc(var(--font-size) * 1.5);
+  margin: 0.15rem 0 0.4rem;
+  font-size: calc(var(--font-size) * 1.35);
   font-weight: 900;
-  text-align: center;
   color: var(--color-dark);
 }
 
-.product__links {
-  list-style: none;
-  margin: calc(var(--gap) * 0.35) auto 0;
-  padding: 0;
-  font-weight: 700;
+.product__text {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
-.product__links li:not(:last-child) {
-  border-bottom: 3px dashed var(--color-middle-gray);
+.product__actions {
+  margin-top: auto;
 }
 
-.product__links a {
+.product__buy {
   display: block;
-  padding: 0.55rem 0.4rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  background: var(--color-green-bright);
+  color: var(--color-dark);
+  font-weight: 700;
   text-align: center;
-  color: var(--color-link);
   text-decoration: none;
 }
 
-.product__links a:hover,
-.product__links a:focus-visible {
-  color: var(--color-link-hover);
+.product__buy:hover,
+.product__buy:focus-visible {
+  text-decoration: none;
+  filter: brightness(0.95);
 }
 
-.pinout {
+.product__alt {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: calc(var(--gap) * 1.2);
-  margin-top: calc(var(--gap) * 2);
-  padding: 0.95rem 1.25rem;
-  border: 2px solid var(--color-dark);
-  border-radius: 10px;
-  background: var(--color-light);
-  text-decoration: none;
-  color: inherit;
+  justify-content: center;
+  gap: 0.35rem 0.8rem;
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
 }
 
-.pinout:hover,
-.pinout:focus-visible {
-  text-decoration: none;
+.product__alt span {
+  color: #6b6b72;
 }
 
-.pinout__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.pinout__mark {
-  width: 100%;
-  max-width: 210px;
-  object-fit: contain;
-  object-position: left center;
-  border: none;
-  margin: 0;
-  flex-shrink: 0;
-}
-
-.pinout__link {
-  margin-left: auto;
-  font-size: calc(var(--font-size) * 1.3);
+.product__alt a {
+  font-weight: 700;
   color: var(--color-link);
-  font-weight: 600;
 }
 
-.pinout:hover .pinout__link,
-.pinout:focus-visible .pinout__link {
-  color: var(--color-link-hover);
+.extras {
+  margin: 0;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.extras a {
+  font-weight: 700;
 }
 
 @media (max-width: 900px) {
   .catalog {
     grid-template-columns: 1fr;
-    column-gap: 0;
   }
 
-  .pinout {
+  .local {
     flex-wrap: wrap;
   }
 
-  .pinout__link {
-    flex: 1 1 100%;
-    text-align: left;
+  .local__cta {
     margin-left: 0;
-    font-size: calc(var(--font-size) * 1);
   }
 }
 </style>
