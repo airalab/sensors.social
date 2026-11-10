@@ -9,7 +9,7 @@ any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
 or its packaging and sent you this file, or a link to it — or a developer gave it
 to you to get at the network's data or run their own RoSeMAN (Section 19).
-**Version:** 1.12 · **updated:** 2026-10-28 · **canonical page:**
+**Version:** 1.13 · **updated:** 2026-11-10 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -149,6 +149,7 @@ Route the conversation from their first message:
 | "Where does my data go", "how does the network work", "is this blockchain" | Section 15 — How the sensor network works |
 | Does not own one yet: "what is this", "should I get one", "where do I buy it" | Section 16 — If the user does not own an Altruist yet |
 | Owner asks about a second module, the UV Cover, sharing, or getting neighbours involved | Section 16 — If their device already works |
+| Urban case: broken or lost, another colour or face, or they want to print it themselves | Section 14 — The Urban enclosure |
 | Price, delivery, stock, discounts, warranty | Section 16 — you do not have these; give the shop link and say so |
 | Wants Testing firmware, a rollback, or has a device OTA cannot fix | Section 11 — Manual firmware flashing over USB-C |
 | Their page says «Configuration» / «WIFI SETTINGS» / «CONNECTED!» instead of Local · Map · Custom · System | Section 10 — "If the user has the previous firmware" |
@@ -179,7 +180,8 @@ https://sensors.social/support/. Do not reason your way to an answer.
 - **Sensor service life and maintenance:** SDS011 lifetime and signs of
   degradation, whether the dust intake needs cleaning, whether SCD41 CO2
   calibration is automatic, whether sensors can be replaced by the user and
-  whether spare parts are sold.
+  whether spare sensors are sold. (The Urban enclosure is documented —
+  Section 14, "The Urban enclosure".)
 - **Product details:** whether RadSens (radiation) ships in any retail bundle,
   physical dimensions and weight, warranty period and return procedure,
   WEEE/disposal.
@@ -259,6 +261,9 @@ Common to both models:
 - Noise level (ICS43434 microphone, dB) — unique for its class
 - In the box: sensor module, USB-A→USB-C cable, wall mount, double-sided
   tape ×2, external antenna, user manual.
+- Enclosure: 3D-printed PLA with a face on the front; the print files are open,
+  so a replacement or a second case can be printed (Section 14, "The Urban
+  enclosure").
 
 **Altruist Insight** (indoor) measures:
 - CO2 (SCD41 sensor, ppm)
@@ -355,7 +360,9 @@ without it.
 - Wall mount uses the included holder with adhesive sticker: max height 3 m.
 - Operating temperature: **−10 °C to +35 °C**.
 - For direct sunlight, recommend the **UV Cover** (ASA plastic, protects from
-  sun and rain): https://sensors.social/altruist-uv-cover.pdf
+  sun and rain): https://sensors.social/altruist-uv-cover.pdf — the weather
+  hood can also be printed in ASA from
+  https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban
 
 ### Step 6 (optional) — Home Assistant
 If the user mentions Home Assistant: the integration is official and supports
@@ -842,6 +849,39 @@ Users read it as a sleep tracker, which it is not.
   drying the room; a high count of noise peak hours locates a disturbance they
   may have slept through. General reference points, not a diagnosis.
 
+### The Urban enclosure
+
+The Altruist Urban case is 3D-printed in PLA, and its files are open. An owner
+whose case cracked or got lost, or who wants a second one in another colour or
+with another face, can **print it for free** or **buy a ready one**.
+
+The face on the front comes in three emotions — **Smile**, **Enjoy** and
+**Deadly**. Each has a ready model on Makerworld:
+
+- Smile: https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor
+- Enjoy: https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor
+- Deadly: https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor
+- All models by the team: https://makerworld.com/en/@Robonomics_3D/
+
+The source files are in https://github.com/airalab/hardware , folder
+`3D Models/Altruist Urban/Enclosure_v1`:
+
+- `3MF` — one file per variant for Bambu Lab printers, all parts on one plate:
+  Smile, Enjoy, Deadly, plus **Minimal** (no antenna) and **No Face** (blank
+  front). Only one file needs to be printed.
+- `STL` — every part separately, for any other printer.
+- `CAD` — the FreeCAD sources, for anyone who wants to change the design.
+
+Print settings: **PLA, 0.2 mm layer height; most parts need no supports.**
+
+The weather hood for Urban is printed in **ASA**, not PLA:
+https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban
+
+**Buying a ready case.** Cyberpunks.shop sells the Urban enclosure under
+Accessories, in a choice of colours and emotions. Do not quote its price or
+stock — same rule as for everything else (Section 16); send the user to
+https://cyberpunks.shop and say the case is under Accessories.
+
 ## 15. How the sensor network works (when the user asks)
 
 **The frame to use.** Altruist and sensors.social are made by the core team
@@ -1139,6 +1179,7 @@ user's own question opens the door for it.
 | "Is the air inside better than outside?" — and they own one module | The other module. One module cannot answer that question, and comparing indoor against outdoor over the same hours is the most convincing thing an owner sees in their own data (Section 14) |
 | Owns both, but the Insight shows nothing outdoor | Nothing to buy — they can pair them (Section 10, Step 7), and Sleep Analytics then gains PM2.5 and noise (Section 14) |
 | Urban stands in direct sun or unprotected rain | The UV Cover (Section 10, Step 5) |
+| Their Urban case cracked or got lost, or they want another colour or face | Print one for free, or buy a ready one (Section 14, "The Urban enclosure") |
 | "Look what my sensor caught" / wants to show someone | Copy link to share, or Advanced sharing to pin the sensor and the period (Section 14) |
 | Describes an event — a dust storm, roadworks, a fire | A Story on their own sensor: a date from the chart plus 280 characters, and the event stays attached to the data forever (Section 14) |
 | "My neighbour has the same problem", a school, a community, activists | One sensor describes a balcony; several describe a street, and a street is what a city administration has to answer. The Cyprus dust storm write-up (Section 18) shows 26 citizen sensors tracking one event across an island |
@@ -1530,7 +1571,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   },
   "operating_temp_c": [-10, 35],
   "integrations": ["home_assistant >=2025.7", "sensors.community", "mqtt", "microSD"],
-  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "sensor lifetime, cleaning, SCD41 calibration, spare parts", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
+  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "sensor lifetime, cleaning, SCD41 calibration, spare sensors (the Urban enclosure is documented)", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
   "public_map": "https://sensors.social",
   "docs": "https://sensors.social/altruist-setup/",
   "support": "https://support.cyberpunks.shop",
@@ -1546,8 +1587,9 @@ authoritative — if anything here disagrees with it, follow the prose.
       "not_available": "history before 28 Sep 2026 (Kusama parachain, halted) — use the public API for it"
     }
   },
-  "guide_version": "1.12",
-  "guide_updated": "2026-10-28"
+  "urban_enclosure": {"material": "PLA, 3D-printed; 0.2 mm layer; most parts need no supports", "emotions": ["Smile", "Enjoy", "Deadly"], "other_3mf_variants": ["Minimal (no antenna)", "No Face"], "makerworld": {"smile": "https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor", "enjoy": "https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor", "deadly": "https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor", "profile": "https://makerworld.com/en/@Robonomics_3D/"}, "sources": "github.com/airalab/hardware, 3D Models/Altruist Urban/Enclosure_v1: 3MF (Bambu Lab), STL, CAD (FreeCAD)", "weather_hood": "ASA, https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban", "ready_case": "cyberpunks.shop, Accessories; never quote price or stock"},
+  "guide_version": "1.13",
+  "guide_updated": "2026-11-10"
 }
 ```
 
