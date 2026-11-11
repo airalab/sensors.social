@@ -354,6 +354,13 @@ watch(
   margin: calc(var(--gap) * 1) 0;
 }
 
+/* Device shots in a set: drop the usual image margin so the tiles share one gap. */
+.blog-post .grid.grid-flush img {
+  width: 100%;
+  margin: 0;
+  max-height: none;
+}
+
 /* Phone screenshots: keep portrait shots readable but not huge on desktop */
 .blog-post .grid.grid-3 > p > img:nth-of-type(-n + 2) {
   width: auto;
