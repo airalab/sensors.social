@@ -16,7 +16,7 @@
         </b>
         <span class="panel-list__meta">
           <template v-if="isDemo">{{ t("sensorpopup.demo_live") }}</template>
-          <template v-else>{{ formatSensorIdShort(activeRow.sensorId) }}</template>
+          <template v-else>{{ sensorName(activeRow.sensorId) }}</template>
         </span>
       </div>
 
@@ -46,7 +46,7 @@
             <div class="panel-list__text">
               <span class="panel-list__title">Sensor ({{ sensorTypeTitle(row.type) }})</span>
               <span class="panel-list__meta">
-                <template v-if="row.sensorId">{{ formatSensorIdShort(row.sensorId) }}</template>
+                <template v-if="row.sensorId">{{ sensorName(row.sensorId) }}</template>
                 <template v-else>{{ t("sensor_picker_not_found") }}</template>
               </span>
             </div>
@@ -65,11 +65,11 @@
 </template>
 
 <script setup>
+import { sensorName } from "@/utils/addressNames";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   buildSensorPickerRows,
-  formatSensorIdShort,
   resolveSensorType,
   sensorTypeIcon,
   sensorTypeTitle,
