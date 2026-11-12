@@ -255,7 +255,9 @@ const aqiPart = computed(() => {
   return {
     key: "aqi",
     name: aqiMeta.nameshort?.[loc] || aqiMeta.label || "AQI",
-    displayValue: String(Math.round(value)),
+    // EEA levels are named, not numbered
+    displayValue:
+      version === "eu" ? zone?.label?.[loc] || zone?.label?.en || "" : String(Math.round(value)),
     unit: "",
     zoneLabel: zone?.label?.[loc] || zone?.label?.en || "",
     color: zone?.color || "var(--measure-nodata)",

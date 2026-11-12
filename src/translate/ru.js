@@ -69,6 +69,7 @@ export default {
   "scales.upto": "до",
   "scales.above": "выше",
   "chart.scaleAbove": "> {value} {unit}",
+  "aqi.eeaLastHour": "Европейский индекс (EEA), последний час",
   "chart.scaleBreak": "ниже {value} {unit}",
   "chart.scaleCompressed":
     "Верхняя полоса — сжатая шкала выше {value} {unit}: пик остаётся на графике, и обычный день тоже можно сравнить. Числа на пике настоящие.",
