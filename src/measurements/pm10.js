@@ -12,9 +12,7 @@ export default {
   },
   unit: "μg/m3",
   // EEA European Air Quality Index bands (airindex.eea.europa.eu; revision ETC HE 2024/17, July 2025).
-  // Defined for HOURLY mean concentrations: realtime markers show the last-hour mean, Daily Recap the
-  // day's mean; the chart keeps colouring each reading. The Fair/Moderate border 45 is the WHO 2021 24-h guideline.
-  hourlyMean: true,
+  // The bands are defined for hourly means; the map and chart colour each reading on them. The Fair/Moderate border 45 is the WHO 2021 24-h guideline.
   scaleNote: {
     en: "European Air Quality Index (EEA) bands. WHO 24-h guideline: 45 µg/m³.",
     ru: "Шкала Европейского индекса качества воздуха (EEA). Суточная норма ВОЗ: 45 мкг/м³.",
