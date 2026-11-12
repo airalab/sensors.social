@@ -59,6 +59,17 @@
         <font-awesome-icon icon="fa-solid fa-download" />
         <span>{{ $t("history.reports") }}</span>
       </button>
+
+      <button
+        type="button"
+        class="button-round-outline button-round-outline-labeled"
+        aria-haspopup="dialog"
+        :aria-expanded="aboutOpen ? 'true' : 'false'"
+        @click="openAbout"
+      >
+        <font-awesome-icon icon="fa-solid fa-circle-info" />
+        <span>{{ $t("footer.more") }}</span>
+      </button>
     </div>
 
     <div class="flexline footercontrol-wide mapcontrols-primary">
@@ -225,6 +236,7 @@ import { useMap } from "@/composables/useMap";
 import { useMessages } from "../../composables/useMessages";
 import { useSensors } from "../../composables/useSensors";
 import Accordion from "../controls/Accordion.vue";
+import { useAboutSheet } from "@/composables/useAboutSheet";
 
 // Переменные для геолокации (должны быть объявлены рано для CSS v-bind)
 const geomsg = ref("");
@@ -252,6 +264,7 @@ const emit = defineEmits(["center-on-user", "opengeotip", "clickMessage"]);
 
 // инстансы
 const mapState = useMap();
+const { aboutOpen, openAbout } = useAboutSheet();
 const router = useRouter();
 const route = useRoute();
 const { locale: i18nLocale, t } = useI18n();
@@ -854,7 +867,7 @@ defineExpose({
 }
 
 .mapcontrols {
-  bottom: var(--map-footer-peek, 0px);
+  bottom: 0;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
@@ -876,7 +889,7 @@ defineExpose({
 
 .popover-bottom-right,
 .popover-bottom-left {
-  bottom: calc(var(--app-inputheight) + var(--app-controlsgap) * 2 + var(--map-footer-peek, 0px));
+  bottom: calc(var(--app-inputheight) + var(--app-controlsgap) * 2);
   max-width: calc(100vw - var(--app-controlsgap) * 2);
 }
 
