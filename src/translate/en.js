@@ -69,6 +69,9 @@ export default {
   "scales.upto": "up to",
   "scales.above": "above",
   "chart.scaleAbove": "> {value} {unit}",
+  "aqi.eeaLastHour": "European AQI (EEA), last hour",
+  "chart.hourMean": "hourly mean",
+  "chart.rollingHourMean": "mean of the last 60 min",
   "chart.scaleBreak": "below {value} {unit}",
   "chart.scaleCompressed":
     "The top band is a compressed scale above {value} {unit}, so the peak stays visible and the rest of the day stays readable. Numbers on the peak are the real values.",

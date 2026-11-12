@@ -59,6 +59,7 @@ import {
   collectOwnerDeviceIds,
 } from "../utils/map/sensors/requests";
 import { hasValidCoordinates } from "../utils/utils";
+import { withLastHourMean } from "../utils/map/sensors/lastHourMean";
 import { getDefaultMapView, getMapAddressZoom } from "@/utils/map/defaultView";
 import { useSensors, redecryptDataBag, resolveOwnerAccount } from "../composables/useSensors";
 import { useMessages } from "../composables/useMessages";
@@ -276,15 +277,17 @@ const onRealtimePoint = async (point) => {
   }
 
   if (mapState.currentProvider.value === "realtime") {
+    // Marker colour: PM as the mean of the last 60 min (EEA bands are hourly); the popup keeps raw logs.
+    const markerData = withLastHourMean(point.sensor_id, point.timestamp, streamData);
     setSensorData(point.sensor_id, {
       geo: point.geo,
       model: point.model,
-      data: streamData,
+      data: markerData,
       owner: normalizeOwnerKey(point) || null,
       device_model: point.device_model || null,
       timestamp: point.timestamp,
     });
-    updateSensorMarker(point);
+    updateSensorMarker({ ...point, data: markerData });
 
     if (!isSensorOpen(point.sensor_id)) return;
 

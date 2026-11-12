@@ -1,5 +1,12 @@
 import { settings } from "@config";
 import { fetchJson } from "@/utils/utils";
+import measurements from "../measurements";
+
+const MEAN_METRICS = new Set(
+  Object.entries(measurements)
+    .filter(([, m]) => m?.hourlyMean)
+    .map(([k]) => k.toLowerCase())
+);
 
 class Provider {
   constructor(url) {
@@ -46,6 +53,20 @@ class Provider {
   }
 
   async maxValuesForPeriod(start, end, type) {
+    // The PM scale (EEA) is defined on means, not on the day's single highest reading: Daily Recap
+    // colours PM by the day's mean (RoSeMAN avgdata). Until a RoSeMAN with avgdata is deployed,
+    // this falls back to maxdata, the day's maximum. Other metrics keep the maximum.
+    if (MEAN_METRICS.has(String(type).toLowerCase())) {
+      try {
+        const result = await fetchJson(
+          `${settings.REMOTE_PROVIDER}api/v2/sensor/avgdata/${type}/${start}/${end}`,
+          { cache: "no-store" }
+        );
+        if (result?.result) return result.result;
+      } catch {
+        // no avgdata on this RoSeMAN yet
+      }
+    }
     try {
       const result = await fetchJson(
         `${settings.REMOTE_PROVIDER}api/v2/sensor/maxdata/${type}/${start}/${end}`,

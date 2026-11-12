@@ -11,9 +11,17 @@ export default {
     ru: "PM10",
   },
   unit: "μg/m3",
+  // EEA European Air Quality Index bands (airindex.eea.europa.eu; revision ETC HE 2024/17, July 2025).
+  // Defined for HOURLY mean concentrations: the chart colours hourly means, realtime markers show the
+  // last-hour mean, Daily Recap the day's mean. The Fair/Moderate border 45 is the WHO 2021 24-h guideline.
+  hourlyMean: true,
+  scaleNote: {
+    en: "European Air Quality Index (EEA) bands for hourly means. Colour shows the hourly mean; single readings are grey. WHO 24-h guideline: 45 µg/m³.",
+    ru: "Шкала Европейского индекса качества воздуха (EEA) для часовых средних. Цвет — у среднего за час, отдельные показания серые. Суточная норма ВОЗ: 45 мкг/м³.",
+  },
   zones: [
     {
-      valueMax: 50,
+      valueMax: 15,
       color: "var(--measure-green)",
       label: {
         en: "Good",
@@ -21,34 +29,42 @@ export default {
       },
     },
     {
-      valueMax: 100,
+      valueMax: 45,
       color: "var(--measure-bluegreen)",
       label: {
-        en: "Moderate",
-        ru: "Приемлемо",
+        en: "Fair",
+        ru: "Удовлетворительно",
       },
     },
     {
-      valueMax: 250,
+      valueMax: 120,
       color: "var(--measure-yellow)",
       label: {
-        en: "Unhealthy",
-        ru: "Вредно для здоровья",
+        en: "Moderate",
+        ru: "Умеренно",
       },
     },
     {
-      valueMax: 350,
+      valueMax: 195,
       color: "var(--measure-orange)",
       label: {
-        en: "Very Unhealthy",
-        ru: "Очень вредно для здоровья",
+        en: "Poor",
+        ru: "Плохо",
       },
     },
     {
+      valueMax: 270,
       color: "var(--measure-red)",
       label: {
-        en: "Unacceptable",
-        ru: "Неприемлемо",
+        en: "Very poor",
+        ru: "Очень плохо",
+      },
+    },
+    {
+      color: "var(--measure-darkred)",
+      label: {
+        en: "Extremely poor",
+        ru: "Крайне плохо",
       },
     },
   ],

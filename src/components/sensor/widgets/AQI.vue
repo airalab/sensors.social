@@ -2,19 +2,20 @@
   <div v-if="aqiValue !== null" class="aqi-container" :style="aqiStyle">
     <div class="aqi">
       <div class="aqi-badge">
+        <!-- EEA has six named levels and no number: the level name is the value -->
         <div class="aqi-box">
-          <span class="aqi-value">{{ aqiValue }}</span>
+          <span class="aqi-value">{{ isEEA ? zoneLabel : aqiValue }}</span>
         </div>
         <div class="aqi-text">
           <div class="aqi-subtext">{{ aqiTitle }}</div>
-          <div v-if="zoneLabel" class="aqi-label">{{ zoneLabel }}</div>
+          <div v-if="zoneLabel && !isEEA" class="aqi-label">{{ zoneLabel }}</div>
         </div>
       </div>
     </div>
 
     <select v-model="selectedVersion" @change="handleVersionChange" class="aqi-version-select">
       <option value="us">US EPA</option>
-      <option value="eu">EU Standards</option>
+      <option value="eu">EU (EEA)</option>
     </select>
   </div>
 </template>
@@ -32,7 +33,8 @@ const props = defineProps({
   logs: { type: Array, default: () => [] },
 });
 
-const { locale } = useI18n();
+const { locale, t } = useI18n();
+const isEEA = computed(() => mapState.aqiVersion.value === "eu");
 const mapState = useMap();
 const localeComputed = computed(() => localStorage.getItem("locale") || locale.value || "en");
 const selectedVersion = ref(mapState.aqiVersion.value);
@@ -67,7 +69,7 @@ const aqiValue = computed(() => {
 const aqiTitle = computed(() => {
   // Показываем разные названия в зависимости от выбранной версии AQI
   if (mapState.aqiVersion.value === "eu") {
-    return "AQI (EU)";
+    return t("aqi.eeaLastHour");
   } else {
     return "AQI (US EPA)";
   }
