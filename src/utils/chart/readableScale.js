@@ -267,7 +267,7 @@ export function applyReadableScale(seriesList) {
       if (typeof y !== "number" || !Number.isFinite(y)) return [x, null];
 
       const next = { x, y: scale.toDisplay(y), custom: { realY: y } };
-      if (index === peakIndex && y > scale.knee && !item.noPeakLabel) {
+      if (index === peakIndex && y > scale.knee) {
         const valueLabel = formatScaleValue(y);
         const caption = item.shortName ? `${item.shortName} ${valueLabel}` : valueLabel;
         const ownsAxisPeak = y === scale.max;

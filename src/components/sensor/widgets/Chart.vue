@@ -140,48 +140,6 @@ watch(() => Array.from(UNITS_FOUND.value).sort().join("|"), clearLegendCache);
 const REALTIME_VIEW_TIMELINE_MS = 60 * 60 * 1000;
 
 const chartSeries = ref([]);
-
-// Single readings under an hourly-mean line (metrics with hourlyMean): visible, but not the message.
-const RAW_READING_COLOR = "rgba(120, 120, 130, 0.55)";
-const HOUR_MS = 60 * 60 * 1000;
-
-/**
- * Hourly means for a [ms, value][] series. Day/week/month: clock-hour means as flat segments,
- * a break where an hour has no data. Realtime: a trailing 60-minute mean at every reading.
- */
-function hourlyMeanPoints(points, rolling) {
-  const valid = points.filter(([, v]) => typeof v === "number" && Number.isFinite(v));
-  if (!valid.length) return [];
-  if (rolling) {
-    const out = [];
-    let sum = 0;
-    let start = 0;
-    for (let i = 0; i < valid.length; i++) {
-      sum += valid[i][1];
-      while (valid[i][0] - valid[start][0] > HOUR_MS) sum -= valid[start++][1];
-      out.push([valid[i][0], sum / (i - start + 1)]);
-    }
-    return out;
-  }
-  const hours = new Map();
-  for (const [t, v] of valid) {
-    const h = Math.floor(t / HOUR_MS);
-    const acc = hours.get(h) || [0, 0];
-    acc[0] += v;
-    acc[1] += 1;
-    hours.set(h, acc);
-  }
-  const out = [];
-  let prev = null;
-  for (const h of [...hours.keys()].sort((a, b) => a - b)) {
-    const [sum, n] = hours.get(h);
-    const mean = sum / n;
-    if (prev !== null && h !== prev + 1) out.push([(prev + 1) * HOUR_MS, null]);
-    out.push([h * HOUR_MS, mean], [(h + 1) * HOUR_MS - 1, mean]);
-    prev = h;
-  }
-  return out;
-}
 const yScalesByUnit = ref(new Map());
 
 // Цветовые зоны отформатированные для Highcharts
@@ -1224,10 +1182,6 @@ function buildSeriesArray(log, legendKey) {
     let dataPoints = Array.from(
       new Map(data.map(([timestamp, value]) => [timestamp, value])).entries()
     ).sort((a, b) => a[0] - b[0]);
-    // Before week/month thinning: the hourly mean must see every reading.
-    const hourly = unitsettings[seriesMeta.id]?.hourlyMean
-      ? hourlyMeanPoints(dataPoints, isRealtime.value)
-      : null;
 
     // Умная фильтрация для Week и Month
     const timelineMode = mapState.timelineMode.value;
@@ -1354,42 +1308,8 @@ function buildSeriesArray(log, legendKey) {
     return {
       ...seriesMeta,
       data: dataPoints,
-      hourly,
     };
   });
-
-  // EEA bands are defined for hourly means (src/measurements/pm25.js, hourlyMean): the colour moves
-  // to an hourly-mean line, single readings are drawn thin and grey under it.
-  const hourlySeries = [];
-  for (const series of processedSeries) {
-    const { hourly } = series;
-    delete series.hourly;
-    if (!hourly?.length) continue;
-    const meanLabel = tr(isRealtime.value ? "chart.rollingHourMean" : "chart.hourMean");
-    hourlySeries.push({
-      id: `${series.id}-hourly`,
-      type: "line",
-      name: series.name,
-      shortName: series.shortName,
-      fullLabel: `${series.fullLabel} · ${meanLabel}`,
-      unit: series.unit,
-      data: hourly,
-      zones: series.zones,
-      lineWidth: 4,
-      zIndex: 3,
-      dashStyle: series.dashStyle === "ShortDot" ? "ShortDash" : "Solid",
-      linkedTo: series.linkedTo || series.id,
-      showInLegend: false,
-      showInNavigator: false,
-      noPeakLabel: true,
-      connectNulls: false,
-      dataGrouping: { enabled: false },
-    });
-    series.zones = [];
-    series.color = RAW_READING_COLOR;
-    series.lineWidth = 1;
-  }
-  processedSeries.push(...hourlySeries);
 
   // Сортируем серии по имени и кэшируем результат
   const sortedSeries = processedSeries.sort((a, b) => a.name.localeCompare(b.name));
