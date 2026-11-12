@@ -15,28 +15,74 @@
       </svg>
       {{ $t("Blog") }}
     </router-link>
-    <div class="ticker-window">
-      <!-- the list runs twice so the loop has no seam; the copy is hidden from screen readers -->
-      <div class="ticker-run" :style="{ animationDuration: `${latest.length * 12}s` }">
-        <ul v-for="copy in 2" :key="copy" :aria-hidden="copy === 2 ? 'true' : null">
-          <li v-for="post in latest" :key="post.slug">
-            <router-link :to="`/blog/${post.slug}`" :tabindex="copy === 2 ? -1 : null">
-              <span class="ticker-date">{{ shortDate(post.date) }}</span>
-              <span class="ticker-title">{{ post.title }}</span>
-            </router-link>
-          </li>
-        </ul>
-      </div>
+    <!-- static: the newest post first; the rest are reached with the arrows or a sideways swipe -->
+    <div ref="windowEl" class="ticker-window" @scroll.passive="updateEnds">
+      <ul class="ticker-list">
+        <li v-for="post in latest" :key="post.slug">
+          <router-link :to="`/blog/${post.slug}`">
+            <span class="ticker-date">{{ shortDate(post.date) }}</span>
+            <span class="ticker-title">{{ post.title }}</span>
+          </router-link>
+        </li>
+      </ul>
+    </div>
+    <div v-if="!atStart || !atEnd" class="ticker-arrows">
+      <button
+        type="button"
+        class="ticker-arrow"
+        :disabled="atStart"
+        :aria-label="$t('ticker.prev')"
+        :title="$t('ticker.prev')"
+        @click="page(-1)"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        class="ticker-arrow"
+        :disabled="atEnd"
+        :aria-label="$t('ticker.next')"
+        :title="$t('ticker.next')"
+        @click="page(1)"
+      >
+        ›
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
 import { useBlogPosts } from "@/composables/useBlogPosts";
 
 const { posts, currentLocale } = useBlogPosts();
 const latest = computed(() => posts.value.slice(0, 5));
+
+const windowEl = ref(null);
+const atStart = ref(true);
+const atEnd = ref(true);
+
+const updateEnds = () => {
+  const el = windowEl.value;
+  if (!el) return;
+  atStart.value = el.scrollLeft <= 1;
+  atEnd.value = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+};
+
+// One click moves by most of the visible width, so the next title starts near the left edge.
+const page = (dir) => {
+  const el = windowEl.value;
+  el?.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+};
+
+let resize = null;
+onMounted(() => {
+  updateEnds();
+  resize = new ResizeObserver(updateEnds);
+  if (windowEl.value) resize.observe(windowEl.value);
+});
+onBeforeUnmount(() => resize?.disconnect());
+watch(latest, () => nextTick(updateEnds));
 
 const shortDate = (date) =>
   new Intl.DateTimeFormat(currentLocale.value === "ru" ? "ru-RU" : "en-GB", {
@@ -73,58 +119,51 @@ const shortDate = (date) =>
   flex: 1 1 auto;
   align-items: center;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
 }
 
-.ticker-run {
+.ticker-window::-webkit-scrollbar {
+  display: none;
+}
+
+/* .ticker raises specificity over the global ul:not(:last-child) margin */
+.ticker .ticker-list {
   display: flex;
   align-items: center;
   width: max-content;
-  animation: ticker-scroll linear infinite;
-}
-
-/* stops under the pointer and while a link has keyboard focus, so a title can be read and clicked */
-.ticker:hover .ticker-run,
-.ticker:focus-within .ticker-run {
-  animation-play-state: paused;
-}
-
-/* .ticker raises specificity over the global ul:not(:last-child) margin, which pushed the first copy up */
-.ticker .ticker-run ul {
-  display: flex;
-  align-items: center;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 12px;
   list-style: none;
 }
 
 /* the site-wide li rule adds a bottom margin and its own font size, which lifts the titles off centre */
-.ticker-run li {
+.ticker-list li {
   display: flex;
   align-items: center;
   margin: 0;
   font-size: inherit;
 }
 
-.ticker-run li::after {
+.ticker-list li:not(:last-child)::after {
   content: "•";
   padding: 0 20px;
   color: var(--color-link);
 }
 
-.ticker-run a {
+.ticker-list a {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-left: 4px;
   color: var(--app-textcolor);
   font-size: 0.9rem;
   white-space: nowrap;
   text-decoration: none;
 }
 
-.ticker-run a:hover,
-.ticker-run a:focus-visible {
+.ticker-list a:hover,
+.ticker-list a:focus-visible {
   color: var(--color-link);
 }
 
@@ -137,27 +176,36 @@ const shortDate = (date) =>
   font-weight: 700;
 }
 
-@keyframes ticker-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+.ticker-arrows {
+  display: flex;
+  flex-shrink: 0;
+  align-items: stretch;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* no motion: the titles stay put and scroll sideways by hand */
+.ticker-arrow {
+  width: 32px;
+  border: 0;
+  background: transparent;
+  color: var(--app-textcolor);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ticker-arrow:hover:not(:disabled),
+.ticker-arrow:focus-visible {
+  color: var(--color-link);
+}
+
+.ticker-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ticker-window {
-    overflow-x: auto;
-  }
-
-  .ticker-run {
-    animation: none;
-  }
-
-  .ticker-run ul[aria-hidden] {
-    display: none;
+    scroll-behavior: auto;
   }
 }
 </style>

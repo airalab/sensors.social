@@ -23,8 +23,10 @@
           class="popovercontrol button-round-outline"
           popovertarget="about"
           :aria-label="$t('nav.menu')"
+          :aria-expanded="menuOpen ? 'true' : 'false'"
         >
-          <font-awesome-icon :icon="menuOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars'" />
+          <!-- stays a ☰: under the backdrop a × here looked disabled and sat right under the strip's × -->
+          <font-awesome-icon icon="fa-solid fa-bars" />
         </button>
 
         <button
@@ -55,6 +57,16 @@
             {{ lang.title }}
           </option>
         </select>
+        <button
+          type="button"
+          class="menu-close"
+          popovertarget="about"
+          popovertargetaction="hide"
+          :aria-label="$t('banner.close')"
+          :title="$t('banner.close')"
+        >
+          <font-awesome-icon icon="fa-solid fa-xmark" />
+        </button>
       </div>
 
       <nav class="menu-links" :aria-label="$t('nav.menu')">
@@ -73,6 +85,14 @@
         <router-link class="menu-link" to="/altruist-setup/">{{ $t("nav.setup") }}</router-link>
         <router-link class="menu-link" to="/blog/">{{ $t("Blog") }}</router-link>
         <router-link class="menu-link" to="/support/">{{ $t("Support") }}</router-link>
+        <a
+          v-if="route.name === 'main'"
+          class="menu-link"
+          href="#about-project"
+          aria-haspopup="dialog"
+          @click.prevent="openAbout"
+          >{{ $t("footer.more") }}</a
+        >
       </nav>
 
       <LicenceLine class="menu-licence" />
@@ -101,6 +121,7 @@ import Login from "./Login.vue";
 import ServiceStatus from "./ServiceStatus.vue";
 import TopStrip from "../TopStrip.vue";
 import Bookmarks from "@/components/Bookmarks.vue";
+import { useAboutSheet } from "@/composables/useAboutSheet";
 
 const { locale: i18nLocale } = useI18n();
 const route = useRoute();
@@ -109,6 +130,7 @@ const locale = ref(localStorage.getItem("locale") || i18nLocale.value || "en");
 const locales = languages || ["en"];
 const { idbBookmarks } = useBookmarks();
 const menuOpen = ref(false);
+const { openAbout } = useAboutSheet();
 const localeComputed = computed(() => locale.value || "en");
 // Количество закладок
 const bookmarksCount = computed(() => idbBookmarks.value?.length || 0);
@@ -211,9 +233,31 @@ header > .popover {
 }
 
 .menu-title {
+  flex: 1 1 auto;
   color: #555;
   font-size: 0.8rem;
   font-weight: 800;
+}
+
+.menu-close {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--app-textcolor);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.menu-close:hover,
+.menu-close:focus-visible {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-link);
 }
 
 .menu-head .menu-locale {

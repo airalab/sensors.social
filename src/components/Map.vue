@@ -370,7 +370,7 @@ defineExpose({
   left: 0;
   z-index: 0;
   width: 100%;
-  height: calc(100svh - var(--map-footer-peek, 0px));
+  height: 100svh;
   overflow: hidden;
 }
 </style>
