@@ -9,7 +9,7 @@ any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
 or its packaging and sent you this file, or a link to it — or a developer gave it
 to you to get at the network's data or run their own RoSeMAN (Section 19).
-**Version:** 1.13 · **updated:** 2026-11-10 · **canonical page:**
+**Version:** 1.14 · **updated:** 2026-11-12 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -378,7 +378,7 @@ readings:
   **with an Urban**.
 - **The main Urban** shares the first page of the e-ink screen with the
   Insight's own readings. On current hardware (ESP32-C6) the Insight finds it
-  on the network via mDNS (service `altruist._tcp`) — usually no action
+  on the network via mDNS (service `_altruist._tcp`) — usually no action
   needed; otherwise type its IP ("custom IP").
 - **Legacy Urban units (ESP32-C3) have no mDNS**: set the Urban's LAN IP
   address manually. If auto-discovery fails, this manual IP method works on
@@ -448,6 +448,46 @@ https://wiki.robonomics.network/docs/altruist/
   while powered; do not block the air intake; Insight is an indoor device and
   is not waterproof; Urban outdoors should be protected from direct sun and
   rain (UV Cover) and kept within −10…+35 °C.
+
+### Updating every device on the owner's network (AI agents with LAN access)
+
+For an assistant that runs commands on a computer in the owner's home (an
+agent, not a chat). The owner says "update all my Altruists" — that is the
+permission for the steps below; still name each device and its versions before
+and after. Verified on 2026-11-12 on two Urbans and two Insights.
+
+1. **Find the devices.** Each Altruist (ESP32-C6) announces the mDNS service
+   `_altruist._tcp`; the TXT record carries `device_model=urban|insight`.
+   On Linux: `avahi-browse -rtp _altruist._tcp`; on macOS: `dns-sd -B _altruist._tcp`.
+   Legacy ESP32-C3 Urbans do not announce it — take their IP from the owner or
+   the router. Skip entries that are not on the owner's LAN (a VPN interface
+   can show someone else's device).
+2. **Read the version.** `http://<ip>/status` shows it (`Firmware version` or
+   `Firmware:`), e.g. `R-URB_2026-11`, `R-INS_2026-04.4`. The latest Stable
+   release is the newest one at
+   https://github.com/airalab/altruist-firmware/releases — `v_R_2026-11` there
+   means `R-URB_2026-11` / `R-INS_2026-11` on the device.
+3. **Update, by the generation of the firmware on the device:**
+   - **R_2026-10 and newer (Hub interface):** `GET /ota-check.json` returns
+     `{"status":"uptodate"|…,"latest":"R-URB_2026-11","show_install":…}`.
+     If `show_install` is true: `POST /ota-install.json`, then poll
+     `GET /ota-progress.json` until `success` or `failed`.
+   - **R_2026-04 … R_2026-06 (page Local → Firmware Update at `/ota`):**
+     `POST /ota` with no body. The reply says "Update check requested"; the
+     device downloads, installs and restarts on its own.
+   - **Older builds with no `/ota` page** (seen: `R-URB_2026-01`, `/ota`
+     answers 404): OTA cannot move them even with Auto update on — `/status`
+     shows recent "Last OTA" checks and the same version. Only a one-time USB
+     flash helps (next subsection). Tell the owner it needs the device on a
+     desktop computer with Chrome or Edge; do not try further from the network.
+4. **Wait and confirm.** The device goes silent for about a minute and comes
+   back. `/status` then shows the new version and `Reset Reason: OTA firmware
+   update`; settings, Wi-Fi and the device key stay. Do not cut power meanwhile.
+5. **Report** one line per device: name, IP, version before → after, or why it
+   was not updated.
+
+If a device asks for a password (the owner set Web UI protection), ask the owner
+to enter it in the browser themselves; never ask for it in chat.
 
 ### Manual firmware flashing over USB-C (webflasher)
 
@@ -1495,12 +1535,12 @@ authoritative — if anything here disagrees with it, follow the prose.
     "why": ["history cannot be retro-edited", "every component of the cloud is open source and self-hostable, so nothing depends on one vendor", "publishing is optional, local operation needs none of it"],
     "source": "code of altruist-firmware, sensors-connectivity, connectivity-protocol, connectivity-cloud, RoSeMAN, sensors.social as of 2026-10-16; background https://x.com/EnsRationis/status/1894397199078810064"
   },
-  "pairing": {"insight_to_urban": "mDNS altruist._tcp (ESP32-C6) or manual Urban IP (legacy ESP32-C3)"},
+  "pairing": {"insight_to_urban": "mDNS _altruist._tcp (ESP32-C6) or manual Urban IP (legacy ESP32-C3)"},
   "wifi_reset": {"urban_c6": "hold reset button >10s while running", "insight": "hold SET+DOWN 4s", "effect": "clears Wi-Fi + web password, preserves identity"},
   "factory_reset": {"urban_c6": "hold reset button while powering on", "insight": "hold SET+DOWN while powering on", "effect": "erases everything incl. Robonomics identity"},
   "insight_buttons": {"UP": "prev screen", "DOWN": "next screen", "SET_long": "sleep"},
   "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min"},
-  "firmware_update": "OTA on stable channel (Local -> System -> Auto update firmware); manual check in Local -> Firmware Update (Check for update -> Update, Switch language); USB flashing via browser webflasher (Web Serial API) only for special cases",
+  "firmware_update": "OTA on stable channel (Local -> System -> Auto update firmware); manual check in Local -> Firmware Update (Check for update -> Update, Switch language); USB flashing via browser webflasher (Web Serial API) only for special cases; agent on the owner's LAN: Section 11 \"Updating every device on the owner's network\"",
   "webflasher": {
     "url": "https://webflasher.robonomics.network/",
     "title": "Robonomics ESP Installer",
@@ -1589,8 +1629,8 @@ authoritative — if anything here disagrees with it, follow the prose.
     }
   },
   "urban_enclosure": {"material": "PLA, 3D-printed; 0.2 mm layer; most parts need no supports", "emotions": ["Smile", "Enjoy", "Deadly"], "other_3mf_variants": ["Minimal (no antenna)", "No Face"], "makerworld": {"smile": "https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor", "enjoy": "https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor", "deadly": "https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor", "profile": "https://makerworld.com/en/@Robonomics_3D/"}, "sources": "github.com/airalab/hardware, 3D Models/Altruist Urban/Enclosure_v1: 3MF (Bambu Lab), STL, CAD (FreeCAD)", "weather_hood": "ASA, https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban", "ready_case": "https://cyberpunks.shop/altruist-urban-enclosure — full enclosure kit without electronics; never quote price or stock"},
-  "guide_version": "1.13",
-  "guide_updated": "2026-11-10"
+  "guide_version": "1.14",
+  "guide_updated": "2026-11-12"
 }
 ```
 
