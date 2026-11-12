@@ -198,7 +198,8 @@
 import { computed, ref, watch, onMounted, onBeforeUnmount, inject } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMap } from "@/composables/useMap";
-import { useSensors, isSensorAddressReady, formatSensorIdShort } from "@/composables/useSensors";
+import { useSensors, isSensorAddressReady } from "@/composables/useSensors";
+import { sensorName } from "@/utils/addressNames";
 import { useLogGeoAddresses, LOG_GEO_ADDRESSES_KEY } from "@/composables/useLogGeoAddresses";
 import { getStoriesForSensor, isStoryHidden, storiesLocalKeys } from "@/composables/useStories";
 import { useSensorBookmark } from "@/composables/useBookmarks";
@@ -235,7 +236,7 @@ const logGeoAddresses =
 const displayAddress = computed(() => logGeoAddresses.headerAddress.value);
 const hasAddress = computed(() => isSensorAddressReady(displayAddress.value));
 const headerFallbackLabel = computed(() => {
-  const id = formatSensorIdShort(point.value?.sensor_id);
+  const id = sensorName(point.value?.sensor_id);
   return id ? t("sensorpopup.sensorIdHeader", { id }) : "";
 });
 const isAddressLoading = computed(

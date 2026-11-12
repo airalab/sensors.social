@@ -1,7 +1,8 @@
 import { computed, toValue } from "vue";
 import { settings } from "@config";
 import { useLogGeoAddresses } from "@/composables/useLogGeoAddresses";
-import { formatSensorIdShort, resolveSensorType, sensorTypeTitle } from "@/composables/useSensors";
+import { resolveSensorType, sensorTypeTitle } from "@/composables/useSensors";
+import { sensorName } from "@/utils/addressNames";
 import measurements from "../measurements";
 import { MEASUREMENT_GROUPS, MEASUREMENT_GROUP_LOOKUP } from "../measurements/groups";
 import en from "../translate/en.js";
@@ -20,7 +21,7 @@ export function sensorShareTitleLead(placeLabel) {
 
 /** @param {{ address?: string|null, sensorId: string, suffix: string }} opts */
 export function buildSensorShareTitle({ address, sensorId, suffix }) {
-  const place = address || formatSensorIdShort(sensorId);
+  const place = address || sensorName(sensorId);
   return `${sensorShareTitleLead(place)} — ${suffix}`;
 }
 
@@ -91,7 +92,7 @@ export function useSensorPageMeta(
       return settings?.DESC || null;
     }
 
-    const sid = formatSensorIdShort(sensorId);
+    const sid = sensorName(sensorId);
     const address = logGeoAddresses.headerAddress.value;
     if (!address) return null;
 

@@ -21,7 +21,7 @@
               aria-hidden="true"
             />
             <font-awesome-icon v-else icon="fa-solid fa-user" class="account-icon" />
-            <b class="account-address-text">{{ collapseAddress(acc.address) }}</b>
+            <b class="account-address-text" :title="acc.address">{{ ownerName(acc.address) }}</b>
           </div>
           <div class="account-actions">
             <Copy
@@ -86,6 +86,7 @@
 </template>
 
 <script setup>
+import { ownerName } from "@/utils/addressNames";
 import { ref, onMounted, watch } from "vue";
 import { useAccounts } from "@/composables/useAccounts";
 import config from "@/config/default/config.json";
@@ -142,11 +143,6 @@ async function logoutAll() {
   await loadAccounts();
 }
 
-function collapseAddress(addr) {
-  const s = String(addr || "");
-  if (s.length <= 16) return s;
-  return `${s.slice(0, 6)}...${s.slice(-6)}`;
-}
 
 // Сформировать ссылку на сенсор
 function getSensorLink(sensor) {

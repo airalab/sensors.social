@@ -58,7 +58,7 @@
             </div>
             <div class="panel-list__text">
               <b class="panel-list__title">{{ t("sensorpopup.infosensorowner") }}</b>
-              <span class="panel-list__meta">{{ formatSensorIdShort(ownerKey) }}</span>
+              <span class="panel-list__meta">{{ ownerName(ownerKey) }}</span>
             </div>
             <font-awesome-icon
               icon="fa-solid fa-caret-down"
@@ -96,7 +96,7 @@
             </div>
             <div class="panel-list__text">
               <b class="panel-list__title">{{ t("sensorpopup.infosensorowner") }}</b>
-              <span class="panel-list__meta">{{ formatSensorIdShort(ownerKey) }}</span>
+              <span class="panel-list__meta">{{ ownerName(ownerKey) }}</span>
             </div>
           </div>
           <p v-if="isOwnerLoggedIn" class="panel-popover__footer">
@@ -264,12 +264,12 @@
 </template>
 
 <script setup>
+import { ownerName } from "@/utils/addressNames";
 import { computed, ref, watch, inject, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMap } from "@/composables/useMap";
 import {
   useSensors,
-  formatSensorIdShort,
   isPanelSensorPickerReady,
   isPanelOwnerLoading,
   resolveSensorType,
@@ -325,7 +325,8 @@ const chartAddressForTimestamp = (...args) => logGeoAddresses?.addressForTimesta
 
 const ownerKey = computed(() => String(props.point?.owner || "").trim());
 const ownerAvatar = ref(null);
-const ownerPlaceholderMeta = formatSensorIdShort("00000000000000000000000000000000");
+// placeholder text only sets the skeleton width
+const ownerPlaceholderMeta = "Woolly Pony";
 
 const isSensorPickerReady = computed(() => isPanelSensorPickerReady(props.point));
 const isOwnerLoading = computed(() => isPanelOwnerLoading(props.point));
