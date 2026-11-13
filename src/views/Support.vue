@@ -1,5 +1,9 @@
 <template>
-  <MetaInfo pageTitle="Support — sensors.social" pageImage="/og-default.webp" />
+  <MetaInfo
+    :pageTitle="$t('seo.supportTitle')"
+    :pageDescription="$t('seo.supportDescription')"
+    pageImage="/og-default.webp"
+  />
   <PageTextLayout>
     <div class="pagetext-prose">
       <section class="pagetext-header">

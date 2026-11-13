@@ -926,4 +926,8 @@ export default {
   "usecases.alt3": "Altruist in a smart-home living room, turning on a purifier, humidifier and air conditioner",
   "usecases.alt4": "World map of community air sensors and the open-source GitHub logo",
   "landing.appScreenshot": "{name} app screen",
+  "seo.privacyTitle": "Sensors.social Privacy Policy",
+  "seo.privacyDescription": "What sensors.social collects and why: self-hosted Matomo analytics without tracking cookies, the messages you send us, your rights and how long data is kept.",
+  "seo.supportTitle": "Support — sensors.social",
+  "seo.supportDescription": "Questions about Altruist sensors or the sensors.social map, feedback and anything else: send us a message and we reply by email.",
 };

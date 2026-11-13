@@ -8,4 +8,4 @@ export const languages = [
   { code: "ru", title: "RU" },
 ];
 
-export const defaultLocale = localStorage.getItem("locale") || "en";
+export { DEFAULT_LOCALE as defaultLocale } from "../utils/localePath";

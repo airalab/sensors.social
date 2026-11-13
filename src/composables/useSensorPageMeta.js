@@ -78,7 +78,8 @@ export function useSensorPageMeta(
   const pageTitle = computed(() => {
     const sensorId = String(toValue(sensorIdSource) || "").trim();
     if (!sensorId) {
-      return settings?.TITLE || settings?.SITE_NAME || "Sensors map";
+      const dict = UI_MESSAGES[toValue(localeSource)] || UI_MESSAGES.en;
+      return dict["seo.mapTitle"] || settings?.TITLE || settings?.SITE_NAME || "Sensors map";
     }
 
     const address = logGeoAddresses.headerAddress.value;

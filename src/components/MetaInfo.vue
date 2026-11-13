@@ -7,6 +7,7 @@ import { useHead } from "@vueuse/head";
 import { useI18n } from "vue-i18n";
 
 import { settings } from "@config";
+import { withLocale } from "@/utils/localePath";
 
 const { locale: i18nLocale } = useI18n();
 
@@ -17,14 +18,34 @@ const props = defineProps({
   pageImageWidth: { type: String },
   pageImageHeight: { type: String },
   noindex: { type: Boolean, default: false },
+  // false when the Russian address shows the English text (a post without index.ru.md):
+  // then the page points search engines to the English original and claims no translation.
+  translated: { type: Boolean, default: true },
 });
 
 const route = useRoute();
-// One address per page for search engines: no query string (map state, ad click ids) and
-// always a trailing slash, because GitHub Pages serves /page/ and redirects /page to it.
-const canonicalUrl = computed(() => {
-  const path = route.path.endsWith("/") ? route.path : `${route.path}/`;
-  return (settings?.SITE_URL || "") + path;
+// One address per page and language for search engines: no query string (map state, ad
+// click ids) and always a trailing slash, because GitHub Pages serves /page/ and redirects
+// /page to it.
+const pathWithSlash = computed(() => (route.path.endsWith("/") ? route.path : `${route.path}/`));
+const siteUrl = settings?.SITE_URL || "";
+const urlFor = (locale) => siteUrl + withLocale(pathWithSlash.value, locale);
+
+const canonicalUrl = computed(() =>
+  props.translated ? siteUrl + pathWithSlash.value : urlFor("en")
+);
+
+const links = computed(() => {
+  if (props.noindex) return [];
+  const list = [{ rel: "canonical", href: canonicalUrl.value }];
+  if (props.translated) {
+    list.push(
+      { rel: "alternate", hreflang: "en", href: urlFor("en") },
+      { rel: "alternate", hreflang: "ru", href: urlFor("ru") },
+      { rel: "alternate", hreflang: "x-default", href: urlFor("en") }
+    );
+  }
+  return list;
 });
 
 const locale = computed(() => {
@@ -63,6 +84,7 @@ const meta = computed(() => {
     d.image && d.image_width && { property: "og:image:width", content: d.image_width },
     d.image && d.image_height && { property: "og:image:height", content: d.image_height },
     { property: "og:url", content: canonicalUrl.value },
+    { property: "og:locale", content: locale.value === "ru" ? "ru_RU" : "en_US" },
 
     { name: "twitter:card", content: "summary_large_image" },
     d.title && { name: "twitter:title", content: d.title },
@@ -80,6 +102,6 @@ useHead({
     dir: "ltr",
   },
   meta: () => meta.value,
-  link: () => (props.noindex ? [] : [{ rel: "canonical", href: canonicalUrl.value }]),
+  link: () => links.value,
 });
 </script>

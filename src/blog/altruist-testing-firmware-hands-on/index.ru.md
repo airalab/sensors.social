@@ -10,7 +10,7 @@ tags: ["firmware", "altruist", "guide", "testing"]
 author: ""
 ---
 
-Несколько дней назад мы [рассказывали, что готовим](/blog/altruist-firmware-hub-and-encryption/):
+Несколько дней назад мы [рассказывали, что готовим](/ru/blog/altruist-firmware-hub-and-encryption/):
 app-like веб-интерфейс, шифрование значений на карте, бэкап и восстановление.
 Теперь всё это доступно в канале Testing, и этот пост — практическая половина.
 Мы взяли работающий Urban, поставили на него Testing, подключили к Wi-Fi и

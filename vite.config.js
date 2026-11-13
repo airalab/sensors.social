@@ -26,32 +26,27 @@ function getBlogRoutes() {
 // the page is complete as static HTML, and a few lines of inline script carry the ad click
 // id to the shop link. The app loads only for a non-English locale.
 const LANDING_ROUTES = ["/altruist/insight", "/altruist/urban", "/altruist/dual"];
+const LANDING_ROUTES_ALL = [...LANDING_ROUTES, ...LANDING_ROUTES.map((r) => `/ru${r}`)];
 
-function landingBoot(appSrc) {
+// The landings run without the app, so the language links and the "picked Russian before"
+// redirect are done here. Both keep the query string: it carries the ad click id.
+function landingBoot() {
   return `<script>(function () {
   var withClickIds = ${withClickIds.toString()};
   document.querySelectorAll("a[data-shop]").forEach(function (a) {
     a.href = withClickIds(a.href, location.search);
   });
-  var loaded = false;
-  function loadApp() {
-    if (loaded) return;
-    loaded = true;
-    var s = document.createElement("script");
-    s.type = "module";
-    s.crossOrigin = "";
-    s.src = ${JSON.stringify(appSrc)};
-    document.body.appendChild(s);
-  }
-  var saved = null;
-  try { saved = localStorage.getItem("locale"); } catch (e) {}
-  if (saved && saved !== "en") loadApp();
-  document.querySelectorAll("[data-locale]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      try { localStorage.setItem("locale", b.dataset.locale); } catch (e) {}
-      if (b.dataset.locale !== "en") loadApp();
+  document.querySelectorAll("a[data-locale]").forEach(function (a) {
+    a.href = a.getAttribute("href").split("?")[0] + location.search + location.hash;
+    a.addEventListener("click", function () {
+      try { localStorage.setItem("locale", a.dataset.locale); } catch (e) {}
     });
   });
+  var saved = null;
+  try { saved = localStorage.getItem("locale"); } catch (e) {}
+  if (saved === "ru" && !/^\\/ru(\\/|$)/.test(location.pathname)) {
+    location.replace("/ru" + location.pathname + location.search + location.hash);
+  }
 })();</script>`;
 }
 
@@ -72,23 +67,44 @@ function blogPostDate(route) {
   return m ? m[1] : null;
 }
 
+// Blog posts get a Russian address only when they have index.ru.md; everything else is
+// translated in src/translate/ru.js.
+function hasRussian(route) {
+  if (!route.startsWith("/blog/")) return true;
+  return fs.existsSync(path.resolve(__dirname, "src", route.slice(1), "index.ru.md"));
+}
+
+const ruRoute = (route) => (route === "/" ? "/ru" : `/ru${route}`);
+
 function sitemapXml(routes, siteUrl) {
+  const loc = (route) => siteUrl + (route === "/" ? "/" : `${route}/`);
   const urls = routes
     .filter((route) => !NOINDEX_ROUTES.includes(route))
-    .map((route) => {
-      const loc = siteUrl + (route === "/" ? "/" : `${route}/`);
+    .flatMap((route) => {
       const lastmod = route.startsWith("/blog/") ? blogPostDate(route) : null;
-      return `  <url><loc>${loc}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ""}</url>`;
+      const versions = hasRussian(route) ? [route, ruRoute(route)] : [route];
+      const alternates =
+        versions.length > 1
+          ? [
+              `<xhtml:link rel="alternate" hreflang="en" href="${loc(route)}"/>`,
+              `<xhtml:link rel="alternate" hreflang="ru" href="${loc(ruRoute(route))}"/>`,
+              `<xhtml:link rel="alternate" hreflang="x-default" href="${loc(route)}"/>`,
+            ].join("")
+          : "";
+      const modified = lastmod ? `<lastmod>${lastmod}</lastmod>` : "";
+      return versions.map(
+        (version) => `  <url><loc>${loc(version)}</loc>${modified}${alternates}</url>`
+      );
     });
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls.join("\n")}
 </urlset>
 `;
 }
 
 function stripAppBundle(renderedRoute) {
-  if (!LANDING_ROUTES.includes(renderedRoute.originalRoute.replace(/\/$/, ""))) return;
+  if (!LANDING_ROUTES_ALL.includes(renderedRoute.originalRoute.replace(/\/$/, ""))) return;
   let appSrc = null;
   renderedRoute.html = renderedRoute.html
     .replace(/<script type="module"[^>]*src="([^"]+)"[^>]*><\/script>/g, (tag, src) => {
@@ -97,12 +113,13 @@ function stripAppBundle(renderedRoute) {
     })
     .replace(/<link rel="modulepreload"[^>]*>/g, "");
   if (!appSrc) throw new Error(`Landing ${renderedRoute.originalRoute}: app entry not found`);
-  renderedRoute.html = renderedRoute.html.replace("</body>", `${landingBoot(appSrc)}</body>`);
+  renderedRoute.html = renderedRoute.html.replace("</body>", `${landingBoot()}</body>`);
 }
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
-  const prerenderRoutes = [
+  // English addresses; the Russian ones are the same under /ru.
+  const pageRoutes = [
     "/",
     "/privacy-policy",
     "/support",
@@ -120,7 +137,12 @@ export default defineConfig(() => {
     "/blog",
     // auto-generated blog routes
     ...getBlogRoutes(),
+  ];
+  const prerenderRoutes = [
+    ...pageRoutes,
+    ...pageRoutes.filter(hasRussian).map(ruRoute),
     ...NOINDEX_ROUTES,
+    "/ru/login",
   ];
 
   return {
@@ -156,7 +178,7 @@ export default defineConfig(() => {
         name: "sitemap",
         apply: "build",
         async writeBundle() {
-          const xml = sitemapXml(prerenderRoutes, "https://sensors.social");
+          const xml = sitemapXml(pageRoutes, "https://sensors.social");
           await fsp.writeFile(path.resolve(__dirname, "dist", "sitemap.xml"), xml);
         },
       },

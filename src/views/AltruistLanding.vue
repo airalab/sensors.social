@@ -16,18 +16,19 @@
       <router-link to="/where-to-buy/" class="lp-top__all">{{
         $t("landing.allDevices")
       }}</router-link>
-      <button
+      <a
         v-for="lang in languages"
         :key="lang.code"
-        type="button"
+        :href="hrefFor(lang.code)"
+        :hreflang="lang.code"
         class="lp-top__lang"
         :class="{ 'is-active': locale === lang.code }"
         :data-locale="lang.code"
-        :aria-pressed="locale === lang.code"
-        @click="setLocale(lang.code)"
+        :aria-current="locale === lang.code ? 'page' : undefined"
+        @click.prevent="switchLocale(lang.code)"
       >
         {{ lang.title }}
-      </button>
+      </a>
     </nav>
   </header>
 
@@ -184,6 +185,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
 import MetaInfo from "../components/MetaInfo.vue";
+import { useLocaleSwitch } from "@/composables/useLocaleSwitch";
 import { absoluteUrl, pageUrl, shopOffer, useStructuredData } from "@/utils/structuredData";
 import SiteFooter from "../components/layouts/SiteFooter.vue";
 import BuyBlock from "../components/AltruistBuyBlock.vue";
@@ -232,6 +234,7 @@ const props = defineProps({
 
 const route = useRoute();
 const { locale, t } = useI18n();
+const { hrefFor, switchLocale } = useLocaleSwitch();
 
 const apps = [
   { key: "local", name: "Altruist.local", img: appLocal },
@@ -316,7 +319,7 @@ const structuredData = computed(() => ({
   description: t(`landing.${props.model}.lead`),
   image: page.value.gallery.slice(0, 4).map(absoluteUrl),
   brand: { "@type": "Brand", name: "Altruist" },
-  url: pageUrl(`/altruist/${props.model}`),
+  url: pageUrl(route.path),
   offers: shopOffer(product.value),
 }));
 useStructuredData(structuredData);
@@ -326,11 +329,6 @@ const search = computed(() => new URLSearchParams(route.query).toString());
 
 const storyKey = (block) =>
   block.shared ? `landing.${block.key}` : `landing.${props.model}.${block.key}`;
-
-function setLocale(code) {
-  locale.value = code;
-  localStorage.setItem("locale", code);
-}
 </script>
 
 <style scoped>
@@ -374,6 +372,10 @@ function setLocale(code) {
 }
 
 .lp-top__lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   min-width: 44px;
   min-height: 44px;
   border: none;
