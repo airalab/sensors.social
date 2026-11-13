@@ -72,7 +72,7 @@
     "zoom": { "city": 14, "address": 18 }
   },
   "TITLE": "Map of independent air quality sensors",
-  "DESC": "Welcome to the decentralized opensource sensors map which operates with the sole intent of serving the free will of individuals, without any beneficiaries.",
+  "DESC": "Live map of independent air quality sensors: PM2.5, PM10, noise, temperature and humidity from citizen stations worldwide. Open data and open source.",
   "SITE_NAME": "Sensors.social",
   "SITE_URL": "https://sensors.social",
   "SHARE_URL": "https://share.sensors.social",

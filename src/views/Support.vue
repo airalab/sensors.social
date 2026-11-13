@@ -1,5 +1,5 @@
 <template>
-  <MetaInfo pageTitle="Support — sensors.social" />
+  <MetaInfo pageTitle="Support — sensors.social" pageImage="/og-default.webp" />
   <PageTextLayout>
     <div class="pagetext-prose">
       <section class="pagetext-header">

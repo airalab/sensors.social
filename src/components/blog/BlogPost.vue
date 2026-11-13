@@ -6,7 +6,7 @@
         <router-link class="blog-post__backlink" to="/blog/">{{
           $t("← Back to Blog")
         }}</router-link>
-        <img v-if="coverUrl" :src="coverUrl" class="blog-post__cover" />
+        <img v-if="coverUrl" :src="coverUrl" :alt="postTitle" class="blog-post__cover" />
         <div class="blog-post__hero-content">
           <h1>{{ postTitle }}</h1>
           <p class="blog-post__meta">

@@ -1,7 +1,7 @@
 <template>
   <MetaInfo
     :pageTitle="$t(`landing.${model}.metaTitle`)"
-    :pageDescription="$t(`landing.${model}.lead`)"
+    :pageDescription="$t(`landing.${model}.metaDescription`)"
     :pageImage="page.gallery[0]"
     pageImageWidth="720"
     pageImageHeight="720"
@@ -64,7 +64,12 @@
         class="lp-story"
         :class="{ 'lp-story--dark': block.dark }"
       >
-        <img :src="block.img" alt="" loading="lazy" decoding="async" />
+        <img
+          :src="block.img"
+          :alt="$t(`${storyKey(block)}.title`)"
+          loading="lazy"
+          decoding="async"
+        />
         <div class="lp-story__text">
           <h2>{{ $t(`${storyKey(block)}.title`) }}</h2>
           <p>{{ $t(`${storyKey(block)}.text`) }}</p>
@@ -81,7 +86,12 @@
           :to="item.to"
           class="lp-pair__item"
         >
-          <img :src="item.img" alt="" loading="lazy" decoding="async" />
+          <img
+            :src="item.img"
+            :alt="$t(`landing.dual.${item.key}.title`)"
+            loading="lazy"
+            decoding="async"
+          />
           <h2>{{ $t(`landing.dual.${item.key}.title`) }}</h2>
           <p>{{ $t(`landing.dual.${item.key}.text`) }}</p>
           <span class="lp-more">{{ $t("landing.moreAbout") }} {{ item.name }} →</span>
@@ -93,7 +103,14 @@
         <p class="lp-apps__lead">{{ $t("landing.apps.text") }}</p>
         <ol class="lp-apps__list">
           <li v-for="app in apps" :key="app.key">
-            <img :src="app.img" alt="" width="300" height="604" loading="lazy" decoding="async" />
+            <img
+              :src="app.img"
+              :alt="$t('landing.appScreenshot', { name: app.name })"
+              width="300"
+              height="604"
+              loading="lazy"
+              decoding="async"
+            />
             <div>
               <h3>{{ app.name }}</h3>
               <p>{{ $t(`landing.apps.${app.key}`) }}</p>
@@ -107,13 +124,23 @@
         <h2>{{ $t(`landing.${block.key}.title`, { name: product.title }) }}</h2>
         <p v-if="block.text">{{ $t(`landing.${block.key}.text`) }}</p>
         <a v-for="src in block.imgs" :key="src" :href="src" target="_blank" rel="noopener">
-          <img :src="src" alt="" loading="lazy" decoding="async" />
+          <img
+            :src="src"
+            :alt="$t(`landing.${block.key}.title`, { name: product.title })"
+            loading="lazy"
+            decoding="async"
+          />
         </a>
       </section>
 
       <section v-else-if="block.type === 'box'" class="lp-figure">
         <h2>{{ $t("landing.box.title") }}</h2>
-        <img :src="block.img" alt="" loading="lazy" decoding="async" />
+        <img
+          :src="block.img"
+          :alt="`${$t('landing.box.title')}: ${product.title}`"
+          loading="lazy"
+          decoding="async"
+        />
         <ul class="lp-box">
           <li v-for="item in block.items" :key="item">
             <strong
@@ -157,7 +184,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
 import MetaInfo from "../components/MetaInfo.vue";
-import { absoluteUrl, pageUrl, priceValue, useStructuredData } from "@/utils/structuredData";
+import { absoluteUrl, pageUrl, shopOffer, useStructuredData } from "@/utils/structuredData";
 import SiteFooter from "../components/layouts/SiteFooter.vue";
 import BuyBlock from "../components/AltruistBuyBlock.vue";
 import { altruistProducts } from "@config/altruistProducts";
@@ -282,8 +309,7 @@ const pages = {
 const page = computed(() => pages[props.model]);
 const product = computed(() => altruistProducts[props.model]);
 
-// Price and shop link are the ones the buy block shows. No availability: the shop is the
-// source of truth for stock and this page does not know it.
+// Price and shop link are the ones the buy block shows; stock and terms come from config.
 const structuredData = computed(() => ({
   "@type": "Product",
   name: product.value.title,
@@ -291,12 +317,7 @@ const structuredData = computed(() => ({
   image: page.value.gallery.slice(0, 4).map(absoluteUrl),
   brand: { "@type": "Brand", name: "Altruist" },
   url: pageUrl(`/altruist/${props.model}`),
-  offers: {
-    "@type": "Offer",
-    price: priceValue(product.value.price),
-    priceCurrency: "EUR",
-    url: product.value.shop,
-  },
+  offers: shopOffer(product.value),
 }));
 useStructuredData(structuredData);
 

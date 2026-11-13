@@ -4,6 +4,7 @@ import { toValue } from "vue";
 import { useHead } from "@vueuse/head";
 
 import { settings } from "@config";
+import { returnPolicy, shippingZones } from "@config/shopTerms";
 
 export const SITE_URL = settings?.SITE_URL || "https://sensors.social";
 
@@ -59,4 +60,32 @@ export function useStructuredData(source) {
       return [{ type: "application/ld+json", key: "structured-data", innerHTML: json }];
     },
   });
+}
+
+// Offer for an Altruist sold on cyberpunks.shop: price, stock, delivery rates and the
+// EU/EEA return window, all from the shop's own terms.
+export function shopOffer(product) {
+  return {
+    "@type": "Offer",
+    price: priceValue(product.price),
+    priceCurrency: "EUR",
+    url: product.shop,
+    availability: product.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    shippingDetails: shippingZones.map((zone) => ({
+      "@type": "OfferShippingDetails",
+      shippingRate: { "@type": "MonetaryAmount", value: zone.price, currency: "EUR" },
+      shippingDestination: zone.countries.map((country) => ({
+        "@type": "DefinedRegion",
+        addressCountry: country,
+      })),
+    })),
+    hasMerchantReturnPolicy: {
+      "@type": "MerchantReturnPolicy",
+      applicableCountry: returnPolicy.countries,
+      returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+      merchantReturnDays: returnPolicy.days,
+      returnMethod: "https://schema.org/ReturnByMail",
+      returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+    },
+  };
 }

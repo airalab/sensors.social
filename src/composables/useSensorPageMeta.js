@@ -89,7 +89,8 @@ export function useSensorPageMeta(
   const pageDescription = computed(() => {
     const sensorId = String(toValue(sensorIdSource) || "").trim();
     if (!sensorId) {
-      return settings?.DESC || null;
+      const dict = UI_MESSAGES[toValue(localeSource)] || UI_MESSAGES.en;
+      return dict["seo.mapDescription"] || settings?.DESC || null;
     }
 
     const sid = sensorName(sensorId);

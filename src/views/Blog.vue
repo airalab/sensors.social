@@ -28,7 +28,7 @@
           :to="`/blog/${post.slug}/`"
           class="blog-list__card ui-surface"
         >
-          <img :src="post.cover_image" />
+          <img :src="post.cover_image" :alt="post.title" />
 
           <div class="blog-list__card-content">
             <h2>{{ post.title }}</h2>
