@@ -10,21 +10,39 @@
       </span>
     </summary>
     <div class="details-content">
-      <h4 class="service-status__title">{{ $t("service.title") }}</h4>
-      <p v-if="status.sensors24h !== null" class="service-status__sensors">
-        {{ $t("service.sensors24h", { n: status.sensors24h }) }}
-      </p>
-      <details v-if="sensorsNoLocation.length > 0" class="service-status__nogeo">
-        <summary>{{ $t("service.noGeo", { n: sensorsNoLocation.length }) }}</summary>
-        <ul class="service-status__nogeo-list">
-          <li v-for="sensor in sensorsNoLocation" :key="sensor.sensor_id">
-            <a :href="sensorLink(sensor)" :title="sensor.sensor_id">
-              <b>{{ sensorName(sensor.sensor_id) }}</b>
-              <span v-if="sensor.device_model"> · {{ sensor.device_model }}</span>
-            </a>
-          </li>
-        </ul>
-      </details>
+      <div class="service-status__head">
+        <h4 class="service-status__title">{{ $t("service.title") }}</h4>
+        <p v-if="status.sensors24h !== null" class="service-status__sensors">
+          {{ $t("service.sensors24h", { n: status.sensors24h }) }}
+        </p>
+        <details v-if="sensorsNoLocation.length > 0" class="service-status__nogeo">
+          <summary>
+            <span>{{ $t("service.noGeo", { n: sensorsNoLocation.length }) }}</span>
+            <svg
+              class="service-status__chevron"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <ul class="service-status__nogeo-list">
+            <li v-for="sensor in sensorsNoLocation" :key="sensor.sensor_id">
+              <a :href="sensorLink(sensor)" :title="sensor.sensor_id">
+                <b>{{ sensorName(sensor.sensor_id) }}</b>
+                <span v-if="sensor.device_model"> · {{ sensor.device_model }}</span>
+              </a>
+            </li>
+          </ul>
+        </details>
+      </div>
       <ul class="service-status__list">
         <li v-for="service in services" :key="service.tech" :title="service.tech">
           <span
@@ -206,13 +224,33 @@ const summaryLabel = computed(
 }
 
 .service-status__nogeo {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: max(var(--font-size), 0.875rem);
 }
 
+/* the summary row reads as an accordion: label plus a chevron that turns when open */
 .service-status__nogeo summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   cursor: pointer;
   color: var(--color-link, #0066cc);
+}
+
+.service-status__chevron {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.service-status__nogeo[open] .service-status__chevron {
+  transform: rotate(180deg);
+}
+
+/* one divider: under the stats block, before the services */
+.service-status__head {
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .service-status__nogeo-list {
@@ -225,12 +263,11 @@ const summaryLabel = computed(
 .service-status__nogeo-list li {
   display: block;
   margin: 0;
-  border-top: 1px dotted var(--app-bordercolor);
 }
 
 .service-status__nogeo-list a {
   display: block;
-  padding: 5px 0;
+  padding: 4px 0;
 }
 
 .service-status__list {
