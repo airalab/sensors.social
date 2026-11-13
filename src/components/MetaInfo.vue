@@ -16,10 +16,16 @@ const props = defineProps({
   pageImage: { type: String },
   pageImageWidth: { type: String },
   pageImageHeight: { type: String },
+  noindex: { type: Boolean, default: false },
 });
 
 const route = useRoute();
-const fullUrl = computed(() => (settings?.SITE_URL || "") + route.fullPath);
+// One address per page for search engines: no query string (map state, ad click ids) and
+// always a trailing slash, because GitHub Pages serves /page/ and redirects /page to it.
+const canonicalUrl = computed(() => {
+  const path = route.path.endsWith("/") ? route.path : `${route.path}/`;
+  return (settings?.SITE_URL || "") + path;
+});
 
 const locale = computed(() => {
   return i18nLocale.value || localStorage.getItem("locale") || "en";
@@ -47,6 +53,7 @@ const meta = computed(() => {
   const d = ogdata.value;
   return [
     d.description && { name: "description", content: d.description },
+    props.noindex && { name: "robots", content: "noindex" },
 
     { property: "og:type", content: "website" },
     d.site_name && { property: "og:site_name", content: d.site_name },
@@ -55,7 +62,7 @@ const meta = computed(() => {
     d.image && { property: "og:image", content: getAbsoluteImageUrl(d.image) },
     d.image && d.image_width && { property: "og:image:width", content: d.image_width },
     d.image && d.image_height && { property: "og:image:height", content: d.image_height },
-    { property: "og:url", content: fullUrl.value },
+    { property: "og:url", content: canonicalUrl.value },
 
     { name: "twitter:card", content: "summary_large_image" },
     d.title && { name: "twitter:title", content: d.title },
@@ -70,9 +77,9 @@ useHead({
   title: () => ogdata.value.title,
   htmlAttrs: {
     lang: () => locale.value,
-    amp: true,
     dir: "ltr",
   },
   meta: () => meta.value,
+  link: () => (props.noindex ? [] : [{ rel: "canonical", href: canonicalUrl.value }]),
 });
 </script>

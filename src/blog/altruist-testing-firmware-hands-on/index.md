@@ -10,7 +10,7 @@ tags: ["firmware", "altruist", "guide", "testing"]
 author: ""
 ---
 
-We [previewed the next Altruist firmware](/blog/altruist-firmware-hub-and-encryption)
+We [previewed the next Altruist firmware](/blog/altruist-firmware-hub-and-encryption/)
 a few days ago: an app-like web interface, optional encryption of map values,
 backup and restore. It is now available on the Testing channel, and this post is
 the practical half — we took a working Urban off the shelf, flashed Testing onto

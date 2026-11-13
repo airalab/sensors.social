@@ -19,7 +19,7 @@
     <div ref="windowEl" class="ticker-window" @scroll.passive="updateEnds">
       <ul class="ticker-list">
         <li v-for="post in latest" :key="post.slug">
-          <router-link :to="`/blog/${post.slug}`">
+          <router-link :to="`/blog/${post.slug}/`">
             <span class="ticker-date">{{ shortDate(post.date) }}</span>
             <span class="ticker-title">{{ post.title }}</span>
           </router-link>

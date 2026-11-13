@@ -81,7 +81,7 @@ How the CO2 screen reads:
 - Face: **Good** / **Elevated** / **High** for CO2 only (High if max ≥ 2000 ppm, Elevated if at least 30 minutes over 1000)
 - VOC is a spike count for this night window
 
-The older Night score model is unchanged in spirit; the full write-up is [Insight Sleep Analytics](/blog/insight-sleeping-analytics). One update: a noise peak hour is now **> 40 dBA** (it was 45).
+The older Night score model is unchanged in spirit; the full write-up is [Insight Sleep Analytics](/blog/insight-sleeping-analytics/). One update: a noise peak hour is now **> 40 dBA** (it was 45).
 
 ### Night window
 

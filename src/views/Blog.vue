@@ -1,6 +1,6 @@
 <template>
   <MetaInfo
-    :pageTitle="$t('Blog')"
+    :pageTitle="$t('seo.blogTitle')"
     :pageDescription="
       $t(
         'Curious about your environmental insights? So are we.Measure it, test it, and have fun discovering what’s floating around you.'
@@ -25,7 +25,7 @@
         <router-link
           v-for="post in posts"
           :key="post.slug"
-          :to="`/blog/${post.slug}`"
+          :to="`/blog/${post.slug}/`"
           class="blog-list__card ui-surface"
         >
           <img :src="post.cover_image" />

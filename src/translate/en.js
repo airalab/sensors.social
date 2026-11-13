@@ -909,4 +909,10 @@ export default {
   "landing.dual.community.title": "Explore our open-source environmental map — or build your own",
   "landing.dual.community.text": "Real sensor data from communities around the world: AQI, history, color-coded charts and outdoor noise. Add your sensor and join the community building a common-good air dataset.",
   "landing.dual.community.link": "Open the map",
+  "seo.mapTitle": "Map of independent air quality sensors",
+  "seo.blogTitle": "Blog — air quality, noise and CO₂ from citizen sensors",
+  "notfound.title": "Page not found",
+  "notfound.text": "This address doesn’t exist on sensors.social. Maybe the link is old or has a typo.",
+  "notfound.map": "Open the map",
+  "notfound.blog": "Read the blog",
 };

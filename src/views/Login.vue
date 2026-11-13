@@ -1,5 +1,5 @@
 <template>
-  <MetaInfo pageTitle="Login" pageImage="/og-login.webp" />
+  <MetaInfo pageTitle="Login" pageImage="/og-login.webp" noindex />
 
   <PageTextLayout>
     <section class="login-page">

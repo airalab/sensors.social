@@ -10,7 +10,7 @@
   />
   <PageTextLayout>
     <div class="pagetext-wide-1920 pagetext-no-text-all">
-      <AltruistCompare gif promo />
+      <AltruistCompare gif promo heading="h1" />
     </div>
   </PageTextLayout>
 </template>
