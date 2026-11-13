@@ -39,6 +39,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
 import MetaInfo from "../MetaInfo.vue";
+import { absoluteUrl, organization, pageUrl, useStructuredData } from "@/utils/structuredData";
 import PageTextLayout from "../layouts/PageText.vue";
 import { formatReadingTime, formatRelative } from "@/utils/formatDate";
 
@@ -111,6 +112,35 @@ const coverUrl = computed(() => {
 
   return new URL(raw, new URL(path, import.meta.url)).href;
 });
+
+const structuredData = computed(() => {
+  if (!postVisible.value) return null;
+  const url = pageUrl(`/blog/${route.params.slug}`);
+  const date = postDate.value ? new Date(postDate.value).toISOString().slice(0, 10) : undefined;
+  return [
+    {
+      "@type": "BlogPosting",
+      headline: postTitle.value,
+      description: postDescription.value || undefined,
+      image: absoluteUrl(coverUrl.value),
+      datePublished: date,
+      inLanguage: matchedEntry.value?.path.match(/index\.([a-z]{2})\.md$/)?.[1] || "en",
+      author: { "@type": "Organization", name: organization.name, url: organization.url },
+      publisher: organization,
+      mainEntityOfPage: url,
+      url,
+      keywords: postTags.value.length ? postTags.value.join(", ") : undefined,
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Blog", item: pageUrl("/blog") },
+        { "@type": "ListItem", position: 2, name: postTitle.value, item: url },
+      ],
+    },
+  ];
+});
+useStructuredData(structuredData);
 
 function applyExternalLinkTargets() {
   const root = document.querySelector(".blog-post__content");
