@@ -1,45 +1,5 @@
 <template>
   <section class="chart-section">
-    <div
-      class="chart-section-units"
-      :class="{ expanded: unitsExpanded }"
-      v-if="activeLegendUnits.length"
-      @click="toggleUnits"
-    >
-      <div class="chart-unit-toggler">
-        <font-awesome-icon
-          :icon="unitsExpanded ? 'fa-solid fa-caret-left' : 'fa-solid fa-caret-right'"
-        />
-      </div>
-
-      <div
-        class="chart-unit"
-        v-for="(unitGroup, index) in activeLegendUnits"
-        :key="`unit-${unitGroup.unit}-${index}`"
-      >
-        <div class="chart-unit-zones" v-if="unitGroup.zones.length">
-          <div class="chart-unit-symbol" v-if="unitGroup.unit">
-            <span class="expanded-text" v-if="unitGroup.title">{{ unitGroup.title }} (</span>
-            {{ unitGroup.unit }}
-            <span class="expanded-text" v-if="unitGroup.title">)</span>
-          </div>
-          <div
-            class="chart-unit-zone"
-            v-for="(zone, zIndex) in [...unitGroup.zones].reverse()"
-            :key="`zone-${index}-${zIndex}`"
-            :style="{ backgroundColor: zone.color }"
-          >
-            <div class="expanded-text">
-              <span class="chart-unit-zone-label">
-                {{ zone.label }}<template v-if="zone.range">: </template>
-              </span>
-              <span class="chart-unit-zone-range" v-if="zone.range">{{ zone.range }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="chart-section-chart">
       <div class="chart-wrapper">
         <Chart ref="chartRef" constructor-type="stockChart" :options="chartOptions" />
@@ -53,12 +13,12 @@
             type="button"
             role="tab"
             :aria-selected="item.key === activeLegendKey"
-            :class="['chart-tab', { active: item.key === activeLegendKey }]"
+            :class="['chart-mtab', { active: item.key === activeLegendKey }]"
             @click="onLegendClick(item.key)"
           >
             <svg
               v-if="LEGEND_ICONS[item.key]"
-              class="chart-tab__icon"
+              class="chart-mtab__icon"
               viewBox="0 0 24 24"
               aria-hidden="true"
               v-html="LEGEND_ICONS[item.key]"
@@ -180,16 +140,6 @@ const LEGEND_ICONS = {
 // Словарь для быстрого поиска группы по параметру
 const GROUPS_LOOKUP = MEASUREMENT_GROUP_LOOKUP;
 
-// Кэшируем результаты сборки единиц измерения для легенды, чтобы не выполнять
-// тяжелую группировку при каждом реактивном обновлении
-const legendUnitsCache = new Map();
-const legendUnitsCacheOrder = [];
-const LEGEND_CACHE_LIMIT = 32;
-const clearLegendCache = () => {
-  legendUnitsCache.clear();
-  legendUnitsCacheOrder.length = 0;
-};
-
 const UNITS_FOUND = ref(new Set());
 
 function isMapUnitAvailableInData(unit, ids) {
@@ -201,8 +151,6 @@ function isMapUnitAvailableInData(unit, ids) {
   return false;
 }
 
-watch(() => locale.value, clearLegendCache);
-watch(() => Array.from(UNITS_FOUND.value).sort().join("|"), clearLegendCache);
 
 // Временное окно просмотра для realtime режима (1 час)
 const REALTIME_VIEW_TIMELINE_MS = 60 * 60 * 1000;
@@ -297,12 +245,6 @@ const isRealtime = computed(() => mapState.timelineMode.value === "realtime");
 
 // Получаем экземпляр Highcharts для работы с графиком
 const chart = computed(() => chartRef.value?.chart);
-
-const unitsExpanded = ref(false);
-
-const toggleUnits = () => {
-  unitsExpanded.value = !unitsExpanded.value;
-};
 
 // Флаг для предотвращения конкурирующих обновлений графика
 const isUpdatingChart = ref(false);
@@ -518,187 +460,6 @@ const scaleHints = computed(() => {
   });
   return hints;
 });
-
-const activeLegendUnits = computed(() => {
-  const legendKey = activeLegendKey.value;
-  if (!legendKey) return [];
-
-  const unitsSignature = Array.from(UNITS_FOUND.value).sort().join("|");
-  const cacheKey = `${legendKey}|${locale.value}|${unitsSignature}`;
-  if (legendUnitsCache.has(cacheKey)) {
-    return legendUnitsCache.get(cacheKey);
-  }
-
-  const collected = new Map();
-
-  if (GROUPS[legendKey]) {
-    GROUPS[legendKey].members.forEach((memberId) => {
-      if (!UNITS_FOUND.value.has(memberId)) return;
-      const settingsEntry = unitsettings[memberId];
-      if (!settingsEntry) return;
-      const unitSymbol = settingsEntry.unit || "";
-      if (!collected.has(unitSymbol)) {
-        collected.set(unitSymbol, []);
-      }
-      const unitZones = (settingsEntry.zones || []).map((zone, index, arr) => {
-        const label =
-          typeof zone.label === "string"
-            ? zone.label
-            : zone.label?.[locale.value] ?? zone.label?.en ?? "";
-        let range = "";
-        if (zone.valueMax !== undefined && zone.valueMax !== null) {
-          range = `${tr("scales.upto")} ${zone.valueMax}`;
-        } else {
-          const prev = arr[index - 1];
-          if (prev && prev.valueMax !== undefined && prev.valueMax !== null) {
-            range = `${tr("scales.above")} ${prev.valueMax}`;
-          } else {
-            range = tr("scales.above");
-          }
-        }
-        return {
-          color: zone.color || "var(--color-dark)",
-          label,
-          range,
-        };
-      });
-
-      const title =
-        settingsEntry.nameshort?.[locale.value] ||
-        settingsEntry.name?.[locale.value] ||
-        settingsEntry.label ||
-        memberId.toUpperCase();
-
-      collected.get(unitSymbol).push({
-        id: memberId,
-        title,
-        unit: unitSymbol,
-        zones: unitZones,
-      });
-    });
-  } else {
-    const settingsEntry = unitsettings[legendKey.toLowerCase()];
-    if (!settingsEntry) return [];
-    const unitSymbol = settingsEntry.unit || "";
-    collected.set(unitSymbol, [
-      {
-        id: legendKey,
-        title:
-          settingsEntry.nameshort?.[locale.value] ||
-          settingsEntry.name?.[locale.value] ||
-          settingsEntry.label ||
-          legendKey.toUpperCase(),
-        unit: unitSymbol,
-        zones: (settingsEntry.zones || []).map((zone, index, arr) => {
-          const label =
-            typeof zone.label === "string"
-              ? zone.label
-              : zone.label?.[locale.value] ?? zone.label?.en ?? "";
-          let range = "";
-          if (zone.valueMax !== undefined && zone.valueMax !== null) {
-            range = `${tr("scales.upto")} ${zone.valueMax}`;
-          } else {
-            const prev = arr[index - 1];
-            if (prev && prev.valueMax !== undefined && prev.valueMax !== null) {
-              range = `${tr("scales.above")} ${prev.valueMax}`;
-            } else {
-              range = tr("scales.above");
-            }
-          }
-          return {
-            color: zone.color || "var(--color-dark)",
-            label,
-            range: settingsEntry.zoneLabelsAreRanges ? "" : range,
-          };
-        }),
-      },
-    ]);
-  }
-
-  const result = entriesGroupedByUnit(collected);
-
-  legendUnitsCache.set(cacheKey, result);
-  legendUnitsCacheOrder.push(cacheKey);
-  if (legendUnitsCacheOrder.length > LEGEND_CACHE_LIMIT) {
-    const oldestKey = legendUnitsCacheOrder.shift();
-    if (oldestKey) {
-      legendUnitsCache.delete(oldestKey);
-    }
-  }
-
-  return result;
-});
-
-function entriesGroupedByUnit(collectedMap) {
-  const result = [];
-
-  collectedMap.forEach((entries, unitSymbol) => {
-    if (!entries.length) return;
-
-    const firstEntry = entries[0];
-
-    const zonesSignature = JSON.stringify(
-      firstEntry.zones.map((z) => ({
-        color: z.color,
-        rangeLabel: z.label,
-      }))
-    );
-
-    const hasIdenticalZones = entries.every((entry) => {
-      const entrySig = JSON.stringify(
-        entry.zones.map((z) => ({
-          color: z.color,
-          rangeLabel: z.label,
-        }))
-      );
-      return entrySig === zonesSignature;
-    });
-
-    let zones;
-
-    const zoneGroups = new Map();
-
-    entries.forEach((entry) => {
-      entry.zones.forEach((zone) => {
-        const key = `${zone.label}__${zone.color}`;
-        if (!zoneGroups.has(key)) {
-          zoneGroups.set(key, {
-            color: zone.color,
-            label: zone.label,
-            ranges: [],
-          });
-        }
-        const rangeVal = zone.range && zone.range.trim();
-        if (rangeVal && rangeVal.length > 0 && !zoneGroups.get(key).ranges.includes(rangeVal)) {
-          zoneGroups.get(key).ranges.push(rangeVal);
-        }
-      });
-    });
-
-    zones = Array.from(zoneGroups.values()).map((item) => ({
-      color: item.color,
-      label: item.label,
-      range: item.ranges.join(" / "),
-    }));
-
-    const hasMergedRanges = zones.some((z) => z.range.includes(" / "));
-
-    const groupTitle = hasMergedRanges
-      ? entries.map((e) => e.title).join(" / ")
-      : entries.length === 1
-      ? entries[0].title
-      : entries.map((e) => e.title).join(" / ");
-
-    result.push({
-      unit: unitSymbol,
-      title: groupTitle,
-
-      zones,
-    });
-  });
-
-  return result;
-}
 
 // Конфигурация оси X
 const xAxisConfig = computed(() => {
@@ -1786,77 +1547,6 @@ onMounted(async () => {
 <style>
 .chart-section {
   position: relative;
-  padding-left: 30px;
-}
-
-.chart-section-units {
-  width: 30px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 2rem;
-  overflow-wrap: break-word;
-  z-index: 1;
-  background: #f2f2f2;
-  padding: 2px;
-  box-sizing: border-box;
-  font-size: calc(var(--font-size) * 0.8);
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 0.2rem;
-  overflow: hidden;
-}
-
-.chart-unit-symbol {
-  text-align: center;
-}
-
-.chart-unit-zones {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.chart-unit-zone {
-  flex: 1 1 0;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  color: var(--color-light);
-  padding: 4px;
-}
-
-.chart-section-units .expanded-text {
-  display: none;
-}
-
-.chart-section-units.expanded div.expanded-text {
-  display: block;
-}
-
-.chart-section-units.expanded span.expanded-text {
-  display: inline-block;
-}
-
-.chart-section-units.expanded {
-  width: auto;
-}
-
-.chart-unit {
-  position: relative;
-  height: 100%;
-}
-
-.chart-unit:not(:last-child) {
-  margin-bottom: var(--gap);
-}
-
-.chart-unit-toggler {
-  text-align: center;
-}
-
-.chart-section-units.expanded .chart-unit-toggler {
-  text-align: right;
 }
 
 .chart-wrapper {
@@ -1886,13 +1576,10 @@ onMounted(async () => {
 }
 
 .chart-scale-hint {
-  margin: 0.6rem 0 0 0.6rem;
-  padding: 0.6rem 0.9rem;
+  margin: 0.6rem 0 0;
   font-size: 0.95rem;
   line-height: 1.5;
   color: #262626;
-  background: #f2f2ef;
-  border-radius: 12px;
 }
 
 /* Measurement tabs and, when the period offers it, the raw / corrected switch: one panel. */
@@ -1902,11 +1589,7 @@ onMounted(async () => {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px 20px;
-  margin: calc(var(--gap) * 0.75) 0 0 0.6rem;
-  padding: 8px;
-  border: 1px solid #d9d9d4;
-  border-radius: 16px;
-  background: #f7f7f5;
+  margin: calc(var(--gap) * 0.75) 0 0;
 }
 
 .chart-tabs {
@@ -1915,7 +1598,7 @@ onMounted(async () => {
   gap: 4px;
 }
 
-.chart-tab {
+.chart-mtab {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1932,18 +1615,18 @@ onMounted(async () => {
   cursor: pointer;
 }
 
-.chart-tab:hover:not(.active) {
-  background: #ebebe6;
+.chart-mtab:hover:not(.active) {
+  box-shadow: inset 0 0 0 1px #c9c9c4;
 }
 
-.chart-tab.active {
+.chart-mtab.active {
   background: #141414;
   color: #fff;
   font-weight: 700;
   cursor: default;
 }
 
-.chart-tab__icon {
+.chart-mtab__icon {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -1969,8 +1652,8 @@ onMounted(async () => {
 .chart-view__switch {
   display: flex;
   padding: 3px;
+  border: 1px solid #c9c9c4;
   border-radius: 12px;
-  background: #e6e6e1;
 }
 
 .chart-view__switch button {
@@ -1996,7 +1679,7 @@ onMounted(async () => {
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  margin: calc(var(--gap) * 0.75) 0 0 0.6rem;
+  margin: calc(var(--gap) * 0.75) 0 0;
   padding: 14px 16px;
   border: 1px solid #9cc3f5;
   border-radius: 14px;
