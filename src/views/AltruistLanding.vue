@@ -157,6 +157,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 
 import MetaInfo from "../components/MetaInfo.vue";
+import { absoluteUrl, pageUrl, priceValue, useStructuredData } from "@/utils/structuredData";
 import SiteFooter from "../components/layouts/SiteFooter.vue";
 import BuyBlock from "../components/AltruistBuyBlock.vue";
 import { altruistProducts } from "@config/altruistProducts";
@@ -203,7 +204,7 @@ const props = defineProps({
 });
 
 const route = useRoute();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
 const apps = [
   { key: "local", name: "Altruist.local", img: appLocal },
@@ -280,6 +281,24 @@ const pages = {
 
 const page = computed(() => pages[props.model]);
 const product = computed(() => altruistProducts[props.model]);
+
+// Price and shop link are the ones the buy block shows. No availability: the shop is the
+// source of truth for stock and this page does not know it.
+const structuredData = computed(() => ({
+  "@type": "Product",
+  name: product.value.title,
+  description: t(`landing.${props.model}.lead`),
+  image: page.value.gallery.slice(0, 4).map(absoluteUrl),
+  brand: { "@type": "Brand", name: "Altruist" },
+  url: pageUrl(`/altruist/${props.model}`),
+  offers: {
+    "@type": "Offer",
+    price: priceValue(product.value.price),
+    priceCurrency: "EUR",
+    url: product.value.shop,
+  },
+}));
+useStructuredData(structuredData);
 
 // The query string of the ad click; BuyBlock carries its gclid and utm tags to the shop.
 const search = computed(() => new URLSearchParams(route.query).toString());

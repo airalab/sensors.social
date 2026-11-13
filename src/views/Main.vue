@@ -48,6 +48,7 @@ import Map from "../components/Map.vue";
 import Sensor from "../components/sensor/Index.vue";
 import MessagePopup from "../components/message/Index.vue";
 import MetaInfo from "../components/MetaInfo.vue";
+import { organization, useStructuredData, website } from "@/utils/structuredData";
 import SiteFooter from "../components/layouts/SiteFooter.vue";
 
 import { settings } from "@config";
@@ -125,6 +126,7 @@ const { logGeoAddresses, pageTitle, pageDescription } = useSensorPageMeta(
 
 provide(LOG_GEO_ADDRESSES_KEY, logGeoAddresses);
 provide(SENSOR_PAGE_META_KEY, { pageTitle, pageDescription });
+useStructuredData([organization, website]);
 
 const sensorsList = () => (Array.isArray(sensors.value) ? sensors.value : []);
 
