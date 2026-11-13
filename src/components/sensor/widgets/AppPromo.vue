@@ -43,8 +43,11 @@
 
       <p class="app-promo__note">
         <i18n-t keypath="app.onPhone" tag="span">
-          <template #paste>
-            <b>Paste an address</b>
+          <template #add>
+            <b>Add a sensor</b>
+          </template>
+          <template #name>
+            <b>{{ sensorName(sensorId) }}</b>
           </template>
         </i18n-t>
       </p>
@@ -71,6 +74,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { settings } from "@config";
+import { sensorName } from "@/utils/addressNames";
 import Copy from "../../controls/Copy.vue";
 import QrCode from "../../controls/QrCode.vue";
 

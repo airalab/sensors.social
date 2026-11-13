@@ -937,8 +937,8 @@ export default {
   "app.step2": "In the app, tap {add}, then {scan}.",
   "app.step3": "Point the phone at this code.",
   "app.download": "Download for Android",
-  "app.onPhone": "Already on the phone? Copy the sensor address and use {paste} in the app.",
-  "app.copyAddress": "Copy sensor address",
+  "app.onPhone": "Already on the phone? In the app, tap {add} and type this sensor's name: {name}.",
+  "app.copyAddress": "Or copy its address",
   "app.noAndroid": "No Android phone? Any phone camera opens this sensor on the map.",
   "sensorpopup.shareTab": "Share",
 };
