@@ -69,6 +69,7 @@ export default {
   "scales.upto": "up to",
   "scales.above": "above",
   "chart.scaleAbove": "> {value} {unit}",
+  "aqi.eeaLastHour": "European AQI (EEA), last hour",
   "chart.scaleBreak": "below {value} {unit}",
   "chart.scaleCompressed":
     "The top band is a compressed scale above {value} {unit}, so the peak stays visible and the rest of the day stays readable. Numbers on the peak are the real values.",
@@ -429,6 +430,8 @@ export default {
   "footer.more": "About the project",
   "banner.close": "Close",
   "ticker.hide": "Hide news",
+  "ticker.prev": "Previous news",
+  "ticker.next": "Next news",
   "footer.about": "A decentralized map of independent sensors that record their measurements on the blockchain.",
   "footer.device": "About the device",
   "footer.compare": "Comparison",
@@ -906,4 +909,10 @@ export default {
   "landing.dual.community.title": "Explore our open-source environmental map — or build your own",
   "landing.dual.community.text": "Real sensor data from communities around the world: AQI, history, color-coded charts and outdoor noise. Add your sensor and join the community building a common-good air dataset.",
   "landing.dual.community.link": "Open the map",
+  "seo.mapTitle": "Map of independent air quality sensors",
+  "seo.blogTitle": "Blog — air quality, noise and CO₂ from citizen sensors",
+  "notfound.title": "Page not found",
+  "notfound.text": "This address doesn’t exist on sensors.social. Maybe the link is old or has a typo.",
+  "notfound.map": "Open the map",
+  "notfound.blog": "Read the blog",
 };

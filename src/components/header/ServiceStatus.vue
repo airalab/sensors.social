@@ -36,7 +36,7 @@
           <ul class="service-status__nogeo-list">
             <li v-for="sensor in sensorsNoLocation" :key="sensor.sensor_id">
               <a :href="sensorLink(sensor)" :title="sensor.sensor_id">
-                <b>{{ shortId(sensor.sensor_id) }}</b>
+                <b>{{ sensorName(sensor.sensor_id) }}</b>
                 <span v-if="sensor.device_model"> · {{ sensor.device_model }}</span>
               </a>
             </li>
@@ -65,6 +65,7 @@
 </template>
 
 <script setup>
+import { sensorName } from "@/utils/addressNames";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -92,10 +93,6 @@ const sensorLink = (sensor) =>
     },
   }).href;
 
-const shortId = (id) => {
-  const s = String(id);
-  return s.length > 12 ? `${s.slice(0, 6)}…${s.slice(-6)}` : s;
-};
 
 const stateLabel = (state) =>
   ({

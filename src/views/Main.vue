@@ -5,6 +5,8 @@
     pageImage="/og-default.webp"
   />
   <Header />
+  <!-- The map has no visible title; this one is for search engines and screen readers. -->
+  <h1 class="visually-hidden">{{ $t("seo.mapTitle") }}</h1>
 
   <Stories v-if="settings.SERVICES?.stories" />
 
@@ -46,6 +48,7 @@ import Map from "../components/Map.vue";
 import Sensor from "../components/sensor/Index.vue";
 import MessagePopup from "../components/message/Index.vue";
 import MetaInfo from "../components/MetaInfo.vue";
+import { organization, useStructuredData, website } from "@/utils/structuredData";
 import SiteFooter from "../components/layouts/SiteFooter.vue";
 
 import { settings } from "@config";
@@ -123,6 +126,7 @@ const { logGeoAddresses, pageTitle, pageDescription } = useSensorPageMeta(
 
 provide(LOG_GEO_ADDRESSES_KEY, logGeoAddresses);
 provide(SENSOR_PAGE_META_KEY, { pageTitle, pageDescription });
+useStructuredData([organization, website]);
 
 const sensorsList = () => (Array.isArray(sensors.value) ? sensors.value : []);
 
@@ -587,3 +591,17 @@ watch(
 //   }
 // );
 </script>
+
+<style scoped>
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+</style>

@@ -69,6 +69,7 @@ export default {
   "scales.upto": "до",
   "scales.above": "выше",
   "chart.scaleAbove": "> {value} {unit}",
+  "aqi.eeaLastHour": "Европейский индекс (EEA), последний час",
   "chart.scaleBreak": "ниже {value} {unit}",
   "chart.scaleCompressed":
     "Верхняя полоса — сжатая шкала выше {value} {unit}: пик остаётся на графике, и обычный день тоже можно сравнить. Числа на пике настоящие.",
@@ -441,6 +442,8 @@ export default {
   "footer.more": "О проекте",
   "banner.close": "Закрыть",
   "ticker.hide": "Скрыть новости",
+  "ticker.prev": "Предыдущие новости",
+  "ticker.next": "Следующие новости",
   "footer.about": "Децентрализованная карта независимых датчиков, которые записывают свои измерения в блокчейн.",
   "footer.device": "Об устройстве",
   "footer.compare": "Сравнение",
@@ -918,4 +921,10 @@ export default {
   "landing.dual.community.title": "Открытая карта окружающей среды — или своя собственная",
   "landing.dual.community.text": "Данные датчиков сообществ по всему миру: AQI, история, цветные графики и уличный шум. Подключите свой датчик и присоединяйтесь к общему открытому набору данных о воздухе.",
   "landing.dual.community.link": "Открыть карту",
+  "seo.mapTitle": "Карта независимых датчиков качества воздуха",
+  "seo.blogTitle": "Блог — воздух, шум и CO₂ по данным гражданских датчиков",
+  "notfound.title": "Страница не найдена",
+  "notfound.text": "Такого адреса на sensors.social нет. Возможно, ссылка устарела или в ней опечатка.",
+  "notfound.map": "Открыть карту",
+  "notfound.blog": "Читать блог",
 };

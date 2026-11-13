@@ -55,6 +55,38 @@ function landingBoot(appSrc) {
 })();</script>`;
 }
 
+function postProcessRoute(renderedRoute) {
+  // GitHub Pages answers every unknown address with /404.html (status 404); the app inside it
+  // then routes to the real URL, so client-only pages and the not-found page both work.
+  if (renderedRoute.originalRoute === "/404") renderedRoute.outputPath = "404.html";
+  stripAppBundle(renderedRoute);
+}
+
+// Pages that are for people who already have a link, not for search: they carry noindex
+// and stay out of the sitemap.
+const NOINDEX_ROUTES = ["/login", "/404"];
+
+function blogPostDate(route) {
+  const md = path.resolve(__dirname, "src", `${route.slice(1)}`, "index.md");
+  const m = fs.readFileSync(md, "utf8").match(/^date:\s*["']?(\d{4}-\d{2}-\d{2})/m);
+  return m ? m[1] : null;
+}
+
+function sitemapXml(routes, siteUrl) {
+  const urls = routes
+    .filter((route) => !NOINDEX_ROUTES.includes(route))
+    .map((route) => {
+      const loc = siteUrl + (route === "/" ? "/" : `${route}/`);
+      const lastmod = route.startsWith("/blog/") ? blogPostDate(route) : null;
+      return `  <url><loc>${loc}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ""}</url>`;
+    });
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join("\n")}
+</urlset>
+`;
+}
+
 function stripAppBundle(renderedRoute) {
   if (!LANDING_ROUTES.includes(renderedRoute.originalRoute.replace(/\/$/, ""))) return;
   let appSrc = null;
@@ -70,6 +102,27 @@ function stripAppBundle(renderedRoute) {
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
+  const prerenderRoutes = [
+    "/",
+    "/privacy-policy",
+    "/support",
+    "/ai",
+    "/air-measurements",
+    "/altruist-timeline",
+    "/altruist-use-cases",
+    "/altruist-compare",
+    "/altruist-device-info",
+    "/altruist-setup",
+    "/where-to-buy",
+    "/construction-monitoring",
+    "/noise-data-real-estate",
+    ...LANDING_ROUTES,
+    "/blog",
+    // auto-generated blog routes
+    ...getBlogRoutes(),
+    ...NOINDEX_ROUTES,
+  ];
+
   return {
     base: "/",
     // server: { https: true },
@@ -99,28 +152,18 @@ export default defineConfig(() => {
           );
         },
       },
+      {
+        name: "sitemap",
+        apply: "build",
+        async writeBundle() {
+          const xml = sitemapXml(prerenderRoutes, "https://sensors.social");
+          await fsp.writeFile(path.resolve(__dirname, "dist", "sitemap.xml"), xml);
+        },
+      },
       prerender({
-        routes: [
-          "/",
-          "/privacy-policy",
-          "/support",
-          "/ai",
-          "/air-measurements",
-          "/altruist-timeline",
-          "/altruist-use-cases",
-          "/altruist-compare",
-          "/altruist-device-info",
-          "/altruist-setup",
-          "/where-to-buy",
-          "/construction-monitoring",
-          "/noise-data-real-estate",
-          ...LANDING_ROUTES,
-          "/blog",
-          // auto-generated blog routes
-          ...getBlogRoutes()
-        ],
+        routes: prerenderRoutes,
         renderer: "@prerenderer/renderer-puppeteer",
-        postProcess: stripAppBundle,
+        postProcess: postProcessRoute,
       }),
         Markdown({
         frontmatter: true

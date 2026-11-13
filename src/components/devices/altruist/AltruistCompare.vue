@@ -1,6 +1,8 @@
 <template>
   <section>
-    <h2>{{ $t("Air Sensor Comparison Table") }}</h2>
+    <component :is="heading" class="compare-heading">{{
+      $t("Air Sensor Comparison Table")
+    }}</component>
 
     <img
       alt=""
@@ -126,6 +128,8 @@ const { t: $t } = useI18n();
 const props = defineProps({
   gif: { type: Boolean, default: false },
   promo: { type: Boolean, default: false },
+  // h1 on /altruist-compare/, where the table is the page; h2 where it is one section of many.
+  heading: { type: String, default: "h2" },
 });
 
 const deviceHeaders = [
@@ -419,7 +423,10 @@ th:not(:first-child) {
   text-align: center;
 }
 
-h2 {
+/* Same look whether it is rendered as h1 or h2. */
+.compare-heading {
+  font-size: calc(var(--font-size) * 2);
+  margin-bottom: calc(var(--gap) * 2);
   position: sticky;
   top: 0;
   background-color: var(--app-bodybg);
@@ -448,8 +455,15 @@ h2 {
 }
 
 /* When table is horizontally scrollable, avoid sticky interactions */
+@media (width < 800px) {
+  .compare-heading {
+    font-size: calc(var(--font-size) * 1.6);
+    margin-bottom: calc(var(--gap) * 1.6);
+  }
+}
+
 @media (width >= 1000px) {
-  h2 {
+  .compare-heading {
     position: static;
   }
 

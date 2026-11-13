@@ -1,5 +1,5 @@
 <template>
-  <MetaInfo pageTitle="Login" pageImage="/og-login.webp" />
+  <MetaInfo pageTitle="Login" pageImage="/og-login.webp" noindex />
 
   <PageTextLayout>
     <section class="login-page">
@@ -44,7 +44,7 @@
                   alt=""
                   aria-hidden="true"
                 />
-                <span class="account-pill-text">{{ formatAddress(acc.address) }}</span>
+                <span class="account-pill-text" :title="acc.address">{{ ownerName(acc.address) }}</span>
               </div>
               <div class="pill-actions">
                 <Copy :msg="acc.address" :title="'Copy address'" :notify="'Copied'" />
@@ -124,7 +124,7 @@
 
           <div v-if="account" class="preview">
             <div class="muted">{{ $t("You are signing in as") }}</div>
-            <div class="addr">{{ formatAddress(account) }}</div>
+            <div class="addr"><b>{{ ownerName(account) }}</b> · {{ formatAddress(account) }}</div>
             <label class="label-line">
               <span>{{ $t("Type (advanced):") }}</span>
               <select v-model="keyType" class="select-link">
@@ -172,7 +172,7 @@
           </button>
 
           <div v-if="loginStatus === 'success' && lastAddress" class="success">
-            {{ $t("Signed in as") }} <b>{{ formatAddress(lastAddress) }}</b>
+            {{ $t("Signed in as") }} <b>{{ ownerName(lastAddress) }}</b>
           </div>
 
           <div v-if="loginStatus === 'error'" class="error">
@@ -186,6 +186,7 @@
 </template>
 
 <script setup>
+import { ownerName } from "@/utils/addressNames";
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";

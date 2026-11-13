@@ -183,4 +183,4 @@ Turn the LEDs on or off, set the brightness and the hours when they switch off a
 
 ---
 
-Stuck on a step? Scan the QR code on your Altruist: the [AI setup assistant](/blog/altruist-ai-assistant-setup) walks you through every screen. A guide to moving from the previous firmware is coming next.
+Stuck on a step? Scan the QR code on your Altruist: the [AI setup assistant](/blog/altruist-ai-assistant-setup/) walks you through every screen. A guide to moving from the previous firmware is coming next.

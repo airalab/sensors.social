@@ -4,7 +4,10 @@
     <div class="infoline flexline" v-if="sensorId">
       <div class="infoline-title">{{ t("sensorpopup.infosensorid") }}:</div>
       <div class="infoline-info">
-        <span>{{ collapsedSensorId }}</span>
+        <span class="info-name">
+          <b>{{ sensorName(sensorId) }}</b>
+          <small>{{ collapsedSensorId }}</small>
+        </span>
         <Copy :msg="sensorId" :title="`Copy ${sensorId}`" :notify="t('details.copied')" />
       </div>
     </div>
@@ -12,7 +15,10 @@
     <div class="infoline flexline" v-if="owner">
       <div class="infoline-title">{{ t("sensorpopup.infosensorowner") }}:</div>
       <div class="infoline-info">
-        <span>{{ collapsedOwner }}</span>
+        <span class="info-name">
+          <b>{{ ownerName(owner) }}</b>
+          <small>{{ collapsedOwner }}</small>
+        </span>
         <Copy :msg="owner" :title="`Copy ${owner}`" :notify="t('details.copied')" />
       </div>
     </div>
@@ -55,6 +61,7 @@
 import { computed, getCurrentInstance } from "vue";
 import { useI18n } from "vue-i18n";
 import Copy from "../../controls/Copy.vue";
+import { sensorName, ownerName } from "@/utils/addressNames";
 import QrCode from "../../controls/QrCode.vue";
 import { pinned_sensors, settings } from "@config";
 import appleMapIcon from "@/assets/images/map-apps-icons/Apple-map-icon.svg";
@@ -136,6 +143,18 @@ function getMapLink(lat, lon, label = "Sensor") {
 </script>
 
 <style scoped>
+/* the name is what people read; the address under it is for copying and checking */
+.info-name {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.info-name small {
+  color: var(--color-gray);
+  font-size: 0.8em;
+}
+
 .sensor-info-tab {
   display: flex;
   flex-direction: column;

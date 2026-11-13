@@ -1,13 +1,22 @@
 <template>
-  <footer ref="root" class="site-footer" :class="{ 'site-footer-on-map': onMap }">
-    <div v-if="onMap" class="site-footer-peek">
+  <component
+    :is="onMap ? 'dialog' : 'footer'"
+    ref="root"
+    class="site-footer"
+    :class="{ 'site-footer-sheet': onMap }"
+    :aria-labelledby="onMap ? 'site-footer-sheet-title' : undefined"
+    @close="closeAbout"
+    @click="onSheetClick"
+  >
+    <div v-if="onMap" class="site-footer-sheet-head">
+      <p id="site-footer-sheet-title">{{ $t("footer.more") }}</p>
       <button
         type="button"
-        class="site-footer-more"
-        :aria-expanded="footerOpen ? 'true' : 'false'"
-        @click="togglePeek"
+        class="site-footer-sheet-close"
+        :aria-label="$t('banner.close')"
+        @click="closeAbout"
       >
-        {{ $t("footer.more") }} <span aria-hidden="true">{{ footerOpen ? "↑" : "↓" }}</span>
+        <font-awesome-icon icon="fa-solid fa-xmark" />
       </button>
     </div>
     <div class="site-footer-in">
@@ -81,32 +90,65 @@
         </p>
       </div>
     </div>
-  </footer>
+  </component>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, watch, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { settings } from "@config";
 import { version } from "../../../package.json";
 import LicenceLine from "../LicenceLine.vue";
+import { useAboutSheet, ABOUT_HASH } from "@/composables/useAboutSheet";
 
 const props = defineProps({ onMap: { type: Boolean, default: false } });
 
 const root = ref(null);
-// The blog ticker moved to the strip above the map (TopStrip); down here only the way into the footer.
-const footerOpen = ref(false);
-let page = null;
-const onScroll = () => {
-  footerOpen.value = page.scrollTop > 0;
+const { aboutOpen, openAbout, closeAbout } = useAboutSheet();
+
+// The hash makes the sheet linkable; replaceState keeps vue-router's history state.
+const setHash = (on) => {
+  const { pathname, search, hash } = window.location;
+  if (on === (hash === ABOUT_HASH)) return;
+  window.history.replaceState(window.history.state, "", pathname + search + (on ? ABOUT_HASH : ""));
+};
+
+watch(aboutOpen, (open) => {
+  if (!props.onMap) return;
+  const dialog = root.value;
+  if (open && !dialog.open) {
+    // Opened from the header menu: that popover would otherwise stay on top of the sheet.
+    document.getElementById("about")?.hidePopover?.();
+    dialog.showModal();
+    dialog.scrollTop = 0;
+  } else if (!open && dialog.open) {
+    dialog.close();
+  }
+  setHash(open);
+});
+
+// The map rewrites its query (lat, lng, zoom) on load and drops the hash; put it back.
+const route = useRoute();
+watch(
+  () => route.fullPath,
+  () => {
+    if (props.onMap && aboutOpen.value) setHash(true);
+  },
+  { flush: "post" }
+);
+
+// A click on the backdrop lands on the dialog itself, outside its box.
+const onSheetClick = (e) => {
+  if (!props.onMap || e.target !== root.value) return;
+  const r = root.value.getBoundingClientRect();
+  const inside =
+    e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+  if (!inside) closeAbout();
 };
 
 onMounted(() => {
-  if (!props.onMap) return;
-  page = root.value?.closest("#app");
-  page?.addEventListener("scroll", onScroll, { passive: true });
+  if (props.onMap && window.location.hash === ABOUT_HASH) openAbout();
 });
-
-onBeforeUnmount(() => page?.removeEventListener("scroll", onScroll));
 
 const repos = [
   { name: "sensors.social", label: "footer.repoMap" },
@@ -114,12 +156,6 @@ const repos = [
   { name: "sensors-connectivity", label: "footer.repoConnectivity" },
   { name: "RoSeMAN", label: "footer.repoRoseman" },
 ];
-
-// The map takes wheel and touch for itself, so the strip is the way into the footer there.
-const togglePeek = () => {
-  const page = root.value.closest("#app");
-  page.scrollTo({ top: page.scrollTop > 0 ? 0 : page.scrollHeight, behavior: "smooth" });
-};
 
 const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${version}`;
 </script>
@@ -139,42 +175,84 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
   padding: 48px 32px 28px;
 }
 
-.site-footer-on-map {
-  position: absolute;
-  top: calc(100svh - var(--map-footer-peek));
-  right: 0;
-  left: 0;
+/* On the map: a sheet over the map instead of a section below it. */
+.site-footer-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: min(85svh, 760px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 16px 16px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 -8px 32px rgb(0 0 0 / 0.35);
+}
+
+.site-footer-sheet[open] {
+  animation: site-footer-sheet-in 0.22s ease-out;
+}
+
+.site-footer-sheet::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+@keyframes site-footer-sheet-in {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer-sheet[open] {
+    animation: none;
+  }
+}
+
+.site-footer-sheet-head {
+  position: sticky;
+  top: 0;
   z-index: 1;
-  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px 0 32px;
+  background: var(--color-dark);
 }
 
-.site-footer-peek {
-  display: flex;
-  height: var(--map-footer-peek);
+.site-footer-sheet-head p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
 }
 
-.site-footer-more {
+.site-footer-sheet-close {
   display: flex;
-  flex: 1 1 auto;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 20px;
+  width: 44px;
+  height: 44px;
   border: 0;
+  border-radius: 50%;
   background: transparent;
   color: var(--color-light);
-  font: inherit;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.3rem;
   cursor: pointer;
 }
 
-.site-footer-more:hover,
-.site-footer-more:focus-visible {
+.site-footer-sheet-close:hover,
+.site-footer-sheet-close:focus-visible {
+  background: #2c2c34;
   color: var(--color-green-bright);
 }
 
-.site-footer-on-map .site-footer-in {
+.site-footer-sheet .site-footer-in {
   padding-top: 16px;
 }
 
@@ -296,6 +374,16 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
 }
 
 @media screen and (max-width: 900px) {
+  .site-footer-sheet {
+    max-height: 100svh;
+    height: 100svh;
+    border-radius: 0;
+  }
+
+  .site-footer-sheet-head {
+    padding: 8px 8px 0 16px;
+  }
+
   .site-footer-in {
     padding: 32px 16px 24px;
   }
