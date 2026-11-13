@@ -462,20 +462,27 @@ const scaleHints = computed(() => {
 });
 
 // Конфигурация оси X
-const xAxisConfig = computed(() => {
-  // Определяем формат лейблов в зависимости от режима
-  let labelFormat = "{value: %H:%M}";
-  if (!isRealtime.value) {
-    // Для remote режима используем более подходящий формат для длительных периодов
-    labelFormat = "{value: %d.%m %H:%M}";
-  }
+// No fixed "%d.%m %H:%M" format: Highcharts picks the unit from the tick interval, so a day
+// reads 02:00 04:00 … and a week reads 07.11 08.11 …, and the labels stay short enough for
+// a phone (the fixed format overlapped there: "13.11 0… 13.11 04:00").
+const AXIS_DATE_FORMATS = {
+  millisecond: "%H:%M:%S.%L",
+  second: "%H:%M:%S",
+  minute: "%H:%M",
+  hour: "%H:%M",
+  day: "%d.%m",
+  week: "%d.%m",
+  month: "%m.%Y",
+  year: "%Y",
+};
 
-  return {
-    type: "datetime",
-    labels: { format: labelFormat },
-    ordinal: false, // Убираем ordinal для правильного отображения длительных периодов
-  };
-});
+const xAxisConfig = computed(() => ({
+  type: "datetime",
+  dateTimeLabelFormats: AXIS_DATE_FORMATS,
+  tickPixelInterval: 90,
+  labels: { style: { whiteSpace: "nowrap" } },
+  ordinal: false, // Убираем ordinal для правильного отображения длительных периодов
+}));
 
 // Live tooltip context — Highcharts may keep an old formatter; read at hover time.
 const tooltipContext = {
@@ -588,19 +595,8 @@ const chartOptions = computed(() => ({
   navigator: {
     xAxis: {
       type: "datetime",
-      labels: {
-        format: "{value: %d.%m %H:%M}",
-        dateTimeLabelFormats: {
-          millisecond: "%H:%M:%S.%L",
-          second: "%H:%M:%S",
-          minute: "%H:%M",
-          hour: "%H:%M",
-          day: "%d.%m",
-          week: "%d.%m",
-          month: "%m.%Y",
-          year: "%Y",
-        },
-      },
+      dateTimeLabelFormats: AXIS_DATE_FORMATS,
+      tickPixelInterval: 90,
       ordinal: false,
     },
     enabled: true,

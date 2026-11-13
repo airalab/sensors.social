@@ -48,17 +48,23 @@ function upsertMarker(point, colors, sensor_id = null) {
       ctx.activeSensorMarkerId === markerId ||
       existingMarker.getElement()?.classList.contains(MARKER_CLASSES.active);
 
-    // Update marker data first
-    existingMarker.options.data = point;
-
     // Обновляем иконку только когда она реально изменилась.
     // Important: while a cluster is spiderfied, avoid calling `setIcon()` on child markers.
     // Markercluster treats icon changes as a reason to recalculate clusters, which can
     // collapse the spiderfy "web" after a short delay.
+    // Compare with the data the icon was drawn from, read BEFORE it is replaced: comparing
+    // the new point with itself froze every marker's colour at its first render, while the
+    // cluster around it was recoloured from fresh values (red cluster over green markers).
     const prevData = existingMarker.options.data;
+    const colorKey = `${colors?.basic || ""}|${colors?.border || ""}`;
     const iconUnchanged =
       prevData?.iconLocal === point.iconLocal &&
-      Boolean(prevData?.markerIconFullBleed) === Boolean(point.markerIconFullBleed);
+      Boolean(prevData?.markerIconFullBleed) === Boolean(point.markerIconFullBleed) &&
+      Boolean(prevData?.isBookmarked) === Boolean(point.isBookmarked) &&
+      existingMarker.options.colorKey === colorKey;
+
+    existingMarker.options.data = point;
+    existingMarker.options.colorKey = colorKey;
     if (!spiderfyOpen && !iconUnchanged) {
       existingMarker.setIcon(
         icons.createIconPoint({
@@ -109,6 +115,7 @@ function upsertMarker(point, colors, sensor_id = null) {
     point.iconLocal,
     markerType
   );
+  marker.options.colorKey = `${colors?.basic || ""}|${colors?.border || ""}`;
 
   return { marker, isNew: true };
 }
@@ -196,6 +203,13 @@ export function removeMarker(sensorId) {
 
 export function upsertPoint(point, unit = null) {
   try {
+    if (unit) {
+      try {
+        getMapContext().sensorUnit = unit;
+      } catch {
+        /* map not ready */
+      }
+    }
     // Сенсоры всегда используют addMarker
     addMarker(point, unit);
   } catch (error) {
@@ -240,11 +254,14 @@ export async function init(cb, unit = null) {
   const ctx = getMapContext();
 
   // Создаем основной слой маркеров
+  // The cluster colour must use the measurement the markers are drawn with now, not the one
+  // the map was opened with: upsertPoint() keeps ctx.sensorUnit current.
+  ctx.sensorUnit = unit;
   ctx.markersLayer = utils.createClusterGroup(
     (cluster) =>
       icons.createIconCluster(
         cluster,
-        unit,
+        ctx.sensorUnit || unit,
         colors.getClusterWinningColor,
         colors.getBorderColor,
         colors.isDarkColor
