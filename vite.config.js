@@ -185,6 +185,9 @@ export default defineConfig(() => {
       prerender({
         routes: prerenderRoutes,
         renderer: "@prerenderer/renderer-puppeteer",
+        // ~85 pages since the /ru/ copies. By default they all open at once, and on the
+        // 2-core CI runner one of them missed the 30 s navigation timeout (13 Nov 2026).
+        rendererOptions: { maxConcurrentRoutes: 4, timeout: 60000 },
         postProcess: postProcessRoute,
       }),
         Markdown({
