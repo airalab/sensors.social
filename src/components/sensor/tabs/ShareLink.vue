@@ -1,4 +1,9 @@
 <template>
+  <!-- One tab for "what is this sensor" and "take it with you": the identity, the app QR, the link. -->
+  <Info :sensor-id="sensorId" :owner="owner" :geo="geo" />
+
+  <AppPromo v-if="sensorId" class="sharelink-app" :sensor-id="sensorId" :owner="owner" />
+
   <section class="sharelink">
     <h4>{{ $t("Copy link to share") }}</h4>
 
@@ -10,13 +15,6 @@
       />
       <span class="sharelink-preview-url">{{ generatedLink }}</span>
     </div>
-
-    <QrCode
-      class="sharelink-qr"
-      :value="generatedLink"
-      :label="t('qr.caption')"
-      :filename="`sensor-${selectedSensor || 'link'}.png`"
-    />
   </section>
 
   <Accordion>
@@ -122,7 +120,8 @@ import measurements from "../../../measurements";
 import { settings } from "@config";
 import Copy from "../../controls/Copy.vue";
 import Accordion from "../../controls/Accordion.vue";
-import QrCode from "../../controls/QrCode.vue";
+import Info from "./Info.vue";
+import AppPromo from "../widgets/AppPromo.vue";
 
 const props = defineProps({
   log: {
@@ -133,6 +132,9 @@ const props = defineProps({
     type: Object,
     default: () => null,
   },
+  sensorId: { type: String, default: "" },
+  owner: { type: String, default: "" },
+  geo: { type: Object, default: null },
 });
 
 const state = reactive({
@@ -412,8 +414,8 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
-.sharelink-qr {
-  margin-top: var(--gap);
+.sharelink-app {
+  margin: calc(var(--gap) * 2) 0;
 }
 
 .sharelink-preview-url {

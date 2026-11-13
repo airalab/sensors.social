@@ -139,12 +139,8 @@
         />
       </div>
 
-      <div v-show="activeTab === 'info'" class="tab-content">
-        <Info :sensor-id="sensor_id" :owner="owner" :geo="geo" />
-      </div>
-
       <div v-show="activeTab === 'sharelink'" class="tab-content">
-        <ShareLink :log="log" :point="point" />
+        <ShareLink :log="log" :point="point" :sensor-id="sensor_id" :owner="owner" :geo="geo" />
       </div>
     </div>
 
@@ -172,21 +168,12 @@
 
       <button
         class="panel-button"
-        :class="{ active: activeTab === 'info' }"
-        @click.prevent="activeTab = 'info'"
-        :title="t('sensorpopup.infotitle')"
-      >
-        <font-awesome-icon icon="fa-regular fa-file-lines" />
-        <span>Info</span>
-      </button>
-      <button
-        class="panel-button"
         :class="{ active: activeTab === 'sharelink' }"
         @click.prevent="activeTab = 'sharelink'"
         :title="t('sensorpopup.sharedefault')"
       >
-        <font-awesome-icon icon="fa-solid fa-link" />
-        <span>Share</span>
+        <font-awesome-icon icon="fa-solid fa-qrcode" />
+        <span>{{ t("sensorpopup.shareTab") }}</span>
       </button>
     </div>
 
@@ -207,7 +194,6 @@ import { settings } from "@config";
 import { dayISO, getPeriodBounds } from "@/utils/date";
 
 import Data from "./tabs/Data.vue";
-import Info from "./tabs/Info.vue";
 import ShareLink from "./tabs/ShareLink.vue";
 import EditStory from "./tabs/EditStory.vue";
 
@@ -375,7 +361,7 @@ const sensorStoriesTotalCount = computed(() => {
 
 // Порядок табов для навигации клавиатурой (edit только если accounts включен)
 const tabsOrder = computed(() => {
-  const base = ["chart", "info", "sharelink"];
+  const base = ["chart", "sharelink"];
   if (isAccountsEnabled.value) {
     base.push("edit");
   }
