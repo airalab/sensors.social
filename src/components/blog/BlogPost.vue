@@ -304,6 +304,14 @@ watch(
   padding-bottom: min(177.78%, 640px);
 }
 
+/* A recording of the Android app on a foldable's inner screen: 5:6 box, narrow and centred. */
+.blog-post .video-embed.video-embed-app {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: min(120%, 480px);
+}
+
 /* A list of short guides folded into <details>: the reader scans the titles
    and opens one, so the videos (preload="none") load only when asked for. */
 .blog-post details.video-guide {
