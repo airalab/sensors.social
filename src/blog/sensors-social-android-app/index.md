@@ -1,5 +1,5 @@
 ---
-title: "sensors.social for Android: your sensors in your pocket"
+title: "Android app is out: your air sensors in your pocket"
 date: 2026-11-13
 published: true
 locale: "en"
@@ -39,6 +39,8 @@ The home screen lists the sensors you follow with their latest readings: PM2.5 a
 Tap a sensor for its own screen: each value with its scale, the noise peak and pressure. Tap a value for its chart over 24 hours, 7 days or 30 days. You can rename a sensor to something you will recognise, like "Balcony" or "Grandma's".
 
 <div class="video-embed video-embed-app"><video src="./images/sensor-screen.mp4" controls muted playsinline preload="none" poster="./images/sensor-screen.webp"></video></div>
+
+<div class="video-embed video-embed-app"><video src="./images/chart.mp4" controls muted playsinline preload="none" poster="./images/chart.webp"></video></div>
 
 ## Alerts
 

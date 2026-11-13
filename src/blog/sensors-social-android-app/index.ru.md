@@ -1,5 +1,5 @@
 ---
-title: "sensors.social для Android: ваши датчики в кармане"
+title: "Вышло приложение для Android: датчики воздуха в кармане"
 date: 2026-11-13
 published: true
 locale: "ru"
@@ -39,6 +39,8 @@ author: ""
 Нажмите на датчик, чтобы открыть его экран: каждое значение со своей шкалой, пик шума и давление. Нажмите на значение, чтобы увидеть график за 24 часа, 7 или 30 дней. Датчик можно переименовать во что-то узнаваемое: «Балкон» или «У бабушки».
 
 <div class="video-embed video-embed-app"><video src="./images/sensor-screen.mp4" controls muted playsinline preload="none" poster="./images/sensor-screen.webp"></video></div>
+
+<div class="video-embed video-embed-app"><video src="./images/chart.mp4" controls muted playsinline preload="none" poster="./images/chart.webp"></video></div>
 
 ## Уведомления
 
