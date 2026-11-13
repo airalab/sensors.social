@@ -22,6 +22,37 @@ export function isReadyLayer() {
 }
 
 /**
+ * Redraws a marker's icon and remembers what it now shows: the comparison in upsertMarker()
+ * must be against the drawn icon, not against the latest data.
+ */
+function redrawIcon(marker, point, colors) {
+  marker.options.colorKey = `${colors?.basic || ""}|${colors?.border || ""}`;
+  marker.options.drawn = point;
+  delete marker.options.pendingColors;
+  marker.setIcon(
+    icons.createIconPoint({
+      image: point.iconLocal,
+      colors: point.markerIconFullBleed ? null : colors,
+      isBookmarked: point.isBookmarked,
+      id: point.sensor_id,
+    })
+  );
+}
+
+/** Icons whose redraw was held back while a cluster was spiderfied. */
+function redrawPendingIcons(layer) {
+  let redrawn = 0;
+  layer.eachLayer((marker) => {
+    if (marker.options?.pendingColors === undefined) return;
+    redrawIcon(marker, marker.options.data, marker.options.pendingColors);
+    redrawn++;
+  });
+  // The cluster refresh after a data batch was skipped while the web was open; do it now,
+  // so the cluster takes the colour its markers have.
+  if (redrawn) layer.refreshClusters();
+}
+
+/**
  * Upsert маркер: создает новый или обновляет существующий
  * @param {Object} point - Данные точки
  * @param {Object} colors - Цвета для маркера
@@ -48,32 +79,38 @@ function upsertMarker(point, colors, sensor_id = null) {
       ctx.activeSensorMarkerId === markerId ||
       existingMarker.getElement()?.classList.contains(MARKER_CLASSES.active);
 
-    // Update marker data first
-    existingMarker.options.data = point;
-
     // Обновляем иконку только когда она реально изменилась.
     // Important: while a cluster is spiderfied, avoid calling `setIcon()` on child markers.
     // Markercluster treats icon changes as a reason to recalculate clusters, which can
     // collapse the spiderfy "web" after a short delay.
-    const prevData = existingMarker.options.data;
+    // Compare with the data the icon was drawn from, read BEFORE it is replaced: comparing
+    // the new point with itself froze every marker's colour at its first render, while the
+    // cluster around it was recoloured from fresh values (red cluster over green markers).
+    const prevData = existingMarker.options.drawn || existingMarker.options.data;
+    const colorKey = `${colors?.basic || ""}|${colors?.border || ""}`;
     const iconUnchanged =
       prevData?.iconLocal === point.iconLocal &&
-      Boolean(prevData?.markerIconFullBleed) === Boolean(point.markerIconFullBleed);
-    if (!spiderfyOpen && !iconUnchanged) {
-      existingMarker.setIcon(
-        icons.createIconPoint({
-          image: point.iconLocal,
-          colors: point.markerIconFullBleed ? null : colors,
-          isBookmarked: point.isBookmarked,
-          id: point.sensor_id,
-        })
-      );
+      Boolean(prevData?.markerIconFullBleed) === Boolean(point.markerIconFullBleed) &&
+      Boolean(prevData?.isBookmarked) === Boolean(point.isBookmarked) &&
+      existingMarker.options.colorKey === colorKey;
+
+    existingMarker.options.data = point;
+    if (!iconUnchanged) {
+      if (spiderfyOpen) {
+        // Redrawn when the web closes (see redrawPendingIcons), not on the next data tick,
+        // which in the remote mode may never come.
+        existingMarker.options.pendingColors = colors;
+      } else {
+        redrawIcon(existingMarker, point, colors);
+      }
     }
 
     // Применяем вычисленные координаты
     // Important: avoid forcing recluster/unspiderfy on every data tick.
     try {
-      const prev = existingMarker.getLatLng?.();
+      // A spiderfied marker sits on its leg, not on its point: compare with the point it came
+      // from, or every data tick moves it back and markercluster collapses the open web.
+      const prev = existingMarker._preSpiderfyLatlng || existingMarker.getLatLng?.();
       const nextLat = Number(coord[0]);
       const nextLng = Number(coord[1]);
       const same =
@@ -109,6 +146,8 @@ function upsertMarker(point, colors, sensor_id = null) {
     point.iconLocal,
     markerType
   );
+  marker.options.colorKey = `${colors?.basic || ""}|${colors?.border || ""}`;
+  marker.options.drawn = point;
 
   return { marker, isNew: true };
 }
@@ -196,6 +235,13 @@ export function removeMarker(sensorId) {
 
 export function upsertPoint(point, unit = null) {
   try {
+    if (unit) {
+      try {
+        getMapContext().sensorUnit = unit;
+      } catch {
+        /* map not ready */
+      }
+    }
     // Сенсоры всегда используют addMarker
     addMarker(point, unit);
   } catch (error) {
@@ -240,11 +286,14 @@ export async function init(cb, unit = null) {
   const ctx = getMapContext();
 
   // Создаем основной слой маркеров
+  // The cluster colour must use the measurement the markers are drawn with now, not the one
+  // the map was opened with: upsertPoint() keeps ctx.sensorUnit current.
+  ctx.sensorUnit = unit;
   ctx.markersLayer = utils.createClusterGroup(
     (cluster) =>
       icons.createIconCluster(
         cluster,
-        unit,
+        ctx.sensorUnit || unit,
         colors.getClusterWinningColor,
         colors.getBorderColor,
         colors.isDarkColor
@@ -252,6 +301,7 @@ export async function init(cb, unit = null) {
     unit
   );
   ctx.map.addLayer(ctx.markersLayer);
+  ctx.markersLayer.on("unspiderfied", () => redrawPendingIcons(ctx.markersLayer));
 
   // Создаем обработчик клика для маркеров
   ctx.markerClickHandler = (data) => cb(data);
