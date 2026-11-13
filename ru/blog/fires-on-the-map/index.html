@@ -1,0 +1,593 @@
+<!DOCTYPE html><html lang="ru" dir="ltr"><head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">:root, :host {
+  --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Free";
+  --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free";
+  --fa-font-light: normal 300 1em/1 "Font Awesome 6 Pro";
+  --fa-font-thin: normal 100 1em/1 "Font Awesome 6 Pro";
+  --fa-font-duotone: normal 900 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-duotone-regular: normal 400 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-duotone-light: normal 300 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-duotone-thin: normal 100 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands";
+  --fa-font-sharp-solid: normal 900 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-regular: normal 400 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-light: normal 300 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-thin: normal 100 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-duotone-solid: normal 900 1em/1 "Font Awesome 6 Sharp Duotone";
+  --fa-font-sharp-duotone-regular: normal 400 1em/1 "Font Awesome 6 Sharp Duotone";
+  --fa-font-sharp-duotone-light: normal 300 1em/1 "Font Awesome 6 Sharp Duotone";
+  --fa-font-sharp-duotone-thin: normal 100 1em/1 "Font Awesome 6 Sharp Duotone";
+}
+
+svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
+  overflow: visible;
+  box-sizing: content-box;
+}
+
+.svg-inline--fa {
+  display: var(--fa-display, inline-block);
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+}
+.svg-inline--fa.fa-2xs {
+  vertical-align: 0.1em;
+}
+.svg-inline--fa.fa-xs {
+  vertical-align: 0em;
+}
+.svg-inline--fa.fa-sm {
+  vertical-align: -0.0714285705em;
+}
+.svg-inline--fa.fa-lg {
+  vertical-align: -0.2em;
+}
+.svg-inline--fa.fa-xl {
+  vertical-align: -0.25em;
+}
+.svg-inline--fa.fa-2xl {
+  vertical-align: -0.3125em;
+}
+.svg-inline--fa.fa-pull-left {
+  margin-right: var(--fa-pull-margin, 0.3em);
+  width: auto;
+}
+.svg-inline--fa.fa-pull-right {
+  margin-left: var(--fa-pull-margin, 0.3em);
+  width: auto;
+}
+.svg-inline--fa.fa-li {
+  width: var(--fa-li-width, 2em);
+  top: 0.25em;
+}
+.svg-inline--fa.fa-fw {
+  width: var(--fa-fw-width, 1.25em);
+}
+
+.fa-layers svg.svg-inline--fa {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.fa-layers-counter, .fa-layers-text {
+  display: inline-block;
+  position: absolute;
+  text-align: center;
+}
+
+.fa-layers {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  text-align: center;
+  vertical-align: -0.125em;
+  width: 1em;
+}
+.fa-layers svg.svg-inline--fa {
+  transform-origin: center center;
+}
+
+.fa-layers-text {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+
+.fa-layers-counter {
+  background-color: var(--fa-counter-background-color, #ff253a);
+  border-radius: var(--fa-counter-border-radius, 1em);
+  box-sizing: border-box;
+  color: var(--fa-inverse, #fff);
+  line-height: var(--fa-counter-line-height, 1);
+  max-width: var(--fa-counter-max-width, 5em);
+  min-width: var(--fa-counter-min-width, 1.5em);
+  overflow: hidden;
+  padding: var(--fa-counter-padding, 0.25em 0.5em);
+  right: var(--fa-right, 0);
+  text-overflow: ellipsis;
+  top: var(--fa-top, 0);
+  transform: scale(var(--fa-counter-scale, 0.25));
+  transform-origin: top right;
+}
+
+.fa-layers-bottom-right {
+  bottom: var(--fa-bottom, 0);
+  right: var(--fa-right, 0);
+  top: auto;
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: bottom right;
+}
+
+.fa-layers-bottom-left {
+  bottom: var(--fa-bottom, 0);
+  left: var(--fa-left, 0);
+  right: auto;
+  top: auto;
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: bottom left;
+}
+
+.fa-layers-top-right {
+  top: var(--fa-top, 0);
+  right: var(--fa-right, 0);
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: top right;
+}
+
+.fa-layers-top-left {
+  left: var(--fa-left, 0);
+  right: auto;
+  top: var(--fa-top, 0);
+  transform: scale(var(--fa-layers-scale, 0.25));
+  transform-origin: top left;
+}
+
+.fa-1x {
+  font-size: 1em;
+}
+
+.fa-2x {
+  font-size: 2em;
+}
+
+.fa-3x {
+  font-size: 3em;
+}
+
+.fa-4x {
+  font-size: 4em;
+}
+
+.fa-5x {
+  font-size: 5em;
+}
+
+.fa-6x {
+  font-size: 6em;
+}
+
+.fa-7x {
+  font-size: 7em;
+}
+
+.fa-8x {
+  font-size: 8em;
+}
+
+.fa-9x {
+  font-size: 9em;
+}
+
+.fa-10x {
+  font-size: 10em;
+}
+
+.fa-2xs {
+  font-size: 0.625em;
+  line-height: 0.1em;
+  vertical-align: 0.225em;
+}
+
+.fa-xs {
+  font-size: 0.75em;
+  line-height: 0.0833333337em;
+  vertical-align: 0.125em;
+}
+
+.fa-sm {
+  font-size: 0.875em;
+  line-height: 0.0714285718em;
+  vertical-align: 0.0535714295em;
+}
+
+.fa-lg {
+  font-size: 1.25em;
+  line-height: 0.05em;
+  vertical-align: -0.075em;
+}
+
+.fa-xl {
+  font-size: 1.5em;
+  line-height: 0.0416666682em;
+  vertical-align: -0.125em;
+}
+
+.fa-2xl {
+  font-size: 2em;
+  line-height: 0.03125em;
+  vertical-align: -0.1875em;
+}
+
+.fa-fw {
+  text-align: center;
+  width: 1.25em;
+}
+
+.fa-ul {
+  list-style-type: none;
+  margin-left: var(--fa-li-margin, 2.5em);
+  padding-left: 0;
+}
+.fa-ul > li {
+  position: relative;
+}
+
+.fa-li {
+  left: calc(-1 * var(--fa-li-width, 2em));
+  position: absolute;
+  text-align: center;
+  width: var(--fa-li-width, 2em);
+  line-height: inherit;
+}
+
+.fa-border {
+  border-color: var(--fa-border-color, #eee);
+  border-radius: var(--fa-border-radius, 0.1em);
+  border-style: var(--fa-border-style, solid);
+  border-width: var(--fa-border-width, 0.08em);
+  padding: var(--fa-border-padding, 0.2em 0.25em 0.15em);
+}
+
+.fa-pull-left {
+  float: left;
+  margin-right: var(--fa-pull-margin, 0.3em);
+}
+
+.fa-pull-right {
+  float: right;
+  margin-left: var(--fa-pull-margin, 0.3em);
+}
+
+.fa-beat {
+  animation-name: fa-beat;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, ease-in-out);
+}
+
+.fa-bounce {
+  animation-name: fa-bounce;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+}
+
+.fa-fade {
+  animation-name: fa-fade;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+}
+
+.fa-beat-fade {
+  animation-name: fa-beat-fade;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
+}
+
+.fa-flip {
+  animation-name: fa-flip;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, ease-in-out);
+}
+
+.fa-shake {
+  animation-name: fa-shake;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, linear);
+}
+
+.fa-spin {
+  animation-name: fa-spin;
+  animation-delay: var(--fa-animation-delay, 0s);
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 2s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, linear);
+}
+
+.fa-spin-reverse {
+  --fa-animation-direction: reverse;
+}
+
+.fa-pulse,
+.fa-spin-pulse {
+  animation-name: fa-spin;
+  animation-direction: var(--fa-animation-direction, normal);
+  animation-duration: var(--fa-animation-duration, 1s);
+  animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+  animation-timing-function: var(--fa-animation-timing, steps(8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fa-beat,
+.fa-bounce,
+.fa-fade,
+.fa-beat-fade,
+.fa-flip,
+.fa-pulse,
+.fa-shake,
+.fa-spin,
+.fa-spin-pulse {
+    animation-delay: -1ms;
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    transition-delay: 0s;
+    transition-duration: 0s;
+  }
+}
+@keyframes fa-beat {
+  0%, 90% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(var(--fa-beat-scale, 1.25));
+  }
+}
+@keyframes fa-bounce {
+  0% {
+    transform: scale(1, 1) translateY(0);
+  }
+  10% {
+    transform: scale(var(--fa-bounce-start-scale-x, 1.1), var(--fa-bounce-start-scale-y, 0.9)) translateY(0);
+  }
+  30% {
+    transform: scale(var(--fa-bounce-jump-scale-x, 0.9), var(--fa-bounce-jump-scale-y, 1.1)) translateY(var(--fa-bounce-height, -0.5em));
+  }
+  50% {
+    transform: scale(var(--fa-bounce-land-scale-x, 1.05), var(--fa-bounce-land-scale-y, 0.95)) translateY(0);
+  }
+  57% {
+    transform: scale(1, 1) translateY(var(--fa-bounce-rebound, -0.125em));
+  }
+  64% {
+    transform: scale(1, 1) translateY(0);
+  }
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+}
+@keyframes fa-fade {
+  50% {
+    opacity: var(--fa-fade-opacity, 0.4);
+  }
+}
+@keyframes fa-beat-fade {
+  0%, 100% {
+    opacity: var(--fa-beat-fade-opacity, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(var(--fa-beat-fade-scale, 1.125));
+  }
+}
+@keyframes fa-flip {
+  50% {
+    transform: rotate3d(var(--fa-flip-x, 0), var(--fa-flip-y, 1), var(--fa-flip-z, 0), var(--fa-flip-angle, -180deg));
+  }
+}
+@keyframes fa-shake {
+  0% {
+    transform: rotate(-15deg);
+  }
+  4% {
+    transform: rotate(15deg);
+  }
+  8%, 24% {
+    transform: rotate(-18deg);
+  }
+  12%, 28% {
+    transform: rotate(18deg);
+  }
+  16% {
+    transform: rotate(-22deg);
+  }
+  20% {
+    transform: rotate(22deg);
+  }
+  32% {
+    transform: rotate(-12deg);
+  }
+  36% {
+    transform: rotate(12deg);
+  }
+  40%, 100% {
+    transform: rotate(0deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.fa-rotate-90 {
+  transform: rotate(90deg);
+}
+
+.fa-rotate-180 {
+  transform: rotate(180deg);
+}
+
+.fa-rotate-270 {
+  transform: rotate(270deg);
+}
+
+.fa-flip-horizontal {
+  transform: scale(-1, 1);
+}
+
+.fa-flip-vertical {
+  transform: scale(1, -1);
+}
+
+.fa-flip-both,
+.fa-flip-horizontal.fa-flip-vertical {
+  transform: scale(-1, -1);
+}
+
+.fa-rotate-by {
+  transform: rotate(var(--fa-rotate-angle, 0));
+}
+
+.fa-stack {
+  display: inline-block;
+  vertical-align: middle;
+  height: 2em;
+  position: relative;
+  width: 2.5em;
+}
+
+.fa-stack-1x,
+.fa-stack-2x {
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: var(--fa-stack-z-index, auto);
+}
+
+.svg-inline--fa.fa-stack-1x {
+  height: 1em;
+  width: 1.25em;
+}
+.svg-inline--fa.fa-stack-2x {
+  height: 2em;
+  width: 2.5em;
+}
+
+.fa-inverse {
+  color: var(--fa-inverse, #fff);
+}
+
+.sr-only,
+.fa-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:not(:focus),
+.fa-sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.svg-inline--fa .fa-primary {
+  fill: var(--fa-primary-color, currentColor);
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa .fa-secondary {
+  fill: var(--fa-secondary-color, currentColor);
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-primary {
+  opacity: var(--fa-secondary-opacity, 0.4);
+}
+
+.svg-inline--fa.fa-swap-opacity .fa-secondary {
+  opacity: var(--fa-primary-opacity, 1);
+}
+
+.svg-inline--fa mask .fa-primary,
+.svg-inline--fa mask .fa-secondary {
+  fill: black;
+}</style><link rel="icon" href="/favicon.ico">
+    <meta name="description" content="На карте sensors.social появились пожары, которые видят спутники. Включите слой вместе с ветром и спутниковой пылью — и мутный день можно проследить до источника.">
+    <link rel="apple-touch-icon" href="/app-icon-120.png" sizes="120x120">
+    <link rel="mask-icon" href="/app-icon-512.png" color="#FFFFFF">
+    <meta name="theme-color" content="#ffffff">
+    <title>Пожары на карте: откуда приходит дым</title>
+
+    <script>
+      // Only load Matomo if user hasn't opted out
+      if (!localStorage.getItem("matomoOptOut")) {
+        // Initialize _paq BEFORE loading matomo.js
+        window._paq = window._paq || [];
+        window._paq.push(["setTrackerUrl", "https://matomo.robonomics.network/matomo.php"]);
+        window._paq.push(["setSiteId", "5"]);
+        window._paq.push(["enableLinkTracking"]);
+
+        // Inject Matomo script
+        const g = document.createElement("script");
+        g.async = true;
+        g.defer = true;
+        g.src = "https://matomo.robonomics.network/matomo.js";
+        document.head.appendChild(g);
+      }
+    </script><script async="" defer="" src="https://matomo.robonomics.network/matomo.js"></script>
+    <script type="module" crossorigin="" src="/assets/index-f5df9273.js"></script>
+    <link rel="stylesheet" href="/assets/index-c321ae96.css">
+  <style>.vue-notification-group{display:block;position:fixed;z-index:5000}.vue-notification-wrapper{display:block;overflow:hidden;width:100%;margin:0;padding:0}.notification-title{font-weight:600}.vue-notification-template{display:block;box-sizing:border-box;background:white;text-align:left}.vue-notification{display:block;box-sizing:border-box;text-align:left;font-size:12px;padding:10px;margin:0 5px 5px;color:#fff;background:#44A4FC;border-left:5px solid #187FE7}.vue-notification.warn{background:#ffb648;border-left-color:#f48a06}.vue-notification.error{background:#E54D42;border-left-color:#b82e24}.vue-notification.success{background:#68CD86;border-left-color:#42a85f}.vn-fade-enter-active,.vn-fade-leave-active,.vn-fade-move{transition:all .5s}.vn-fade-enter-from,.vn-fade-leave-to{opacity:0}</style><script type="application/ld+json" data-hid="b2003d6">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Пожары на карте: откуда приходит дым","description":"На карте sensors.social появились пожары, которые видят спутники. Включите слой вместе с ветром и спутниковой пылью — и мутный день можно проследить до источника.","image":"https://sensors.social/blog/fires-on-the-map/images/cover.png","datePublished":"2026-10-26T00:00:00.000Z","inLanguage":"ru","author":{"@type":"Organization","name":"sensors.social","url":"https://sensors.social/"},"publisher":{"@type":"Organization","@id":"https://sensors.social/#organization","name":"sensors.social","url":"https://sensors.social/","logo":"https://sensors.social/app-icon-512.png","sameAs":["https://x.com/SensorsSocial","https://github.com/airalab/sensors.social"]},"mainEntityOfPage":"https://sensors.social/ru/blog/fires-on-the-map/","url":"https://sensors.social/ru/blog/fires-on-the-map/","keywords":"fires, smoke, satellite, map, air-quality"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Blog","item":"https://sensors.social/ru/blog/"},{"@type":"ListItem","position":2,"name":"Пожары на карте: откуда приходит дым","item":"https://sensors.social/ru/blog/fires-on-the-map/"}]}]}</script><meta property="og:type" content="website"><meta property="og:site_name" content="Sensors.social"><meta property="og:title" content="Пожары на карте: откуда приходит дым"><meta property="og:description" content="На карте sensors.social появились пожары, которые видят спутники. Включите слой вместе с ветром и спутниковой пылью — и мутный день можно проследить до источника."><meta property="og:image" content="https://sensors.social/blog/fires-on-the-map/images/cover.png"><meta property="og:image:width" content="1280"><meta property="og:image:height" content="765"><meta property="og:url" content="https://sensors.social/ru/blog/fires-on-the-map/"><meta property="og:locale" content="ru_RU"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Пожары на карте: откуда приходит дым"><meta name="twitter:image" content="https://sensors.social/blog/fires-on-the-map/images/cover.png"><meta name="twitter:description" content="На карте sensors.social появились пожары, которые видят спутники. Включите слой вместе с ветром и спутниковой пылью — и мутный день можно проследить до источника."><meta name="twitter:site" content="@AIRA_Robonomics"><meta name="twitter:creator" content="@AIRA_Robonomics"><link rel="canonical" href="https://sensors.social/ru/blog/fires-on-the-map/"><link rel="alternate" hreflang="en" href="https://sensors.social/blog/fires-on-the-map/"><link rel="alternate" hreflang="ru" href="https://sensors.social/ru/blog/fires-on-the-map/"><link rel="alternate" hreflang="x-default" href="https://sensors.social/blog/fires-on-the-map/"></head>
+  <body>
+    <div id="app" data-v-app=""><!----><header data-v-d7907b40="" class="route-blog-post"><!----><div data-v-d7907b40="" class="header-content flexline space-between"><div data-v-d7907b40="" class="flexline align-start"><a data-v-d7907b40="" href="/ru/" class="appicon"><img data-v-d7907b40="" alt="Map of independent air quality sensors" src="/assets/app-icon-512-c18bf4f0.png"></a><details data-v-dacb10ad="" data-v-d7907b40="" tabindex="0" class="service-status details-popup"><summary data-v-dacb10ad="" class="service-status__summary button-round-outline button-round-outline-labeled" aria-label="Как работает карта: Сбор данных проверяем, База карты проверяем, Блокчейн проверяем"><span data-v-dacb10ad="" class="service-status__item"><span data-v-dacb10ad="" class="service-status__dot is-unknown" aria-hidden="true"></span><span data-v-dacb10ad="" class="service-status__name">Данные</span></span><span data-v-dacb10ad="" class="service-status__item"><span data-v-dacb10ad="" class="service-status__dot is-unknown" aria-hidden="true"></span><span data-v-dacb10ad="" class="service-status__name">Карта</span></span><span data-v-dacb10ad="" class="service-status__item"><span data-v-dacb10ad="" class="service-status__dot is-unknown" aria-hidden="true"></span><span data-v-dacb10ad="" class="service-status__name">Блокчейн</span></span></summary><div data-v-dacb10ad="" class="details-content"><h4 data-v-dacb10ad="" class="service-status__title">Как работает карта</h4><!----><!----><ul data-v-dacb10ad="" class="service-status__list"><li data-v-dacb10ad="" title="Connectivity"><span data-v-dacb10ad="" class="service-status__dot is-unknown" aria-hidden="true"></span><div data-v-dacb10ad="" class="service-status__body"><div data-v-dacb10ad="" class="service-status__row"><b data-v-dacb10ad="">Сбор данных</b><span data-v-dacb10ad="">проверяем</span></div><div data-v-dacb10ad="" class="service-status__detail">Принимает показания датчиков.</div><!----></div></li><li data-v-dacb10ad="" title="RoSeMAN"><span data-v-dacb10ad="" class="service-status__dot is-unknown" aria-hidden="true"></span><div data-v-dacb10ad="" class="service-status__body"><div data-v-dacb10ad="" class="service-status__row"><b data-v-dacb10ad="">База карты</b><span data-v-dacb10ad="">проверяем</span></div><div data-v-dacb10ad="" class="service-status__detail">Хранит показания, которые вы видите на карте.</div><!----></div></li><li data-v-dacb10ad="" title="Robonomics"><span data-v-dacb10ad="" class="service-status__dot is-unknown" aria-hidden="true"></span><div data-v-dacb10ad="" class="service-status__body"><div data-v-dacb10ad="" class="service-status__row"><b data-v-dacb10ad="">Блокчейн</b><span data-v-dacb10ad="">проверяем</span></div><div data-v-dacb10ad="" class="service-status__detail">Robonomics ведёт открытый журнал данных.</div><!----></div></li></ul></div></details></div><div data-v-d7907b40="" class="flexline header-actions"><a data-v-d7907b40="" href="/ru/where-to-buy/" class="button button-outlined shop-button button-round-outline-brightgreen"><svg data-v-d7907b40="" class="svg-inline--fa fa-bag-shopping" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bag-shopping" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M160 112c0-35.3 28.7-64 64-64s64 28.7 64 64l0 48-128 0 0-48zm-48 48l-64 0c-26.5 0-48 21.5-48 48L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-208c0-26.5-21.5-48-48-48l-64 0 0-48C336 50.1 285.9 0 224 0S112 50.1 112 112l0 48zm24 48a24 24 0 1 1 0 48 24 24 0 1 1 0-48zm152 24a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z"></path></svg><span data-v-d7907b40="" class="shop-full">Купить датчики</span><span data-v-d7907b40="" class="shop-short">Купить</span></a><button data-v-d7907b40="" class="popovercontrol button-round-outline" popovertarget="about" aria-label="Меню" aria-expanded="false"><svg data-v-d7907b40="" class="svg-inline--fa fa-bars" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"></path></svg></button><button data-v-d7907b40="" class="popovercontrol button-round-outline bookmarksbutton" popovertarget="bookmarks"><svg data-v-d7907b40="" class="svg-inline--fa fa-bookmark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bookmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path class="" fill="currentColor" d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"></path></svg><!----></button><a data-v-8a7d7c9e="" data-v-d7907b40="" href="/ru/login/" class="button button-round-outline" title="Войти"><svg data-v-8a7d7c9e="" class="svg-inline--fa fa-user" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="" fill="currentColor" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"></path></svg></a></div></div><div data-v-d7907b40="" id="about" class="popover popover-top-right" popover=""><div data-v-d7907b40="" class="menu-head"><span data-v-d7907b40="" class="menu-title">Меню</span><select data-v-d7907b40="" class="menu-locale" aria-label="Язык"><option data-v-d7907b40="" value="en">EN</option><option data-v-d7907b40="" value="ru">RU</option></select><button data-v-d7907b40="" type="button" class="menu-close" popovertarget="about" popovertargetaction="hide" aria-label="Закрыть" title="Закрыть"><svg data-v-d7907b40="" class="svg-inline--fa fa-xmark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path class="" fill="currentColor" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"></path></svg></button></div><nav data-v-d7907b40="" class="menu-links" aria-label="Меню"><a data-v-d7907b40="" href="/ru/where-to-buy/" class="menu-link menu-link-buy">Где купить</a><a data-v-d7907b40="" href="/ru/ai/" class="menu-link">ИИ-ассистент</a><a data-v-d7907b40="" href="/ru/altruist-device-info/" class="menu-link">Об Altruist</a><div data-v-d7907b40="" class="menu-models" role="group" aria-label="Модели Altruist"><a data-v-d7907b40="" href="/ru/altruist/insight/" class="">Insight</a><a data-v-d7907b40="" href="/ru/altruist/urban/" class="">Urban</a><a data-v-d7907b40="" href="/ru/altruist/dual/" class="">Dual</a></div><a data-v-d7907b40="" href="/ru/altruist-setup/" class="menu-link">Настройка</a><a data-v-d7907b40="" href="/ru/blog/" class="menu-link">Блог</a><a data-v-d7907b40="" href="/ru/support/" class="menu-link">Поддержка</a><!----></nav><p data-v-4cc6be94="" data-v-d7907b40="" class="licence-line menu-licence">Данные карты © <a data-v-4cc6be94="" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Участники OpenStreetMap</a> · Данные датчиков © участники sensors.social, <a data-v-4cc6be94="" href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a> · Код: <a data-v-4cc6be94="" href="https://github.com/airalab/sensors.social/blob/master/NOTICE" target="_blank" rel="noopener">AGPL-3.0</a></p></div><div data-v-d7907b40="" id="bookmarks" class="popover-top-right popover" popover=""><h3 data-v-d7907b40="">Сохраненные датчики</h3><div data-v-d7907b40="" class="bookmarks-content">Здесь вы можете сохранить датчики для быстрого просмотра</div></div></header><section class="container-pagetext"><article data-v-056b8009="" class="blog-post"><header data-v-056b8009="" class="blog-post__hero"><a data-v-056b8009="" href="/ru/blog/" class="blog-post__backlink">← Назад к блогу</a><img data-v-056b8009="" src="/blog/fires-on-the-map/images/cover.png" alt="Пожары на карте: откуда приходит дым" class="blog-post__cover"><div data-v-056b8009="" class="blog-post__hero-content"><h1 data-v-056b8009="">Пожары на карте: откуда приходит дым</h1><p data-v-056b8009="" class="blog-post__meta">26 октября 2026 г. • 2 мин чтения</p><ul data-v-056b8009="" class="blog-tags blog-tags--post"><li data-v-056b8009="" class="blog-tag">fires</li><li data-v-056b8009="" class="blog-tag">smoke</li><li data-v-056b8009="" class="blog-tag">satellite</li><li data-v-056b8009="" class="blog-tag">map</li><li data-v-056b8009="" class="blog-tag">air-quality</li></ul></div></header><p data-v-056b8009="" class="blog-post__abstract">На карте sensors.social появились пожары, которые видят спутники. Включите слой вместе с ветром и спутниковой пылью — и мутный день можно проследить до источника.</p><div data-v-056b8009="" class="blog-post__content text-all"><div data-v-056b8009="" class="markdown-body"><div class="video-embed video-embed-portrait"><video src="/assets/fires-map-96339828.mp4" controls="" playsinline="" preload="metadata" poster="/assets/poster-238e4a8d.jpg"></video></div><h2>Что нового</h2><p>Новый слой «Пожары» отмечает очаги огня, замеченные спутниками за последние сутки. Чем ярче и крупнее свечение, тем мощнее огонь. Выберите на карте прошлую дату — и увидите пожары того дня.</p><h2>Как пользоваться</h2><ul><li>Включите «Пожары» внизу карты. На телефоне они под кнопкой-шестерёнкой.</li><li>Оставьте включённым ветер: бегущие штрихи показывают, куда несёт дым.</li><li>Посмотрите на датчики по ветру. Если они растут, пока выше по ветру горит, понятно, откуда дымка.</li><li>Добавьте спутниковую пыль, чтобы отличить пыль из пустыни от дыма. Обе портят воздух, но приходят из разных мест.</li></ul><h2>Полезно знать</h2><p>Спутник видит жар, а не только лесные пожары. Часть точек — сжигание на полях или газовые факелы, которые горят круглый год. Что на самом деле доходит до вашей улицы, покажут датчики на земле.</p><p>Данные о пожарах — от NASA. Как и всё на sensors.social, слой открыт и бесплатен.</p><p><a href="https://sensors.social/?type=pm10&amp;provider=remote&amp;lat=20&amp;lng=20&amp;zoom=3" target="_blank" rel="noopener noreferrer">Открыть живую карту</a></p></div></div></article></section><footer data-v-ba23438d="" class="site-footer"><!----><div data-v-ba23438d="" class="site-footer-in"><div data-v-ba23438d="" class="site-footer-columns"><div data-v-ba23438d="" class="site-footer-brand"><a data-v-ba23438d="" href="/ru/" class="site-footer-logo"><img data-v-ba23438d="" src="/assets/app-icon-512-c18bf4f0.png" alt=""><span data-v-ba23438d="">sensors.social</span></a><p data-v-ba23438d="">Децентрализованная карта независимых датчиков, которые записывают свои измерения в блокчейн.</p><a data-v-ba23438d="" href="/ru/where-to-buy/" class="site-footer-buy">Купить датчики</a></div><nav data-v-ba23438d="" aria-label="Altruist"><h2 data-v-ba23438d="">Altruist</h2><a data-v-ba23438d="" href="/ru/altruist/insight/" class="">Altruist Insight</a><a data-v-ba23438d="" href="/ru/altruist/urban/" class="">Altruist Urban</a><a data-v-ba23438d="" href="/ru/altruist/dual/" class="">Altruist Dual</a><a data-v-ba23438d="" href="/ru/altruist-device-info/" class="">Об устройстве</a><a data-v-ba23438d="" href="/ru/altruist-setup/" class="">Настройка</a><a data-v-ba23438d="" href="/ru/ai/" class="">ИИ-ассистент</a><a data-v-ba23438d="" href="/ru/altruist-compare/" class="">Сравнение</a><a data-v-ba23438d="" href="/ru/altruist-use-cases/" class="">Применение</a></nav><nav data-v-ba23438d="" aria-label="Данные"><h2 data-v-ba23438d="">Данные</h2><a data-v-ba23438d="" href="/ru/air-measurements/" class="">Что мы измеряем</a><a data-v-ba23438d="" href="/ru/construction-monitoring/" class="">Мониторинг стройки</a><a data-v-ba23438d="" href="/ru/noise-data-real-estate/" class="">Шум и недвижимость</a></nav><nav data-v-ba23438d="" aria-label="Проект"><h2 data-v-ba23438d="">Проект</h2><a data-v-ba23438d="" href="/ru/altruist-timeline/" class="">История</a><a data-v-ba23438d="" href="/ru/blog/" class="">Блог</a><a data-v-ba23438d="" href="/ru/support/" class="">Поддержка</a><h3 data-v-ba23438d="">GitHub</h3><a data-v-ba23438d="" href="https://github.com/airalab/sensors.social" target="_blank" rel="noopener">Приложение карты</a><a data-v-ba23438d="" href="https://github.com/airalab/altruist-firmware" target="_blank" rel="noopener">Прошивка Altruist</a><a data-v-ba23438d="" href="https://github.com/airalab/sensors-connectivity" target="_blank" rel="noopener">Connectivity</a><a data-v-ba23438d="" href="https://github.com/airalab/RoSeMAN" target="_blank" rel="noopener">RoSeMAN</a></nav><nav data-v-ba23438d="" aria-label="Правовое"><h2 data-v-ba23438d="">Правовое</h2><a data-v-ba23438d="" href="/ru/privacy-policy/" class="">Конфиденциальность</a><a data-v-ba23438d="" href="https://github.com/airalab/sensors.social/blob/master/NOTICE" target="_blank" rel="noopener">Лицензии</a></nav></div><div data-v-ba23438d="" class="site-footer-bottom"><p data-v-4cc6be94="" data-v-ba23438d="" class="licence-line">Данные карты © <a data-v-4cc6be94="" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">Участники OpenStreetMap</a> · Данные датчиков © участники sensors.social, <a data-v-4cc6be94="" href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a> · Код: <a data-v-4cc6be94="" href="https://github.com/airalab/sensors.social/blob/master/NOTICE" target="_blank" rel="noopener">AGPL-3.0</a></p><p data-v-ba23438d=""><a data-v-ba23438d="" href="https://github.com/airalab/sensors.social/releases/tag/v4.1.0" target="_blank" rel="noopener">Версия 4.1.0</a> · Обеспечено защитой Polkadot </p></div></div></footer><div class="vue-notification-group" style="width: 300px; top: 0px; right: 0px;"><span></span></div></div>
+    
+  
+
+</body></html>
