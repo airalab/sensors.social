@@ -10,14 +10,14 @@
       </div>
 
       <div class="flexline header-actions">
-        <a
-          href="/where-to-buy/"
+        <router-link
+          to="/where-to-buy/"
           class="button button-outlined shop-button button-round-outline-brightgreen"
         >
           <font-awesome-icon icon="fa-solid fa-bag-shopping" aria-hidden="true" />
           <span class="shop-full">{{ $t("Shop sensors") }}</span>
           <span class="shop-short">{{ $t("nav.buy") }}</span>
-        </a>
+        </router-link>
 
         <button
           class="popovercontrol button-round-outline"
@@ -108,7 +108,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { languages } from "@/translate";
 import { settings } from "@config";
 import { useI18n } from "vue-i18n";
@@ -122,11 +122,17 @@ import ServiceStatus from "./ServiceStatus.vue";
 import TopStrip from "../TopStrip.vue";
 import Bookmarks from "@/components/Bookmarks.vue";
 import { useAboutSheet } from "@/composables/useAboutSheet";
+import { useLocaleSwitch } from "@/composables/useLocaleSwitch";
 
 const { locale: i18nLocale } = useI18n();
 const route = useRoute();
 
-const locale = ref(localStorage.getItem("locale") || i18nLocale.value || "en");
+const { switchLocale } = useLocaleSwitch();
+// The language comes from the address; picking another one opens that page at its address.
+const locale = computed({
+  get: () => i18nLocale.value || "en",
+  set: (code) => switchLocale(code),
+});
 const locales = languages || ["en"];
 const { idbBookmarks } = useBookmarks();
 const menuOpen = ref(false);
@@ -134,15 +140,6 @@ const { openAbout } = useAboutSheet();
 const localeComputed = computed(() => locale.value || "en");
 // Количество закладок
 const bookmarksCount = computed(() => idbBookmarks.value?.length || 0);
-
-watch(
-  locale,
-  (newValue) => {
-    i18nLocale.value = newValue;
-    localStorage.setItem("locale", newValue);
-  },
-  { immediate: true }
-);
 
 onMounted(() => {
   // Close all opened details on body click if this is Tooltip

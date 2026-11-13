@@ -1,12 +1,17 @@
 <template>
-  <MetaInfo :pageTitle="postTitle" :pageDescription="postDescription" :pageImage="coverUrl" />
+  <MetaInfo
+    :pageTitle="postTitle"
+    :pageDescription="postDescription"
+    :pageImage="coverUrl"
+    :translated="postTranslated"
+  />
   <PageTextLayout>
     <article v-if="postVisible" class="blog-post">
       <header class="blog-post__hero">
         <router-link class="blog-post__backlink" to="/blog/">{{
           $t("← Back to Blog")
         }}</router-link>
-        <img v-if="coverUrl" :src="coverUrl" class="blog-post__cover" />
+        <img v-if="coverUrl" :src="coverUrl" :alt="postTitle" class="blog-post__cover" />
         <div class="blog-post__hero-content">
           <h1>{{ postTitle }}</h1>
           <p class="blog-post__meta">
@@ -40,6 +45,7 @@ import { useI18n } from "vue-i18n";
 
 import MetaInfo from "../MetaInfo.vue";
 import { absoluteUrl, organization, pageUrl, useStructuredData } from "@/utils/structuredData";
+import { withLocale } from "@/utils/localePath";
 import PageTextLayout from "../layouts/PageText.vue";
 import { formatReadingTime, formatRelative } from "@/utils/formatDate";
 
@@ -86,13 +92,22 @@ const readingTime = computed(() => {
 
 const postMod = computed(() => matchedEntry.value?.mod ?? null);
 
+// Shown in the reader's language, or the English original standing in for a missing translation.
+const postTranslated = computed(
+  () =>
+    currentLocale.value === "en" ||
+    Boolean(matchedEntry.value?.path.endsWith(`index.${currentLocale.value}.md`))
+);
+
 const frontmatter = computed(() => postMod.value ?? {});
 const postComponent = computed(() => postMod.value?.default ?? null);
 const postTitle = computed(() => frontmatter.value?.title ?? "");
 const postDate = computed(() => frontmatter.value?.date ?? "");
 const postTags = computed(() => frontmatter.value?.tags ?? []);
 const postAbstract = computed(() => frontmatter.value?.abstract ?? "");
-const postDescription = computed(() => frontmatter.value?.description ?? "");
+const postDescription = computed(
+  () => frontmatter.value?.description || frontmatter.value?.abstract || ""
+);
 const postVisible = computed(() => frontmatter.value?.published ?? false);
 
 const coverUrl = computed(() => {
@@ -115,8 +130,9 @@ const coverUrl = computed(() => {
 
 const structuredData = computed(() => {
   if (!postVisible.value) return null;
-  const url = pageUrl(`/blog/${route.params.slug}`);
-  const date = postDate.value ? new Date(postDate.value).toISOString().slice(0, 10) : undefined;
+  const url = pageUrl(route.path);
+  // Google wants a full datetime with a zone; front matter has only the day, read as UTC midnight.
+  const date = postDate.value ? new Date(postDate.value).toISOString() : undefined;
   return [
     {
       "@type": "BlogPosting",
@@ -134,7 +150,12 @@ const structuredData = computed(() => {
     {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Blog", item: pageUrl("/blog") },
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Blog",
+          item: pageUrl(withLocale("/blog/", currentLocale.value)),
+        },
         { "@type": "ListItem", position: 2, name: postTitle.value, item: url },
       ],
     },

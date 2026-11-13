@@ -1,4 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, START_LOCATION } from "vue-router";
+import { i18n } from "./plugins/i18n";
+import { localeFromPath, savedLocale, withLocale } from "./utils/localePath";
 import AiAssistant from "./views/AiAssistant.vue";
 import AirMeasurements from "./views/AirMeasurements.vue";
 import AltruistCompare from "./views/AltruistCompare.vue";
@@ -30,101 +32,101 @@ const router = createRouter({
   },
   routes: [
     {
-      path: "/",
+      path: "/:lang(ru)?",
       // path: "/:provider?/:type?/:zoom?/:lat?/:lng?/:sensor?",
       name: "main",
       component: Main,
     },
     {
-      path: "/privacy-policy/",
+      path: "/:lang(ru)?/privacy-policy/",
       name: "privacy-policy",
       component: PrivacyPolicy,
     },
     {
-      path: "/support/",
+      path: "/:lang(ru)?/support/",
       name: "support",
       component: Support,
     },
     {
-      path: "/ai/",
+      path: "/:lang(ru)?/ai/",
       name: "ai",
       component: AiAssistant,
     },
     {
-      path: "/air-measurements/",
+      path: "/:lang(ru)?/air-measurements/",
       name: "air-measurements",
       component: AirMeasurements,
     },
     {
-      path: "/altruist-use-cases/",
+      path: "/:lang(ru)?/altruist-use-cases/",
       name: "altruist-use-cases",
       component: AltruistUseCases,
     },
     {
-      path: "/altruist-timeline/",
+      path: "/:lang(ru)?/altruist-timeline/",
       name: "altruist-timeline",
       component: AltruistTimeline,
     },
     {
-      path: "/altruist-compare/",
+      path: "/:lang(ru)?/altruist-compare/",
       name: "altruist-compare",
       component: AltruistCompare,
     },
     {
-      path: "/altruist-device-info/",
+      path: "/:lang(ru)?/altruist-device-info/",
       name: "altruist-device-info",
       component: AltruistDeviceInfo,
     },
     {
-      path: "/altruist-setup/",
+      path: "/:lang(ru)?/altruist-setup/",
       name: "altruist-setup",
       component: AltruistSetup,
     },
     {
-      path: "/altruist/insight/",
+      path: "/:lang(ru)?/altruist/insight/",
       name: "altruist-insight",
       component: AltruistLanding,
       props: { model: "insight" },
     },
     {
-      path: "/altruist/urban/",
+      path: "/:lang(ru)?/altruist/urban/",
       name: "altruist-urban",
       component: AltruistLanding,
       props: { model: "urban" },
     },
     {
-      path: "/altruist/dual/",
+      path: "/:lang(ru)?/altruist/dual/",
       name: "altruist-dual",
       component: AltruistLanding,
       props: { model: "dual" },
     },
     {
-      path: "/where-to-buy/",
+      path: "/:lang(ru)?/where-to-buy/",
       name: "where-to-buy",
       component: WhereToBuy,
     },
     {
-      path: "/construction-monitoring/",
+      path: "/:lang(ru)?/construction-monitoring/",
       name: "construction-monitoring",
       component: ConstructionMonitoring,
     },
     {
-      path: "/noise-data-real-estate/",
+      path: "/:lang(ru)?/noise-data-real-estate/",
       name: "noise-data-real-estate",
       component: NoiseDataRealEstate,
     },
     {
-      path: "/login/",
+      path: "/:lang(ru)?/login/",
       name: "login",
       component: Login,
     },
       {
-      path: "/blog",
+      path: "/:lang(ru)?/blog",
       name: "blog",
       component: Blog
     },
     {
-      path: "/blog/:slug",
+      path: "/:lang(ru)?/blog/:slug",
       name: "blog-post",
       component: BlogPost
     },
@@ -142,12 +144,60 @@ const router = createRouter({
   ],
 });
 
+// Language. The address is the source of truth: /ru/… is Russian, everything else English.
+// - First load: a /ru/ address shows Russian; an English address sends a visitor who
+//   picked Russian with the switch before to the /ru/ version.
+// - Inside the app the current language is kept, so links and router.push() calls written
+//   as English paths land on the page in the language the visitor is reading.
+// - ?lang=en|ru (the shop links to /ai/ with it) switches explicitly.
+router.beforeEach((to, from) => {
+  const urlLocale = localeFromPath(to.path);
+  const queryLocale = ["en", "ru"].includes(to.query.lang) ? to.query.lang : null;
+
+  let locale;
+  if (queryLocale) locale = queryLocale;
+  else if (from === START_LOCATION) locale = urlLocale === "ru" ? "ru" : savedLocale() || "en";
+  else locale = i18n.global.locale.value;
+
+  if (queryLocale) {
+    try {
+      localStorage.setItem("locale", queryLocale);
+    } catch (e) {
+      /* private mode */
+    }
+  }
+  i18n.global.locale.value = locale;
+
+  if (locale !== urlLocale || queryLocale) {
+    const query = { ...to.query };
+    delete query.lang;
+    return { path: withLocale(to.path, locale), query, hash: to.hash, replace: true };
+  }
+});
+
+// <router-link> builds its href with router.resolve(). Giving it the current language here
+// means every link in the app points to /ru/… on Russian pages, also in the prerendered
+// HTML that search engines read, without touching each link.
+const resolveRoute = router.resolve.bind(router);
+router.resolve = (to, current) => {
+  const resolved = resolveRoute(to, current);
+  const locale = i18n.global.locale.value;
+  if (locale === "en" || localeFromPath(resolved.path) === locale) return resolved;
+  if (resolved.name === "not-found") return resolved;
+  return resolveRoute(
+    { path: withLocale(resolved.path, locale), query: resolved.query, hash: resolved.hash },
+    current
+  );
+};
+
 // Support old urls
 (async () => {
   // Old hash-mode urls look like #/provider/type/zoom/lat/lng/sensor. Any other
   // hash is an anchor on the current page and must stay where it is.
   if (window.location.hash.startsWith("#/")) {
-    const routes = router.options.routes.map((item) => item.path.split("/")[1]);
+    const routes = router.options.routes.map(
+      (item) => item.path.replace("/:lang(ru)?", "").split("/")[1]
+    );
     const [, provider, type, zoom, lat, lng, sensor] = window.location.hash.split("/");
     if (routes.includes(provider)) {
       window.location.href = `${provider}/`;

@@ -1,11 +1,7 @@
 <template>
   <MetaInfo
     :pageTitle="$t('Who Altruist Was Created For - Sensors use cases')"
-    :pageDescription="
-      $t(
-        'Monitoring the environment involves plenty of pitfalls, making the job far harder than it looks at first glance. Our team—the creators of Altruist and the open-source project sensors.social—has spent seven years studying and working in this field, and we hope our experience will pleasantly surprise you and give you a practical tool for adapting to the conditions in which you and your loved ones live. Below we explain which main user groups Altruist is designed for…'
-      )
-    "
+    :pageDescription="$t('seo.useCasesDescription')"
     pageImage="/og-altruist-use-cases.webp"
   />
   <PageTextLayout>
@@ -24,7 +20,7 @@
 
       <section>
         <h2>🏙️ {{ $t("You live in a big city or an ecologically challenged region") }}</h2>
-        <p><img :src="image1" alt="" /></p>
+        <p><img :src="image1" :alt="$t('usecases.alt1')" /></p>
         <p>
           {{
             $t(
@@ -65,7 +61,7 @@
 
       <section>
         <h2>🤧🌿 {{ $t("You or your loved ones have allergies or bronchial asthma") }}</h2>
-        <p><img :src="image2" alt="" /></p>
+        <p><img :src="image2" :alt="$t('usecases.alt2')" /></p>
         <p>
           {{
             $t(
@@ -107,7 +103,7 @@
 
       <section>
         <h2>🛠️🏠 {{ $t("You are building a smart home") }}</h2>
-        <p><img :src="image3" alt="" /></p>
+        <p><img :src="image3" :alt="$t('usecases.alt3')" /></p>
         <p>
           {{
             $t(
@@ -148,7 +144,7 @@
             )
           }}
         </h2>
-        <p><img :src="image4" alt="" /></p>
+        <p><img :src="image4" :alt="$t('usecases.alt4')" /></p>
         <p>
           {{
             $t(

@@ -97,4 +97,4 @@ tags: ["altruist", "thailand", "bangkok", "koh-phangan", "photo"]
 
 Бангкок теперь есть на карте — открыть можно [здесь](https://sensors.social/?type=pm10&date=2026-09-10&provider=remote&lat=13.70&lng=100.40&zoom=10).
 
-Остров с последних кадров отчитывается уже год. Эта история, со всем архивом за ней, — в посте [«Ко Пханган год спустя»](/blog/koh-phangan-one-year-later/).
+Остров с последних кадров отчитывается уже год. Эта история, со всем архивом за ней, — в посте [«Ко Пханган год спустя»](/ru/blog/koh-phangan-one-year-later/).

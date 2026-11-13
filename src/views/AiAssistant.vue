@@ -65,21 +65,14 @@ const assistants = [
   { name: "Qwen", url: (q) => `https://chat.qwen.ai/?q=${encodeURIComponent(q)}` },
 ];
 
-const { t, locale } = useI18n();
+const { t } = useI18n();
 const route = useRoute();
 
 // ?product=insight|urban|dual comes from the landing pages and the shop cards: the visitor
 // is still deciding, so the prompt sends the assistant to the guide's pre-purchase section.
 const productName = computed(() => altruistProducts[route.query.product]?.title || "");
 
-// ?lang= lets the shop open the page in its own language; only en and ru exist here.
-// Saved like the header's language switch, because the header restores the saved locale
-// when it mounts and would override a value set only on i18n.
-if (route.query.lang) {
-  const lang = route.query.lang === "ru" ? "ru" : "en";
-  localStorage.setItem("locale", lang);
-  locale.value = lang;
-}
+// ?lang= from the shop is handled by the router: it opens /ru/ai/ or /ai/. See src/router.js.
 
 const title = computed(() =>
   productName.value ? t("ai.productTitle", { name: productName.value }) : t("ai.title")

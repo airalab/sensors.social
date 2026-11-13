@@ -1,5 +1,9 @@
 <template>
-  <MetaInfo pageTitle="Sensors.social Privacy Policy" pageImage="/og-privacy-policy.webp" />
+  <MetaInfo
+    :pageTitle="$t('seo.privacyTitle')"
+    :pageDescription="$t('seo.privacyDescription')"
+    pageImage="/og-privacy-policy.webp"
+  />
   <PageTextLayout>
     <div class="pagetext-prose">
       <div class="pagetext-header">

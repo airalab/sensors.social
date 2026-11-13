@@ -312,10 +312,10 @@ const isDemo = computed({
   set: (value) => emit("update:demo", Boolean(value)),
 });
 
-const { t } = useI18n();
+const { t, locale: i18nLocale } = useI18n();
 const mapState = useMap();
 const accountStore = useAccounts();
-const localeComputed = computed(() => localStorage.getItem("locale") || "en");
+const localeComputed = computed(() => i18nLocale.value || "en");
 const { logsProgress, runLogsHealth } = useSensors();
 const { logsHealth, logsHealthMeta } = useLogsHealth();
 const logGeoAddresses = inject(LOG_GEO_ADDRESSES_KEY, null);

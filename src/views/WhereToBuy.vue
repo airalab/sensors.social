@@ -1,7 +1,7 @@
 <template>
   <MetaInfo
     :pageTitle="$t('Where to buy air monitor Altruist')"
-    :pageDescription="$t('Official and pinout purchase options for Altruist devices by region.')"
+    :pageDescription="$t('seo.whereToBuyDescription')"
     pageImage="/og-default.webp"
   />
   <PageTextLayout>

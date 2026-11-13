@@ -88,7 +88,7 @@ Altruist Insight включает в себя специальную функц�
 
 Узнайте больше о том, как работают Ночный отчет и Балл комфорта:
 
-[Insight Sleep Analytics: Как работает ночной отчёт и оценка комфорта](/blog/insight-sleeping-analytics/)
+[Insight Sleep Analytics: Как работает ночной отчёт и оценка комфорта](/ru/blog/insight-sleeping-analytics/)
 
 ## Дополнительный случай: Зона отдыха домашней сауны
 
