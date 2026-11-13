@@ -31,9 +31,9 @@ Even we cannot close it. That is the point. Each owner decides whether their sen
 
 Since April: about 18 million records from more than 200 home sensors in 22 countries. A few places worth opening:
 
-**Cyprus — a densely measured Mediterranean island.** More than 60 sensors and 5 million records. The network followed Saharan dust across seven cities in early April, and on the morning of 18 April watched it come down to balcony level across the island. [Case study](/blog/cyprus-saharan-dust-storm)
+**Cyprus — a densely measured Mediterranean island.** More than 60 sensors and 5 million records. The network followed Saharan dust across seven cities in early April, and on the morning of 18 April watched it come down to balcony level across the island. [Case study](/blog/cyprus-saharan-dust-storm/)
 
-**Koh Phangan, Thailand.** Background air among the cleanest we measure, with 1,199 short, intense burning episodes hidden inside it that no daily average would show. In April fine dust ran two to three times higher than in midsummer. [One year on](/blog/koh-phangan-one-year-later)
+**Koh Phangan, Thailand.** Background air among the cleanest we measure, with 1,199 short, intense burning episodes hidden inside it that no daily average would show. In April fine dust ran two to three times higher than in midsummer. [One year on](/blog/koh-phangan-one-year-later/)
 
 **Togliatti — an industrial post-Soviet city.** 30 sensors and 2.3 million records, from 37 °C in July to 2.7 °C on 3 October. In the cool months of April, May and September, indoor CO2 passed 1,000 ppm in about one hour in six; in summer, almost never.
 

@@ -89,7 +89,7 @@ This is not an assessment of sleep stages or a medical evaluation of sleep quali
 
 Learn more about how the Night Report and Comfort Score work:
 
-[Insight Sleep Analytics: Understanding Your Night Report and Comfort Score](/blog/insight-sleeping-analytics)
+[Insight Sleep Analytics: Understanding Your Night Report and Comfort Score](/blog/insight-sleeping-analytics/)
 
 ## Extra Case: Your Home Sauna Relaxation Area
 

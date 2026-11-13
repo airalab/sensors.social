@@ -97,4 +97,4 @@ It does not have to be on a wall. A cube on a desk beside the map it feeds, a ye
 
 Bangkok is on the map now — you can open it [here](https://sensors.social/?type=pm10&date=2026-09-10&provider=remote&lat=13.70&lng=100.40&zoom=10).
 
-The island in the last frames has been reporting for a year. That story, with the whole archive behind it, is in [Koh Phangan, one year on](/blog/koh-phangan-one-year-later).
+The island in the last frames has been reporting for a year. That story, with the whole archive behind it, is in [Koh Phangan, one year on](/blog/koh-phangan-one-year-later/).

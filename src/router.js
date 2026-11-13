@@ -14,6 +14,7 @@ import Login from "./views/Login.vue";
 import Main from "./views/Main.vue";
 import PrivacyPolicy from "./views/PrivacyPolicy.vue";
 import Support from "./views/Support.vue";
+import NotFound from "./views/NotFound.vue";
 // import SensorEmbed from "./views/SensorEmbed.vue";
 
 // blog
@@ -126,7 +127,13 @@ const router = createRouter({
       path: "/blog/:slug",
       name: "blog-post",
       component: BlogPost
-    }
+    },
+    // GitHub Pages serves dist/404.html for any unknown address; the app then lands here.
+    {
+      path: "/:pathMatch(.*)*",
+      name: "not-found",
+      component: NotFound,
+    },
     // {
     //   path: "/embed/sensor/:id/",
     //   name: "sensor-embed",
