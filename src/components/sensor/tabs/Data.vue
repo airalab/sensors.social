@@ -206,40 +206,38 @@
 
     <section v-if="!isDemo || demoScreen === 'readings'" class="info-wrap">
       <div v-if="units && scales && scales.length > 0" class="scales-block">
-        <p class="scales-title">{{ t("scales.title") }}</p>
+        <h2 class="scales-title">{{ t("scales.title") }}</h2>
         <div class="scalegrid">
-          <div v-for="item in scales" :key="item.label">
-            <template v-if="item?.zones && (item.name || item.label)">
-              <p>
-                <b v-if="item.name">
-                  {{ item.nameshort[localeComputed] }}
-                </b>
-                <b v-else>{{ item.label }}</b>
-                <template v-if="item.unit && item.unit !== ''"> ({{ item.unit }}) </template>
-              </p>
-              <template v-for="zone in item.zones" :key="zone.color">
-                <div
-                  class="scales-color"
-                  v-if="zone.color && zone.label"
-                  :style="`--color: ${zone.color}`"
-                >
-                  <b>
-                    {{ zone.label[localeComputed] ? zone.label[localeComputed] : zone.label.en }}
-                  </b>
-                  <template v-if="!item.zoneLabelsAreRanges">
-                    (<template v-if="typeof zone.valueMax === 'number'">
-                      {{ t("scales.upto") }} {{ zone.valueMax }}
-                    </template>
-                    <template v-else>{{ t("scales.above") }}</template
-                    >)
-                  </template>
-                </div>
-              </template>
-              <p v-if="item.scaleNote" class="textsmall">
+          <template v-for="item in scales" :key="item.label">
+            <article v-if="item?.zones && (item.name || item.label)" class="scale-card">
+              <h3 class="scale-card__title">
+                {{ item.name ? item.nameshort[localeComputed] : item.label }}
+                <span v-if="item.unit" class="scale-card__unit">{{ item.unit }}</span>
+              </h3>
+              <p v-if="item.scaleNote" class="scale-card__note">
                 {{ item.scaleNote[localeComputed] || item.scaleNote.en }}
               </p>
-            </template>
-          </div>
+              <p v-if="item === measurements.humidity" class="scale-card__note">
+                {{ t("scales.humidityCorrection", { rh: HUMID_RH }) }}
+              </p>
+              <div class="scale-card__bar" aria-hidden="true">
+                <span
+                  v-for="zone in scaleZones(item)"
+                  :key="zone.color"
+                  :style="{ background: zone.color }"
+                ></span>
+              </div>
+              <ul class="scale-card__list">
+                <li v-for="(zone, index) in scaleZones(item)" :key="zone.color">
+                  <span class="scale-card__chip" :style="{ background: zone.color }"></span>
+                  <b>{{ zone.label[localeComputed] || zone.label.en }}</b>
+                  <span v-if="!item.zoneLabelsAreRanges" class="scale-card__range">
+                    {{ zoneRange(item, index) }}
+                  </span>
+                </li>
+              </ul>
+            </article>
+          </template>
         </div>
       </div>
 
@@ -264,6 +262,7 @@
 </template>
 
 <script setup>
+import { HUMID_RH } from "@/utils/humidityCorrection";
 import { ownerName } from "@/utils/addressNames";
 import { computed, ref, watch, inject, onBeforeUnmount } from "vue";
 import { useI18n } from "vue-i18n";
@@ -600,6 +599,18 @@ const isRussia = computed(() => {
 });
 
 const units = ref([]);
+
+const scaleZones = (item) => (item.zones || []).filter((zone) => zone.color && zone.label);
+
+/** "up to 15" for the first zone, "15–45" in between, "above 270" for the last. */
+const zoneRange = (item, index) => {
+  const zones = scaleZones(item);
+  const max = zones[index]?.valueMax;
+  const prev = index > 0 ? zones[index - 1]?.valueMax : null;
+  if (typeof max !== "number") return `${t("scales.above")} ${prev ?? ""}`.trim();
+  if (typeof prev !== "number") return `${t("scales.upto")} ${max}`;
+  return `${prev}–${max}`;
+};
 
 const scales = computed(() => {
   const buffer = [];
@@ -1010,40 +1021,88 @@ watch(
 }
 
 .scales-title {
-  font-weight: 600;
-  margin-bottom: var(--gap);
+  margin: 0 0 var(--gap);
+  font-size: 1.25rem;
+  font-weight: 800;
 }
 
+/* One card per scale: name and unit, the source, a colour bar, then colour · name · range. */
 .scalegrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--gap);
-  font-size: 0.8em;
 }
 
-.scalegrid:not(:last-child) {
-  margin-bottom: calc(var(--gap) * 2);
+.scale-card {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 0.6);
+  padding: var(--gap);
+  border: 1px solid var(--surface-border-soft);
+  border-radius: var(--radius-lg);
 }
 
-.scalegrid p {
-  margin-bottom: calc(var(--gap) * 0.5);
+.scale-card__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
 }
 
-.scales-color {
-  position: relative;
-  padding-left: calc(var(--gap) * 2);
-  hyphens: auto;
+.scale-card__unit {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #444;
 }
 
-.scales-color:before {
-  content: "";
-  display: block;
-  position: absolute;
-  background-color: var(--color);
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: var(--gap);
+.scale-card__note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.scale-card__bar {
+  display: flex;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.scale-card__bar span {
+  flex: 1;
+}
+
+.scale-card__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scale-card__list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 0.95rem;
+}
+
+.scale-card__list li:not(:last-child) {
+  border-bottom: 1px solid var(--surface-border-soft);
+}
+
+.scale-card__list b {
+  flex: 1;
+}
+
+.scale-card__chip {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.scale-card__range {
+  color: #262626;
+  white-space: nowrap;
 }
 
 .logs-progress {
