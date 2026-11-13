@@ -44,6 +44,73 @@
       <div class="chart-wrapper">
         <Chart ref="chartRef" constructor-type="stockChart" :options="chartOptions" />
       </div>
+      <!-- One panel under the chart: what is measured, and how it is shown when there is a choice. -->
+      <div class="chart-controls">
+        <div class="chart-tabs" role="tablist" :aria-label="$t('chart.measurement')">
+          <button
+            v-for="item in visibleLegend"
+            :key="item.key"
+            type="button"
+            role="tab"
+            :aria-selected="item.key === activeLegendKey"
+            :class="['chart-tab', { active: item.key === activeLegendKey }]"
+            @click="onLegendClick(item.key)"
+          >
+            <svg
+              v-if="LEGEND_ICONS[item.key]"
+              class="chart-tab__icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              v-html="LEGEND_ICONS[item.key]"
+            ></svg>
+            <span>{{ $t(item.labelKey) }}</span>
+          </button>
+        </div>
+        <div v-if="humidityNote" class="chart-view">
+          <span class="chart-view__label">{{ $t("chart.view") }}</span>
+          <div class="chart-view__switch" role="radiogroup" :aria-label="$t('chart.view')">
+            <button
+              type="button"
+              role="radio"
+              :aria-checked="humidityCorrectionOn"
+              :class="{ active: humidityCorrectionOn }"
+              @click="setHumidityCorrection(true)"
+            >
+              {{ $t("chart.humidityCorrected") }}
+            </button>
+            <button
+              type="button"
+              role="radio"
+              :aria-checked="!humidityCorrectionOn"
+              :class="{ active: !humidityCorrectionOn }"
+              @click="setHumidityCorrection(false)"
+            >
+              {{ $t("chart.humidityRaw") }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="humidityNote" class="chart-humidity-note" role="status">
+        <svg class="chart-humidity-note__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="11" x2="12" y2="17"></line>
+          <circle cx="12" cy="7.5" r="0.6"></circle>
+        </svg>
+        <div>
+          <p>
+            <b>{{ $t("chart.humidityLead", { rh: humidityNote.maxRh }) }}</b>
+            {{ $t(humidityCorrectionOn ? "chart.humidityOnText" : "chart.humidityOffText") }}
+          </p>
+          <button
+            type="button"
+            class="chart-humidity-note__link"
+            @click="setHumidityCorrection(!humidityCorrectionOn)"
+          >
+            {{ $t(humidityCorrectionOn ? "chart.humidityShowRaw" : "chart.humidityShowCorrected") }}
+          </button>
+        </div>
+      </div>
       <p v-for="(hint, hintIndex) in scaleHints" :key="hintIndex" class="chart-scale-hint">
         {{ hint }}
       </p>
@@ -53,17 +120,6 @@
           unitsettings[activeLegendKey].scaleNote.en
         }}
       </p>
-
-      <div class="custom-legend">
-        <span
-          v-for="item in visibleLegend"
-          :key="item.key"
-          :class="['legend-item', { active: item.key === activeLegendKey }]"
-          @click="onLegendClick(item.key)"
-        >
-          {{ $t(item.labelKey) }}
-        </span>
-      </div>
     </div>
   </section>
 </template>
@@ -82,6 +138,7 @@ import { useMap } from "@/composables/useMap";
 import { getPeriodBounds } from "@/utils/date";
 import { applyReadableScale, formatScaleValue } from "@/utils/chart/readableScale";
 import { canonicalMeasurementId, measurementValue } from "@/measurements/aliases";
+import { HUMID_RH, correctForHumidity, pickKappa } from "@/utils/humidityCorrection";
 
 stockInit(Highcharts);
 
@@ -108,6 +165,17 @@ const mapState = useMap();
 const chartRef = ref(null);
 
 const GROUPS = MEASUREMENT_GROUPS;
+
+// Line icons for the measurement tabs (24×24, stroke = currentColor); a tab without one shows its name only.
+const LEGEND_ICONS = {
+  dust: '<circle cx="6" cy="7" r="1.6"/><circle cx="13" cy="5" r="1.2"/><circle cx="18" cy="9" r="1.8"/><circle cx="9" cy="13" r="2"/><circle cx="16" cy="16" r="1.4"/><circle cx="6" cy="19" r="1.2"/><circle cx="12" cy="20" r="0.9"/>',
+  noise:
+    '<path d="M4 9.5h3.5L12 5v14l-4.5-4.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11"/>',
+  climate:
+    '<path d="M9 14.5V5a2.5 2.5 0 0 1 5 0v9.5a4 4 0 1 1-5 0z"/><line x1="11.5" y1="9" x2="11.5" y2="16"/><path d="M19 4.5c1.2 1.6 2 2.8 2 3.8a2 2 0 0 1-4 0c0-1 .8-2.2 2-3.8z"/>',
+  pressure:
+    '<circle cx="12" cy="12" r="9.5"/><line x1="6.2" y1="9" x2="7.4" y2="9.6"/><line x1="12" y1="5.2" x2="12" y2="6.5"/><line x1="17.8" y1="9" x2="16.6" y2="9.6"/><line x1="12" y1="12" x2="15.2" y2="8"/><circle cx="12" cy="12" r="1.1"/><path d="M7.5 16.5c1.5-.9 3-.9 4.5 0s3 .9 4.5 0"/>',
+};
 
 // Словарь для быстрого поиска группы по параметру
 const GROUPS_LOOKUP = MEASUREMENT_GROUP_LOOKUP;
@@ -141,6 +209,31 @@ const REALTIME_VIEW_TIMELINE_MS = 60 * 60 * 1000;
 
 const chartSeries = ref([]);
 const yScalesByUnit = ref(new Map());
+// Set when the dust chart covers a humid period: { maxRh }. Shows the raw / corrected switch.
+const humidityNote = ref(null);
+// Default of the switch: true = corrected for humidity, false = raw readings. Sergei, 13.11.2026:
+// in humid periods the chart opens corrected; raw readings are one tap away and stay in storage.
+const HUMIDITY_CORRECTION_DEFAULT = true;
+const readHumidityChoice = () => {
+  try {
+    const saved = localStorage.getItem("humidityCorrection");
+    if (saved === "on") return true;
+    if (saved === "off") return false;
+  } catch {
+    /* private mode */
+  }
+  return HUMIDITY_CORRECTION_DEFAULT;
+};
+const humidityCorrectionOn = ref(readHumidityChoice());
+const setHumidityCorrection = (on) => {
+  humidityCorrectionOn.value = on;
+  try {
+    localStorage.setItem("humidityCorrection", on ? "on" : "off");
+  } catch {
+    /* private mode */
+  }
+  updateChart(safeLog.value, activeLegendKey.value);
+};
 
 // Цветовые зоны отформатированные для Highcharts
 const HIGHCHARTS_COLOR_ZONES = Object.fromEntries(
@@ -797,6 +890,8 @@ const seriesPointX = (point) => {
 
 const presentSeries = (log, legendKey) => {
   const built = buildSeriesArray(log, legendKey).sort((a, b) => a.name.localeCompare(b.name));
+  const humid = legendKey === "dust" ? built.find((item) => item.custom?.humidity) : null;
+  humidityNote.value = humid?.custom.humidity || null;
   const { series, scales } =
     legendKey === "climate" ? { series: built, scales: new Map() } : applyReadableScale(built);
   const units = [...new Set(series.map((item) => item.unit || ""))];
@@ -1067,11 +1162,57 @@ function getLogSignature(log, revision = "") {
  * @param {string} legendKey - Ключ легенды
  * @returns {Array} Массив серий Highcharts
  */
+/**
+ * Humid periods on the dust tab: PM2.5 and PM10 corrected for humidity (κ-Köhler, Crilley et al.
+ * 2018), on the lines' own timestamps, when the switch under the chart is on. The switch appears
+ * only when the period had humid air (RH ≥ HUMID_RH), where optical sensors also count the water
+ * the particles soak up. RH ≥ 95% leaves a gap: the formula diverges there.
+ * Returns { maxRh } for a humid period (whether or not the correction is applied), else null.
+ */
+function applyHumidityCorrection(log, series, startMs, endMs, apply) {
+  const corrected = { pm10: new Map(), pm25: new Map() };
+  let maxRh = 0;
+  for (const { timestamp, data } of log) {
+    if (!timestamp || !data) continue;
+    const ts = String(timestamp).length === 10 ? timestamp * 1000 : timestamp;
+    if (startMs !== null && ts < startMs) continue;
+    if (endMs && ts > endMs) continue;
+    const values = {};
+    for (const [key, raw] of Object.entries(data)) {
+      const id = canonicalMeasurementId(key.toLowerCase());
+      if (id === "pm10" || id === "pm25" || id === "humidity") {
+        values[id] = Number(measurementValue(key.toLowerCase(), raw));
+      }
+    }
+    if (!Number.isFinite(values.humidity)) continue;
+    if (values.humidity > maxRh) maxRh = values.humidity;
+    const kappa = pickKappa(values.pm10, values.pm25);
+    for (const id of ["pm10", "pm25"]) {
+      if (!Number.isFinite(values[id])) continue;
+      const value = correctForHumidity(values[id], values.humidity, kappa);
+      corrected[id].set(ts, value === null ? null : Math.round(value * 10) / 10);
+    }
+  }
+  if (maxRh < HUMID_RH) return null;
+
+  const info = { maxRh: Math.round(maxRh) };
+  for (const item of series) {
+    if (item.id !== "pm10" && item.id !== "pm25") continue;
+    item.custom = { ...(item.custom || {}), humidity: info };
+    if (!apply) continue;
+    item.data = item.data.map(([ts, value]) => [
+      ts,
+      value === null || !corrected[item.id].has(ts) ? null : corrected[item.id].get(ts),
+    ]);
+  }
+  return info;
+}
+
 function buildSeriesArray(log, legendKey) {
   // Try cache first
   const cacheKey = `${legendKey}|${mapState.timelineMode.value}|${
     mapState.currentDate.value
-  }|${getLogSignature(log, props.logRevision)}`;
+  }|${getLogSignature(log, props.logRevision)}|rh:${humidityCorrectionOn.value}`;
   const cached = seriesCache.get(cacheKey);
   if (cached) return cached;
 
@@ -1310,6 +1451,16 @@ function buildSeriesArray(log, legendKey) {
       data: dataPoints,
     };
   });
+
+  if (legendKey === "dust") {
+    applyHumidityCorrection(
+      log,
+      processedSeries,
+      shouldRestrictByPeriod ? periodStartMs : null,
+      periodEndMs,
+      humidityCorrectionOn.value
+    );
+  }
 
   // Сортируем серии по имени и кэшируем результат
   const sortedSeries = processedSeries.sort((a, b) => a.name.localeCompare(b.name));
@@ -1633,39 +1784,6 @@ onMounted(async () => {
 </script>
 
 <style>
-.custom-legend {
-  font-weight: 900;
-  user-select: none;
-  /* margin-bottom: calc(var(--gap) * 3); */
-  text-align: center;
-}
-.legend-item {
-  color: var(--color-dark);
-  cursor: pointer;
-  transition: color 0.2s;
-  opacity: 0.5;
-}
-.legend-item:not(:last-child) {
-  margin-right: calc(var(--gap) * 2);
-}
-.legend-item.active {
-  opacity: 1;
-  text-decoration: underline;
-  cursor: default;
-}
-.legend-item:hover:not(.active) {
-  opacity: 0.3;
-}
-
-@media screen and (max-width: 420px) {
-  .custom-legend {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-}
-
 .chart-section {
   position: relative;
   padding-left: 30px;
@@ -1768,13 +1886,183 @@ onMounted(async () => {
 }
 
 .chart-scale-hint {
-  margin: 0.45rem 0 0 0.6rem;
-  padding: 0.35rem 0.6rem;
-  text-align: center;
-  font-size: 0.78rem;
-  line-height: 1.4;
-  color: #1c1c1c;
-  background: var(--color-light-gray);
-  border-radius: var(--radius-sm);
+  margin: 0.6rem 0 0 0.6rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #262626;
+  background: #f2f2ef;
+  border-radius: 12px;
+}
+
+/* Measurement tabs and, when the period offers it, the raw / corrected switch: one panel. */
+.chart-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: calc(var(--gap) * 0.75) 0 0 0.6rem;
+  padding: 8px;
+  border: 1px solid #d9d9d4;
+  border-radius: 16px;
+  background: #f7f7f5;
+}
+
+.chart-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chart-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #262626;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chart-tab:hover:not(.active) {
+  background: #ebebe6;
+}
+
+.chart-tab.active {
+  background: #141414;
+  color: #fff;
+  font-weight: 700;
+  cursor: default;
+}
+
+.chart-tab__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-view {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-view__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.chart-view__switch {
+  display: flex;
+  padding: 3px;
+  border-radius: 12px;
+  background: #e6e6e1;
+}
+
+.chart-view__switch button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #262626;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chart-view__switch button.active {
+  background: #0058c7;
+  color: #fff;
+  font-weight: 700;
+}
+
+.chart-humidity-note {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: calc(var(--gap) * 0.75) 0 0 0.6rem;
+  padding: 14px 16px;
+  border: 1px solid #9cc3f5;
+  border-radius: 14px;
+  background: #eef5ff;
+  color: #0d2440;
+}
+
+.chart-humidity-note p {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.chart-humidity-note b {
+  font-weight: 700;
+}
+
+.chart-humidity-note__icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  fill: none;
+  stroke: #0058c7;
+  stroke-width: 2;
+}
+
+.chart-humidity-note__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #0058c7;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Phone: tabs in a 2×2 grid, the switch as a full-width second row of the same panel. */
+@media (max-width: 560px) {
+  .chart-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .chart-view {
+    width: 100%;
+  }
+
+  .chart-view__label {
+    display: none;
+  }
+
+  .chart-view__switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .chart-view__switch button {
+    min-height: 44px;
+    padding: 4px 8px;
+    line-height: 1.2;
+  }
 }
 </style>
