@@ -116,7 +116,8 @@ const coverUrl = computed(() => {
 const structuredData = computed(() => {
   if (!postVisible.value) return null;
   const url = pageUrl(`/blog/${route.params.slug}`);
-  const date = postDate.value ? new Date(postDate.value).toISOString().slice(0, 10) : undefined;
+  // Google wants a full datetime with a zone; front matter has only the day, read as UTC midnight.
+  const date = postDate.value ? new Date(postDate.value).toISOString() : undefined;
   return [
     {
       "@type": "BlogPosting",
