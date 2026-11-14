@@ -9,7 +9,7 @@ any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
 or its packaging and sent you this file, or a link to it — or a developer gave it
 to you to get at the network's data or run their own RoSeMAN (Section 19).
-**Version:** 1.14 · **updated:** 2026-11-12 · **canonical page:**
+**Version:** 1.15 · **updated:** 2026-11-14 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -598,7 +598,7 @@ Both pixels of the LED ring show the same color:
 | **Blue** (steady) | Setup mode — no saved Wi-Fi, or the configuration portal is active. Also shown briefly during a data transmission. |
 | **Green** (~3 s flash) | Last data send succeeded. |
 | **Red** (~3 s flash) | Last data send failed (a one-off failure is not a problem). |
-| **Red** (steady) | Wi-Fi disconnected or data delivery unhealthy for over 10 minutes — check Wi-Fi first. |
+| **Red** (steady) | Wi-Fi disconnected or data delivery unhealthy for over 10 minutes — check Wi-Fi first. On Urban "data delivery" means the registry write (Stream B, Section 15): if the internet works and the red stays, the write is being rejected — see "Map and Datalog both show Not send" in Section 13. |
 
 **Local → LEDs** turns the indication on or off and sets the brightness. On
 Altruist Insight, the perimeter LEDs indicate the air quality level — the exact
@@ -622,6 +622,9 @@ night.
 | No readings from some sensor | Check the model: Altruist Urban has PM + noise but no CO2; Altruist Insight has CO2 but no PM or noise. |
 | Insight doesn't show Urban data | Both must be on the same Wi-Fi network; on legacy ESP32-C3 Urban set its IP manually in the Insight config (Section 10, Step 7). |
 | Steady red LED on Urban | Wi-Fi or data delivery down for >10 min — check router, signal strength, internet; see Section 12, "Status LEDs". |
+| Map and Datalog both show **Not send** (counters like `0/1264`), steady red LED, internet works | First check **Map → Robonomics → RWS Owner Address** — it may hold someone else's address. Ask the user to compare it with the device's own Robonomics address (Local → Status, or the CONNECTED screen). If they differ **and the device is not a member of a device group** (Map → Device group (RWS); a member legitimately shows the group master's address), the device stops registering itself and writes under a subscription it is not part of: the registry rejects the write and the connectivity provider drops the readings. Fix: clear the field → **Save** → restart; within a few minutes the LED turns green and the counters start to grow. If the addresses match, collect a log (next row) and hand over to support with the device's address. |
+| Support needs the actual send error | No USB needed. Open `http://<ip>/debug?lvl=5` (asks for the web UI password) and keep the page open: the log below the buttons updates by itself (`http://<ip>/serial` returns the same lines as plain text, the new ones since the last call). Wait 10–15 min so a registry write happens, then copy the lines that start with `[CONNECTIVITY]`, `[Map#`, `[DATALOG] failed reason=` and `[RWS]`. They contain the device's public address, no secrets. Afterwards set the default level back with `http://<ip>/debug?lvl=3`. |
+| User tested `connectivity.robonomics.network` from another computer and it answers | That proves little: the host is tagged for Russia, and a device with any other Region sends to `1.connectivity.robonomics.network` / `2.connectivity.robonomics.network`. Test those, or better collect the device log (row above). |
 | Unclear LED pattern not in the table | Do not guess what it means; ask support. |
 | Wants to change Wi-Fi network (moved / new router) | If the old network still works, **System → Delete configuration → Wi-Fi only**; if they cannot reach the device any more, the button Wi-Fi reset (Section 11). Then redo setup from Step 2 — device identity and map history survive. |
 | Forgot the web UI password | The Wi-Fi reset also clears it (Section 11). |
@@ -741,7 +744,8 @@ instead (Section 10).
   have no phrase and log in with the backup file.
 - **Map → Robonomics** — advanced; most owners never touch it. **RWS Owner
   Address (legacy)** is the address of the RWS subscription, not the device
-  key and not a seed; CPS node ID; **Datalog sending interval (sec)** (the
+  key and not a seed; leave it as the device fills it — an address typed in by
+  hand stops both map streams (Section 13, "Map and Datalog both show Not send"); CPS node ID; **Datalog sending interval (sec)** (the
   registry write, Stream B in Section 15); Robonomics Public Node; the map host
   (connectivity); how data goes to the map — JSON/CSV (current) and/or
   protobuf (new protocol) with its URL. If a user is changing these without a
@@ -1539,7 +1543,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   "wifi_reset": {"urban_c6": "hold reset button >10s while running", "insight": "hold SET+DOWN 4s", "effect": "clears Wi-Fi + web password, preserves identity"},
   "factory_reset": {"urban_c6": "hold reset button while powering on", "insight": "hold SET+DOWN while powering on", "effect": "erases everything incl. Robonomics identity"},
   "insight_buttons": {"UP": "prev screen", "DOWN": "next screen", "SET_long": "sleep"},
-  "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min"},
+  "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min; on Urban = registry write failing, check RWS Owner Address (Section 13)"},
   "firmware_update": "OTA on stable channel (Local -> System -> Auto update firmware); manual check in Local -> Firmware Update (Check for update -> Update, Switch language); USB flashing via browser webflasher (Web Serial API) only for special cases; agent on the owner's LAN: Section 11 \"Updating every device on the owner's network\"",
   "webflasher": {
     "url": "https://webflasher.robonomics.network/",
@@ -1612,7 +1616,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   },
   "operating_temp_c": [-10, 35],
   "integrations": ["home_assistant >=2025.7", "sensors.community", "mqtt", "microSD"],
-  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "sensor lifetime, cleaning, SCD41 calibration, spare sensors (the Urban enclosure is documented)", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
+  "not_documented_here": ["insight LED colour scale", "legacy C3 indication", "reset button location on Urban", "how to force USB flashing mode when the browser cannot see the device", "insight e-ink screen list (except the Sleep Analytics screen)", "sensor lifetime, cleaning, SCD41 calibration, spare sensors (the Urban enclosure is documented)", "RadSens in retail bundles", "dimensions, weight, warranty, WEEE", "local HTTP API endpoints other than /status, /debug?lvl=N and /serial (Section 13)", "cost of a network subscription or of running your own connectivity provider/node (RoSeMAN itself is documented: Section 19)", "price, discounts, stock, delivery times and destinations, payment methods, which shop serves which country"],
   "public_map": "https://sensors.social",
   "docs": "https://sensors.social/altruist-setup/",
   "support": "https://support.cyberpunks.shop",
@@ -1629,8 +1633,8 @@ authoritative — if anything here disagrees with it, follow the prose.
     }
   },
   "urban_enclosure": {"material": "PLA, 3D-printed; 0.2 mm layer; most parts need no supports", "emotions": ["Smile", "Enjoy", "Deadly"], "other_3mf_variants": ["Minimal (no antenna)", "No Face"], "makerworld": {"smile": "https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor", "enjoy": "https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor", "deadly": "https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor", "profile": "https://makerworld.com/en/@Robonomics_3D/"}, "sources": "github.com/airalab/hardware, 3D Models/Altruist Urban/Enclosure_v1: 3MF (Bambu Lab), STL, CAD (FreeCAD)", "weather_hood": "ASA, https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban", "ready_case": "https://cyberpunks.shop/altruist-urban-enclosure — full enclosure kit without electronics; never quote price or stock"},
-  "guide_version": "1.14",
-  "guide_updated": "2026-11-12"
+  "guide_version": "1.15",
+  "guide_updated": "2026-11-14"
 }
 ```
 
