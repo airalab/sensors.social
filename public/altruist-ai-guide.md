@@ -622,7 +622,8 @@ night.
 | No readings from some sensor | Check the model: Altruist Urban has PM + noise but no CO2; Altruist Insight has CO2 but no PM or noise. |
 | Insight doesn't show Urban data | Both must be on the same Wi-Fi network; on legacy ESP32-C3 Urban set its IP manually in the Insight config (Section 10, Step 7). |
 | Steady red LED on Urban | Wi-Fi or data delivery down for >10 min — check router, signal strength, internet; see Section 12, "Status LEDs". |
-| Map and Datalog both show **Not send** (counters like `0/1264`), steady red LED, internet works | First check **Map → Robonomics → RWS Owner Address** — it may hold someone else's address. Ask the user to compare it with the device's own Robonomics address (Local → Status, or the CONNECTED screen). If they differ **and the device is not a member of a device group** (Map → Device group (RWS); a member legitimately shows the group master's address), the device stops registering itself and writes under a subscription it is not part of: the registry rejects the write and the connectivity provider drops the readings. Fix: clear the field → **Save** → restart; within a few minutes the LED turns green and the counters start to grow. If the addresses match, collect a log (next row) and hand over to support with the device's address. |
+| Map and Datalog both show **Not send** (counters like `0/1264`), steady red LED, internet works | The device is sending, but neither the registry nor the connectivity provider accepts it — almost always because the device is not registered in a network subscription. That is fixed on the network side, not by the owner, so hand over to support (Section 17) with the device's Robonomics address (Local → Status, or the CONNECTED screen) and a log (next row). One cause the user can check meanwhile: **Map → Robonomics → RWS Owner Address** holding someone else's address. If it differs from the device's own address **and the device is not a member of a device group** (Map → Device group (RWS); a member legitimately shows the group master's address), the device stops registering itself — clear the field → **Save** → restart. |
+| Map shows **Not send** now and then, Datalog is fine | The connectivity provider was busy and did not answer in time; the device sends again in ~30 s. Short gaps on the map chart are the visible result. Nothing to change on the device. |
 | Support needs the actual send error | No USB needed. Open `http://<ip>/debug?lvl=5` (asks for the web UI password) and keep the page open: the log below the buttons updates by itself (`http://<ip>/serial` returns the same lines as plain text, the new ones since the last call). Wait 10–15 min so a registry write happens, then copy the lines that start with `[CONNECTIVITY]`, `[Map#`, `[DATALOG] failed reason=` and `[RWS]`. They contain the device's public address, no secrets. Afterwards set the default level back with `http://<ip>/debug?lvl=3`. |
 | User tested `connectivity.robonomics.network` from another computer and it answers | That proves little: the host is tagged for Russia, and a device with any other Region sends to `1.connectivity.robonomics.network` / `2.connectivity.robonomics.network`. Test those, or better collect the device log (row above). |
 | Unclear LED pattern not in the table | Do not guess what it means; ask support. |
@@ -745,7 +746,7 @@ instead (Section 10).
 - **Map → Robonomics** — advanced; most owners never touch it. **RWS Owner
   Address (legacy)** is the address of the RWS subscription, not the device
   key and not a seed; leave it as the device fills it — an address typed in by
-  hand stops both map streams (Section 13, "Map and Datalog both show Not send"); CPS node ID; **Datalog sending interval (sec)** (the
+  hand stops the device registering itself (Section 13, "Map and Datalog both show Not send"); CPS node ID; **Datalog sending interval (sec)** (the
   registry write, Stream B in Section 15); Robonomics Public Node; the map host
   (connectivity); how data goes to the map — JSON/CSV (current) and/or
   protobuf (new protocol) with its URL. If a user is changing these without a
@@ -1543,7 +1544,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   "wifi_reset": {"urban_c6": "hold reset button >10s while running", "insight": "hold SET+DOWN 4s", "effect": "clears Wi-Fi + web password, preserves identity"},
   "factory_reset": {"urban_c6": "hold reset button while powering on", "insight": "hold SET+DOWN while powering on", "effect": "erases everything incl. Robonomics identity"},
   "insight_buttons": {"UP": "prev screen", "DOWN": "next screen", "SET_long": "sleep"},
-  "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min; on Urban = registry write failing, check RWS Owner Address (Section 13)"},
+  "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min; on Urban = registry write failing, usually device not registered in a subscription (Section 13)"},
   "firmware_update": "OTA on stable channel (Local -> System -> Auto update firmware); manual check in Local -> Firmware Update (Check for update -> Update, Switch language); USB flashing via browser webflasher (Web Serial API) only for special cases; agent on the owner's LAN: Section 11 \"Updating every device on the owner's network\"",
   "webflasher": {
     "url": "https://webflasher.robonomics.network/",
