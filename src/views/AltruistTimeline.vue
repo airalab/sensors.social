@@ -182,7 +182,7 @@
         </p>
         <p>
           {{ $t("Find out who Altruist was designed for") }}
-          <router-link to="/altruist-use-cases">{{ $t("on this page") }}</router-link>
+          <router-link to="/altruist-use-cases/">{{ $t("on this page") }}</router-link>
         </p>
       </section>
     </div>

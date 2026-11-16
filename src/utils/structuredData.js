@@ -78,6 +78,17 @@ export function shopOffer(product) {
         "@type": "DefinedRegion",
         addressCountry: country,
       })),
+      // The shop publishes only order-to-door days, not handling and transit separately,
+      // so the whole range goes into transitTime rather than splitting it by guess.
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        transitTime: {
+          "@type": "QuantitativeValue",
+          minValue: zone.days[0],
+          maxValue: zone.days[1],
+          unitCode: "DAY",
+        },
+      },
     })),
     hasMerchantReturnPolicy: {
       "@type": "MerchantReturnPolicy",
