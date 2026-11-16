@@ -18,6 +18,8 @@ export default {
   "notice_without_fz": "Указанные данные не являются юридически значимой информацией.",
   "sensorpopup.profileTitle": "Профиль датчика",
   "sensorpopup.profilePhotoAlt": "Фото датчика",
+  "sensorpopup.profileEmpty": "У этого датчика пока нет фото. Ваш датчик?",
+  "sensorpopup.profileEmptyCta": "Добавьте фото и пару слов в приложении",
   "sensorpopup.profileByOwner": "От владельца датчика",
   "sensorpopup.infotitle": "Подробная информация",
   "sensorpopup.bookmarkplaceholder": "Сохранить этот сенсор в закладки",

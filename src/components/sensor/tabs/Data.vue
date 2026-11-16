@@ -190,6 +190,8 @@
         <div v-else-if="!chartHasData" class="chart-skeleton"></div>
       </section>
 
+      <SensorProfile v-if="!isDemo" :sensor-id="point?.sensor_id" />
+
       <DemoShowcase v-if="isDemo" part="now" :items="demoItems" />
     </template>
 
@@ -293,6 +295,7 @@ import ChartHealthWarning from "../widgets/ChartHealthWarning.vue";
 import { LOG_GEO_ADDRESSES_KEY } from "@/composables/useLogGeoAddresses";
 import SensorPicker from "../widgets/SensorPicker.vue";
 import Timeline from "../widgets/Timeline.vue";
+import SensorProfile from "../SensorProfile.vue";
 // import NativeShare from "../widgets/NativeShare.vue";
 
 const props = defineProps({

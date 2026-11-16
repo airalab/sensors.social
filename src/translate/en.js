@@ -18,6 +18,8 @@ export default {
   "notice_without_fz": "This information holds no legal validity and is intended solely for personal use.",
   "sensorpopup.profileTitle": "Sensor profile",
   "sensorpopup.profilePhotoAlt": "Photo of the sensor",
+  "sensorpopup.profileEmpty": "No photos of this sensor yet. Yours?",
+  "sensorpopup.profileEmptyCta": "Add photos and a few words in the app",
   "sensorpopup.profileByOwner": "From the sensor’s owner",
   "sensorpopup.infotitle": "Advanced information",
   "sensorpopup.bookmarkplaceholder": "Save this sensor in bookmarks",

@@ -126,7 +126,6 @@
           </button>
         </div>
 
-        <SensorProfile v-if="!isDemo" :sensor-id="sensor_id" />
         <Data :point="point" :log="log" v-model:demo="isDemo" />
       </div>
 
@@ -197,7 +196,6 @@ import { dayISO, getPeriodBounds } from "@/utils/date";
 import Data from "./tabs/Data.vue";
 import ShareLink from "./tabs/ShareLink.vue";
 import EditStory from "./tabs/EditStory.vue";
-import SensorProfile from "./SensorProfile.vue";
 
 const props = defineProps({
   point: Object,
