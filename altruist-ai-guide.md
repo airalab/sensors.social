@@ -598,7 +598,7 @@ Both pixels of the LED ring show the same color:
 | **Blue** (steady) | Setup mode — no saved Wi-Fi, or the configuration portal is active. Also shown briefly during a data transmission. |
 | **Green** (~3 s flash) | Last data send succeeded. |
 | **Red** (~3 s flash) | Last data send failed (a one-off failure is not a problem). |
-| **Red** (steady) | Wi-Fi disconnected or data delivery unhealthy for over 10 minutes — check Wi-Fi first. On Urban "data delivery" means the registry write (Stream B, Section 15): if the internet works and the red stays, the write is being rejected — see "Map and Datalog both show Not send" in Section 13. |
+| **Red** (steady) | Wi-Fi disconnected or data delivery unhealthy for over 10 minutes — check Wi-Fi first. If the internet works, look at **Local → Status**: when the **Map** counter keeps growing, the data reaches the map and the red comes from the device's own **Datalog** channel — a legacy test channel the map does not use (Section 15), so nothing is wrong. When **Map** shows **Not send**, see Section 13. |
 
 **Local → LEDs** turns the indication on or off and sets the brightness. On
 Altruist Insight, the perimeter LEDs indicate the air quality level — the exact
@@ -622,9 +622,10 @@ night.
 | No readings from some sensor | Check the model: Altruist Urban has PM + noise but no CO2; Altruist Insight has CO2 but no PM or noise. |
 | Insight doesn't show Urban data | Both must be on the same Wi-Fi network; on legacy ESP32-C3 Urban set its IP manually in the Insight config (Section 10, Step 7). |
 | Steady red LED on Urban | Wi-Fi or data delivery down for >10 min — check router, signal strength, internet; see Section 12, "Status LEDs". |
-| Map and Datalog both show **Not send** (counters like `0/1264`), steady red LED, internet works | The device is sending, but neither the registry nor the connectivity provider accepts it — almost always because the device is not registered in a network subscription. That is fixed on the network side, not by the owner, so hand over to support (Section 17) with the device's Robonomics address (Local → Status, or the CONNECTED screen) and a log (next row). One cause the user can check meanwhile: **Map → Robonomics → RWS Owner Address** holding someone else's address. If it differs from the device's own address **and the device is not a member of a device group** (Map → Device group (RWS); a member legitimately shows the group master's address), the device stops registering itself — clear the field → **Save** → restart. |
-| Map shows **Not send** now and then, Datalog is fine | The connectivity provider was busy and did not answer in time; the device sends again in ~30 s. Short gaps on the map chart are the visible result. Nothing to change on the device. |
-| Support needs the actual send error | No USB needed. Open `http://<ip>/debug?lvl=5` (asks for the web UI password) and keep the page open: the log below the buttons updates by itself (`http://<ip>/serial` returns the same lines as plain text, the new ones since the last call). Wait 10–15 min so a registry write happens, then copy the lines that start with `[CONNECTIVITY]`, `[Map#`, `[DATALOG] failed reason=` and `[RWS]`. They contain the device's public address, no secrets. Afterwards set the default level back with `http://<ip>/debug?lvl=3`. |
+| Map shows **Not send** (counters like `0/1264`), steady red LED, internet works | The device is sending, but the connectivity provider does not accept it — almost always because the device's address is not registered in its owner's device list on the network (for example, the device made a new key after a reset). That is fixed on the network side, not by the owner, so hand over to support (Section 17) with the device's Robonomics address (Local → Status, or the CONNECTED screen) and a log (next row). One cause the user can check meanwhile: **Map → Robonomics → RWS Owner Address** holding someone else's address. If it differs from the device's own address **and the device is not a member of a device group** (Map → Device group (RWS); a member legitimately shows the group master's address), the device stops registering itself — clear the field → **Save** → restart. |
+| Map shows **Not send** now and then | The connectivity provider was busy and did not answer in time; the device sends again in ~30 s. Short gaps on the map chart are the visible result. Nothing to change on the device. |
+| **Datalog** shows **Not send**, **Map** counter grows | Expected. Datalog is the device's own direct write to the chain — a legacy test channel, not how data reaches the map (Section 15). The data is fine; do not send the user to support over this. |
+| Support needs the actual send error | No USB needed. Open `http://<ip>/debug?lvl=5` (asks for the web UI password) and keep the page open: the log below the buttons updates by itself (`http://<ip>/serial` returns the same lines as plain text, the new ones since the last call). Wait 2–3 min, then copy the lines that start with `[CONNECTIVITY]` and `[Map#` (and `[RWS]` if present). They contain the device's public address, no secrets. Afterwards set the default level back with `http://<ip>/debug?lvl=3`. |
 | User tested `connectivity.robonomics.network` from another computer and it answers | That proves little: the host is tagged for Russia, and a device with any other Region sends to `1.connectivity.robonomics.network` / `2.connectivity.robonomics.network`. Test those, or better collect the device log (row above). |
 | Unclear LED pattern not in the table | Do not guess what it means; ask support. |
 | Wants to change Wi-Fi network (moved / new router) | If the old network still works, **System → Delete configuration → Wi-Fi only**; if they cannot reach the device any more, the button Wi-Fi reset (Section 11). Then redo setup from Step 2 — device identity and map history survive. |
@@ -746,8 +747,8 @@ instead (Section 10).
 - **Map → Robonomics** — advanced; most owners never touch it. **RWS Owner
   Address (legacy)** is the address of the RWS subscription, not the device
   key and not a seed; leave it as the device fills it — an address typed in by
-  hand stops the device registering itself (Section 13, "Map and Datalog both show Not send"); CPS node ID; **Datalog sending interval (sec)** (the
-  registry write, Stream B in Section 15); Robonomics Public Node; the map host
+  hand stops the device registering itself (Section 13, "Map shows Not send"); CPS node ID; **Datalog sending interval (sec)** (the
+  device's own direct chain write — a legacy test channel, Section 15); Robonomics Public Node; the map host
   (connectivity); how data goes to the map — JSON/CSV (current) and/or
   protobuf (new protocol) with its URL. If a user is changing these without a
   reason, suggest leaving the defaults.
@@ -1039,15 +1040,24 @@ items to an owner as what their device does now.
 - [live] Backup and restore (System → Backup & restore) carries the key over,
   so a restored device keeps its address and history.
 
-**Two streams leave a device** — both [live] on the Stable firmware:
+**How data leaves a device.** The data path is **Stream A**, via the connectivity
+provider: that is what feeds the map, RoSeMAN and the chain anchors. Stream B is a
+**legacy test channel**: earlier firmware also wrote its own record to the chain
+under the owner's subscription, to put test load on the network. It is not part of
+the data path and is not planned to become one — devices are not expected to write
+to the chain under their own subscription. [planned] Direct chain writes may later
+be offered to devices that use encryption. [planned] The network is moving to
+**Protobuf** messages through the connectivity provider: they keep each device's
+identity (its key signs every message) and anchor batches in the chain
+economically (`cps` pallet; RoSeMAN already indexes it).
 
-| | Stream A — via the connectivity provider | Stream B — straight to the registry |
+| | Stream A — via the connectivity provider (the data path) | Stream B — straight to the registry (legacy test channel) |
 | --- | --- | --- |
 | Cadence | every 30 s | every 10 min |
 | Transport | HTTP POST of a JSON message to the provider pool `connectivity.robonomics.network` (and `1.`/`2.`) | the device itself submits a registry record (`datalog.record`, wrapped in `rws.call` so that the network subscription the device is registered under covers it — set up by the operator, nothing the owner buys) through `polkadot.rpc.robonomics.network` |
 | Content | `robonomics_address`, `owner`, `donated_by`, `device_model` (`urban`/`insight`), `GPS_lat`/`GPS_lon`, `sensordatavalues` as `p1:…,p2:…,t:…,h:…,p:…,nm:…,na:…,co2:…` (PM10, PM2.5, °C, %RH, pressure in Pa, noise max/avg, CO₂), `signature` | the same `p1:…,p2:…` string; pressure in **Pa** here |
 | Signature | Ed25519 over `"<sensordatavalues>,time:<unix time with the last 2 digits dropped>"` — valid within a ~100 s window; the device sends no timestamp, the provider stamps the receive time | the registry's own transaction signature by the device key |
-| Ends up in | the live feed and the provider's batch files → RoSeMAN → map | the registry only — the public RoSeMAN does **not** index these per-device records |
+| Ends up in | the live feed and the provider's batch files → RoSeMAN → map | the registry only — not indexed, not shown, may fail without any effect on the map |
 
 **Stream A, step by step** [live] (`airalab/sensors-connectivity`):
 1. Check the signature against `robonomics_address`, then check that the address
@@ -1103,7 +1113,7 @@ items to an owner as what their device does now.
 
 | Claim | Guaranteed by | How to check it yourself |
 | --- | --- | --- |
-| A reading came from this device | Device signature, checked by the provider (Stream A) or by the registry (Stream B) | Stream B: read the device's own records on chain. Stream A: the device signature is not kept in the batch file — this part rests on the provider |
+| A reading came from this device | Device signature, checked by the provider | The device signature is not kept in the batch file — this part rests on the provider today; [planned] Protobuf messages keep the device signature end to end |
 | A batch file was not changed after publishing | Content addressing: the CID is the hash of the file, and the CID is sealed on chain | Fetch the file by the CID from the agent's record and recompute the CID locally (`ipfs add --only-hash` with the same settings), or fetch it through your own IPFS node, which verifies the hash |
 | History was not rewritten | Finality of the registry | Read the agents' `datalog` records from an archive node and compare with the API |
 | The map shows what was sealed | Nothing automatic — the map trusts RoSeMAN | Compare one sensor and one hour: API values against the batch files from the agents' records |
@@ -1439,9 +1449,9 @@ and `ROBONOMICS_START_BLOCK_FORCE=true`, restart once, then set it back to
   Polkadot only. For older readings use the public API above.
 - **The live 30-second feed.** That comes over libp2p pubsub from the
   connectivity provider, not from the chain. RoSeMAN holds the batch files.
-- **Each device's own 10-minute records.** Devices also write their readings to
-  the chain under their own addresses (Stream B in Section 15); RoSeMAN indexes
-  only the publishing agents, so those stay on chain and are not in the API.
+- **Records some devices write to the chain themselves.** That is a legacy test
+  channel (Stream B in Section 15), not data the network relies on; RoSeMAN
+  indexes only the publishing agents.
 
 ### When it does not work
 
@@ -1513,7 +1523,8 @@ authoritative — if anything here disagrees with it, follow the prose.
       "batch: JSON file {address: {model, geo, owner, donated_by, device_model, measurements[]}} pinned on IPFS (+Crust/Pinata)",
       "anchor: datalog.record(CID) on Robonomics on Polkadot from agents 4HMPh33…rm14, 4D23jon…WUmm, 4DWazwm…bHZL; chain state keeps the last 128 records per account, full history in blocks"
     ],
-    "stream_b_live": "device itself writes datalog.record('p1:…' CSV, pressure in Pa, whole record encrypted if owner encryption is on) every 10 min via rws.call under the owner's subscription; not indexed by the public RoSeMAN",
+    "stream_b_legacy": "legacy test channel only: older firmware also writes its own datalog.record via rws.call under the owner's subscription to load-test the network; not the data path, not indexed, its failures do not affect the map; devices are not expected to write to the chain themselves (may later be offered to encrypting devices)",
+    "protobuf_planned": "planned main protocol: Protobuf messages via the connectivity provider, device identity kept by per-message device signatures, batches anchored in the chain via the cps pallet",
     "indexing": "RoSeMAN reads finalized blocks, datalog.NewRecord from the agents, fetches CIDs via IPFS gateways, stores MongoDB measurements unique by sensor_id+timestamp, serves /api/v2 (seconds, values as published); no realtime, no websocket; public instance still serves Kusama-era history",
     "map": {
       "realtime": "browser libp2p via {1,2,3}.pubsub.sensors.social, accepts only known provider peers, session memory only, 1 h chart",
@@ -1523,7 +1534,7 @@ authoritative — if anything here disagrees with it, follow the prose.
       "csv": "RoSeMAN /api/sensor/csv per city"
     },
     "guarantees": {
-      "origin": "device signature checked by the provider (stream A) or the chain (stream B); not kept inside batch files",
+      "origin": "device signature checked by the provider; not kept inside batch files (Protobuf will keep it)",
       "batch_integrity": "CID sealed on chain = hash of the file; recompute the CID or fetch via your own IPFS node",
       "history": "chain finality",
       "map_matches_chain": "not automatic; compare API against batch files from the agents' records",
@@ -1544,7 +1555,7 @@ authoritative — if anything here disagrees with it, follow the prose.
   "wifi_reset": {"urban_c6": "hold reset button >10s while running", "insight": "hold SET+DOWN 4s", "effect": "clears Wi-Fi + web password, preserves identity"},
   "factory_reset": {"urban_c6": "hold reset button while powering on", "insight": "hold SET+DOWN while powering on", "effect": "erases everything incl. Robonomics identity"},
   "insight_buttons": {"UP": "prev screen", "DOWN": "next screen", "SET_long": "sleep"},
-  "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min; on Urban = registry write failing, usually device not registered in a subscription (Section 13)"},
+  "led_status_urban_c6": {"green": "ok", "blue": "setup mode or transmitting", "red_flash_3s": "last send failed", "red_steady": "offline/unhealthy >10min; if Local -> Status Map counter grows, red comes from the legacy Datalog channel and is harmless; if Map shows Not send, device not registered in its owner's device list (Section 13)"},
   "firmware_update": "OTA on stable channel (Local -> System -> Auto update firmware); manual check in Local -> Firmware Update (Check for update -> Update, Switch language); USB flashing via browser webflasher (Web Serial API) only for special cases; agent on the owner's LAN: Section 11 \"Updating every device on the owner's network\"",
   "webflasher": {
     "url": "https://webflasher.robonomics.network/",
@@ -1563,7 +1574,7 @@ authoritative — if anything here disagrees with it, follow the prose.
     "areas": "Local (readings, status, device settings), Map (sensors.social), Custom (Home Assistant and other integrations), System (backup, restart, resets); sidebar on desktop, tabs on phone — Stable since 2026-10",
     "setup_page": "captive portal or http://192.168.4.1: WiFi credentials (network, password, Local Hostname, Timezone, Region), Connected sensors, Publish to map, Save configuration and restart, Backup & restore -> Restore from backup; then CONNECTED with IP + Robonomics address, Save device info / Copy as text, Finish setup",
     "previous_firmware": "page with Configuration / WIFI SETTINGS / CONNECTED!; same steps under the old labels",
-    "screens": {"readings": "Local -> Readings", "status": "Local -> Status (Technical details -> Copy all for support)", "wifi": "Local -> WiFi Credentials", "leds": "Local -> LEDs (Insight: night hours, dims ~2 h before off, same hour twice = on all night)", "other_urbans": "Local -> Other Urbans (Insight)", "sleep_analytics": "Local -> Sleep analytics (Insight: window HH:MM, morning report from 06:00 until a chosen hour, Add Urban data)", "system": "Local -> System (Timezone, Date format MM/DD/YYYY | DD.MM.YYYY | YYYY-MM-DD, Region, Auto update firmware, Insight standalone, Urban: Meshtastic LoRa)", "firmware": "Local -> Firmware Update", "gps": "Map -> GPS & Sensors", "publish": "Map -> Publish to map", "encrypt": "Map -> Encrypt map values", "robonomics": "Map -> Robonomics (RWS Owner Address (legacy) = subscription address, not the device key; datalog interval; node; JSON/CSV and/or protobuf)", "device_group": "Map -> Device group (RWS)"},
+    "screens": {"readings": "Local -> Readings", "status": "Local -> Status (Technical details -> Copy all for support)", "wifi": "Local -> WiFi Credentials", "leds": "Local -> LEDs (Insight: night hours, dims ~2 h before off, same hour twice = on all night)", "other_urbans": "Local -> Other Urbans (Insight)", "sleep_analytics": "Local -> Sleep analytics (Insight: window HH:MM, morning report from 06:00 until a chosen hour, Add Urban data)", "system": "Local -> System (Timezone, Date format MM/DD/YYYY | DD.MM.YYYY | YYYY-MM-DD, Region, Auto update firmware, Insight standalone, Urban: Meshtastic LoRa)", "firmware": "Local -> Firmware Update", "gps": "Map -> GPS & Sensors", "publish": "Map -> Publish to map", "encrypt": "Map -> Encrypt map values", "robonomics": "Map -> Robonomics (RWS Owner Address (legacy) = subscription address, not the device key; datalog interval = legacy test channel; node; JSON/CSV and/or protobuf)", "device_group": "Map -> Device group (RWS)"},
     "backup": "System -> Backup & restore -> Download backup = backup.json (Wi-Fi, location, settings, device key); Restore from backup there or on the setup page right after a reset (/guest-restore); same file logs in on the map",
     "delete_configuration": "System -> Delete configuration: Wi-Fi only (keeps identity and history) | All settings (= factory reset, warn + offer backup first)",
     "other_system": ["Restart", "Install sensor key (derived from a Sensors.Social master seed, //N) — advanced, never ask for the seed"],
