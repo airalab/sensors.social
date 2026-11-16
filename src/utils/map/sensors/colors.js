@@ -123,41 +123,34 @@ export function getMarkerColors(point, unit, isUserMessage = false) {
 }
 
 /**
- * Find the winning color for a cluster based on zone counting
+ * Find the winning color for a cluster based on zone counting.
+ * The most common zone wins; on a tie the higher zone of the scale wins, so a cluster
+ * with as many red sensors as green ones shows red (for pollutants, the worse level).
  * @param {Array} markers - Array of marker objects
  * @param {string} unit - Measurement unit
- * @returns {string} - The most common color among markers
+ * @returns {string} - The winning color
  */
 export function getClusterWinningColor(markers, unit) {
+  const zones = getMeasurementByName(unit)?.zones || [];
+  const zoneRank = (color) => zones.findIndex((zone) => zone?.color === color);
   const zoneCounts = new Map(); // zone color -> count
 
-  // Sort markers by sensor_id for consistent results
-  const sortedMarkers = [...markers].sort((a, b) => {
-    const idA = a.options.data?.sensor_id || "";
-    const idB = b.options.data?.sensor_id || "";
-    return idA.localeCompare(idB);
-  });
-
-  for (const marker of sortedMarkers) {
+  for (const marker of markers) {
     const data = marker.options.data;
     if (!data) continue;
 
     const value = data.value;
     if (value === null || value === undefined || isNaN(value)) continue;
 
-    // Get color for this marker's value
     const markerColor = getColorForValue(value, unit, data);
-
-    // Count this zone
     zoneCounts.set(markerColor, (zoneCounts.get(markerColor) || 0) + 1);
   }
 
-  // Find the winning zone (most common color)
   let maxCount = 0;
   let winningColor = DEFAULT_COLORS.cluster.initColor;
 
   for (const [color, count] of zoneCounts) {
-    if (count > maxCount) {
+    if (count > maxCount || (count === maxCount && zoneRank(color) > zoneRank(winningColor))) {
       maxCount = count;
       winningColor = color;
     }
