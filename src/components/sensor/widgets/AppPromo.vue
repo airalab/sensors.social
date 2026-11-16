@@ -74,11 +74,10 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { settings } from "@config";
+import { ANDROID_APP_RELEASES_URL as APP_RELEASES_URL } from "@/config/androidApp";
 import { sensorName } from "@/utils/addressNames";
 import Copy from "../../controls/Copy.vue";
 import QrCode from "../../controls/QrCode.vue";
-
-const APP_RELEASES_URL = "https://github.com/PinoutLimited/sensors-social-android/releases/latest";
 
 const props = defineProps({
   sensorId: { type: String, default: "" },

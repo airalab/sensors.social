@@ -462,6 +462,7 @@ export default {
   "footer.privacy": "Конфиденциальность",
   "footer.licences": "Лицензии",
   "footer.version": "Версия",
+  "footer.androidApp": "Приложение для Android",
   "deviceinfo.eyebrow": "Комплект Altruist",
   "deviceinfo.title": "Знайте, каким воздухом вы дышите дома и на улице",
   "deviceinfo.subtitle": "Вы следите за пульсом и сном. Теперь узнайте о среде, в которой живёте. Два модуля — одна картина вашего дома и улицы за окном.",

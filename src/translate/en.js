@@ -450,6 +450,7 @@ export default {
   "footer.privacy": "Privacy",
   "footer.licences": "Licences",
   "footer.version": "Version",
+  "footer.androidApp": "Android app",
   "deviceinfo.eyebrow": "Altruist bundle",
   "deviceinfo.title": "Know the air you live in, inside and outside",
   "deviceinfo.subtitle": "You track your pulse and sleep quality. Now learn about your living environment. Two modules, one picture of your home and the street outside.",
