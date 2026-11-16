@@ -485,6 +485,21 @@ and after. Verified on 2026-11-12 on two Urbans and two Insights.
    update`; settings, Wi-Fi and the device key stay. Do not cut power meanwhile.
 5. **Report** one line per device: name, IP, version before → after, or why it
    was not updated.
+6. **Check the map after a big jump.** A legacy Urban whose **Map → Robonomics →
+   RWS Owner Address** held another address comes up on R_2026-11 in **Manual
+   owner** mode and does not register itself on the network (no `setDevices`).
+   It reads and serves data locally, but the map refuses it: the debug log
+   (`http://<ip>/serial` after `/debug?lvl=5`) shows `403 sensor_forbidden`,
+   and the device never appears at https://sensors.social. Seen on 2026-11-13
+   on an Urban moved from R-URB_2026-01. Tell the owner what you see and offer
+   two ways, without choosing for them:
+   - the owner of that RWS address registers the device in their device list;
+   - **Map → Device group (RWS) → Standalone → Save**: the device registers
+     itself, but from then on it is its own owner — values encrypted for the
+     old owner and access through the old owner's key no longer apply. Ask for
+     an explicit yes, and keep the key file the device offers to download.
+   If neither brings the device onto the map within a few minutes, hand over
+   to support (Section 17) with the device's Robonomics address and the log.
 
 If a device asks for a password (the owner set Web UI protection), ask the owner
 to enter it in the browser themselves; never ask for it in chat.
@@ -523,6 +538,16 @@ flashing a working device gains nothing.
    the device's serial port in the browser's dialog. The installer then shows
    what is currently on the device, e.g.
    `Altruist Altruist-Urban (R-URB_2026-06.1-testing+35859af)`.
+   **An agent with a shell on that computer: make a backup first.** Before
+   Install, close the browser tab (it holds the port) and copy the whole flash
+   with esptool, e.g. `esptool.py --chip esp32c6 -p /dev/ttyACM0 read_flash 0
+   0x800000 altruist-<id>-backup.bin` (8 MB on the C6 Urban; on Windows the
+   port is `COMx`). If the new build does not come up, `write_flash 0
+   altruist-<id>-backup.bin` returns the device exactly as it was, identity
+   included. **The file holds the device's private key:** keep it on the
+   owner's computer with owner-only permissions, never upload, paste or attach
+   it anywhere, and tell the owner where it lies. A chat assistant cannot do
+   this step — skip it rather than walking a non-technical user through esptool.
 6. Choose **Install**. The next dialog offers an **"Erase device"** checkbox.
    **Leave it unchecked.** Erasing wipes the whole config, including the
    device's Robonomics identity and therefore its history on the map — treat
