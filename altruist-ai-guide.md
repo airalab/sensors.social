@@ -9,7 +9,7 @@ any other LLM) — not an article for a human to read.
 **How it reached you:** a human scanned a QR code printed on an Altruist device
 or its packaging and sent you this file, or a link to it — or a developer gave it
 to you to get at the network's data or run their own RoSeMAN (Section 19).
-**Version:** 1.15 · **updated:** 2026-11-14 · **canonical page:**
+**Version:** 1.16 · **updated:** 2026-11-18 · **canonical page:**
 https://sensors.social/altruist-setup/
 **User's language:** unknown — detect it from their message and reply in it.
 
@@ -648,6 +648,7 @@ night.
 | Insight doesn't show Urban data | Both must be on the same Wi-Fi network; on legacy ESP32-C3 Urban set its IP manually in the Insight config (Section 10, Step 7). |
 | Steady red LED on Urban | Wi-Fi or data delivery down for >10 min — check router, signal strength, internet; see Section 12, "Status LEDs". |
 | Map shows **Not send** (counters like `0/1264`), steady red LED, internet works | The device is sending, but the connectivity provider does not accept it — almost always because the device's address is not registered in its owner's device list on the network (for example, the device made a new key after a reset). That is fixed on the network side, not by the owner, so hand over to support (Section 17) with the device's Robonomics address (Local → Status, or the CONNECTED screen) and a log (next row). One cause the user can check meanwhile: **Map → Robonomics → RWS Owner Address** holding someone else's address. If it differs from the device's own address **and the device is not a member of a device group** (Map → Device group (RWS); a member legitimately shows the group master's address), the device stops registering itself — clear the field → **Save** → restart. |
+| Worked on the map, then after a power cycle shows **Not send** on Map and a steady red LED; the address in **Local → Status** is not the one the sensor had before | The device lost its key and made a new one, so it is now a different device that is not in its owner's device list. Factory reset and «Delete configuration → All settings» do this on purpose; Altruist Urban on ESP32-C6 with firmware older than `R_2026-11.01` (the device shows it as `R-URB_2026-11.01`) could also do it by itself at power-on; that release fixes it. **If the user has a `backup.json`:** **System → Backup & restore → Restore from backup** brings the old key back — the old address, its registration and its map history return, nothing else to do. **No backup:** the old address cannot be recovered. The owner's device list has to get the new address (support can help, Section 17); the old history stays under the old address. Either way, update the firmware (Section 11) and take a fresh backup once it works. |
 | Map shows **Not send** now and then | The connectivity provider was busy and did not answer in time; the device sends again in ~30 s. Short gaps on the map chart are the visible result. Nothing to change on the device. |
 | **Datalog** shows **Not send**, **Map** counter grows | Expected. Datalog is the device's own direct write to the chain — a legacy test channel, not how data reaches the map (Section 15). The data is fine; do not send the user to support over this. |
 | Support needs the actual send error | No USB needed. Open `http://<ip>/debug?lvl=5` (asks for the web UI password) and keep the page open: the log below the buttons updates by itself (`http://<ip>/serial` returns the same lines as plain text, the new ones since the last call). Wait 2–3 min, then copy the lines that start with `[CONNECTIVITY]` and `[Map#` (and `[RWS]` if present). They contain the device's public address, no secrets. Afterwards set the default level back with `http://<ip>/debug?lvl=3`. |
@@ -1670,8 +1671,8 @@ authoritative — if anything here disagrees with it, follow the prose.
     }
   },
   "urban_enclosure": {"material": "PLA, 3D-printed; 0.2 mm layer; most parts need no supports", "emotions": ["Smile", "Enjoy", "Deadly"], "other_3mf_variants": ["Minimal (no antenna)", "No Face"], "makerworld": {"smile": "https://makerworld.com/en/models/1218175-altruist-smile-environmental-monitoring-sensor", "enjoy": "https://makerworld.com/en/models/1218283-altruist-enjoy-environmental-monitoring-sensor", "deadly": "https://makerworld.com/en/models/1218232-altruist-deadly-environmental-monitoring-sensor", "profile": "https://makerworld.com/en/@Robonomics_3D/"}, "sources": "github.com/airalab/hardware, 3D Models/Altruist Urban/Enclosure_v1: 3MF (Bambu Lab), STL, CAD (FreeCAD)", "weather_hood": "ASA, https://makerworld.com/en/models/3418273-weather-protection-hood-for-altruist-urban", "ready_case": "https://cyberpunks.shop/altruist-urban-enclosure — full enclosure kit without electronics; never quote price or stock"},
-  "guide_version": "1.15",
-  "guide_updated": "2026-11-14"
+  "guide_version": "1.16",
+  "guide_updated": "2026-11-18"
 }
 ```
 
