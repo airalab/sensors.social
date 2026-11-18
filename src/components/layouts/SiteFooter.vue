@@ -30,6 +30,15 @@
           <router-link to="/where-to-buy/" class="site-footer-buy">{{
             $t("Shop sensors")
           }}</router-link>
+          <a
+            :href="ANDROID_APP_RELEASES_URL"
+            class="site-footer-app"
+            target="_blank"
+            rel="noopener"
+          >
+            <font-awesome-icon icon="fa-brands fa-android" aria-hidden="true" />
+            {{ $t("footer.androidApp") }}
+          </a>
         </div>
 
         <nav aria-label="Altruist">
@@ -97,6 +106,7 @@
 import { ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { settings } from "@config";
+import { ANDROID_APP_RELEASES_URL } from "@/config/androidApp";
 import { version } from "../../../package.json";
 import LicenceLine from "../LicenceLine.vue";
 import { useAboutSheet, ABOUT_HASH } from "@/composables/useAboutSheet";
@@ -318,6 +328,18 @@ const releaseUrl = `https://github.com/${settings.REPO_NAME}/releases/tag/v${ver
 .site-footer a.site-footer-buy:focus-visible {
   color: var(--color-dark);
   text-decoration: none;
+}
+
+.site-footer a.site-footer-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 0 18px;
+  border: 1px solid currentColor;
+  border-radius: 22px;
+  font-size: 0.95rem;
 }
 
 .site-footer nav {
