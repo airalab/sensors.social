@@ -6,16 +6,18 @@
         <span class="sensor-profile__by">{{ $t("sensorpopup.profileByOwner") }}</span>
       </div>
       <div class="sensor-profile__body">
-        <button
-          v-for="cid in profile.images"
-          :key="cid"
-          type="button"
-          class="sensor-profile__thumb"
-          :aria-label="$t('sensorpopup.profilePhotoAlt')"
-          @click="open = cid"
-        >
-          <img :src="imageUrl(cid)" alt="" loading="lazy" />
-        </button>
+        <div v-if="profile.images.length" class="sensor-profile__photos">
+          <button
+            v-for="cid in profile.images"
+            :key="cid"
+            type="button"
+            class="sensor-profile__thumb"
+            :aria-label="$t('sensorpopup.profilePhotoAlt')"
+            @click="open = cid"
+          >
+            <img :src="imageUrl(cid)" alt="" loading="lazy" />
+          </button>
+        </div>
         <p
           v-if="profile.description"
           class="sensor-profile__text"
@@ -56,7 +58,7 @@
 <script setup>
 // Sensor social profile: the owner's photos and a few words, set from the sensors.social app
 // (CPS node on Robonomics → profile.json → photos pinned by RoSeMAN's Kubo).
-// Shown under the chart as thumbnails, so it is in view without pushing the controls down.
+// Shown under the chart: a row of photos across the card, the owner's words below.
 // No profile: one line inviting the owner to add one. API unreachable: nothing at all.
 import { ref, watch } from "vue";
 import { settings } from "@config";
@@ -122,17 +124,20 @@ watch(
   opacity: 0.6;
 }
 .sensor-profile__body {
-  display: flex;
+  display: grid;
+  gap: 10px;
+}
+.sensor-profile__photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  align-items: flex-start;
+  max-width: 480px;
 }
 .sensor-profile__thumb {
-  flex: none;
-  width: 64px;
-  height: 64px;
+  aspect-ratio: 1;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: zoom-in;
   background: var(--color-light-gray, #eee);
@@ -145,10 +150,9 @@ watch(
 }
 .sensor-profile__text {
   margin: 0;
-  min-width: 0;
-  line-height: 1.4;
+  line-height: 1.45;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   cursor: pointer;
