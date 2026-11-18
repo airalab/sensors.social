@@ -7,6 +7,7 @@
     ]
   },
   "REMOTE_PROVIDER": "https://roseman.robonomics.network/",
+  "PROFILE_API": "https://roseman.robonomics.network/api/",
   "WIND_PROVIDER": "https://wind.sensors.social/latest",
   "AOD_WMS": {
     "url": "https://wind.sensors.social/aod/wms",

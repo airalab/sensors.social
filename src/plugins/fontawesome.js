@@ -49,6 +49,7 @@ import {
   faChartSimple,
   faRadiation,
   faQrcode,
+  faCamera,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faBookmark as faBookmarkRegular,
@@ -64,6 +65,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(
   faAndroid,
+  faCamera,
   faQrcode,
   faArrowRight,
   faBars,
