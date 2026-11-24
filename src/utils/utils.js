@@ -7,6 +7,25 @@ import { dayISO } from "@/utils/date";
  * @param {object} options - Fetch options (optional)
  * @returns {Promise<object>} Parsed JSON data
  */
+/**
+ * fetchJson that waits out a short outage of the API: a network error or a 5xx answer is retried
+ * with growing pauses (1, 2, 4, 8, 16 s — about half a minute in all, then the error stands).
+ * RoSeMAN is down for 10–40 s while it restarts after a deploy; a map opened in that window used
+ * to stay empty until reloaded. 4xx answers are final and not retried.
+ */
+export async function fetchJsonRetrying(url, options = {}, attempts = 6) {
+  for (let i = 0; ; i++) {
+    try {
+      const res = await fetch(url, { credentials: "omit", cache: "no-cache", ...options });
+      if (res.ok) return res.json();
+      if (res.status < 500 || i >= attempts - 1) throw new Error(`HTTP ${res.status}`);
+    } catch (e) {
+      if (i >= attempts - 1 || /^HTTP 4/.test(e.message)) throw e;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** i));
+  }
+}
+
 export async function fetchJson(url, options = {}) {
   const defaultOptions = {
     credentials: "omit",
