@@ -55,7 +55,7 @@ import { computed, getCurrentInstance } from "vue";
 import { useI18n } from "vue-i18n";
 import Copy from "../../controls/Copy.vue";
 import { sensorName, ownerName } from "@/utils/addressNames";
-import { pinned_sensors } from "@config";
+import { sensorPin } from "@/utils/sensorPins";
 import appleMapIcon from "@/assets/images/map-apps-icons/Apple-map-icon.svg";
 import googleMapIcon from "@/assets/images/map-apps-icons/Google-map-icon.svg";
 
@@ -97,11 +97,11 @@ const mapInfo = computed(() => {
 
 const metaUserLink = computed(() => {
   if (!props.sensorId) return "";
-  return pinned_sensors[props.sensorId]?.link || "";
+  return sensorPin(props.sensorId)?.link || "";
 });
 
 // A pinned sensor may name who runs it (a government agency); the bare link otherwise
-const metaUserLabel = computed(() => pinned_sensors[props.sensorId]?.owner || metaUserLink.value);
+const metaUserLabel = computed(() => sensorPin(props.sensorId)?.owner || metaUserLink.value);
 
 function getMapLink(lat, lon, label = "Sensor") {
   const ua = navigator.userAgent || "";
