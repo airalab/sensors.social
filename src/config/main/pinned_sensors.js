@@ -1,5 +1,12 @@
 const iconroute = "/sensors/";
 
+const GOV_CY = {
+  kind: "gov",
+  icon: iconroute + "cyprus-gov.png",
+  owner: "Republic of Cyprus, Department of Labour Inspection (public data)",
+  link: "https://airquality.dli.mlsi.gov.cy/",
+};
+
 export default {
   "7e071fd9b023ed8f18458a73613a0834f6220bd5cc50357ba3493c6040a9ea8c": {
     icon: iconroute + "ekovoz.png",
@@ -58,5 +65,63 @@ export default {
   "4FfcLUpH2ADwAuaWZFULiTs7Ap6BKv2Cwg1MZcymnUk9iHk4": {
     icon: iconroute + "smash-academy.jpg",
     link: "https://www.instagram.com/smashpadeltennis",
+  },
+  // Government air quality stations of the Republic of Cyprus (Department of Labour Inspection):
+  // public hourly data, republished by RoSeMAN's gov-stations module as sensors of type "gov".
+  "cy-dli-nictra": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Nicosia traffic",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-nicres": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Nicosia residential",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-limtra": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Limassol traffic",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-lartra": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Larnaca traffic",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-paftra": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Paphos traffic",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-partra": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Paralimni traffic",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-agmbac": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Ayia Marina Xyliatou background",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
+  },
+  "cy-dli-zygind": {
+    kind: GOV_CY.kind,
+    name: "Gov. station · Zygi industrial",
+    icon: GOV_CY.icon,
+    owner: GOV_CY.owner,
+    link: GOV_CY.link,
   },
 };

@@ -44,7 +44,7 @@
     <div class="infoline flexline" v-if="metaUserLink">
       <div class="infoline-title">{{ t("sensorpopup.infosensorowner") }}:</div>
       <div class="infoline-info">
-        <a :href="metaUserLink" rel="noopener" target="_blank">{{ metaUserLink }}</a>
+        <a :href="metaUserLink" rel="noopener" target="_blank">{{ metaUserLabel }}</a>
       </div>
     </div>
   </section>
@@ -99,6 +99,9 @@ const metaUserLink = computed(() => {
   if (!props.sensorId) return "";
   return pinned_sensors[props.sensorId]?.link || "";
 });
+
+// A pinned sensor may name who runs it (a government agency); the bare link otherwise
+const metaUserLabel = computed(() => pinned_sensors[props.sensorId]?.owner || metaUserLink.value);
 
 function getMapLink(lat, lon, label = "Sensor") {
   const ua = navigator.userAgent || "";
