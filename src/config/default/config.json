@@ -39,7 +39,7 @@
     "attribution": "NASA FIRMS / GIBS, VIIRS 375 m"
   },
   "GOV_STATIONS": {
-    "sources": [{ "id": "cy-dli", "url": "/gov-stations/cy-dli.json" }],
+    "url": "https://roseman.robonomics.network/api/v2/gov/stations",
     "refreshMinutes": 15
   },
   "MAP": {

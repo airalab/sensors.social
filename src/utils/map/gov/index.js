@@ -2,17 +2,17 @@
  * Government stations layer — reference monitors of national air-quality networks, shown next to
  * the Altruist sensors for comparison. First source: Cyprus, Department of Labour Inspection (DLI).
  *
- * The data are public and republished as is. They come from a feeder JSON
- * (scripts/gov-stations/*.mjs: source page → { source, source_url, fetched_at, stations[] }),
- * because the official sites have no API and no CORS. Each station: { id, name, kind, lat, lng,
- * approx?, timestamp, values: { pm25, pm10, no2, o3, so2, co, … } } in μg/m³, hourly means.
+ * The data are public and republished as is. RoSeMAN reads the official sites (they have no API
+ * and no CORS) in its optional gov-stations module and serves GET /api/v2/gov/stations →
+ * { result: [{ id, publisher, url, country, note, stations: [{ id, name, kind, lat, lng, approx?,
+ * timestamp, values: { pm25, pm10, no2, o3, so2, co, … } }] }] }, μg/m³, hourly means.
  *
  * The layer is a plain L.layerGroup of its own, apart from the sensor clusters: stations do not
  * merge with sensors, do not open the sensor card, and keep their own icon. The marker colour is the
  * map's PM2.5 zone (PM10 when the station has no PM2.5), grey when the reading is over 3 h old.
  * Gases are listed in μg/m³ as published, without colour: the map's gas scales are in ppb/ppm.
  *
- * Config (`settings.GOV_STATIONS`): { sources: [{ id, url }], refreshMinutes }
+ * Config (`settings.GOV_STATIONS`): { url, refreshMinutes }
  */
 
 import L from "leaflet";
@@ -103,8 +103,8 @@ function popupHtml(station, source, nowS) {
       ${station.approx ? `<div class="gov-popup-note">${t("gov.approx")}</div>` : ""}
       <div class="gov-popup-source">
         ${t("gov.source")}
-        <a href="${escapeHtml(source.source_url)}" target="_blank" rel="noopener">${escapeHtml(
-    source.source
+        <a href="${escapeHtml(source.url)}" target="_blank" rel="noopener">${escapeHtml(
+    source.publisher
   )}</a>
       </div>
     </div>`;
@@ -117,24 +117,22 @@ function ensurePane(map) {
   }
 }
 
-async function loadSource(src) {
-  const res = await fetch(src.url, { cache: "no-cache" });
-  if (!res.ok) throw new Error(`${src.id}: HTTP ${res.status}`);
-  return res.json();
-}
-
 async function refresh() {
   if (!group) return;
-  const results = await Promise.allSettled((cfg().sources || []).map(loadSource));
+  let sources = [];
+  try {
+    const res = await fetch(cfg().url, { cache: "no-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    sources = (await res.json()).result || [];
+  } catch (e) {
+    console.error("Government stations:", e);
+    return;
+  }
   if (!group) return;
   group.clearLayers();
   const nowS = Date.now() / 1000;
-  results.forEach((r, i) => {
-    if (r.status !== "fulfilled") {
-      console.error("Government stations:", cfg().sources[i].id, r.reason);
-      return;
-    }
-    for (const st of r.value.stations || []) {
+  for (const source of sources) {
+    for (const st of source.stations || []) {
       if (!Number.isFinite(st.lat) || !Number.isFinite(st.lng)) continue;
       L.marker([st.lat, st.lng], {
         icon: icon(markerColor(st, nowS)),
@@ -142,10 +140,10 @@ async function refresh() {
         title: st.name,
         keyboard: true,
       })
-        .bindPopup(popupHtml(st, r.value, nowS), { className: "gov-popup-wrap", maxWidth: 280 })
+        .bindPopup(popupHtml(st, source, nowS), { className: "gov-popup-wrap", maxWidth: 280 })
         .addTo(group);
     }
-  });
+  }
 }
 
 export function readGovPref() {
