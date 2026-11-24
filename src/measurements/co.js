@@ -6,6 +6,11 @@ export default {
     en: "Carbon monoxide",
     ru: "Угарный газ",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Carbon monoxide CO",
+    ru: "Угарный газ CO",
+  },
   nameshort: {
     en: "CO",
     ru: "CO",

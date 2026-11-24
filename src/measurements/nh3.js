@@ -6,6 +6,11 @@ export default {
     en: "Ammonia",
     ru: "Аммиак",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Ammonia NH₃",
+    ru: "Аммиак NH₃",
+  },
   nameshort: {
     en: "NH3",
     ru: "NH3",

@@ -354,7 +354,7 @@ const availableOptions = computed(() => {
       }
       return {
         value: key,
-        name: info.nameshort?.[locale.value] || info.label,
+        name: info.mapName?.[locale.value] || info.nameshort?.[locale.value] || info.label,
       };
     })
     .filter((item) => Boolean(item));

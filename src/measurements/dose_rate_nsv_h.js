@@ -7,6 +7,11 @@ export default {
     en: "Radiation dose rate",
     ru: "Мощность дозы излучения",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Radiation dose",
+    ru: "Доза радиации",
+  },
   nameshort: {
     en: "Dose rate",
     ru: "Мощность дозы",

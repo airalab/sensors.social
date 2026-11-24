@@ -6,6 +6,11 @@ export default {
     en: "Carbon Dioxide",
     ru: "Углекислый газ",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Stuffiness CO₂",
+    ru: "Духота CO₂",
+  },
   nameshort: {
     en: "CO₂",
     ru: "CO₂",

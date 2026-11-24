@@ -6,6 +6,11 @@ export default {
     en: "Maximum noise (Lmax)",
     ru: "Максимальный уровень шума (Lmax)",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Noise, peaks",
+    ru: "Шум, пики",
+  },
   nameshort: {
     en: "Noise Max.",
     ru: "Шум Макс.",
