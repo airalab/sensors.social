@@ -23,9 +23,8 @@ import urbanDefaultIcon from "@/assets/images/altruist-device/altruist-urban-def
 export function resolveSensorType(point, logOverride = null) {
   if (!point) return "diy";
 
-  // Government stations have no owner account, yet they are not DIY. The marker carries
-  // device_model "gov"; a card opened by link has only the id, so the pinned config tells.
-  if (sensorTypeFromDeviceModel(point.device_model) === "gov") return "gov";
+  // Government stations have no owner account, yet they are not DIY. Only a station RoSeMAN lists
+  // counts: device_model "gov" alone could be set on any sensor.
   if (sensorPin(point.sensor_id)?.kind === "gov") return "gov";
 
   if (!hasSensorOwner(point)) return "diy";

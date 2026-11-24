@@ -6,49 +6,52 @@
  * - GOV_NETWORKS: government stations republished by RoSeMAN's gov-stations module. Their ids
  *   start with the network id ("nl-rivm-NL10742"); the network gives the logo, the operator and the
  *   link, and the station name comes from RoSeMAN (GET api/v2/gov/stations?brief=1, loaded once).
+ *
+ * A sensor gets a network's branding only when RoSeMAN lists it as that network's station: the id
+ * prefix alone is not trusted, since any sensor could be given an id that starts with "de-uba-".
+ * The list is requested when this module loads, before the first markers arrive.
  */
 import { reactive } from "vue";
 import { pinned_sensors, settings } from "@config";
 
-const govNames = reactive({});
-let govNamesLoading = null;
+const govStations = reactive({}); // station id -> { name, network }
+let govListLoading = null;
 
-function loadGovNames() {
-  if (govNamesLoading || !settings.REMOTE_PROVIDER) return;
-  govNamesLoading = fetch(`${settings.REMOTE_PROVIDER}api/v2/gov/stations?brief=1`)
+function loadGovStations() {
+  if (govListLoading || !settings.REMOTE_PROVIDER || !settings.GOV_NETWORKS) return;
+  govListLoading = fetch(`${settings.REMOTE_PROVIDER}api/v2/gov/stations?brief=1`)
     .then((res) => (res.ok ? res.json() : { result: [] }))
     .then(({ result }) => {
       for (const source of result || []) {
-        for (const st of source.stations || []) govNames[st.id] = st.name;
+        for (const st of source.stations || []) {
+          govStations[st.id] = { name: st.name, network: source.id };
+        }
       }
     })
-    .catch((e) => console.error("Government station names:", e));
+    .catch((e) => console.error("Government stations:", e));
 }
 
-/** The government network a sensor id belongs to, with its id, or null. */
+loadGovStations();
+
+/** The government network RoSeMAN lists this sensor id under, with its id, or null. */
 export function govNetworkOf(sensorId) {
-  const sid = String(sensorId || "");
-  const networks = settings.GOV_NETWORKS || {};
-  for (const [id, network] of Object.entries(networks)) {
-    if (sid.startsWith(`${id}-`)) return { id, ...network };
-  }
-  return null;
+  const station = govStations[String(sensorId || "")];
+  const network = station && (settings.GOV_NETWORKS || {})[station.network];
+  return network ? { id: station.network, ...network } : null;
 }
 
 /**
  * { name?, icon?, owner?, link?, kind? } for a sensor, or null when the config knows nothing of it.
- * A government station's name is reactive: it fills in once RoSeMAN's list arrives.
+ * Reactive for government stations: they are recognised once RoSeMAN's list arrives.
  */
 export function sensorPin(sensorId) {
   const sid = String(sensorId || "");
   const pinned = pinned_sensors[sid] || null;
   const network = govNetworkOf(sid);
   if (!network) return pinned;
-  loadGovNames();
-  const station = govNames[sid];
   return {
     kind: "gov",
-    name: station ? `Gov. station · ${station}` : "Gov. station",
+    name: `Gov. station · ${govStations[sid].name}`,
     icon: network.icon,
     owner: network.owner,
     link: network.link,
