@@ -6,7 +6,7 @@
       popovertarget="sensor-picker-popover"
     >
       <div class="panel-list__media" aria-hidden="true">
-        <img :src="sensorTypeIcon(activeRow.type)" alt="" />
+        <img :src="sensorTypeIcon(activeRow.type, activeRow.sensorId)" alt="" />
       </div>
 
       <div class="panel-list__text">
@@ -40,7 +40,7 @@
             @click="onSelect(row)"
           >
             <div class="panel-list__media" aria-hidden="true">
-              <img :src="sensorTypeIcon(row.type)" alt="" />
+              <img :src="sensorTypeIcon(row.type, row.sensorId)" alt="" />
             </div>
 
             <div class="panel-list__text">

@@ -15,6 +15,7 @@
  * address with a chosen name can be ground out. Where ownership is confirmed, show the address too.
  */
 import { blake2AsU8a, decodeAddress } from "@polkadot/util-crypto";
+import { pinned_sensors } from "@config";
 
 const SALT = new TextEncoder().encode("sensors.social/names/v1.1");
 
@@ -239,8 +240,12 @@ function nameFrom(address, nouns, kind) {
   return name;
 }
 
-/** "Sleepy Clematis" — the name of a sensor by its id. */
-export const sensorName = (sensorId) => nameFrom(sensorId, PLANTS, "sensor");
+/**
+ * "Sleepy Clematis" — the name of a sensor by its id. A sensor pinned in the config with a `name`
+ * (a government station, say) keeps that name instead of a generated one.
+ */
+export const sensorName = (sensorId) =>
+  pinned_sensors[sensorId]?.name || nameFrom(sensorId, PLANTS, "sensor");
 
 /** "Woolly Pony" — the name of an owner (account) by its address. */
 export const ownerName = (address) => nameFrom(address, ANIMALS, "owner");

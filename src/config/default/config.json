@@ -38,10 +38,6 @@
     "since": "2025-07-08",
     "attribution": "NASA FIRMS / GIBS, VIIRS 375 m"
   },
-  "GOV_STATIONS": {
-    "url": "https://roseman.robonomics.network/api/v2/gov/stations",
-    "refreshMinutes": 15
-  },
   "MAP": {
     "zoom": "3",
     "boundsDelta": {

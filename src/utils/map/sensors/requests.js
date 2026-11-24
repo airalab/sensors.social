@@ -157,6 +157,8 @@ export function sensorTypeFromDeviceModel(deviceModel) {
   if (m === "urban") return "urban";
   if (m === "diy") return "diy";
   if (m === "altruist") return "altruist";
+  // Government reference station republished by RoSeMAN (src/gov-stations)
+  if (m === "gov") return "gov";
   return null;
 }
 

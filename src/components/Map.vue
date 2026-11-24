@@ -26,7 +26,6 @@ import {
 import { init as initSensors } from "../utils/map/sensors";
 import { init as initMessages } from "../utils/map/messages";
 import { destroyWindLayer } from "../utils/map/wind";
-import { switchGovLayer, readGovPref, destroyGovLayer } from "../utils/map/gov";
 import { useMap } from "@/composables/useMap";
 import { useBookmarks } from "@/composables/useBookmarks";
 import { getDefaultMapView } from "@/utils/map/defaultView";
@@ -282,9 +281,6 @@ const initializeMapComponents = async () => {
     emit("clickMessage", data);
   });
 
-  // Государственные станции: включены, если пользователь включал их раньше
-  switchGovLayer(toRaw(map.value), readGovPref());
-
   if (mapState.currentProvider.value === "realtime") {
     // await initWindLayer();
   }
@@ -353,9 +349,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  // Очищаем ресурсы ветра и госстанций перед удалением карты
+  // Очищаем ресурсы ветра перед удалением карты
   destroyWindLayer();
-  destroyGovLayer();
   removeMap();
   // Очищаем глобальную ссылку
   window.mapUpdateTheme = null;

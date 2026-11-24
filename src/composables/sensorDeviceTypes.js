@@ -10,6 +10,7 @@ import {
   sensorTypeFromDeviceModel,
 } from "../utils/map/sensors/requests";
 
+import { pinned_sensors } from "@config";
 import diyPrototypeIcon from "@/assets/images/altruist-device/altruist-diy-prototype.webp";
 import dualDefaultIcon from "@/assets/images/altruist-device/altruist-dual-default-icon.webp";
 import insightDefaultIcon from "@/assets/images/altruist-device/altruist-insight-default-icon.webp";
@@ -21,6 +22,11 @@ import urbanDefaultIcon from "@/assets/images/altruist-device/altruist-urban-def
  */
 export function resolveSensorType(point, logOverride = null) {
   if (!point) return "diy";
+
+  // Government stations have no owner account, yet they are not DIY. The marker carries
+  // device_model "gov"; a card opened by link has only the id, so the pinned config tells.
+  if (sensorTypeFromDeviceModel(point.device_model) === "gov") return "gov";
+  if (pinned_sensors[String(point.sensor_id || "")]?.kind === "gov") return "gov";
 
   if (!hasSensorOwner(point)) return "diy";
 
@@ -82,9 +88,10 @@ export function isPanelSensorPickerReady(point) {
   return point._ownerResolved === true;
 }
 
-/** Owner block: resolved (owner known or confirmed DIY without owner). */
+/** Owner block: resolved (owner known or confirmed DIY / government station without owner). */
 export function isPanelOwnerResolved(point) {
   if (point?.idbSensorType === "diy") return true;
+  if (resolveSensorType(point) === "gov") return true;
   if (hasSensorOwner(point)) return true;
   return point?._ownerResolved === true;
 }
@@ -92,6 +99,7 @@ export function isPanelOwnerResolved(point) {
 export function isPanelOwnerLoading(point) {
   const sid = String(point?.sensor_id || "");
   if (!sid || point?.idbSensorType === "diy") return false;
+  if (resolveSensorType(point) === "gov") return false;
   if (hasSensorOwner(point)) return false;
   return !isPanelOwnerResolved(point);
 }
@@ -113,14 +121,19 @@ export function isSensorLogsLoading(point, log, { provider, timelineMode } = {})
 /** Human-readable label for sensor picker and page meta. */
 export function sensorTypeTitle(type) {
   if (type === "diy") return "DIY";
+  if (type === "gov") return "Government station";
   if (type === "insight") return "Altruist Insight";
   if (type === "urban") return "Altruist Urban";
   if (type === "altruist") return "Altruist Urban";
   return "Altruist Urban";
 }
 
-/** WebP asset for map marker or picker (dual = urban + insight at same geo). */
-export function sensorTypeIcon(type) {
+/**
+ * WebP asset for map marker or picker (dual = urban + insight at same geo).
+ * A government station shows its network's logo from the pinned config.
+ */
+export function sensorTypeIcon(type, sensorId = null) {
+  if (type === "gov") return pinned_sensors[String(sensorId || "")]?.icon || diyPrototypeIcon;
   if (type === "diy") return diyPrototypeIcon;
   if (type === "insight") return insightDefaultIcon;
   if (type === "dual") return dualDefaultIcon;

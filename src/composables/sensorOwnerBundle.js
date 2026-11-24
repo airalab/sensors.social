@@ -217,6 +217,10 @@ function findBundleEntryForSlot(bundle, slotType) {
  */
 export function buildSensorPickerRows(point, logSamples = null) {
   const currentId = String(point?.sensor_id || "");
+  // A government station is one device of its own kind, with nothing to switch to
+  if (resolveSensorType(point, logSamples) === "gov") {
+    return [{ type: "gov", sensorId: currentId || null, state: currentId ? "active" : "missing" }];
+  }
   const hasOwner = hasSensorOwner(point);
   const types = hasOwner ? OWNER_PICKER_TYPES : DIY_PICKER_TYPES;
   const bundle = hasOwner ? point?.ownerSensorsWithData : null;

@@ -190,7 +190,8 @@
         <div v-else-if="!chartHasData" class="chart-skeleton"></div>
       </section>
 
-      <SensorProfile v-if="!isDemo" :sensor-id="point?.sensor_id" />
+      <!-- a government station has no owner to add photos: no profile invitation -->
+      <SensorProfile v-if="!isDemo && sensorType !== 'gov'" :sensor-id="point?.sensor_id" />
 
       <DemoShowcase v-if="isDemo" part="now" :items="demoItems" />
     </template>
