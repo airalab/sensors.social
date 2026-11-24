@@ -34,6 +34,16 @@
       />
 
       <ToggleButton
+        v-if="settings.GOV_STATIONS"
+        :model-value="gov"
+        @update:modelValue="onGovToggle"
+        icon-class="fa-solid fa-landmark"
+        class="gov-toggle"
+        :label="$t('layer.gov')"
+        :title="$t('layer.govHint')"
+      />
+
+      <ToggleButton
         v-if="hasMessagesData"
         v-model="messages"
         :icon-class="messages ? 'fa-solid fa-comment' : 'fa-regular fa-comment'"
@@ -141,6 +151,16 @@
               />
 
               <ToggleButton
+                v-if="settings.GOV_STATIONS"
+                :model-value="gov"
+                @update:modelValue="onGovToggle"
+                icon-class="fa-solid fa-landmark"
+                class="gov-toggle"
+                :label="$t('layer.gov')"
+                :title="$t('layer.govHint')"
+              />
+
+              <ToggleButton
                 v-if="hasMessagesData"
                 v-model="messages"
                 :icon-class="messages ? 'fa-solid fa-comment' : 'fa-regular fa-comment'"
@@ -221,6 +241,7 @@ import { resolveMapColorScheme } from "../../utils/map/themeScheme";
 import { initWindLayer, switchWindLayer, destroyWindLayer } from "../../utils/map/wind";
 import { switchAodLayer, isAodAvailable } from "../../utils/map/aod";
 import { switchFiresLayer, isFiresAvailable } from "../../utils/map/fires";
+import { switchGovLayer, readGovPref, saveGovPref } from "../../utils/map/gov";
 import measurements from "../../measurements";
 import { sortMapLayerUnits } from "../../measurements/tools";
 // import { getTypeProvider } from "../../utils/utils"; // deprecated
@@ -308,6 +329,8 @@ const readFiresPref = () => {
 };
 const fires = ref(readFiresPref());
 const firesAllowed = computed(() => isFiresAvailable(start.value));
+// Государственные станции (DLI Кипра и др.): выключены по умолчанию, слой сам помнит выбор
+const gov = ref(readGovPref());
 
 // Computed для проверки, есть ли данные сообщений для отображения
 const hasMessagesData = computed(() => {
@@ -402,6 +425,12 @@ const onAodToggle = (enabled) => {
   } catch (e) {
     // Если localStorage недоступен — работаем без сохранения
   }
+};
+
+const onGovToggle = (enabled) => {
+  gov.value = enabled;
+  saveGovPref(enabled);
+  switchGovLayer(instanceMap(), enabled);
 };
 
 const onFiresToggle = (enabled) => {

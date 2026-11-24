@@ -38,6 +38,10 @@
     "since": "2025-07-08",
     "attribution": "NASA FIRMS / GIBS, VIIRS 375 m"
   },
+  "GOV_STATIONS": {
+    "sources": [{ "id": "cy-dli", "url": "/gov-stations/cy-dli.json" }],
+    "refreshMinutes": 15
+  },
   "MAP": {
     "zoom": "3",
     "boundsDelta": {
