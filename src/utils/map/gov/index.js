@@ -110,6 +110,17 @@ function popupHtml(station, source, nowS) {
     </div>`;
 }
 
+// The site header and the map controls float over the map: pan a popup clear of both
+function popupPadding() {
+  const top = document.querySelector("header")?.getBoundingClientRect().bottom || 0;
+  const controls = document.querySelector(".mapcontrols")?.getBoundingClientRect();
+  const bottom = controls ? window.innerHeight - controls.top : 0;
+  return {
+    autoPanPaddingTopLeft: L.point(16, top + 16),
+    autoPanPaddingBottomRight: L.point(16, bottom + 16),
+  };
+}
+
 function ensurePane(map) {
   if (!map.getPane(PANE)) {
     // above sensor markers (600), below popups (700)
@@ -140,7 +151,11 @@ async function refresh() {
         title: st.name,
         keyboard: true,
       })
-        .bindPopup(popupHtml(st, source, nowS), { className: "gov-popup-wrap", maxWidth: 280 })
+        .bindPopup(popupHtml(st, source, nowS), {
+          className: "gov-popup-wrap",
+          maxWidth: 280,
+          ...popupPadding(),
+        })
         .addTo(group);
     }
   }
