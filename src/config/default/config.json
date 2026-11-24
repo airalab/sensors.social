@@ -38,6 +38,28 @@
     "since": "2025-07-08",
     "attribution": "NASA FIRMS / GIBS, VIIRS 375 m"
   },
+  "GOV_NETWORKS": {
+    "cy-dli": {
+      "icon": "/sensors/gov-cy.png",
+      "owner": "Republic of Cyprus, Department of Labour Inspection (public data)",
+      "link": "https://airquality.dli.mlsi.gov.cy/"
+    },
+    "nl-rivm": {
+      "icon": "/sensors/gov-nl.png",
+      "owner": "Netherlands, RIVM Luchtmeetnet (public data)",
+      "link": "https://www.luchtmeetnet.nl/"
+    },
+    "be-irceline": {
+      "icon": "/sensors/gov-be.png",
+      "owner": "Belgium, IRCEL-CELINE (public data)",
+      "link": "https://www.irceline.be/"
+    },
+    "de-uba": {
+      "icon": "/sensors/gov-de.png",
+      "owner": "Germany, Umweltbundesamt (public data)",
+      "link": "https://www.umweltbundesamt.de/daten/luft/luftdaten"
+    }
+  },
   "MAP": {
     "zoom": "3",
     "boundsDelta": {

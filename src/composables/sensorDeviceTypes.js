@@ -10,7 +10,7 @@ import {
   sensorTypeFromDeviceModel,
 } from "../utils/map/sensors/requests";
 
-import { pinned_sensors } from "@config";
+import { sensorPin } from "@/utils/sensorPins";
 import diyPrototypeIcon from "@/assets/images/altruist-device/altruist-diy-prototype.webp";
 import dualDefaultIcon from "@/assets/images/altruist-device/altruist-dual-default-icon.webp";
 import insightDefaultIcon from "@/assets/images/altruist-device/altruist-insight-default-icon.webp";
@@ -26,7 +26,7 @@ export function resolveSensorType(point, logOverride = null) {
   // Government stations have no owner account, yet they are not DIY. The marker carries
   // device_model "gov"; a card opened by link has only the id, so the pinned config tells.
   if (sensorTypeFromDeviceModel(point.device_model) === "gov") return "gov";
-  if (pinned_sensors[String(point.sensor_id || "")]?.kind === "gov") return "gov";
+  if (sensorPin(point.sensor_id)?.kind === "gov") return "gov";
 
   if (!hasSensorOwner(point)) return "diy";
 
@@ -133,7 +133,7 @@ export function sensorTypeTitle(type) {
  * A government station shows its network's logo from the pinned config.
  */
 export function sensorTypeIcon(type, sensorId = null) {
-  if (type === "gov") return pinned_sensors[String(sensorId || "")]?.icon || diyPrototypeIcon;
+  if (type === "gov") return sensorPin(sensorId)?.icon || diyPrototypeIcon;
   if (type === "diy") return diyPrototypeIcon;
   if (type === "insight") return insightDefaultIcon;
   if (type === "dual") return dualDefaultIcon;

@@ -3,7 +3,7 @@
  * Dual is shown only when Urban and Insight siblings share the same geo cluster (≤ 3 km),
  * not when they merely share an owner account nationwide.
  */
-import { pinned_sensors } from "@config";
+import { sensorPin } from "@/utils/sensorPins";
 import { dayISO } from "@/utils/date";
 import { resolveSensorType, sensorTypeIcon } from "@/composables/sensorDeviceTypes";
 import {
@@ -150,9 +150,12 @@ export function mapMarkerIcon(point, sensorsList = null, isoDate = null, { force
   const dateKey = isoDate || dayISO();
   const cacheSid = markerIconCacheSensorId(point, sensorsList);
 
-  const pinned = cacheSid ? pinned_sensors[cacheSid]?.icon : null;
-  if (pinned) {
-    return { image: pinned, fullBleed: true, iconType: "pinned" };
+  const pin = cacheSid ? sensorPin(cacheSid) : null;
+  if (pin?.icon) {
+    // a government station keeps the coloured ring of the air-quality zone, as a sensor does;
+    // a partner's logo fills the marker
+    const ringed = pin.kind === "gov";
+    return { image: pin.icon, fullBleed: !ringed, iconType: ringed ? "gov" : "pinned" };
   }
 
   if (!rosemanMarkerIconsEnabledForDate(dateKey)) {
@@ -207,7 +210,7 @@ export async function refreshMarkerIconsForSensors(isoDate, sensorsList, { force
   await Promise.all(
     reps.map(async (sensor) => {
       const sid = String(sensor?.sensor_id || "");
-      if (!sid || pinned_sensors[sid]?.icon) return;
+      if (!sid || sensorPin(sid)?.icon) return;
       const icon = mapMarkerIcon(sensor, list, isoDate);
       const prev = peekMarkerIconCache(sid, isoDate);
       if (prev?.iconType === icon.iconType) return;
