@@ -4,6 +4,11 @@ export default {
     en: "Wind Speed",
     ru: "Скорость ветра",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Wind speed",
+    ru: "Скорость ветра",
+  },
   nameshort: {
     en: "Wind Speed",
     ru: "Скорость ветра",

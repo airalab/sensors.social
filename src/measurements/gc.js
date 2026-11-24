@@ -6,6 +6,11 @@ export default {
     en: "Background radiation",
     ru: "Радиационный фон",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Radiation",
+    ru: "Радиация",
+  },
   nameshort: {
     en: "Radiation",
     ru: "Радиация",

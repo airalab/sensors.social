@@ -6,6 +6,11 @@ export default {
     en: "Atmospheric pressure",
     ru: "Атмосферное давление",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Pressure",
+    ru: "Давление",
+  },
   nameshort: {
     en: "Pressure",
     ru: "Давление",

@@ -4,6 +4,11 @@ export default {
     en: "Ozone",
     ru: "Озон",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Ozone O₃",
+    ru: "Озон O₃",
+  },
   nameshort: {
     en: "O₃",
     ru: "O₃",

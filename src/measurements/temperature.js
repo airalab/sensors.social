@@ -6,6 +6,11 @@ export default {
     en: "Temperature",
     ru: "Температура",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Temperature",
+    ru: "Температура",
+  },
   nameshort: {
     en: "Temperature",
     ru: "Температура",

@@ -6,6 +6,11 @@ export default {
     en: "Humidity",
     ru: "Влажность",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Humidity",
+    ru: "Влажность",
+  },
   nameshort: {
     en: "Humidity",
     ru: "Влажность",

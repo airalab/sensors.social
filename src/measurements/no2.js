@@ -4,6 +4,11 @@ export default {
     en: "Nitrogen Dioxide",
     ru: "Диоксид азота",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Exhaust NO₂",
+    ru: "Выхлопы NO₂",
+  },
   nameshort: {
     en: "NO₂",
     ru: "NO₂",

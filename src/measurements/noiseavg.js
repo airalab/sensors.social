@@ -6,6 +6,11 @@ export default {
     en: "Average noise (Leq)",
     ru: "Средний уровень шума (Leq)",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Noise, average",
+    ru: "Шум, средний",
+  },
   nameshort: {
     en: "Noise Avg.",
     ru: "Шум Средн.",

@@ -4,6 +4,11 @@ export default {
     en: "Dew point",
     ru: "Точка росы",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Dew point",
+    ru: "Точка росы",
+  },
   nameshort: {
     en: "Dew point",
     ru: "Точка росы",

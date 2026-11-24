@@ -6,6 +6,11 @@ export default {
     en: "Particulate matter with diameter ≤ 10 µm (PM10)",
     ru: "Взвешенные частицы диаметром до 10 мкм (PM10)",
   },
+  // Map layer picker: what the reader looks for, then the usual symbol
+  mapName: {
+    en: "Dust PM10",
+    ru: "Пыль PM10",
+  },
   nameshort: {
     en: "PM10",
     ru: "PM10",
