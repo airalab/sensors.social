@@ -12,11 +12,11 @@
       <div class="panel-list__text">
         <b class="panel-list__title">
           <template v-if="isDemo">{{ sensorTypeTitle(activeRow.type) }}</template>
-          <template v-else>Sensor ({{ sensorTypeTitle(activeRow.type) }})</template>
+          <template v-else>{{ rowTitle(activeRow) }}</template>
         </b>
         <span class="panel-list__meta">
           <template v-if="isDemo">{{ t("sensorpopup.demo_live") }}</template>
-          <template v-else>{{ sensorName(activeRow.sensorId) }}</template>
+          <template v-else>{{ rowMeta(activeRow) }}</template>
         </span>
       </div>
 
@@ -44,9 +44,9 @@
             </div>
 
             <div class="panel-list__text">
-              <span class="panel-list__title">Sensor ({{ sensorTypeTitle(row.type) }})</span>
+              <span class="panel-list__title">{{ rowTitle(row) }}</span>
               <span class="panel-list__meta">
-                <template v-if="row.sensorId">{{ sensorName(row.sensorId) }}</template>
+                <template v-if="row.sensorId">{{ rowMeta(row) }}</template>
                 <template v-else>{{ t("sensor_picker_not_found") }}</template>
               </span>
             </div>
@@ -66,6 +66,7 @@
 
 <script setup>
 import { sensorName } from "@/utils/addressNames";
+import { sensorPin } from "@/utils/sensorPins";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
@@ -103,6 +104,15 @@ const activeRow = computed(() => {
     state: sensorId ? "active" : "missing",
   };
 });
+
+/** A government station reads "Government station" over "<station> · <network>"; a sensor, "Sensor (<type>)". */
+const govPin = (row) => (row.type === "gov" ? sensorPin(row.sensorId) : null);
+const rowTitle = (row) =>
+  govPin(row) ? sensorTypeTitle("gov") : `Sensor (${sensorTypeTitle(row.type)})`;
+const rowMeta = (row) => {
+  const pin = govPin(row);
+  return pin ? [pin.station, pin.network].filter(Boolean).join(" · ") : sensorName(row.sensorId);
+};
 
 const onSelect = (row) => {
   if (row.state !== "available" || !row.sensorId) return;
