@@ -18,6 +18,16 @@ import { pinned_sensors, settings } from "@config";
 const govStations = reactive({}); // station id -> { name, network, operator, publisher, link }
 let govListLoading = null;
 
+/** A publisher's link as RoSeMAN gives it, kept only if it is http(s): it ends up in an href. */
+function webLink(raw) {
+  try {
+    const url = new URL(String(raw || ""));
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
 function loadGovStations() {
   if (govListLoading || !settings.REMOTE_PROVIDER || !settings.GOV_STATIONS) return;
   govListLoading = fetch(`${settings.REMOTE_PROVIDER}api/v2/gov/stations?brief=1`)
@@ -30,7 +40,7 @@ function loadGovStations() {
             network: source.network || source.publisher || "",
             operator: st.operator || "",
             publisher: source.publisher || "",
-            link: source.url || "",
+            link: webLink(source.url),
           };
         }
       }
