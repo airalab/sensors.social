@@ -3,6 +3,8 @@ export default {
   "layer.aod": "Dust & smoke",
   "layer.aodHint": "Dust and wildfire smoke over the whole air column: satellites + CAMS model",
   "layer.aodUnavailable": "Dust and smoke layer covers only the last few days",
+  "layer.gov": "Gov. stations",
+  "layer.govHint": "Government air quality stations, shown close in for the areas you switch on",
   "layer.fires": "Fires",
   "layer.firesHint": "Fires and burning seen by VIIRS satellites — smoke can raise PM downwind",
   "layer.firesUnavailable": "Fires layer starts in July 2025",

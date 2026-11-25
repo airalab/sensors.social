@@ -5,10 +5,12 @@ import {
   areaMarkers,
   areasInView,
   feedsConfig,
+  feedsLayer,
   loadCatalog,
   markerToSensorRow,
   rankForPrompt,
   setAreaChoice,
+  setFeedsLayer,
 } from "@/utils/map/feeds";
 import { registerFeedStations } from "@/utils/sensorPins";
 
@@ -31,7 +33,8 @@ export function useFeeds(mapState, sensorsUI) {
   let shown = new Set();
   const cache = new Map();
 
-  const enabled = () => !!feedsConfig && mapState.currentProvider.value === "remote";
+  const enabled = () =>
+    !!feedsConfig && feedsLayer.value !== false && mapState.currentProvider.value === "remote";
 
   function window() {
     const { start, end } = timelineFetchBounds(
@@ -64,7 +67,10 @@ export function useFeeds(mapState, sensorsUI) {
   /** Called on every settled pan/zoom with the Leaflet map. */
   async function onView(map) {
     lastMap = map;
-    if (!enabled()) return;
+    if (!enabled()) {
+      prompt.value = null;
+      return;
+    }
     if (map.getZoom() < feedsConfig.minZoom) {
       prompt.value = null;
       if (shown.size) {
@@ -93,6 +99,7 @@ export function useFeeds(mapState, sensorsUI) {
     const area = prompt.value;
     if (!area) return;
     setAreaChoice(area.id, "on");
+    setFeedsLayer(true);
     prompt.value = null;
     void show(area);
     if (lastMap) void onView(lastMap);
@@ -111,6 +118,17 @@ export function useFeeds(mapState, sensorsUI) {
     if (prompt.value) skippedThisVisit.add(prompt.value.id);
     prompt.value = null;
   }
+
+  // The footer toggle: off hides every government station at once, on brings the chosen areas back
+  watch(feedsLayer, (on) => {
+    if (on === false) {
+      prompt.value = null;
+      sensorsUI.dropFeedRows();
+      shown = new Set();
+    } else if (lastMap) {
+      void onView(lastMap);
+    }
+  });
 
   // A reload of the sensor list (new date, provider) drops feed rows: draw the shown areas again.
   watch(
