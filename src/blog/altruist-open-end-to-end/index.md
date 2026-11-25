@@ -95,7 +95,7 @@ The site you are reading this on is open too.
 
 ![The sensors.social repository, AGPL-3.0](./images/map_repo.webp)
 
-*[airalab/sensors.social](https://github.com/airalab/sensors.social), AGPL-3.0.*
+*[PinoutLimited/sensors.social](https://github.com/PinoutLimited/sensors.social), AGPL-3.0.*
 
 ## Why it matters
 

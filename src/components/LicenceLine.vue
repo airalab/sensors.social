@@ -10,7 +10,7 @@
     >
     · {{ $t("Code") }}:
     <a
-      href="https://github.com/airalab/sensors.social/blob/master/NOTICE"
+      href="https://github.com/PinoutLimited/sensors.social/blob/master/NOTICE"
       target="_blank"
       rel="noopener"
       >AGPL-3.0</a

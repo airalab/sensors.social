@@ -70,7 +70,7 @@
           <a
             v-for="repo in repos"
             :key="repo.name"
-            :href="`https://github.com/airalab/${repo.name}`"
+            :href="`https://github.com/${repo.owner || 'airalab'}/${repo.name}`"
             target="_blank"
             rel="noopener"
             >{{ $t(repo.label) }}</a
@@ -81,7 +81,7 @@
           <h2>{{ $t("footer.legal") }}</h2>
           <router-link to="/privacy-policy/">{{ $t("footer.privacy") }}</router-link>
           <a
-            href="https://github.com/airalab/sensors.social/blob/master/NOTICE"
+            href="https://github.com/PinoutLimited/sensors.social/blob/master/NOTICE"
             target="_blank"
             rel="noopener"
             >{{ $t("footer.licences") }}</a
@@ -91,6 +91,11 @@
 
       <div class="site-footer-bottom">
         <LicenceLine />
+        <p>
+          <i18n-t keypath="footer.maintainedBy" tag="span">
+            <a href="https://pinout.cloud" target="_blank" rel="noopener">Pinout Limited</a>
+          </i18n-t>
+        </p>
         <p>
           <a :href="releaseUrl" target="_blank" rel="noopener"
             >{{ $t("footer.version") }} {{ version }}</a
@@ -161,7 +166,7 @@ onMounted(() => {
 });
 
 const repos = [
-  { name: "sensors.social", label: "footer.repoMap" },
+  { name: "sensors.social", owner: "PinoutLimited", label: "footer.repoMap" },
   { name: "altruist-firmware", label: "footer.repoFirmware" },
   { name: "sensors-connectivity", label: "footer.repoConnectivity" },
   { name: "RoSeMAN", label: "footer.repoRoseman" },

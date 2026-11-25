@@ -466,6 +466,7 @@ export default {
   "footer.legal": "Правовое",
   "footer.privacy": "Конфиденциальность",
   "footer.licences": "Лицензии",
+  "footer.maintainedBy": "sensors.social поддерживает и развивает {0}, Кипр.",
   "footer.version": "Версия",
   "footer.androidApp": "Приложение для Android",
   "deviceinfo.eyebrow": "Комплект Altruist",

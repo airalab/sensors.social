@@ -454,6 +454,7 @@ export default {
   "footer.legal": "Legal",
   "footer.privacy": "Privacy",
   "footer.licences": "Licences",
+  "footer.maintainedBy": "sensors.social is maintained and developed by {0}, Cyprus.",
   "footer.version": "Version",
   "footer.androidApp": "Android app",
   "deviceinfo.eyebrow": "Altruist bundle",

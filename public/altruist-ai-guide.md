@@ -1118,7 +1118,7 @@ economically (`cps` pallet; RoSeMAN already indexes it).
 - Does not relay the live feed and has no websocket. The public instance still
   serves the Kusama-era history it indexed before 28 Sep 2026.
 
-**The map** [live] (`airalab/sensors.social`):
+**The map** [live] (`PinoutLimited/sensors.social`):
 - **Realtime** — a libp2p node in the browser subscribes to the topic above via
   `{1,2,3}.pubsub.sensors.social`, accepts messages only from known provider
   peers, and keeps what it hears in memory for the session (chart window: 1 hour).
@@ -1322,7 +1322,7 @@ https://sensors.social/support/
 - Webflasher (manual firmware flashing over USB-C, desktop Chrome/Edge only):
   https://webflasher.robonomics.network/
 - Source code: firmware https://github.com/airalab/altruist-firmware , map
-  https://github.com/airalab/sensors.social , hardware (KiCad, 3D, BOM)
+  https://github.com/PinoutLimited/sensors.social , hardware (KiCad, 3D, BOM)
   https://github.com/airalab/hardware
 - Network components (Section 15): connectivity provider
   https://github.com/airalab/sensors-connectivity , analytics service
