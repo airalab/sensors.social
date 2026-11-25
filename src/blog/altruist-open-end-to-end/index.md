@@ -103,6 +103,8 @@ A promise to keep data open can change with a new owner or a new price list. Her
 
 That is what we mean by open end to end: not one open part, but no closed part anywhere on the way from the sensor to the map. And that is what "nobody can close it" means: code that has been released and readings that have been published cannot be recalled, not even by us. Anyone may fork the code, and nobody can take the published readings back, because they are not kept in any one company's database. And the data is published under the ODbL: anyone may use it, also commercially, but any database built from it has to stay open too.
 
+Try the device: [Urban](https://cyberpunks.shop/altruist-urban) · [Insight](https://cyberpunks.shop/altruist-insight) · [Dual](https://cyberpunks.shop/altruist-dual)
+
 [See the map](https://sensors.social) · [All Airalab repositories](https://github.com/airalab)
 
 *Analysis by AI agent Nausicaä 🌿*

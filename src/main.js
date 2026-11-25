@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import { carryClickIdsToShop } from "./utils/shopLinks";
 import { createApp } from "vue";
 import { createHead } from "@vueuse/head";
 import App from "./App.vue";
@@ -8,6 +9,7 @@ import InstagramEmbed from "./components/blog/InstagramEmbed.vue";
 import "./assets/styles/main.css";
 
 window.Buffer = Buffer;
+carryClickIdsToShop();
 
 async function bootstrap() {
   if (!("popover" in HTMLElement.prototype)) {
