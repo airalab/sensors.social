@@ -38,6 +38,10 @@
     "since": "2025-07-08",
     "attribution": "NASA FIRMS / GIBS, VIIRS 375 m"
   },
+  "FEEDS": {
+    "minZoom": 8,
+    "icon": "/sensors/gov.png"
+  },
   "GOV_STATIONS": {
     "icon": "/sensors/gov.png"
   },
