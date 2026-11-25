@@ -6,11 +6,38 @@
  * An area is what a visitor switches on in one go: a national network (Belgium), or a region of a network
  * that spans several (a U.S. state). The answer is remembered per area in localStorage, "feeds.area.<id>".
  */
+import { ref } from "vue";
 import { settings } from "@config";
 
 const CHOICE_PREFIX = "feeds.area.";
+const LAYER_KEY = "feeds";
 
 export const feedsConfig = settings.FEEDS || null;
+
+function readLayer() {
+  try {
+    const v = localStorage.getItem(LAYER_KEY);
+    return v === "true" ? true : v === "false" ? false : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The footer toggle "Gov. stations" (like Fires): false = no government stations and no prompts; true = the
+ * areas switched on are shown and new ones are asked about; null = never touched (shown off, prompts on).
+ * "Show" in a prompt turns it on.
+ */
+export const feedsLayer = ref(readLayer());
+
+export function setFeedsLayer(on) {
+  feedsLayer.value = on;
+  try {
+    localStorage.setItem(LAYER_KEY, String(on));
+  } catch {
+    /* private mode: lasts this visit only */
+  }
+}
 
 function api() {
   return feedsConfig?.api || settings.REMOTE_PROVIDER;

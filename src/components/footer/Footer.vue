@@ -34,6 +34,16 @@
       />
 
       <ToggleButton
+        v-if="settings.FEEDS"
+        :model-value="feedsLayer === true"
+        @update:modelValue="setFeedsLayer"
+        icon-class="fa-solid fa-landmark"
+        class="feeds-toggle"
+        :label="$t('layer.gov')"
+        :title="$t('layer.govHint')"
+      />
+
+      <ToggleButton
         v-if="hasMessagesData"
         v-model="messages"
         :icon-class="messages ? 'fa-solid fa-comment' : 'fa-regular fa-comment'"
@@ -141,6 +151,16 @@
               />
 
               <ToggleButton
+                v-if="settings.FEEDS"
+                :model-value="feedsLayer === true"
+                @update:modelValue="setFeedsLayer"
+                icon-class="fa-solid fa-landmark"
+                class="feeds-toggle"
+                :label="$t('layer.gov')"
+                :title="$t('layer.govHint')"
+              />
+
+              <ToggleButton
                 v-if="hasMessagesData"
                 v-model="messages"
                 :icon-class="messages ? 'fa-solid fa-comment' : 'fa-regular fa-comment'"
@@ -221,6 +241,7 @@ import { resolveMapColorScheme } from "../../utils/map/themeScheme";
 import { initWindLayer, switchWindLayer, destroyWindLayer } from "../../utils/map/wind";
 import { switchAodLayer, isAodAvailable } from "../../utils/map/aod";
 import { switchFiresLayer, isFiresAvailable } from "../../utils/map/fires";
+import { feedsLayer, setFeedsLayer } from "../../utils/map/feeds";
 import measurements from "../../measurements";
 import { sortMapLayerUnits } from "../../measurements/tools";
 // import { getTypeProvider } from "../../utils/utils"; // deprecated
