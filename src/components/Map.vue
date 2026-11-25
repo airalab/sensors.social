@@ -38,7 +38,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["clickMarker", "clickMessage"]);
+const emit = defineEmits(["clickMarker", "clickMessage", "viewChange"]);
 
 // Ref для Footer компонента
 const footerRef = ref(null);
@@ -251,6 +251,7 @@ const onMapMove = (e) => {
   };
 
   mapState.setMapSettings(route, router, settings);
+  emit("viewChange", e.target);
 };
 
 // Настраивает обработчики событий карты (зум, перемещение)
@@ -309,6 +310,8 @@ const loadMap = async () => {
 
   setupMapEventHandlers();
   await initializeMapComponents();
+  // the first view counts too: a link straight into Belgium asks about Belgium
+  emit("viewChange", toRaw(map.value));
 };
 
 // Watchers

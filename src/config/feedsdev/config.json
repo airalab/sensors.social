@@ -1,0 +1,7 @@
+{
+  "FEEDS": {
+    "api": "http://localhost:3200/",
+    "minZoom": 8,
+    "icon": "/sensors/gov.png"
+  }
+}

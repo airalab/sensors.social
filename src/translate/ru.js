@@ -975,4 +975,9 @@ export default {
   "chart.humidityOffText": "Это сырые показания датчика. В таком влажном воздухе он считает и воду, которую впитали частицы.",
   "chart.humidityShowRaw": "Показать сырые данные",
   "chart.humidityShowCorrected": "Показать с поправкой на влажность",
+  "feeds.title": "Государственные станции качества воздуха",
+  "feeds.offer": "{place}: станций сети {network} — {count}. Показать их на карте рядом с датчиками?",
+  "feeds.show": "Показать",
+  "feeds.hide": "Не показывать",
+  "feeds.later": "Спросить позже",
 };

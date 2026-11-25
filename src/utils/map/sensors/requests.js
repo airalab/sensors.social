@@ -6,6 +6,8 @@ import { dayISO, dayBoundsUnix, timelineFetchBounds } from "../../date";
 import { mapLayerUnitIds, sortMapLayerUnits } from "../../../measurements/tools";
 import { settings, excluded_sensors } from "@config";
 import { decryptMeasurementBag } from "@/utils/sensorValueCrypto";
+import { feedStation } from "@/utils/sensorPins";
+import { stationHistoryAsSensorPayload } from "../feeds";
 
 // Глобальные константы провайдеров
 const REMOTE_PROVIDER = new Provider(settings.REMOTE_PROVIDER);
@@ -87,10 +89,14 @@ async function fetchSensorV2Payload(sensorId, startTimestamp, endTimestamp, sign
     return sensorV2Inflight.get(key);
   }
 
-  const promise = fetchJson(
-    `${settings.REMOTE_PROVIDER}api/v2/sensor/${sid}/${startTimestamp}/${endTimestamp}`,
-    { cache: "no-store", signal }
-  )
+  const feed = feedStation(sid);
+  const request = feed
+    ? stationHistoryAsSensorPayload(sid, startTimestamp, endTimestamp, feed.geo)
+    : fetchJson(`${settings.REMOTE_PROVIDER}api/v2/sensor/${sid}/${startTimestamp}/${endTimestamp}`, {
+        cache: "no-store",
+        signal,
+      });
+  const promise = request
     .then((payload) => {
       sensorV2Recent.set(key, { payload, ts: Date.now() });
       return payload;
@@ -475,6 +481,8 @@ function isMaxDataMemoryValid(cached, isoDate, dayStart) {
 
 function applyMaxValuesToSensors(sensors, unit, maxValues) {
   return sensors.map((sensor) => {
+    // feed stations bring their own maxima for every quantity (utils/map/feeds)
+    if (sensor.feed) return sensor;
     const entry = maxValues?.[sensor.sensor_id];
     const value = entry ? (entry.value ?? null) : null;
     return {
@@ -859,7 +867,13 @@ export async function getSensors(start, end, provider = "remote", cacheContext =
     ? await loadMarkersListRaw(start, end, cacheContext.isoDate, cacheContext.timelineMode)
     : await REMOTE_PROVIDER.getSensorsForPeriod(start, end);
 
-  return markerRowsFromSensorData(historyData);
+  // With feeds, government stations come only from api/v2/feeds, area by area at the visitor's choice; a
+  // RoSeMAN that still copies them into the sensor markers (GOV_STATIONS_LEGACY_PROJECTION) is ignored.
+  const ownSensors = settings.FEEDS
+    ? (historyData || []).filter((row) => row?.device_model !== "gov")
+    : historyData;
+
+  return markerRowsFromSensorData(ownSensors);
 }
 
 /**

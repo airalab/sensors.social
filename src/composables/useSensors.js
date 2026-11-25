@@ -112,6 +112,9 @@ const ownerPromises = new Map();
 const sensors = ref([]);
 const sensorsNoLocation = ref([]);
 const sensorsLoaded = ref(false);
+/** Rows of the feed areas a visitor switched on (useFeeds), by area id. */
+const feedRowsByArea = new Map();
+const withFeedRows = (list) => [...list.filter((s) => !s.feed), ...[...feedRowsByArea.values()].flat()];
 const logsProgress = ref(createDefaultLogsProgress());
 const sensorPoint = ref(null);
 const recentlyClosed = ref({ id: null, until: 0 });
@@ -2369,8 +2372,28 @@ export function useSensors() {
 
   // Local sensor list setters
   const setSensors = (sensorsArr) => {
-    sensors.value = Array.isArray(sensorsArr) ? sensorsArr : [];
+    sensors.value = withFeedRows(Array.isArray(sensorsArr) ? sensorsArr : []);
     sensorsLoaded.value = true;
+  };
+
+  /**
+   * Government stations of one feed area (utils/map/feeds) in the sensor list, replacing that area's
+   * previous rows, then a repaint. Kept apart and appended on every setSensors: a list computed from an
+   * older snapshot (maxdata arriving after a feed area) must not wipe them.
+   */
+  const mergeFeedRows = (areaId, rows) => {
+    feedRowsByArea.set(areaId, rows);
+    sensors.value = withFeedRows(sensors.value);
+    updateSensorMarkers(true, { force: true });
+  };
+
+  /** Removes feed rows (all, or those of the given areas) and repaints if any were there. */
+  const dropFeedRows = (areaIds = null) => {
+    const before = feedRowsByArea.size;
+    for (const id of areaIds || [...feedRowsByArea.keys()]) feedRowsByArea.delete(id);
+    if (feedRowsByArea.size === before) return;
+    sensors.value = withFeedRows(sensors.value);
+    updateSensorMarkers(true, { force: true });
   };
 
   const setSensorsNoLocation = (sensorsArr) => {
@@ -2564,6 +2587,8 @@ export function useSensors() {
   }
 
   return {
+    mergeFeedRows,
+    dropFeedRows,
     // State
     sensorPoint,
     sensors,

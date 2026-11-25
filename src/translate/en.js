@@ -957,4 +957,9 @@ export default {
   "chart.humidityOffText": "These are the sensor's raw readings. In air that humid it also counts the water the particles soak up.",
   "chart.humidityShowRaw": "Show raw readings",
   "chart.humidityShowCorrected": "Show corrected for humidity",
+  "feeds.title": "Government air quality stations",
+  "feeds.offer": "{place}: {count} stations of {network}. Show them on the map next to the sensors?",
+  "feeds.show": "Show",
+  "feeds.hide": "Don't show",
+  "feeds.later": "Ask later",
 };

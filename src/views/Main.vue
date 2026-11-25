@@ -28,6 +28,14 @@
     :mapRef="mapRef"
     @clickMarker="handleSensorClick"
     @clickMessage="handleMessageClick"
+    @viewChange="feeds.onView"
+  />
+
+  <FeedsPrompt
+    :area="feeds.prompt.value"
+    @accept="feeds.accept"
+    @decline="feeds.decline"
+    @later="feeds.later"
   />
 
   <SiteFooter on-map />
@@ -45,6 +53,7 @@ import { useAccounts } from "@/composables/useAccounts";
 import Header from "../components/header/Header.vue";
 import Stories from "../components/header/Stories.vue";
 import Map from "../components/Map.vue";
+import FeedsPrompt from "../components/FeedsPrompt.vue";
 import Sensor from "../components/sensor/Index.vue";
 import MessagePopup from "../components/message/Index.vue";
 import MetaInfo from "../components/MetaInfo.vue";
@@ -65,6 +74,7 @@ import { hasValidCoordinates } from "../utils/utils";
 import { getDefaultMapView, getMapAddressZoom } from "@/utils/map/defaultView";
 import { useSensors, redecryptDataBag, resolveOwnerAccount } from "../composables/useSensors";
 import { useMessages } from "../composables/useMessages";
+import { useFeeds } from "../composables/useFeeds";
 import { useSensorPageMeta, SENSOR_PAGE_META_KEY } from "../composables/useSensorPageMeta";
 import { LOG_GEO_ADDRESSES_KEY } from "../composables/useLogGeoAddresses";
 import { dayISO, getPeriodBounds } from "@/utils/date";
@@ -102,6 +112,8 @@ const {
   loadSensors,
   commitPopupShell,
 } = sensorsUI;
+
+const feeds = useFeeds(mapState, sensorsUI);
 
 const messagesUI = useMessages(localeComputed);
 const { isMessage, messageData, messageGeo, closeMessage, messages, setActiveMessage } =
