@@ -52,7 +52,7 @@
     "dotenv": "^17.2.1",
     "events": "^3.3.0",
     "fast-glob": "^3.3.3",
-    "highcharts": "^11.4.3",
+    "highcharts": "^11.4.9",
     "highcharts-vue": "^2.0.1",
     "js-file-download": "^0.4.12",
     "js-queue": "^2.0.2",
