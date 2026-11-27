@@ -64,7 +64,9 @@
                 class="sensor-chip"
                 :to="getSensorLink(sensor)"
               >
-                {{ sensor }}
+                <span :title="displayAddress(sensor)">
+                  {{ sensorName(sensor) }} · {{ formatAddress(sensor) }}
+                </span>
               </router-link>
             </div>
           </div>
@@ -86,7 +88,8 @@
 </template>
 
 <script setup>
-import { ownerName } from "@/utils/addressNames";
+import { ownerName, sensorName } from "@/utils/addressNames";
+import { displayAddress, formatAddress } from "@/utils/ss58Display";
 import { ref, onMounted, watch } from "vue";
 import { useAccounts } from "@/composables/useAccounts";
 import config from "@/config/default/config.json";
@@ -151,7 +154,7 @@ function getSensorLink(sensor) {
     query: {
       provider: "remote", // Default provider for login redirect
       type: config.MAP.measure,
-      sensor: sensor,
+      sensor: displayAddress(sensor) || sensor,
     },
   };
 }

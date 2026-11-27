@@ -9,6 +9,7 @@ import {
   hasSensorOwner,
   sensorTypeFromDeviceModel,
 } from "../utils/map/sensors/requests";
+import { sensorIdsEqual } from "../utils/sensorId";
 
 import { sensorPin } from "@/utils/sensorPins";
 import diyPrototypeIcon from "@/assets/images/altruist-device/altruist-diy-prototype.webp";
@@ -38,17 +39,22 @@ export function resolveSensorType(point, logOverride = null) {
 
   const sid = String(point.sensor_id || "");
   const fromBundle = Array.isArray(point.ownerSensorsWithData)
-    ? point.ownerSensorsWithData.find((o) => String(o?.id || o?.sensor_id || "") === sid)?.type
+    ? point.ownerSensorsWithData.find((o) =>
+        sensorIdsEqual(o?.id || o?.sensor_id, sid)
+      )?.type
     : null;
   if (fromBundle) return fromBundle;
 
   if (sid) {
     const meta = getCachedSensorMeta(sid);
     if (meta) {
-      const entry = listBundleSensorEntries(meta).find((e) => String(e.sensor_id) === sid);
+      const entry = listBundleSensorEntries(meta).find((e) => sensorIdsEqual(e.sensor_id, sid));
       const fromMeta = sensorTypeFromDeviceModel(entry?.device_model);
       if (fromMeta) return fromMeta;
-      const fromMetaLog = inferDeviceTypeFromLog(meta?.data?.[sid]);
+      const fromMetaLog = inferDeviceTypeFromLog(
+        meta?.data?.[sid] ||
+          Object.entries(meta?.data || {}).find(([key]) => sensorIdsEqual(key, sid))?.[1]
+      );
       if (fromMetaLog) return fromMetaLog;
     }
   }
@@ -57,14 +63,6 @@ export function resolveSensorType(point, logOverride = null) {
   if (cached && cached !== "altruist") return cached;
 
   return "altruist";
-}
-
-/** Short id for picker label: `4Hq6vZ…YUrZV`. */
-export function formatSensorIdShort(id) {
-  const s = String(id || "");
-  if (!s) return "";
-  if (s.length <= 14) return s;
-  return `${s.slice(0, 6)}…${s.slice(-6)}`;
 }
 
 export function isSensorAddressReady(address) {
@@ -88,7 +86,7 @@ export function isPanelSensorPickerReady(point) {
 }
 
 /** Owner block: resolved (owner known or confirmed DIY / government station without owner). */
-export function isPanelOwnerResolved(point) {
+function isPanelOwnerResolved(point) {
   if (point?.idbSensorType === "diy") return true;
   if (resolveSensorType(point) === "gov") return true;
   if (hasSensorOwner(point)) return true;
@@ -101,20 +99,6 @@ export function isPanelOwnerLoading(point) {
   if (resolveSensorType(point) === "gov") return false;
   if (hasSensorOwner(point)) return false;
   return !isPanelOwnerResolved(point);
-}
-
-/** Chart / timeline: logs still loading. */
-export function isSensorLogsLoading(point, log, { provider, timelineMode } = {}) {
-  if (!Array.isArray(log)) return true;
-  if (
-    provider === "realtime" &&
-    timelineMode === "realtime" &&
-    !point?._logsKey &&
-    log.length === 0
-  ) {
-    return true;
-  }
-  return false;
 }
 
 /** Human-readable label for sensor picker and page meta. */

@@ -15,7 +15,7 @@ export default {
     en: "Noise Max.",
     ru: "Шум Макс.",
   },
-  unit: "dB",
+  unit: "dBA",
 
   zones: [
     {

@@ -1,3 +1,4 @@
+import { chacha20poly1305, xchacha20poly1305 } from "@noble/ciphers/chacha.js";
 import { x25519 } from "@noble/curves/ed25519";
 import { hkdf } from "@noble/hashes/hkdf";
 import { sha256 } from "@noble/hashes/sha256";
@@ -7,18 +8,74 @@ import bs58 from "bs58";
 import { cryptoWaitReady, decodeAddress, mnemonicToMiniSecret } from "@polkadot/util-crypto";
 import { getOwnerEd25519Seed } from "@/composables/useAccounts";
 import { MEASUREMENT_GROUPS } from "../measurements/groups";
+import { pressureToMmHg } from "./pressureMmHg.js";
 
 const ENCRYPTED_PREFIX = "e.";
+const PROTO_PLACEHOLDER = "e.proto";
 const HKDF_SALT = "robonomics-network";
-const HKDF_INFO = "aesgcm256";
-const PASCAL_TO_MMHG = 133.32;
-
-const FIELD_PASCAL_THRESHOLD = 3000;
+const HKDF_INFO_AES = "aesgcm256";
+const HKDF_INFO_XCHACHA = "xchacha20poly1305";
+const HKDF_INFO_CHACHA = "chacha20poly1305";
 
 const P = (1n << 255n) - 19n;
 
+export function isEncryptedPlaceholderValue(value) {
+  return typeof value === "string" && value.trim().toLowerCase() === PROTO_PLACEHOLDER;
+}
+
+/** JSON `e.<ciphertext>` only — not the proto `e.proto` placeholder (nothing to decrypt). */
 export function isEncryptedSensorValue(value) {
-  return typeof value === "string" && value.startsWith(ENCRYPTED_PREFIX);
+  if (typeof value !== "string" || !value.startsWith(ENCRYPTED_PREFIX)) return false;
+  if (isEncryptedPlaceholderValue(value)) return false;
+  return value.length > ENCRYPTED_PREFIX.length;
+}
+
+/** Chart/overlay: ciphertext or sealed placeholder. */
+export function isSealedSensorValue(value) {
+  return isEncryptedSensorValue(value) || isEncryptedPlaceholderValue(value);
+}
+
+/** Uint8Array from proto, IndexedDB, JSON `{0:n,…}`, or hex/SS58. */
+export function coerceBytes(value) {
+  if (value == null) return null;
+  if (value instanceof Uint8Array) return Uint8Array.from(value);
+  if (value instanceof ArrayBuffer) return new Uint8Array(value);
+  if (ArrayBuffer.isView(value)) {
+    return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+  }
+  if (Array.isArray(value)) {
+    return Uint8Array.from(value.map((n) => Number(n) & 0xff));
+  }
+  if (typeof value === "string") {
+    const text = value.trim();
+    if (!text) return null;
+    if (/^[0-9a-fA-F]+$/.test(text) && text.length % 2 === 0 && text.length >= 24) {
+      const out = new Uint8Array(text.length / 2);
+      for (let i = 0; i < out.length; i += 1) {
+        out[i] = parseInt(text.slice(i * 2, i * 2 + 2), 16);
+      }
+      return out;
+    }
+    return null;
+  }
+  if (typeof value === "object") {
+    const len = Number(value.length);
+    if (Number.isFinite(len) && len > 0) {
+      const out = new Uint8Array(len);
+      for (let i = 0; i < len; i += 1) out[i] = Number(value[i]) & 0xff;
+      return out;
+    }
+    const keys = Object.keys(value)
+      .filter((k) => /^\d+$/.test(k))
+      .map(Number)
+      .sort((a, b) => a - b);
+    if (keys.length > 0 && keys[0] === 0 && keys[keys.length - 1] === keys.length - 1) {
+      const out = new Uint8Array(keys.length);
+      for (let i = 0; i < keys.length; i += 1) out[i] = Number(value[i]) & 0xff;
+      return out;
+    }
+  }
+  return null;
 }
 
 function hasEncryptedFields(measurement) {
@@ -90,18 +147,102 @@ function ed25519SeedToX25519Scalar(seed) {
   return scalar;
 }
 
-function deriveSharedSecret(ownerSeed, deviceEdPk) {
-  const scalar = ed25519SeedToX25519Scalar(ownerSeed);
-  const theirX = ed25519PublicToX25519(deviceEdPk);
-  return x25519.getSharedSecret(scalar, theirX);
+function bytesKey(bytes) {
+  let out = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    out += bytes[i].toString(16).padStart(2, "0");
+  }
+  return out;
 }
 
-function hkdfAesGcmKey(shared) {
-  return hkdf(sha256, shared, HKDF_SALT, HKDF_INFO, 32);
+const sharedSecretCache = new Map();
+const aesCryptoKeyCache = new Map();
+const devicePkCache = new Map();
+
+function deriveSharedSecret(ownerSeed, deviceEdPk) {
+  const cacheKey = `${bytesKey(ownerSeed)}:${bytesKey(deviceEdPk)}`;
+  const cached = sharedSecretCache.get(cacheKey);
+  if (cached) return cached;
+  const scalar = ed25519SeedToX25519Scalar(ownerSeed);
+  const theirX = ed25519PublicToX25519(deviceEdPk);
+  const secret = x25519.getSharedSecret(scalar, theirX);
+  sharedSecretCache.set(cacheKey, secret);
+  return secret;
+}
+
+function hkdfKey(shared, info) {
+  return hkdf(sha256, shared, HKDF_SALT, info, 32);
+}
+
+function normalizeCipherName(algorithm) {
+  return String(algorithm || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function decryptWithXchacha(shared, nonce, ciphertext) {
+  if (nonce.length !== 24 || ciphertext.length <= 16) return null;
+  try {
+    return xchacha20poly1305(hkdfKey(shared, HKDF_INFO_XCHACHA), nonce).decrypt(ciphertext);
+  } catch {
+    return null;
+  }
+}
+
+function decryptWithChaCha(shared, nonce, ciphertext) {
+  if (nonce.length !== 12 || ciphertext.length <= 16) return null;
+  try {
+    return chacha20poly1305(hkdfKey(shared, HKDF_INFO_CHACHA), nonce).decrypt(ciphertext);
+  } catch {
+    return null;
+  }
+}
+
+async function decryptWithAesGcm(shared, nonce, ciphertext) {
+  if (nonce.length < 8 || ciphertext.length <= 16) return null;
+  try {
+    const key = await importAesGcmKey(hkdfKey(shared, HKDF_INFO_AES));
+    const plain = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: nonce },
+      key,
+      ciphertext
+    );
+    return new Uint8Array(plain);
+  } catch {
+    return null;
+  }
+}
+
+/** CPS / connectivity-protocol: default cipher is xchacha20, firmware JSON is aesgcm256. */
+async function decryptSharedSecret(shared, nonce, ciphertext, algorithm) {
+  const algo = normalizeCipherName(algorithm);
+  const order = [];
+  if (algo.includes("xchacha") || nonce.length === 24) order.push("xchacha");
+  else if (algo === "chacha20" || algo === "chacha20poly1305") order.push("chacha");
+  else if (algo.includes("aesgcm") || nonce.length === 12) order.push("aes");
+  else order.push("xchacha", "aes", "chacha");
+  for (const name of ["xchacha", "aes", "chacha"]) {
+    if (!order.includes(name)) order.push(name);
+  }
+
+  for (const name of order) {
+    let plain = null;
+    if (name === "xchacha") plain = decryptWithXchacha(shared, nonce, ciphertext);
+    else if (name === "aes") plain = await decryptWithAesGcm(shared, nonce, ciphertext);
+    else plain = decryptWithChaCha(shared, nonce, ciphertext);
+    if (plain) return plain;
+  }
+  return null;
 }
 
 async function importAesGcmKey(rawKey) {
-  return crypto.subtle.importKey("raw", rawKey, { name: "AES-GCM" }, false, ["decrypt"]);
+  const id = bytesKey(rawKey);
+  const cached = aesCryptoKeyCache.get(id);
+  if (cached) return cached;
+  const key = await crypto.subtle.importKey("raw", rawKey, { name: "AES-GCM" }, false, ["decrypt"]);
+  aesCryptoKeyCache.set(id, key);
+  return key;
 }
 
 function parseCpsPayload(wire) {
@@ -110,7 +251,7 @@ function parseCpsPayload(wire) {
     const text = new TextDecoder().decode(raw);
     if (!text.startsWith("{")) return null;
     const json = JSON.parse(text);
-    if (json?.version !== 1 || json?.algorithm !== "aesgcm256") return null;
+    if (json?.version !== 1 || !json?.algorithm) return null;
     return json;
   } catch {
     return null;
@@ -120,20 +261,25 @@ function parseCpsPayload(wire) {
 async function resolveDevicePublicKey(fromField) {
   const raw = String(fromField || "").trim();
   if (!raw) return null;
+  if (devicePkCache.has(raw)) return devicePkCache.get(raw);
   await cryptoWaitReady();
+  let pk = null;
   try {
-    const pk = decodeAddress(raw, false, 32);
-    if (pk instanceof Uint8Array && pk.length === 32) return pk;
+    const decoded = decodeAddress(raw, false, 32);
+    if (decoded instanceof Uint8Array && decoded.length === 32) pk = decoded;
   } catch {
     // legacy raw base58 pubkey in `from`
   }
-  try {
-    const pk = bs58.decode(raw);
-    if (pk.length === 32) return pk;
-  } catch {
-    return null;
+  if (!pk) {
+    try {
+      const decoded = bs58.decode(raw);
+      if (decoded.length === 32) pk = decoded;
+    } catch {
+      pk = null;
+    }
   }
-  return null;
+  devicePkCache.set(raw, pk);
+  return pk;
 }
 
 async function decryptCpsValue(wire, ownerSeed) {
@@ -144,17 +290,10 @@ async function decryptCpsValue(wire, ownerSeed) {
   if (!devicePk) return null;
 
   const shared = deriveSharedSecret(ownerSeed, devicePk);
-  const aesKey = hkdfAesGcmKey(shared);
   const nonce = base64ToBytes(json.nonce);
   const ciphertext = base64ToBytes(json.ciphertext);
-
-  try {
-    const key = await importAesGcmKey(aesKey);
-    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: nonce }, key, ciphertext);
-    return new TextDecoder().decode(new Uint8Array(plain));
-  } catch {
-    return null;
-  }
+  const plain = await decryptSharedSecret(shared, nonce, ciphertext, json.algorithm);
+  return plain ? new TextDecoder().decode(plain) : null;
 }
 
 function normalizeDecryptedField(fieldName, plain) {
@@ -162,9 +301,7 @@ function normalizeDecryptedField(fieldName, plain) {
   if (!Number.isFinite(num)) return plain;
 
   const field = String(fieldName || "").toLowerCase();
-  if (field === "pressure" && num >= FIELD_PASCAL_THRESHOLD) {
-    return num / PASCAL_TO_MMHG;
-  }
+  if (field === "pressure") return pressureToMmHg(num);
   return num;
 }
 
@@ -173,30 +310,87 @@ async function decryptSensorValue(wire, ownerSeed) {
   return decryptCpsValue(wire, ownerSeed);
 }
 
+const ownerSeedByAccount = new WeakMap();
+const ownerSeedByAddress = new Map();
+
 async function resolveOwnerSeed(ownerAccount) {
   if (!ownerAccount || typeof ownerAccount !== "object") return null;
   if (ownerAccount.seed instanceof Uint8Array && ownerAccount.seed.length === 32) {
     return ownerAccount.seed;
   }
+  const fromObj = ownerSeedByAccount.get(ownerAccount);
+  if (fromObj) return fromObj;
+  const address = String(ownerAccount.address || "").trim();
+  if (address && ownerSeedByAddress.has(address)) {
+    return ownerSeedByAddress.get(address);
+  }
+
+  let seed = null;
   const seedHex = String(ownerAccount.seedHex || "").trim().replace(/^0x/i, "");
   if (/^[0-9a-fA-F]{64}$/.test(seedHex)) {
-    const out = new Uint8Array(32);
+    seed = new Uint8Array(32);
     for (let i = 0; i < 32; i += 1) {
-      out[i] = parseInt(seedHex.slice(i * 2, i * 2 + 2), 16);
+      seed[i] = parseInt(seedHex.slice(i * 2, i * 2 + 2), 16);
     }
-    return out;
-  }
-  const phrase = String(ownerAccount.phrase || "").trim();
-  if (phrase) {
-    await cryptoWaitReady();
-    const seed = mnemonicToMiniSecret(phrase);
-    if (seed instanceof Uint8Array && seed.length >= 32) {
-      return seed.slice(0, 32);
+  } else {
+    const phrase = String(ownerAccount.phrase || "").trim();
+    if (phrase) {
+      await cryptoWaitReady();
+      const fromMnemonic = mnemonicToMiniSecret(phrase);
+      if (fromMnemonic instanceof Uint8Array && fromMnemonic.length >= 32) {
+        seed = fromMnemonic.slice(0, 32);
+      }
     }
   }
-  const address = String(ownerAccount.address || "").trim();
-  if (!address) return null;
-  return getOwnerEd25519Seed(address);
+  if (!seed) {
+    if (!address) return null;
+    seed = await getOwnerEd25519Seed(address);
+  }
+  if (seed) {
+    ownerSeedByAccount.set(ownerAccount, seed);
+    if (address) ownerSeedByAddress.set(address, seed);
+  }
+  return seed;
+}
+
+async function publicKeyFromField(fromField) {
+  const bytes = coerceBytes(fromField);
+  if (bytes?.length === 32) return bytes;
+  if (bytes?.length > 32) {
+    try {
+      const asText = new TextDecoder().decode(bytes).replace(/\0+$/g, "").trim();
+      const fromSs58 = await resolveDevicePublicKey(asText);
+      if (fromSs58) return fromSs58;
+    } catch {
+      // not UTF-8 SS58 in bytes
+    }
+  }
+  return resolveDevicePublicKey(fromField);
+}
+
+/**
+ * Decrypt a proto `crypto.v1.Encrypted` blob.
+ * @returns {Promise<Uint8Array|null>} plaintext bytes or null
+ */
+export async function decryptCpsBinary({
+  from,
+  nonce,
+  ciphertext,
+  ownerAccount,
+  fallbackFrom,
+  algorithm,
+}) {
+  const ownerSeed = await resolveOwnerSeed(ownerAccount);
+  if (!ownerSeed) return null;
+
+  const devicePk =
+    (await publicKeyFromField(from)) || (await publicKeyFromField(fallbackFrom));
+  const nonceBytes = coerceBytes(nonce);
+  const cipherBytes = coerceBytes(ciphertext);
+  if (!devicePk || !nonceBytes || !cipherBytes) return null;
+
+  const shared = deriveSharedSecret(ownerSeed, devicePk);
+  return decryptSharedSecret(shared, nonceBytes, cipherBytes, algorithm);
 }
 
 /**
@@ -214,15 +408,15 @@ export async function decryptMeasurementBag(sensorId, measurement, ownerAccount)
   if (!ownerSeed) return measurement;
 
   const out = { ...measurement };
-  await Promise.all(
-    Object.entries(measurement).map(async ([field, value]) => {
-      if (!isEncryptedSensorValue(value)) return;
-      const plain = await decryptSensorValue(value, ownerSeed);
-      if (plain == null) return;
-      out[field] = normalizeDecryptedField(field, plain);
-    })
-  );
-  return out;
+  let changed = false;
+  for (const [field, value] of Object.entries(measurement)) {
+    if (!isEncryptedSensorValue(value)) continue;
+    const plain = await decryptSensorValue(value, ownerSeed);
+    if (plain == null) continue;
+    out[field] = normalizeDecryptedField(field, plain);
+    changed = true;
+  }
+  return changed ? out : measurement;
 }
 
 export function measurementBagHasEncryptedValues(measurement) {
@@ -251,11 +445,31 @@ function readBagValue(bag, memberId) {
 export function bagHasEncryptedForLegend(bag, legendKey) {
   if (!bag || !legendKey) return false;
   return legendMemberIds(legendKey).some((memberId) =>
-    isEncryptedSensorValue(readBagValue(bag, memberId))
+    isSealedSensorValue(readBagValue(bag, memberId))
   );
 }
 
 export function logHasEncryptedForLegend(log, legendKey) {
   if (!Array.isArray(log) || !legendKey) return false;
   return log.some((entry) => bagHasEncryptedForLegend(entry?.data, legendKey));
+}
+
+function isNumericSensorValue(value) {
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value === "string" && value.trim() && !isSealedSensorValue(value)) {
+    return Number.isFinite(Number(value));
+  }
+  return false;
+}
+
+export function bagHasNumericForLegend(bag, legendKey) {
+  if (!bag || !legendKey) return false;
+  return legendMemberIds(legendKey).some((memberId) =>
+    isNumericSensorValue(readBagValue(bag, memberId))
+  );
+}
+
+export function logHasNumericForLegend(log, legendKey) {
+  if (!Array.isArray(log) || !legendKey) return false;
+  return log.some((entry) => bagHasNumericForLegend(entry?.data, legendKey));
 }

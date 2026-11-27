@@ -70,6 +70,7 @@ import {
   pickOwnerClusterRepresentative,
   collectOwnerDeviceIds,
 } from "../utils/map/sensors/requests";
+import { sensorIdsEqual } from "../utils/sensorId";
 import { hasValidCoordinates } from "../utils/utils";
 import { getDefaultMapView, getMapAddressZoom } from "@/utils/map/defaultView";
 import { useSensors, redecryptDataBag, resolveOwnerAccount } from "../composables/useSensors";
@@ -143,15 +144,38 @@ useStructuredData([organization, website]);
 const sensorsList = () => (Array.isArray(sensors.value) ? sensors.value : []);
 
 /** Deep-link popup shell — geo/address come from readings API, not URL or stale map rows. */
-const pointFromSensorQuery = (sensorId, fullSensorData, query) =>
-  formatPointForSensor({
-    sensor_id: sensorId,
-    owner: fullSensorData?.owner ?? (query.owner ? String(query.owner) : null),
-    device_model: fullSensorData?.device_model ?? null,
-    model: fullSensorData?.model,
+const pointFromSensorQuery = (sensorId, fullSensorData, query) => {
+  const prev = sensorPoint.value;
+  const nextOwner =
+    fullSensorData?.owner ?? (query.owner ? String(query.owner) : null) ?? prev?.owner ?? null;
+  const sameOwner =
+    prev &&
+    nextOwner &&
+    String(prev.owner || "").trim() &&
+    String(prev.owner).trim() === String(nextOwner).trim();
+  const fromBundle = sameOwner
+    ? (Array.isArray(prev?.ownerSensorsWithData) ? prev.ownerSensorsWithData : []).find((entry) =>
+        sensorIdsEqual(entry?.id || entry?.sensor_id, sensorId)
+      )
+    : null;
+
+  return formatPointForSensor({
+    sensor_id: fullSensorData?.sensor_id || sensorId,
+    owner: nextOwner,
+    device_model:
+      fullSensorData?.device_model ||
+      fromBundle?.device_model ||
+      fromBundle?.type ||
+      null,
+    model: fullSensorData?.model ?? prev?.model,
     maxdata: fullSensorData?.maxdata,
     data: fullSensorData?.data,
+    geo: fullSensorData?.geo || (sameOwner ? prev?.geo : null),
+    ownerSensorsWithData: sameOwner ? prev?.ownerSensorsWithData : null,
+    ownerSensorIds: sameOwner ? prev?.ownerSensorIds : null,
+    sensors: fullSensorData?.sensors || (sameOwner ? prev?.sensors : null),
   });
+};
 
 /** Shell device for `?owner=` without `sensor=` — does not affect picker bundle (full list). */
 const pickOwnerShellSensorId = async (owner, lat, lng) => {
@@ -321,6 +345,9 @@ const onRealtimePoint = async (point) => {
             timestamp: ts,
             data: streamData,
             ...(hasValidCoordinates(point?.geo) ? { geo: point.geo } : null),
+            ...(Array.isArray(point.protoPrivate) && point.protoPrivate.length
+              ? { protoPrivate: point.protoPrivate }
+              : null),
           }
         : null;
     const nextLogs =
@@ -328,9 +355,7 @@ const onRealtimePoint = async (point) => {
         ? [...prevLogs, entry]
         : prevLogs;
 
-    const listOwner = sensorsList().find(
-      (s) => String(s?.sensor_id || "") === String(point.sensor_id)
-    );
+    const listOwner = sensorsList().find((s) => sensorIdsEqual(s?.sensor_id, point.sensor_id));
     const nextPopupOwner =
       normalizeOwnerKey(point) || normalizeOwnerKey(listOwner) || normalizeOwnerKey(prevPopup) || null;
     const bundlePoint = {
@@ -559,7 +584,9 @@ watch(
         const liveSensorId =
           route.query.sensor || ownerDefaultId || sensorPoint.value?.sensor_id;
         if (liveSensorId) {
-          const fullSensorData = sensorsList().find((s) => s.sensor_id === liveSensorId);
+          const fullSensorData = sensorsList().find((s) =>
+            sensorIdsEqual(s.sensor_id, liveSensorId)
+          );
           updateSensorPopup(pointFromSensorQuery(liveSensorId, fullSensorData, route.query));
         }
       });
@@ -570,7 +597,9 @@ watch(
     // Important: on hard refresh `providerChanged` is true (oldQuery undefined), but we still
     // must open the popup from URL in realtime mode.
     if (newQuery.sensor && (sensorChanged || !oldQuery)) {
-      const fullSensorData = sensorsList().find((s) => s.sensor_id === newQuery.sensor);
+      const fullSensorData = sensorsList().find((s) =>
+        sensorIdsEqual(s.sensor_id, newQuery.sensor)
+      );
       updateSensorPopup(pointFromSensorQuery(newQuery.sensor, fullSensorData, newQuery));
     }
 

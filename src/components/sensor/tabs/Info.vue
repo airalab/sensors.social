@@ -6,9 +6,9 @@
       <div class="infoline-info">
         <span class="info-name">
           <b>{{ sensorName(sensorId) }}</b>
-          <small>{{ collapsedSensorId }}</small>
+          <small :title="sensorSs58">{{ collapsedSensorId }}</small>
         </span>
-        <Copy :msg="sensorId" :title="`Copy ${sensorId}`" :notify="t('details.copied')" />
+        <Copy :msg="sensorSs58" :title="`Copy ${sensorSs58}`" :notify="t('details.copied')" />
       </div>
     </div>
 
@@ -17,9 +17,9 @@
       <div class="infoline-info">
         <span class="info-name">
           <b>{{ ownerName(owner) }}</b>
-          <small>{{ collapsedOwner }}</small>
+          <small :title="ownerSs58">{{ collapsedOwner }}</small>
         </span>
-        <Copy :msg="owner" :title="`Copy ${owner}`" :notify="t('details.copied')" />
+        <Copy :msg="ownerSs58" :title="`Copy ${ownerSs58}`" :notify="t('details.copied')" />
       </div>
     </div>
 
@@ -51,10 +51,11 @@
 </template>
 
 <script setup>
-import { computed, getCurrentInstance } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import Copy from "../../controls/Copy.vue";
 import { sensorName, ownerName } from "@/utils/addressNames";
+import { displayAddress, formatAddress } from "@/utils/ss58Display";
 import { sensorPin } from "@/utils/sensorPins";
 import appleMapIcon from "@/assets/images/map-apps-icons/Apple-map-icon.svg";
 import googleMapIcon from "@/assets/images/map-apps-icons/Google-map-icon.svg";
@@ -66,18 +67,12 @@ const props = defineProps({
 });
 
 const { t } = useI18n();
-const { proxy } = getCurrentInstance();
-const filters = proxy?.$filters || null;
 
-const collapsedSensorId = computed(() => {
-  if (!props.sensorId) return "";
-  return filters?.collapse ? filters.collapse(props.sensorId) : props.sensorId;
-});
+const sensorSs58 = computed(() => displayAddress(props.sensorId));
+const ownerSs58 = computed(() => displayAddress(props.owner));
 
-const collapsedOwner = computed(() => {
-  if (!props.owner) return "";
-  return filters?.collapse ? filters.collapse(props.owner) : props.owner;
-});
+const collapsedSensorId = computed(() => formatAddress(props.sensorId));
+const collapsedOwner = computed(() => formatAddress(props.owner));
 
 const MAP_ICONS = {
   apple: appleMapIcon,
@@ -88,7 +83,7 @@ const mapInfo = computed(() => {
   if (!props.sensorId || !props.geo?.lat || !props.geo?.lng) {
     return { href: null, provider: null, icon: null };
   }
-  const info = getMapLink(props.geo.lat, props.geo.lng, `Air Sensor: ${props.sensorId}`);
+  const info = getMapLink(props.geo.lat, props.geo.lng, `Air Sensor: ${sensorSs58.value}`);
   return {
     ...info,
     icon: MAP_ICONS[info.provider] || null,

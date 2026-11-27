@@ -118,6 +118,8 @@ import { SENSOR_PAGE_META_KEY } from "@/composables/useSensorPageMeta";
 import { dayISO } from "../../../utils/date";
 import measurements from "../../../measurements";
 import { settings } from "@config";
+import { displayAddress, formatAddress } from "@/utils/ss58Display";
+import { sensorIdsEqual } from "@/utils/sensorId";
 import Copy from "../../controls/Copy.vue";
 import Accordion from "../../controls/Accordion.vue";
 import Info from "./Info.vue";
@@ -260,13 +262,13 @@ const generatedLink = computed(() => {
   // Add owner only if we actually have it (legacy sensors keep old URL)
   const owner = props.point?.owner ? String(props.point.owner).trim() : "";
   if (owner) {
-    queryParams.set("owner", owner);
+    queryParams.set("owner", displayAddress(owner) || owner);
   }
 
   // Include sensor only if explicitly enabled (or legacy fallback will enable it).
   const sensorId = String(selectedSensor.value || "").trim();
   if (includeSensor.value && sensorId) {
-    queryParams.set("sensor", sensorId);
+    queryParams.set("sensor", displayAddress(sensorId) || sensorId);
   }
 
   // Добавляем выбранный тип данных только если чекбокс отмечен
@@ -300,18 +302,25 @@ const sensorSelectOptions = computed(() => {
   const list = Array.isArray(props.point?.ownerSensorsWithData)
     ? props.point.ownerSensorsWithData
     : [];
-  const ids = new Set();
-  if (active) ids.add(active);
+  const ids = [];
+  const addId = (id) => {
+    const value = String(id || "").trim();
+    if (!value) return;
+    if (ids.some((existing) => sensorIdsEqual(existing, value))) return;
+    ids.push(value);
+  };
+  addId(active);
   for (const o of list) {
-    // show only sensors that actually have data
     if (o?.hasData !== true) continue;
-    const id = String(o?.id || "").trim();
-    if (id) ids.add(id);
+    addId(o?.id);
   }
-  return Array.from(ids).map((id) => ({
-    value: id,
-    label: id === active ? `${id} (active)` : id,
-  }));
+  return ids.map((id) => {
+    const label = formatAddress(id) || id;
+    return {
+      value: id,
+      label: sensorIdsEqual(id, active) ? `${label} (active)` : label,
+    };
+  });
 });
 
 // Keep selected sensor in sync with active sensor

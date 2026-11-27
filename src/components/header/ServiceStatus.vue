@@ -35,8 +35,9 @@
           </summary>
           <ul class="service-status__nogeo-list">
             <li v-for="sensor in sensorsNoLocation" :key="sensor.sensor_id">
-              <a :href="sensorLink(sensor)" :title="sensor.sensor_id">
+              <a :href="sensorLink(sensor)" :title="displayAddress(sensor.sensor_id)">
                 <b>{{ sensorName(sensor.sensor_id) }}</b>
+                <span> · {{ formatAddress(sensor.sensor_id) }}</span>
                 <span v-if="sensor.device_model"> · {{ sensor.device_model }}</span>
               </a>
             </li>
@@ -66,6 +67,7 @@
 
 <script setup>
 import { sensorName } from "@/utils/addressNames";
+import { displayAddress, formatAddress } from "@/utils/ss58Display";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -89,7 +91,7 @@ const sensorLink = (sensor) =>
     query: {
       provider: mapState.currentProvider.value,
       type: mapState.currentUnit.value,
-      sensor: sensor.sensor_id,
+      sensor: displayAddress(sensor.sensor_id) || sensor.sensor_id,
     },
   }).href;
 

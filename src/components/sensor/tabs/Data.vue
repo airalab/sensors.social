@@ -153,6 +153,7 @@
           />
           <Chart
             :log="log"
+            :point="point"
             :log-revision="chartLogRevision"
             :geo-addresses="chartGeoAddresses"
             :show-geo-in-tooltip="showChartGeoInTooltip"
@@ -172,13 +173,13 @@
                 aria-hidden="true"
               />
               <p class="chart-encrypted-overlay__text">
-                {{
-                  encryptedNoticeIsLogin
-                    ? t("sensorpopup.encrypted_login_notice")
-                    : t("sensorpopup.encrypted_decrypt_pending")
-                }}
+                {{ encryptedOverlayText }}
               </p>
-              <router-link to="/login/" class="chart-encrypted-overlay__cta">
+              <router-link
+                v-if="encryptedNoticeIsLogin"
+                to="/login/"
+                class="chart-encrypted-overlay__cta"
+              >
                 {{ t("Login") }}
               </router-link>
             </div>
@@ -286,7 +287,12 @@ import {
 } from "@/utils/calculations/sensor/logs_health.js";
 import measurements from "../../../measurements";
 import { MEASUREMENT_GROUP_LOOKUP, MEASUREMENT_GROUPS } from "@/measurements/groups";
-import { bagHasEncryptedForLegend, logHasEncryptedForLegend } from "@/utils/sensorValueCrypto";
+import {
+  bagHasEncryptedForLegend,
+  bagHasNumericForLegend,
+  logHasEncryptedForLegend,
+  logHasNumericForLegend,
+} from "@/utils/sensorValueCrypto";
 import { useDemoReadings, demoChartTypes } from "@/composables/useDemoReadings";
 
 import AQI from "../widgets/AQI.vue";
@@ -505,14 +511,32 @@ const activeLegendHasEncryptedValues = computed(() => {
   );
 });
 
+const activeLegendHasNumericValues = computed(() => {
+  const legend = activeChartLegend.value;
+  if (!legend) return false;
+  return (
+    logHasNumericForLegend(props.log, legend) ||
+    bagHasNumericForLegend(props.point?.data, legend)
+  );
+});
+
 const showEncryptedLoginNotice = computed(() => {
-  if (!Boolean(ownerKey.value) || !activeLegendHasEncryptedValues.value) return false;
+  if (!activeLegendHasEncryptedValues.value) return false;
+  // Partial decrypt (owner changed mid-day, some hours still sealed): show the chart.
+  if (activeLegendHasNumericValues.value) return false;
   return true;
 });
 
 const encryptedNoticeIsLogin = computed(
   () => showEncryptedLoginNotice.value && !isOwnerLoggedIn.value
 );
+
+const encryptedOverlayText = computed(() => {
+  if (encryptedNoticeIsLogin.value) return t("sensorpopup.encrypted_login_notice");
+  if (props.point?._decryptNoCiphertext) return t("sensorpopup.encrypted_decrypt_unavailable");
+  if (props.point?._decryptAttempted) return t("sensorpopup.encrypted_decrypt_mismatch");
+  return t("sensorpopup.encrypted_decrypt_pending");
+});
 
 const logsHealthSensorUserHide = computed(() =>
   Boolean(

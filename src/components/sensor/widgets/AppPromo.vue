@@ -4,7 +4,7 @@
       class="app-promo__qr"
       :value="sensorLink"
       :size="200"
-      :filename="`sensor-${sensorId}.png`"
+      :filename="`sensor-${sensorSs58}.png`"
     />
 
     <div class="app-promo__text">
@@ -54,7 +54,7 @@
       <Copy
         v-if="sensorId"
         class="app-promo__copy"
-        :msg="sensorId"
+        :msg="sensorSs58"
         :title="t('app.copyAddress')"
         :notify="t('details.copied')"
         >{{ t("app.copyAddress") }}</Copy
@@ -76,6 +76,7 @@ import { useI18n } from "vue-i18n";
 import { settings } from "@config";
 import { ANDROID_APP_RELEASES_URL as APP_RELEASES_URL } from "@/config/androidApp";
 import { sensorName } from "@/utils/addressNames";
+import { displayAddress } from "@/utils/ss58Display";
 import Copy from "../../controls/Copy.vue";
 import QrCode from "../../controls/QrCode.vue";
 
@@ -85,13 +86,14 @@ const props = defineProps({
 });
 
 const { t } = useI18n();
+const sensorSs58 = computed(() => displayAddress(props.sensorId) || props.sensorId);
 
 // The plain sensor link: the app reads `sensor=` from it, a phone camera opens it on the map.
 const sensorLink = computed(() => {
   if (!props.sensorId) return "";
   const params = new URLSearchParams();
-  if (props.owner) params.set("owner", props.owner);
-  params.set("sensor", props.sensorId);
+  if (props.owner) params.set("owner", displayAddress(props.owner) || props.owner);
+  params.set("sensor", sensorSs58.value);
   const base = String(settings?.SHARE_URL || "").replace(/\/$/, "") || `${window.location.origin}/`;
   return `${base}?${params.toString()}`;
 });

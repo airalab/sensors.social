@@ -17,6 +17,7 @@ import { clearActiveMarker, setActiveMarker } from "../utils/map/markers";
 import {
   getSensors,
   getSensorDataWithCache,
+  enrichSensorLogsWithV3,
   getMaxData,
   getSensorOwner,
   getCachedSensorIdbMeta,
@@ -33,24 +34,23 @@ import {
   sensorFetchBoundsForDate,
   sensorTypeFromDeviceModel,
   inferDeviceTypeFromLog,
+  getProvider,
 } from "../utils/map/sensors/requests";
 import { hasValidCoordinates } from "../utils/utils";
 import { dayISO, timelineFetchBounds } from "@/utils/date";
-import { getMapAddressZoom } from "@/utils/map/defaultView";
 import { loadLogsHealth } from "../utils/calculations/sensor/logs_health.js";
 import converter from "../measurements";
 import {
   decryptMeasurementBag,
+  isEncryptedPlaceholderValue,
+  isSealedSensorValue,
   measurementBagHasEncryptedValues,
 } from "../utils/sensorValueCrypto";
-import { getProvider } from "../utils/map/sensors/requests";
+import { decryptProtoPrivate } from "../utils/proto/decodeEnvelope";
+import { canonicalHexSensorId, sensorIdAliases, sensorIdsEqual } from "../utils/sensorId";
+import { feedStation } from "../utils/sensorPins";
 
-import {
-  resolveSensorType,
-  formatSensorIdShort,
-  sensorTypeTitle,
-  sensorTypeIcon,
-} from "./sensorDeviceTypes";
+import { resolveSensorType } from "./sensorDeviceTypes";
 import {
   shouldClusterOwnerBundle,
   buildSensorPickerRows,
@@ -104,6 +104,16 @@ let realtimeHydrationWatchersRegistered = false;
 let ownerDecryptWatchersRegistered = false;
 let setSensorDataHandler = null;
 let updateSensorLogsHandler = null;
+let enrichV3Handler = null;
+let ownerDecryptInFlight = false;
+let ownerDecryptQueued = false;
+
+function yieldToUi() {
+  return new Promise((resolve) => {
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => resolve());
+    else setTimeout(resolve, 0);
+  });
+}
 
 const ownerPromises = new Map();
 
@@ -131,18 +141,59 @@ const isSensor = computed(() => {
 
 // --- Methods (module-private) ---
 
-
-
 function logHasEncryptedValues(logs) {
   if (!Array.isArray(logs)) return false;
   return logs.some((item) => measurementBagHasEncryptedValues(item?.data));
 }
 
+function logHasProtoPrivate(logs) {
+  if (!Array.isArray(logs)) return false;
+  return logs.some((item) => Array.isArray(item?.protoPrivate) && item.protoPrivate.length > 0);
+}
+
+function bagHasSealedValues(bag) {
+  return !!bag && typeof bag === "object" && Object.values(bag).some(isSealedSensorValue);
+}
+
+function logHasSealedValues(logs) {
+  if (!Array.isArray(logs)) return false;
+  return logs.some((item) => bagHasSealedValues(item?.data));
+}
+
+function decryptOverlayFlags(data, logs) {
+  const sealed = bagHasSealedValues(data) || logHasSealedValues(logs);
+  const hadCiphertext =
+    logHasProtoPrivate(logs) ||
+    logHasEncryptedValues(logs) ||
+    measurementBagHasEncryptedValues(data);
+  return {
+    _decryptAttempted: sealed && hadCiphertext,
+    _decryptNoCiphertext: sealed && !hadCiphertext,
+  };
+}
+
+function overlayDecryptedLogOntoData(data, logs) {
+  if (!Array.isArray(logs) || logs.length === 0) return data;
+  const latest = logs[logs.length - 1];
+  if (!latest?.data || typeof latest.data !== "object") return data;
+  const out = { ...(data || {}) };
+  for (const [key, value] of Object.entries(latest.data)) {
+    if (value == null || value === "") continue;
+    if (isEncryptedPlaceholderValue(out[key]) && !isSealedSensorValue(value)) {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
 async function redecryptDataBag(sensorId, bag, ownerAccount) {
   if (!bag || typeof bag !== "object") return bag;
+  if (!measurementBagHasEncryptedValues(bag)) return bag;
   const decrypted = await decryptMeasurementBag(sensorId, bag, ownerAccount);
-  const out = {};
+  if (decrypted === bag) return bag;
+  const out = { ...bag };
   for (const [key, raw] of Object.entries(decrypted)) {
+    if (raw === bag[key]) continue;
     const name = String(key).toLowerCase();
     if (typeof raw === "string" && raw.startsWith("e.")) {
       out[name] = raw;
@@ -156,16 +207,28 @@ async function redecryptDataBag(sensorId, bag, ownerAccount) {
 async function redecryptLogEntries(sensorId, logs, ownerAccount) {
   if (!Array.isArray(logs) || logs.length === 0) return { logs, changed: false };
   let changed = false;
-  const next = await Promise.all(
-    logs.map(async (item) => {
-      if (!item?.data || !measurementBagHasEncryptedValues(item.data)) return item;
-      const data = await redecryptDataBag(sensorId, item.data, ownerAccount);
-      if (JSON.stringify(data) === JSON.stringify(item.data)) return item;
+  const next = logs.slice();
+  for (let i = 0; i < next.length; i += 1) {
+    const item = next[i];
+    const hasProto = Array.isArray(item?.protoPrivate) && item.protoPrivate.length > 0;
+    const hasEnc = measurementBagHasEncryptedValues(item?.data);
+    if (!hasProto && !hasEnc) continue;
+
+    let row = item;
+    if (hasProto) {
+      row = await decryptProtoPrivate({ ...row, sensor_id: sensorId }, ownerAccount);
+    }
+    if (row?.data && (measurementBagHasEncryptedValues(row.data) || row !== item)) {
+      const data = await redecryptDataBag(sensorId, row.data, ownerAccount);
+      if (data !== row.data) row = { ...row, data };
+    }
+    if (row !== item) {
+      next[i] = row;
       changed = true;
-      return { ...item, data };
-    })
-  );
-  return { logs: next, changed };
+    }
+    if (i % 24 === 23) await yieldToUi();
+  }
+  return { logs: changed ? next : logs, changed };
 }
 
 /** Merge popup/stream logs with libp2p history; decrypt when owner seed is available. */
@@ -182,13 +245,22 @@ async function hydrateRealtimeLogsForSensor(sensorId, existingLogs, ownerAccount
   }
 
   if (logs.length > 0 && ownerAccount) {
-    ({ logs } = await redecryptLogEntries(sensorId, logs, ownerAccount));
+    ({ logs } = await redecryptLogEntriesWithAccounts(sensorId, logs, [ownerAccount]));
   }
   return logs;
 }
 
 function isSensorOpenFor(sensorId) {
-  return sensorPoint.value && String(sensorPoint.value.sensor_id) === String(sensorId);
+  return !!sensorPoint.value && sensorIdsEqual(sensorPoint.value.sensor_id, sensorId);
+}
+
+function findSensorRow(list, id) {
+  if (!id || !Array.isArray(list)) return null;
+  return list.find((s) => sensorIdsEqual(s?.sensor_id, id)) || null;
+}
+
+function logsCacheKey(sensorId, provider, timelineMode, date) {
+  return `${canonicalHexSensorId(sensorId)}-${provider}-${timelineMode}-${date}`;
 }
 
 
@@ -202,6 +274,10 @@ function historyPointsToLogs(history) {
       if (p.geo && Number.isFinite(Number(p.geo.lat)) && Number.isFinite(Number(p.geo.lng))) {
         entry.geo = p.geo;
       }
+      if (Array.isArray(p.protoPrivate) && p.protoPrivate.length > 0) {
+        entry.protoPrivate = p.protoPrivate;
+      }
+      if (p.device_model) entry.device_model = p.device_model;
       return entry;
     })
     .filter(Boolean)
@@ -240,6 +316,40 @@ function resolveOwnerAccount(accountsList, ownerAddress, sensorId) {
 
 function isOwnerAccountLoggedIn(accountsList, ownerAddress, sensorId) {
   return !!resolveOwnerAccount(accountsList, ownerAddress, sensorId);
+}
+
+function ownerAccountsForDecrypt(accountsList, ownerAddress, sensorId) {
+  const preferred = resolveOwnerAccount(accountsList, ownerAddress, sensorId);
+  const rest = (Array.isArray(accountsList) ? accountsList : []).filter(
+    (account) => accountHasOwnerSecret(account) && account !== preferred
+  );
+  return preferred ? [preferred, ...rest] : rest;
+}
+
+async function decryptProtoPrivateWithAccounts(point, accounts) {
+  if (!point || !Array.isArray(accounts) || accounts.length === 0) return point;
+  let next = point;
+  for (const account of accounts) {
+    if (!Array.isArray(next.protoPrivate) || next.protoPrivate.length === 0) break;
+    next = await decryptProtoPrivate(next, account);
+  }
+  return next;
+}
+
+async function redecryptLogEntriesWithAccounts(sensorId, logs, accounts) {
+  if (!Array.isArray(logs) || logs.length === 0) return { logs, changed: false };
+  if (!Array.isArray(accounts) || accounts.length === 0) return { logs, changed: false };
+  let current = logs;
+  let changed = false;
+  for (const account of accounts) {
+    const next = await redecryptLogEntries(sensorId, current, account);
+    if (next.changed) {
+      current = next.logs;
+      changed = true;
+    }
+    if (!logHasProtoPrivate(current) && !logHasEncryptedValues(current)) break;
+  }
+  return { logs: current, changed };
 }
 
 async function redecryptAllRealtimeHistory(accountsList) {
@@ -282,7 +392,7 @@ async function redecryptAllRealtimeHistory(accountsList) {
 }
 
 /** Decrypt open popup (+ realtime history) when a logged-in owner seed is available. */
-async function runOwnerDecrypt() {
+async function runOwnerDecryptOnce() {
   const mapState = useMap();
   const popup = sensorPoint.value;
   if (!popup?.sensor_id) return;
@@ -290,25 +400,64 @@ async function runOwnerDecrypt() {
   const owner = normalizeOwnerKey(popup);
   const sensorId = String(popup.sensor_id);
   const accountsList = useAccounts().accounts.value;
-  const ownerAccount = resolveOwnerAccount(accountsList, owner, sensorId);
+  const ownerAccounts = ownerAccountsForDecrypt(accountsList, owner, sensorId);
+  const ownerAccount = ownerAccounts[0];
   if (!ownerAccount) return;
 
+  const hasProtoPrivate =
+    Array.isArray(popup.protoPrivate) && popup.protoPrivate.length > 0;
+  const needsProtoLogsDecrypt = logHasProtoPrivate(popup.logs);
   const needsDataDecrypt = measurementBagHasEncryptedValues(popup.data);
   const needsLogsDecrypt = logHasEncryptedValues(popup.logs);
-  if (!needsDataDecrypt && !needsLogsDecrypt && mapState.currentProvider.value !== "realtime") {
+  const sealedPending = bagHasSealedValues(popup.data) || logHasSealedValues(popup.logs);
+  if (
+    !needsDataDecrypt &&
+    !needsLogsDecrypt &&
+    !hasProtoPrivate &&
+    !needsProtoLogsDecrypt &&
+    mapState.currentProvider.value !== "realtime"
+  ) {
+    if (sealedPending && isSensorOpenFor(sensorId) && !popup._protoV3Tried) {
+      sensorPoint.value = { ...popup, _protoV3Tried: true };
+      if (enrichV3Handler) {
+        const { start, end } = timelineFetchBounds(
+          mapState.currentDate.value,
+          mapState.timelineMode.value
+        );
+        enrichV3Handler(
+          sensorId,
+          currentLogsRequestId,
+          start,
+          end,
+          currentLogsAbortController?.signal
+        );
+      }
+    }
     return;
   }
 
-  let nextData = popup.data;
-  if (needsDataDecrypt) {
-    nextData = await redecryptDataBag(sensorId, popup.data, ownerAccount);
+  await yieldToUi();
+
+  let nextPopup = popup;
+  if (hasProtoPrivate) {
+    nextPopup = await decryptProtoPrivateWithAccounts(popup, ownerAccounts);
+  }
+
+  let nextData = nextPopup.data;
+  if (needsDataDecrypt || measurementBagHasEncryptedValues(nextData)) {
+    for (const account of ownerAccounts) {
+      nextData = await redecryptDataBag(sensorId, nextData, account);
+      if (!measurementBagHasEncryptedValues(nextData)) break;
+    }
   }
 
   let logsOut = normalizeSensorLogs(popup.logs);
   if (mapState.currentProvider.value === "realtime") {
     const provider = getProvider();
     if (provider?.redecryptHistoryForSensor) {
-      await provider.redecryptHistoryForSensor(sensorId, ownerAccount);
+      for (const account of ownerAccounts) {
+        await provider.redecryptHistoryForSensor(sensorId, account);
+      }
     }
     const history = historyPointsToLogs(await provider?.getHistoryBySensor?.(sensorId));
     if (history.length > 0) {
@@ -322,9 +471,15 @@ async function runOwnerDecrypt() {
     }
     const nextLogs = await hydrateRealtimeLogsForSensor(sensorId, logsOut, ownerAccount);
     logsOut = nextLogs.length > 0 ? [...nextLogs] : [...logsOut];
-  } else if (needsLogsDecrypt) {
-    ({ logs: logsOut } = await redecryptLogEntries(sensorId, logsOut, ownerAccount));
+  } else if (needsLogsDecrypt || needsProtoLogsDecrypt) {
+    ({ logs: logsOut } = await redecryptLogEntriesWithAccounts(
+      sensorId,
+      logsOut,
+      ownerAccounts
+    ));
   }
+
+  nextData = overlayDecryptedLogOntoData(nextData, logsOut);
 
   const stillEncrypted =
     measurementBagHasEncryptedValues(nextData) || logHasEncryptedValues(logsOut);
@@ -332,6 +487,8 @@ async function runOwnerDecrypt() {
     stillEncrypted &&
     !needsDataDecrypt &&
     !needsLogsDecrypt &&
+    !hasProtoPrivate &&
+    !needsProtoLogsDecrypt &&
     mapState.currentProvider.value !== "realtime"
   ) {
     return;
@@ -339,10 +496,12 @@ async function runOwnerDecrypt() {
 
   const decryptRev = (popup._decryptRev || 0) + 1;
   sensorPoint.value = {
-    ...popup,
+    ...nextPopup,
     data: nextData,
     logs: logsOut,
-    owner: owner || popup.owner || ownerAccount.address || popup.owner,
+    owner: owner || nextPopup.owner || ownerAccount.address || popup.owner,
+    protoPrivate: nextPopup.protoPrivate ?? null,
+    ...decryptOverlayFlags(nextData, logsOut),
     _decryptRev: decryptRev,
     _logsKey: popup._logsKey || `owner-decrypt:${sensorId}:${decryptRev}`,
   };
@@ -350,6 +509,8 @@ async function runOwnerDecrypt() {
   if (setSensorDataHandler) {
     setSensorDataHandler(sensorId, {
       data: nextData,
+      protoPrivate: nextPopup.protoPrivate ?? null,
+      proto: nextPopup.proto === true,
       ...(logsOut.length > 0 ? { logs: logsOut } : null),
     });
   }
@@ -361,6 +522,22 @@ async function runOwnerDecrypt() {
     stillEncrypted
   ) {
     await updateSensorLogsHandler(sensorId);
+  }
+}
+
+async function runOwnerDecrypt() {
+  if (ownerDecryptInFlight) {
+    ownerDecryptQueued = true;
+    return;
+  }
+  ownerDecryptInFlight = true;
+  try {
+    do {
+      ownerDecryptQueued = false;
+      await runOwnerDecryptOnce();
+    } while (ownerDecryptQueued);
+  } finally {
+    ownerDecryptInFlight = false;
   }
 }
 
@@ -544,7 +721,7 @@ export function useSensors() {
     const sid = sensorId ? String(sensorId) : "";
     if (!sid) return "";
 
-    const fromMap = sensors.value.find((s) => String(s?.sensor_id || "") === sid);
+    const fromMap = findSensorRow(sensors.value, sid);
     const mapOwner = normalizeOwnerKey(fromMap);
     if (mapOwner) return mapOwner;
 
@@ -560,11 +737,11 @@ export function useSensors() {
   const applyOwnerFromCache = (sensorId, owner) => {
     if (!owner || !sensorId) return;
     const sid = String(sensorId);
-    const existsOnMap = sensors.value?.some((s) => String(s?.sensor_id || "") === sid);
+    const existsOnMap = !!findSensorRow(sensors.value, sid);
     if (existsOnMap) {
       setSensorData(sid, { owner });
     }
-    if (sensorPoint.value?.sensor_id === sid) {
+    if (sensorIdsEqual(sensorPoint.value?.sensor_id, sid)) {
       sensorPoint.value = { ...sensorPoint.value, owner };
     }
     mapState.setMapSettings(route, router, { owner });
@@ -615,7 +792,7 @@ export function useSensors() {
    * @returns {boolean} True when popup is open for this sensor
    */
   const isSensorOpen = (sensorId) => {
-    return sensorPoint.value && sensorPoint.value.sensor_id === sensorId;
+    return !!sensorPoint.value && sensorIdsEqual(sensorPoint.value.sensor_id, sensorId);
   };
 
   /**
@@ -650,6 +827,9 @@ export function useSensors() {
           data.owner !== undefined
             ? normalizeOwnerKey({ owner: data.owner }) || null
             : existingSensor.owner,
+        proto: data.proto !== undefined ? data.proto : existingSensor.proto,
+        protoPrivate:
+          data.protoPrivate !== undefined ? data.protoPrivate : existingSensor.protoPrivate,
       };
       existingSensors[sensorIndex] = formatPointForSensor(updatedSensor, { calculateValue: false });
     } else {
@@ -677,7 +857,9 @@ export function useSensors() {
     if (!sensorId || !data) return;
     if (mapState.currentProvider.value === "realtime") {
       const nextLive = new Set(realtimeLiveSensorIds.value);
-      nextLive.add(String(sensorId));
+      if (data?.data && data.timestamp != null) {
+        for (const id of sensorIdAliases(sensorId)) nextLive.add(id);
+      }
       realtimeLiveSensorIds.value = nextLive;
     }
     setSensors(applySensorPatchToList(sensors.value, sensorId, data));
@@ -687,8 +869,8 @@ export function useSensors() {
   const sensorHasRealtimePayload = (sensorId) => {
     const sid = String(sensorId || "");
     if (!sid) return false;
-    if (realtimeLiveSensorIds.value.has(sid)) return true;
-    const row = sensors.value?.find((s) => String(s?.sensor_id || "") === sid);
+    if (sensorIdAliases(sid).some((id) => realtimeLiveSensorIds.value.has(id))) return true;
+    const row = findSensorRow(sensors.value, sid);
     const rowData = row?.data;
     if (rowData && typeof rowData === "object" && Object.keys(rowData).length > 0) return true;
     const popup = sensorPoint.value;
@@ -712,6 +894,78 @@ export function useSensors() {
     timelineMode = null,
   } = {}) => ({ ok, superseded, deduped, requestId, timelineMode });
 
+  const applyPopupLogs = (sensorId, logs, extra = {}) => {
+    const cleanLogs = sanitizeSensorLogsPmSentinels(logs);
+    const inferredType = inferDeviceTypeFromLog(cleanLogs);
+    const existingKind = String(
+      sensorPoint.value?.device_model || sensorPoint.value?.idbSensorType || ""
+    ).toLowerCase();
+    const keepDeviceKind = existingKind === "insight" || existingKind === "urban";
+    let logGeo = null;
+    if (Array.isArray(cleanLogs)) {
+      for (let i = cleanLogs.length - 1; i >= 0; i--) {
+        if (hasValidCoordinates(cleanLogs[i]?.geo)) {
+          logGeo = cleanLogs[i].geo;
+          break;
+        }
+      }
+    }
+    const pointForBundle = {
+      ...sensorPoint.value,
+      geo: hasValidCoordinates(sensorPoint.value?.geo)
+        ? sensorPoint.value.geo
+        : logGeo || null,
+    };
+    const ownerSensorsWithData = applyFilteredOwnerBundleOptions(
+      pointForBundle,
+      sensorPoint.value?.ownerSensorsWithData,
+      sensors.value
+    );
+    const nextData = overlayDecryptedLogOntoData(sensorPoint.value?.data, cleanLogs);
+    const decryptRev = (sensorPoint.value?._decryptRev || 0) + 1;
+    sensorPoint.value = {
+      ...sensorPoint.value,
+      geo: pointForBundle.geo,
+      data: nextData,
+      logs: cleanLogs,
+      _decryptRev: decryptRev,
+      ...decryptOverlayFlags(nextData, cleanLogs),
+      ...extra,
+      ...(!keepDeviceKind && inferredType
+        ? { device_model: inferredType, idbSensorType: inferredType }
+        : null),
+      ...(ownerSensorsWithData?.length ? { ownerSensorsWithData } : null),
+    };
+    if (findSensorRow(sensors.value, sensorId)) {
+      setSensorData(sensorId, { logs: cleanLogs });
+    }
+    return cleanLogs;
+  };
+
+  const enrichPopupLogsWithV3 = (sensorId, requestId, start, end, signal) => {
+    if (mapState.currentProvider.value === "realtime") return;
+    if (feedStation(sensorId)) return;
+    void (async () => {
+      const current = sensorPoint.value?.logs;
+      const enriched = await enrichSensorLogsWithV3(
+        sensorId,
+        current,
+        start,
+        end,
+        signal,
+        normalizeOwnerKey(sensorPoint.value),
+        {
+          device_model: sensorPoint.value?.device_model,
+          type: sensorPoint.value?.idbSensorType,
+        }
+      );
+      if (currentLogsRequestId !== requestId) return;
+      if (!isSensorOpen(sensorId)) return;
+      if (!Array.isArray(enriched) || enriched === current) return;
+      applyPopupLogs(sensorId, enriched);
+    })();
+  };
+
   /**
    * Load chart logs for the open popup (remote API or realtime stream).
    * @param {string} sensorId - Sensor id to fetch logs for
@@ -726,9 +980,12 @@ export function useSensors() {
 
     // Avoid re-fetching the same logs due to UI-only re-renders (e.g. tab switches).
     // Keyed by sensor + provider + timeline mode + selected date.
-    const requestedKey = `${String(sensorId)}-${mapState.currentProvider.value}-${
-      mapState.timelineMode.value
-    }-${mapState.currentDate.value}`;
+    const requestedKey = logsCacheKey(
+      sensorId,
+      mapState.currentProvider.value,
+      mapState.timelineMode.value,
+      mapState.currentDate.value
+    );
     // Only dedupe while a request is actually running.
     if (logsRequestInFlight && currentLogsKey === requestedKey) {
       return logRequestResult({
@@ -807,11 +1064,19 @@ export function useSensors() {
           normalizeOwnerKey(sensorPoint.value),
           sensorId
         );
-        if (ownerAccount && logHasEncryptedValues(currentLogs)) {
-          const { logs: decryptedLogs } = await redecryptLogEntries(
+        const ownerAccounts = ownerAccountsForDecrypt(
+          accountStore.accounts.value,
+          normalizeOwnerKey(sensorPoint.value),
+          sensorId
+        );
+        if (
+          ownerAccounts.length > 0 &&
+          (logHasEncryptedValues(currentLogs) || logHasProtoPrivate(currentLogs))
+        ) {
+          const { logs: decryptedLogs } = await redecryptLogEntriesWithAccounts(
             sensorId,
             currentLogs,
-            ownerAccount
+            ownerAccounts
           );
           const cleanLogs = sanitizeSensorLogsPmSentinels(decryptedLogs);
           const ownerSensorsWithData = applyFilteredOwnerBundleOptions(
@@ -820,14 +1085,18 @@ export function useSensors() {
             sensors.value
           );
           const decryptRev = (sensorPoint.value?._decryptRev || 0) + 1;
+          const nextData = overlayDecryptedLogOntoData(sensorPoint.value?.data, cleanLogs);
           sensorPoint.value = {
             ...sensorPoint.value,
+            data: nextData,
             logs: cleanLogs,
             _decryptRev: decryptRev,
+            ...decryptOverlayFlags(nextData, cleanLogs),
             ...(ownerSensorsWithData?.length ? { ownerSensorsWithData } : null),
           };
-          const existsOnMap = sensors.value?.some((s) => s?.sensor_id === sensorId);
-          if (existsOnMap) setSensorData(sensorId, { logs: cleanLogs });
+          if (findSensorRow(sensors.value, sensorId)) {
+            setSensorData(sensorId, { logs: cleanLogs, data: nextData });
+          }
           if (runLogsHealth.value) {
             void loadLogsHealth(sensorId, cleanLogs, {
               currentDate: mapState.currentDate.value,
@@ -841,6 +1110,25 @@ export function useSensors() {
           });
         }
 
+        const needsV3 =
+          ownerAccount &&
+          logHasSealedValues(currentLogs) &&
+          !logHasProtoPrivate(currentLogs) &&
+          !sensorPoint.value?._protoV3Tried;
+        if (needsV3) {
+          sensorPoint.value = { ...sensorPoint.value, _protoV3Tried: true };
+          const { start, end } = timelineFetchBounds(
+            mapState.currentDate.value,
+            mapState.timelineMode.value
+          );
+          enrichPopupLogsWithV3(
+            sensorId,
+            currentLogsRequestId,
+            start,
+            end,
+            currentLogsAbortController?.signal
+          );
+        }
         resetLogsProgress();
         const cleanLogs = sanitizeSensorLogsPmSentinels(currentLogs);
         const ownerSensorsWithData = applyFilteredOwnerBundleOptions(
@@ -854,8 +1142,9 @@ export function useSensors() {
           ...(ownerSensorsWithData?.length ? { ownerSensorsWithData } : null),
         };
         {
-          const existsOnMap = sensors.value?.some((s) => s?.sensor_id === sensorId);
-          if (existsOnMap) setSensorData(sensorId, { logs: cleanLogs });
+          if (findSensorRow(sensors.value, sensorId)) {
+            setSensorData(sensorId, { logs: cleanLogs });
+          }
         }
         if (runLogsHealth.value) {
           void loadLogsHealth(sensorId, cleanLogs, {
@@ -1016,8 +1305,16 @@ export function useSensors() {
             normalizeOwnerKey(sensorPoint.value),
             sensorId
           );
-          if (ownerAccount && logHasEncryptedValues(logs)) {
-            ({ logs } = await redecryptLogEntries(sensorId, logs, ownerAccount));
+          const ownerAccounts = ownerAccountsForDecrypt(
+            accountStore.accounts.value,
+            normalizeOwnerKey(sensorPoint.value),
+            sensorId
+          );
+          if (
+            ownerAccounts.length > 0 &&
+            (logHasEncryptedValues(logs) || logHasProtoPrivate(logs))
+          ) {
+            ({ logs } = await redecryptLogEntriesWithAccounts(sensorId, logs, ownerAccounts));
           }
         }
 
@@ -1037,31 +1334,14 @@ export function useSensors() {
           });
         }
 
-        const inferredType = inferDeviceTypeFromLog(logs);
-        const ownerSensorsWithData = applyFilteredOwnerBundleOptions(
-          sensorPoint.value,
-          sensorPoint.value?.ownerSensorsWithData,
-          sensors.value
+        applyPopupLogs(sensorId, logs, { _logsKey: requestedKey });
+        enrichPopupLogsWithV3(
+          sensorId,
+          requestId,
+          start,
+          end,
+          currentLogsAbortController?.signal
         );
-        sensorPoint.value = {
-          ...sensorPoint.value,
-          logs,
-          _logsKey: requestedKey,
-          ...(inferredType
-            ? { device_model: inferredType, idbSensorType: inferredType }
-            : null),
-          ...(ownerSensorsWithData?.length ? { ownerSensorsWithData } : null),
-        };
-
-        // Persist logs on sensor row + popup
-        {
-          const existsOnMap = sensors.value?.some((s) => s?.sensor_id === sensorId);
-          if (existsOnMap) {
-            setSensorData(sensorId, {
-              logs,
-            });
-          }
-        }
 
         if (runLogsHealth.value) {
           void loadLogsHealth(sensorId, logs, {
@@ -1135,10 +1415,15 @@ export function useSensors() {
     if (!sid) return false;
 
     const prev = sensorPoint.value;
-    const sameSensor = prev && String(prev.sensor_id) === sid;
+    const sameSensor = prev && sensorIdsEqual(prev.sensor_id, sid);
+    const sameOwner =
+      prev &&
+      normalizeOwnerKey(prev) &&
+      normalizeOwnerKey(rawPoint) &&
+      normalizeOwnerKey(prev) === normalizeOwnerKey(rawPoint);
 
     let geo = rawPoint?.geo;
-    if (!hasValidCoordinates(geo) && sameSensor && hasValidCoordinates(prev?.geo)) {
+    if (!hasValidCoordinates(geo) && (sameSensor || sameOwner) && hasValidCoordinates(prev?.geo)) {
       geo = prev.geo;
     }
 
@@ -1160,7 +1445,7 @@ export function useSensors() {
       sensor_id: sid,
       geo: hasValidCoordinates(geo) ? geo : null,
       model: rawPoint?.model || prev?.model || DEFAULT_SENSOR_MODEL,
-      device_model: rawPoint?.device_model ?? prev?.device_model ?? null,
+      device_model: rawPoint?.device_model ?? (sameSensor ? prev?.device_model : null) ?? null,
       owner:
         rawPoint?.owner ||
         prev?.owner ||
@@ -1168,13 +1453,21 @@ export function useSensors() {
       address: rawPoint?.address || prev?.address || null,
       data: rawPoint?.data || prev?.data || {},
       maxdata: rawPoint?.maxdata || prev?.maxdata || {},
+      proto: rawPoint?.proto === true || (sameSensor && prev?.proto === true),
+      protoPrivate: Array.isArray(rawPoint?.protoPrivate)
+        ? rawPoint.protoPrivate
+        : sameSensor
+          ? prev?.protoPrivate
+          : null,
       logs,
       ownerSensorsWithData:
         rawPoint?.ownerSensorsWithData ||
-        (sameSensor ? prev?.ownerSensorsWithData : null) ||
+        ((sameSensor || sameOwner) ? prev?.ownerSensorsWithData : null) ||
         null,
       ownerSensorIds:
-        rawPoint?.ownerSensorIds || (sameSensor ? prev?.ownerSensorIds : null) || null,
+        rawPoint?.ownerSensorIds ||
+        ((sameSensor || sameOwner) ? prev?.ownerSensorIds : null) ||
+        null,
       idbSensorType: rawPoint?.idbSensorType ?? (sameSensor ? prev?.idbSensorType : null) ?? null,
       _ownerResolved:
         rawPoint?._ownerResolved ?? (sameSensor ? prev?._ownerResolved : false) ?? false,
@@ -1218,11 +1511,11 @@ export function useSensors() {
 
     // Re-check after every await — user may have closed popup while we waited
     const isStalePopupUpdate = () => {
-      if (route.query.sensor && route.query.sensor !== point.sensor_id) return true;
+      if (route.query.sensor && !sensorIdsEqual(route.query.sensor, point.sensor_id)) return true;
       const closed = recentlyClosed.value;
       // Recently closed: URL may still show old sensor id briefly
       return (
-        closed?.id === point.sensor_id && Date.now() < (closed.until || 0)
+        sensorIdsEqual(closed?.id, point.sensor_id) && Date.now() < (closed.until || 0)
       );
     };
 
@@ -1236,8 +1529,8 @@ export function useSensors() {
         (sensorPoint.value?.sensor_id && !options.fromMapClick ? sensorPoint.value.sensor_id : "") ||
         ""
     ).trim();
-    if (lockedSensorId && lockedSensorId !== String(point.sensor_id) && !options.fromMapClick) {
-      const lockedRow = sensors.value.find((s) => String(s?.sensor_id || "") === lockedSensorId);
+    if (lockedSensorId && !sensorIdsEqual(lockedSensorId, point.sensor_id) && !options.fromMapClick) {
+      const lockedRow = sensors.value.find((s) => sensorIdsEqual(s?.sensor_id, lockedSensorId));
       point = {
         ...point,
         sensor_id: lockedSensorId,
@@ -1251,7 +1544,7 @@ export function useSensors() {
     // don't reopen it from stale async updates.
     // Map marker clicks pass `fromMapClick: true` so a stale `sensor=` in URL
     // (e.g. after switching device in select) does not block opening the clicked marker.
-    if (!options.fromMapClick && route.query.sensor && route.query.sensor !== point.sensor_id) {
+    if (!options.fromMapClick && route.query.sensor && !sensorIdsEqual(route.query.sensor, point.sensor_id)) {
       return;
     }
 
@@ -1304,8 +1597,8 @@ export function useSensors() {
         mapState.currentUnit.value,
         mapState.currentProvider.value
       );
-      if (pickedId !== String(point.sensor_id || "")) {
-        const row = sensors.value.find((s) => String(s?.sensor_id || "") === pickedId);
+      if (pickedId && !sensorIdsEqual(pickedId, point.sensor_id)) {
+        const row = findSensorRow(sensors.value, pickedId);
         point = {
           ...point,
           sensor_id: pickedId,
@@ -1321,7 +1614,8 @@ export function useSensors() {
 
     const prevSensorId = String(sensorPoint.value?.sensor_id || "");
     const nextSensorId = String(point.sensor_id || "");
-    const sensorSwitched = prevSensorId && nextSensorId && prevSensorId !== nextSensorId;
+    const sensorSwitched =
+      Boolean(prevSensorId && nextSensorId) && !sensorIdsEqual(prevSensorId, nextSensorId);
     if (sensorSwitched) {
       clearSensorLogs();
     }
@@ -1343,7 +1637,7 @@ export function useSensors() {
       const prevPopup = sensorPoint.value;
       if (
         prevPopup &&
-        String(prevPopup.sensor_id || "") !== String(point.sensor_id || "") &&
+        !sensorIdsEqual(prevPopup.sensor_id, point.sensor_id) &&
         normalizeOwnerKey(prevPopup) &&
         normalizeOwnerKey(prevPopup) === normalizeOwnerKey(point) &&
         hasValidCoordinates(prevPopup.geo)
@@ -1358,7 +1652,7 @@ export function useSensors() {
       const mergePopupPoint = (prev, next) => {
         if (!prev) return next;
         if (!next) return prev;
-        const sameId = String(prev?.sensor_id || "") === String(next?.sensor_id || "");
+        const sameId = sensorIdsEqual(prev?.sensor_id, next?.sensor_id);
         if (!sameId) return next;
 
         const nextOwnerSensors = next.ownerSensorsWithData;
@@ -1521,7 +1815,7 @@ export function useSensors() {
         // sensors:
         // Don't create a new marker entry for "owner dropdown" sensors that aren't part of the map points list.
         // Otherwise switching to a related sensor can create an extra marker.
-        const existsOnMap = sensors.value?.some((s) => s?.sensor_id === point.sensor_id);
+        const existsOnMap = !!findSensorRow(sensors.value, point.sensor_id);
         if (existsOnMap) {
           setSensorData(point.sensor_id, {
             geo: point.geo,
@@ -1549,13 +1843,16 @@ export function useSensors() {
         patchOwnerBundleOptions(sensorPoint.value);
       }
 
-      const logsContextKey = `${String(point.sensor_id)}-${mapState.currentProvider.value}-${
-        mapState.timelineMode.value
-      }-${mapState.currentDate.value}`;
+      const logsContextKey = logsCacheKey(
+        point.sensor_id,
+        mapState.currentProvider.value,
+        mapState.timelineMode.value,
+        mapState.currentDate.value
+      );
       const currentLogs = sensorPoint.value?.logs;
       const remoteLogsAlreadyLoaded =
         mapState.currentProvider.value === "remote" &&
-        String(sensorPoint.value?.sensor_id || "") === String(point.sensor_id) &&
+        sensorIdsEqual(sensorPoint.value?.sensor_id, point.sensor_id) &&
         sensorPoint.value?._logsKey === logsContextKey &&
         Array.isArray(currentLogs);
 
@@ -1600,15 +1897,19 @@ export function useSensors() {
    * @returns {Object} Unified point for popup / markers
    */
   const formatPointForSensor = (basePoint, options = {}) => {
-    const { calculateValue = false } = options;
+    const { calculateValue = false, rebuildOwnerBundle = !calculateValue } = options;
 
     const ownerKey = normalizeOwnerKey(basePoint);
+    const existingBundle =
+      Array.isArray(basePoint.ownerSensorsWithData) && basePoint.ownerSensorsWithData.length > 0
+        ? basePoint.ownerSensorsWithData
+        : null;
     const ownerSensorsWithData = (() => {
-      if (Array.isArray(basePoint.ownerSensorsWithData) && basePoint.ownerSensorsWithData.length > 0) {
-        return (
-          applyFilteredOwnerBundleOptions(basePoint, basePoint.ownerSensorsWithData, sensors.value) ??
-          basePoint.ownerSensorsWithData
-        );
+      // Map redraw walks every marker. Rebuilding the picker bundle here
+      // does SS58 decode over the whole list and freezes realtime / close.
+      if (!rebuildOwnerBundle) return existingBundle;
+      if (existingBundle) {
+        return applyFilteredOwnerBundleOptions(basePoint, existingBundle, sensors.value) ?? existingBundle;
       }
       if (!hasSensorOwner(basePoint)) return null;
       return applyFilteredOwnerBundleOptions(basePoint, null, sensors.value);
@@ -1643,6 +1944,8 @@ export function useSensors() {
         ? sanitizeSensorLogsPmSentinels(basePoint.logs)
         : basePoint.logs ?? null,
       _ownerResolved: basePoint._ownerResolved ?? false,
+      proto: basePoint.proto === true,
+      protoPrivate: Array.isArray(basePoint.protoPrivate) ? basePoint.protoPrivate : null,
       iconLocal: markerIcon.image,
       markerIconFullBleed: markerIcon.fullBleed,
     };
@@ -1668,9 +1971,7 @@ export function useSensors() {
 
   const mergeSensorWithList = (p) => {
     if (!p?.sensor_id) return p;
-    const row = sensors.value?.find(
-      (s) => String(s?.sensor_id || "") === String(p.sensor_id)
-    );
+    const row = findSensorRow(sensors.value, p.sensor_id);
     if (!row) return p;
     return {
       ...row,
@@ -1725,7 +2026,7 @@ export function useSensors() {
 
     let max = null;
     for (const sensorId of sensorIdSet) {
-      const row = list.find((s) => String(s?.sensor_id || "") === sensorId);
+      const row = findSensorRow(list, sensorId);
       if (row) {
         const fromRow = readMarkerUnitValue(row);
         if (!fromRow.isEmpty) {
@@ -1856,7 +2157,7 @@ export function useSensors() {
     const sid = String(sensorId || "");
     if (!sid) return sensorId;
     const list = sensors.value || [];
-    const sensor = list.find((s) => String(s?.sensor_id || "") === sid);
+    const sensor = findSensorRow(list, sid);
     if (!sensor) return sensorId;
     const ownerKey = normalizeOwnerKey(sensor);
     if (!ownerKey) return sensorId;
@@ -2050,17 +2351,6 @@ export function useSensors() {
       if (ownerKey) {
         const popupOwner = normalizeOwnerKey(sensorPoint.value);
         if (sensorPoint.value && popupOwner === ownerKey) {
-          const bundleOpts =
-            applyFilteredOwnerBundleOptions(
-              sensorPoint.value,
-              null,
-              sensors.value,
-              ownerBundleClustered()
-            ) ||
-            buildOwnerSensorsWithData(sensorPoint.value, sensors.value, null, ownerBundleClustered());
-          if (bundleOpts?.length) {
-            sensorPoint.value = { ...sensorPoint.value, ownerSensorsWithData: bundleOpts };
-          }
           rebundleOwnerClusterForPoint(sensorPoint.value);
         } else {
           rebundleOwnerMarkers(ownerKey);
@@ -2082,11 +2372,13 @@ export function useSensors() {
   const clearSensorLogs = (sensorId = null) => {
     if (sensorId && isSensorOpen(sensorId)) {
       // Clear logs on a specific sensor row
-      if (sensorPoint.value && sensorPoint.value.sensor_id === sensorId) {
+      if (sensorPoint.value && sensorIdsEqual(sensorPoint.value.sensor_id, sensorId)) {
         sensorPoint.value = { ...sensorPoint.value, logs: null, _logsKey: null };
       }
       // Clear logs in sensors array
-      const sensorIndex = sensors.value.findIndex((s) => s.sensor_id === sensorId);
+      const sensorIndex = sensors.value.findIndex((s) =>
+        sensorIdsEqual(s.sensor_id, sensorId)
+      );
       if (sensorIndex >= 0) {
         const updatedSensors = [...sensors.value];
         updatedSensors[sensorIndex] = { ...updatedSensors[sensorIndex], logs: null };
@@ -2104,7 +2396,8 @@ export function useSensors() {
     mapState.mapinactive.value = false;
 
     popupSessionId += 1;
-    const closingId = route.query.sensor || null;
+    const closingId = route.query.sensor || sensorPoint.value?.sensor_id || null;
+    const closingOwner = normalizeOwnerKey(sensorPoint.value);
     sensorPoint.value = null;
     if (closingId) {
       recentlyClosed.value = { id: closingId, until: Date.now() + 1500 };
@@ -2131,15 +2424,18 @@ export function useSensors() {
 
     router.replace({ query: currentQuery });
 
-    // Popup sync only touches one anchor cluster; restore the full map on close.
-    if (!sensorsUtils.isReadyLayer()) return;
-    lastUpdateKey = "";
-    rebundleOwnerMarkers();
-    try {
-      sensorsUtils.refreshClusters();
-    } catch {
-      // Map layer may not be ready yet.
-    }
+    // Let the popup unmount first; only the closed owner's cluster needs a restore.
+    void nextTick(() => {
+      if (sensorPoint.value) return;
+      if (!sensorsUtils.isReadyLayer()) return;
+      lastUpdateKey = "";
+      rebundleOwnerMarkers(closingOwner || null);
+      try {
+        sensorsUtils.refreshClusters();
+      } catch {
+        // Map layer may not be ready yet.
+      }
+    });
   };
 
   /**
@@ -2242,7 +2538,7 @@ export function useSensors() {
               model: DEFAULT_SENSOR_MODEL,
               timestamp: Math.floor(Date.now() / 1000),
             },
-            { calculateValue: false }
+            { calculateValue: false, rebuildOwnerBundle: false }
           )
         );
         added = true;
@@ -2412,62 +2708,18 @@ export function useSensors() {
   const switchOpenSensor = (nextId, point = sensorPoint.value) => {
     const next = String(nextId || "").trim();
     const current = String(point?.sensor_id || "");
-    if (!next || next === current) return;
+    if (!next || sensorIdsEqual(next, current)) return;
 
     const sensorsList = sensors.value || [];
-    const nextRow = sensorsList.find((s) => String(s?.sensor_id || "") === next);
+    const nextRow = findSensorRow(sensorsList, next);
     const nextOwner = nextRow?.owner || point?.owner || null;
 
     mapState.setMapSettings(route, router, {
-      lat: point?.geo?.lat ?? route.query.lat,
-      lng: point?.geo?.lng ?? route.query.lng,
-      zoom: route.query.zoom ?? getMapAddressZoom(),
       sensor: next,
       owner: nextOwner ? String(nextOwner) : undefined,
     });
 
-    clearSensorLogs();
-
     void ensureOwnerLoaded(next);
-    void (async () => {
-      if (!sensorPoint.value) return;
-      const ownerKey = String(nextOwner || sensorPoint.value?.owner || route.query.owner || "").trim();
-      if (!ownerKey) return;
-
-      await hydrateOwnerBundleFromUserSensors(next);
-      if (mapState.currentProvider.value === "realtime") {
-        refreshOpenSensorMapMarker();
-        return;
-      }
-
-      const anchorGeo =
-        resolveBundleAnchorGeo(
-          {
-            sensor_id: next,
-            geo: point?.geo || sensorPoint.value?.geo || nextRow?.geo,
-          },
-          sensorsList
-        ) ||
-        point?.geo ||
-        sensorPoint.value?.geo ||
-        null;
-
-      const nextPoint = {
-        ...point,
-        sensor_id: next,
-        owner: ownerKey,
-        geo: anchorGeo,
-        ownerSensorIds: sensorPoint.value?.ownerSensorIds || point?.ownerSensorIds || null,
-      };
-      const fullBundle = buildOwnerSensorsWithData(nextPoint, sensorsList, null, ownerBundleClustered());
-      const bundleOpts =
-        finalizeOwnerBundleNearAnchor(fullBundle, anchorGeo, next, ownerBundleClustered()) ||
-        point?.ownerSensorsWithData;
-      rebundleOwnerClusterForPoint({
-        ...nextPoint,
-        ownerSensorsWithData: bundleOpts,
-      });
-    })();
   };
 
   // --- Watchers ---
@@ -2483,6 +2735,7 @@ export function useSensors() {
 
     setSensorDataHandler = setSensorData;
     updateSensorLogsHandler = updateSensorLogs;
+    enrichV3Handler = enrichPopupLogsWithV3;
     void runOwnerDecrypt();
 
     watch(
@@ -2501,8 +2754,10 @@ export function useSensors() {
           .sort()
           .join("|");
         const needsDecrypt =
-          measurementBagHasEncryptedValues(popup?.data) || logHasEncryptedValues(popup?.logs);
-        return `${mapState.currentProvider.value}|${sid}|${owner}|${popup?._ownerResolved ? "1" : "0"}|${accountsUnlockKey}|${needsDecrypt}|${popup?.logs?.length || 0}`;
+          measurementBagHasEncryptedValues(popup?.data) ||
+          logHasEncryptedValues(popup?.logs) ||
+          (Array.isArray(popup?.protoPrivate) && popup.protoPrivate.length > 0);
+        return `${mapState.currentProvider.value}|${sid}|${owner}|${popup?._ownerResolved ? "1" : "0"}|${accountsUnlockKey}|${needsDecrypt}`;
       },
       () => {
         void runOwnerDecrypt();
@@ -2526,7 +2781,7 @@ export function useSensors() {
         if (mapState.currentProvider.value !== "realtime") return null;
         const popup = sensorPoint.value;
         const sid = String(route.query.sensor || popup?.sensor_id || "").trim();
-        if (!sid || !popup || String(popup.sensor_id) !== sid) return null;
+        if (!sid || !popup || !sensorIdsEqual(popup.sensor_id, sid)) return null;
 
         const ownerKey = normalizeOwnerKey(popup);
         const anchorGeo = resolveBundleAnchorGeo(popup, sensors.value);
@@ -2617,7 +2872,7 @@ export function useSensors() {
     updateSensorMarkers,
     buildOwnerSensorsWithData: (point, list) =>
       buildOwnerSensorsWithData(point, list, null, ownerBundleClustered()),
-    resolveBundleAnchorGeo: (point, list) => resolveBundleAnchorGeo(point, list),
+    resolveBundleAnchorGeo,
     hydrateOwnerBundleFromUserSensors,
     refreshOpenSensorMapMarker,
     reassertMapMarkers,
@@ -2627,10 +2882,6 @@ export function useSensors() {
     clearSensorLogs,
     resolveSensorType,
     buildSensorPickerRows,
-    shouldClusterOwnerBundle,
-    formatSensorIdShort,
-    sensorTypeTitle,
-    sensorTypeIcon,
     switchOpenSensor,
   };
 }
@@ -2639,7 +2890,6 @@ export function useSensors() {
 
 export {
   resolveSensorType,
-  formatSensorIdShort,
   isSensorAddressReady,
   isPanelSensorPickerReady,
   isPanelOwnerLoading,
@@ -2647,16 +2897,13 @@ export {
   sensorTypeIcon,
 } from "./sensorDeviceTypes";
 export {
-  shouldClusterOwnerBundle,
   buildSensorPickerRows,
   buildOwnerSensorsWithData,
-  buildOwnerSensorsWithDataAsync,
   resolveBundleAnchorGeo,
-  pickSensorIdForMapUnit,
 } from "./sensorOwnerBundle";
 export { ownerBundleHasDualDevices, mapMarkerIcon, refreshMarkerIconsForSensors } from "./sensorMarkerIcons";
 
-export { redecryptDataBag, resolveOwnerAccount, historyPointsToLogs, isOwnerAccountLoggedIn, hydrateRealtimeLogsForSensor };
+export { redecryptDataBag, resolveOwnerAccount, isOwnerAccountLoggedIn };
 export async function refreshRealtimeOwnerDecrypt() {
   await redecryptAllRealtimeHistory(useAccounts().accounts.value);
   return runOwnerDecrypt();

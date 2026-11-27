@@ -56,9 +56,10 @@
           <h3>{{ $t("history.title") }}</h3>
           <HistoryImport />
           <p class="licence-note">
-            {{ $t("Sensor data") }} ©
-            {{ $t("sensors.social contributors") }},
-            <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener">ODbL 1.0</a>
+            {{ $t("Sensor data") }} © {{ $t("sensors.social contributors") }},
+            <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener"
+              >ODbL 1.0</a
+            >
           </p>
         </section>
       </div>
@@ -102,7 +103,6 @@
           <h3>Map settings</h3>
 
           <div class="mapsettings-content">
-
             <!-- выбор даты -->
             <input type="date" v-model="start" :max="maxDate" :disabled="realtime" />
 
@@ -110,7 +110,10 @@
               <ProviderType />
 
               <!-- выбор измерения -->
-              <select v-model="type" v-if="sensorsUI.sensors.length > 0 && availableOptions?.length > 0">
+              <select
+                v-model="type"
+                v-if="sensorsUI.sensors.length > 0 && availableOptions?.length > 0"
+              >
                 <option v-for="opt in availableOptions" :key="opt.value" :value="opt.value">
                   {{ opt.name }}
                 </option>
@@ -888,14 +891,16 @@ defineExpose({
 }
 
 .mapcontrols {
-  bottom: 0;
   box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  left: 0;
-  padding: 0 var(--app-controlsgap) var(--app-controlsgap);
   position: absolute;
+  left: 0;
   right: 0;
+  bottom: 0;
+  padding: 0 var(--app-controlsgap) var(--app-controlsgap);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  justify-content: space-between;
   z-index: 12;
   pointer-events: none;
 }
@@ -1004,7 +1009,6 @@ input[type="date"][disabled] {
 .footercontrol-narrow {
   display: none;
 }
-
 
 #mapsettings {
   min-width: 20vw;
