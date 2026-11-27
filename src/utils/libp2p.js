@@ -1,6 +1,7 @@
 import { noise } from "@chainsafe/libp2p-noise";
+import { gossipsub } from "@chainsafe/libp2p-gossipsub";
+import { yamux } from "@chainsafe/libp2p-yamux";
 import { bootstrap } from "@libp2p/bootstrap";
-import { floodsub } from "@libp2p/floodsub";
 import { mplex } from "@libp2p/mplex";
 import { webRTC } from "@libp2p/webrtc";
 import { webSockets } from "@libp2p/websockets";
@@ -25,10 +26,13 @@ export const createNode = async (config) => {
       }),
     ],
 
-    streamMuxers: [mplex()],
+    streamMuxers: [yamux(), mplex()],
     connectionEncryption: [noise()],
     services: {
-      pubsub: floodsub(),
+      pubsub: gossipsub({
+        allowPublishToZeroPeers: true,
+        fallbackToFloodsub: true,
+      }),
       identify: identifyService(),
     },
     peerDiscovery: [

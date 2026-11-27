@@ -3,6 +3,7 @@
     <div class="chart-section-chart">
       <div class="chart-wrapper">
         <Chart ref="chartRef" constructor-type="stockChart" :options="chartOptions" />
+        <slot name="locked" />
       </div>
       <!-- One panel under the chart: what is measured, and how it is shown when there is a choice. -->
       <div class="chart-controls">
@@ -86,7 +87,6 @@
 
 <script setup>
 import { ref, watch, computed, nextTick, onMounted, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import Highcharts from "highcharts";
 import stockInit from "highcharts/modules/stock";
@@ -98,6 +98,7 @@ import { useMap } from "@/composables/useMap";
 import { getPeriodBounds } from "@/utils/date";
 import { applyReadableScale, formatScaleValue } from "@/utils/chart/readableScale";
 import { canonicalMeasurementId, measurementValue } from "@/measurements/aliases";
+import { sensorIdsEqual } from "@/utils/sensorId";
 import { HUMID_RH, correctForHumidity, pickKappa } from "@/utils/humidityCorrection";
 
 stockInit(Highcharts);
@@ -112,15 +113,20 @@ const props = defineProps({
   geoAddresses: { type: Object, default: () => ({}) },
   showGeoInTooltip: { type: Boolean, default: false },
   addressForTimestamp: { type: Function, default: null },
+  point: { type: Object, default: null },
 });
+
+function isInsightChartPoint(point) {
+  const model = String(point?.device_model || point?.idbSensorType || "").toLowerCase();
+  return model === "insight";
+}
 
 const emit = defineEmits(["activeLegendChange"]);
 const safeLog = computed(() => (Array.isArray(props.log) ? props.log : []));
 
-const route = useRoute();
-const router = useRouter();
 const { t: tr, locale } = useI18n();
 const mapState = useMap();
+const legendOverride = ref(null);
 
 const chartRef = ref(null);
 
@@ -220,18 +226,31 @@ const visibleLegend = computed(() => {
   return legend;
 });
 
-// Определяет активный ключ легенды на основе текущего типа единицы измерения
+// Chart tabs stay local. Writing `type` into the URL rebuilds every map marker.
 const activeLegendKey = computed(() => {
+  const visible = visibleLegend.value;
+  const override = legendOverride.value;
+  if (override && visible.some((x) => x.key === override)) return override;
+
   const cur = String(mapState.currentUnit.value || "").toLowerCase();
   const currentGroup = GROUPS_LOOKUP[cur];
-  if (currentGroup && visibleLegend.value.some((x) => x.key === currentGroup)) return currentGroup;
+  if (currentGroup && visible.some((x) => x.key === currentGroup)) return currentGroup;
 
-  if (!currentGroup && UNITS_FOUND.value.has(cur) && visibleLegend.value.some((x) => x.key === cur)) {
+  if (!currentGroup && UNITS_FOUND.value.has(cur) && visible.some((x) => x.key === cur)) {
     return cur;
   }
 
-  return visibleLegend.value[0]?.key || null;
+  return visible[0]?.key || null;
 });
+
+watch(
+  () => props.point?.sensor_id,
+  (next, prev) => {
+    if (sensorIdsEqual(next, prev)) return;
+    legendOverride.value = null;
+    UNITS_FOUND.value = new Set();
+  }
+);
 
 watch(
   activeLegendKey,
@@ -244,26 +263,17 @@ watch(
 const isRealtime = computed(() => mapState.timelineMode.value === "realtime");
 
 // Получаем экземпляр Highcharts для работы с графиком
-const chart = computed(() => chartRef.value?.chart);
+// Highcharts-vue assigns `.chart` after mount. A computed caches the first
+// undefined and never redraws JSON recap series.
+const chart = {
+  get value() {
+    return chartRef.value?.chart || null;
+  },
+};
 
 // Флаг для предотвращения конкурирующих обновлений графика
 const isUpdatingChart = ref(false);
-
-// Вычисляем уникальные единицы измерения для осей Y
-const uniqueUnits = computed(() => [...new Set(chartSeries.value.map((s) => s.unit))]);
-
-// Создаем маппинг единиц измерения на индексы осей
-const unitToAxisMapping = computed(() =>
-  Object.fromEntries(uniqueUnits.value.map((unit, index) => [unit, index]))
-);
-
-// Подготавливаем серии с назначенными осями Y
-const preparedSeries = computed(() =>
-  chartSeries.value.map((series) => ({
-    ...series,
-    yAxis: unitToAxisMapping.value[series.unit] ?? 0,
-  }))
-);
+const pendingChartUpdate = ref(false);
 
 const cssColor = (color) => {
   if (!color || typeof document === "undefined") return color;
@@ -443,11 +453,6 @@ const trimYAxes = (chartInstance, units) => {
   }
 };
 
-// Конфигурация осей Y
-const yAxisConfig = computed(() =>
-  uniqueUnits.value.map((unit) => axisOptionsFor(unit, yScalesByUnit.value.get(unit) || null))
-);
-
 const scaleHints = computed(() => {
   const hints = [];
   yScalesByUnit.value.forEach((scale, unit) => {
@@ -475,14 +480,6 @@ const AXIS_DATE_FORMATS = {
   month: "%m.%Y",
   year: "%Y",
 };
-
-const xAxisConfig = computed(() => ({
-  type: "datetime",
-  dateTimeLabelFormats: AXIS_DATE_FORMATS,
-  tickPixelInterval: 90,
-  labels: { style: { whiteSpace: "nowrap" } },
-  ordinal: false, // Убираем ordinal для правильного отображения длительных периодов
-}));
 
 // Live tooltip context — Highcharts may keep an old formatter; read at hover time.
 const tooltipContext = {
@@ -569,15 +566,22 @@ watch(
   { deep: true }
 );
 
-// Основная конфигурация графика
-const chartOptions = computed(() => ({
+// Keep options identity stable. Binding live series here made Highcharts-vue
+// rebuild the stock chart on every legend/decrypt update on top of updateChart().
+const chartOptions = {
   chart: {
     type: "spline",
     height: 400,
-    spacingTop: yScalesByUnit.value.size ? 26 : 10,
+    spacingTop: 10,
+    animation: { duration: 700 },
     events: {
       render() {
         hideNavigatorPeakLabels(this);
+      },
+      load() {
+        if (safeLog.value.length > 0 && UNITS_FOUND.value.size > 0) {
+          void updateChart(safeLog.value);
+        }
       },
     },
   },
@@ -589,8 +593,14 @@ const chartOptions = computed(() => ({
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     useUTC: false,
   },
-  xAxis: xAxisConfig.value,
-  yAxis: yAxisConfig.value,
+  xAxis: {
+    type: "datetime",
+    dateTimeLabelFormats: AXIS_DATE_FORMATS,
+    tickPixelInterval: 90,
+    labels: { style: { whiteSpace: "nowrap" } },
+    ordinal: false,
+  },
+  yAxis: [{ title: { text: null }, opposite: false }],
   tooltip: tooltipConfig.value,
   navigator: {
     xAxis: {
@@ -608,21 +618,20 @@ const chartOptions = computed(() => ({
   },
   plotOptions: {
     series: {
+      animation: { duration: 700 },
       showInNavigator: true,
       dataGrouping: {
         enabled: false,
       },
-      // Оптимизация для больших данных
-      turboThreshold: 0, // Отключаем turbo режим для точного отображения
+      turboThreshold: 0,
     },
   },
-  series: preparedSeries.value,
+  series: [],
   credits: { enabled: false },
-  // Дополнительные оптимизации
   boost: {
-    enabled: false, // Отключаем boost для точного отображения
+    enabled: false,
   },
-}));
+};
 
 /**
  * Обновление графика с поддержкой realtime и remote режимов
@@ -673,20 +682,44 @@ const presentSeries = (log, legendKey) => {
   };
 }
 
+let chartReadyRetries = 0;
 const updateChart = async (log, legendKey = null) => {
-  if (!chartRef.value || !Array.isArray(log) || log.length === 0) return;
+  if (!chartRef.value) return;
+  if (isUpdatingChart.value) {
+    pendingChartUpdate.value = true;
+    return;
+  }
+  if (!Array.isArray(log) || log.length === 0) return;
+  if (!chart.value) {
+    if (chartReadyRetries < 20) {
+      chartReadyRetries += 1;
+      requestAnimationFrame(() => void updateChart(safeLog.value, legendKey));
+    }
+    return;
+  }
+  chartReadyRetries = 0;
 
-  // Предотвращаем конкурирующие обновления
-  if (isUpdatingChart.value) return;
   isUpdatingChart.value = true;
 
+  try {
+    do {
+      pendingChartUpdate.value = false;
+      const latestLog = Array.isArray(safeLog.value) && safeLog.value.length ? safeLog.value : log;
+      const currentLegendKey =
+        activeLegendKey.value || legendKey || visibleLegend.value[0]?.key;
+      if (!currentLegendKey || !chart.value) break;
+
+      await drawChartSeries(latestLog, currentLegendKey);
+    } while (pendingChartUpdate.value);
+  } finally {
+    isUpdatingChart.value = false;
+  }
+};
+
+const drawChartSeries = async (log, currentLegendKey) => {
   const timelineMode = mapState.timelineMode.value;
 
   try {
-    const currentLegendKey = legendKey || activeLegendKey.value || visibleLegend.value[0]?.key;
-    if (!currentLegendKey) return;
-
-    if (!chart.value) return;
 
     const presented = presentSeries(log, currentLegendKey);
     yScalesByUnit.value = presented.scales;
@@ -894,19 +927,31 @@ const updateChart = async (log, legendKey = null) => {
         chart.value.redraw(false);
       }
     }
-  } finally {
-    isUpdatingChart.value = false;
+  } catch (error) {
+    console.warn("Error updating chart:", error);
   }
 };
 
 // Cache series per (legendKey, logSignature) to speed up tab switches
 const seriesCache = new Map();
+function numericSample(log) {
+  if (!Array.isArray(log) || log.length === 0) return 0;
+  const last = log[log.length - 1]?.data;
+  if (!last || typeof last !== "object") return 0;
+  let count = 0;
+  for (const value of Object.values(last)) {
+    if (typeof value === "number" && Number.isFinite(value)) count += 1;
+  }
+  return count;
+}
+
 function getLogSignature(log, revision = "") {
   if (!Array.isArray(log) || log.length === 0) return `0-0-${revision}`;
   const lastTs = log[log.length - 1]?.timestamp || 0;
   const rev = revision === "" || revision == null ? "" : String(revision);
-  if (!rev) return `${log.length}-${lastTs}`;
-  return `${log.length}-${lastTs}-${rev}`;
+  const nums = numericSample(log);
+  if (!rev) return `${log.length}-${lastTs}-${nums}`;
+  return `${log.length}-${lastTs}-${nums}-${rev}`;
 }
 
 /**
@@ -1256,7 +1301,7 @@ function applySeriesDiffToChart(chartInstance, newSeries) {
     }
   });
 
-  // Add/update series
+  let added = false;
   raw.forEach((ns) => {
     const existing = chartInstance.get(ns.id);
     if (existing) {
@@ -1279,11 +1324,15 @@ function applySeriesDiffToChart(chartInstance, newSeries) {
       existing.setData(ns.data, false, false, false);
       if (typeof prevVis[ns.id] === "boolean") existing.setVisible(prevVis[ns.id], false);
     } else {
-      chartInstance.addSeries({ ...ns, visible: true }, false);
+      added = true;
+      chartInstance.addSeries(
+        { ...ns, visible: true, animation: { duration: 700 } },
+        false
+      );
     }
   });
 
-  chartInstance.redraw(false);
+  chartInstance.redraw(added);
 }
 
 // Возвращает допустимую длину разрыва между точками для текущего режима таймлайна
@@ -1376,16 +1425,7 @@ function clearChartInstantly() {
  */
 function onLegendClick(legendKey) {
   if (legendKey === activeLegendKey.value) return;
-  let targetType;
-  if (GROUPS[legendKey]) {
-    // For groups, take the first available member from the group
-    targetType = GROUPS[legendKey].members.find((m) => UNITS_FOUND.value.has(m));
-  } else {
-    // For single parameters, use the key directly
-    targetType = legendKey;
-  }
-  // Update URL and composable for deep-linking
-  mapState.setMapSettings(route, router, { type: targetType });
+  legendOverride.value = legendKey;
 }
 
 // Основной watcher для обновления графика при изменении данных, легенды или периода
@@ -1396,24 +1436,24 @@ watch(
     () => activeLegendKey.value,
     () => mapState.timelineMode.value,
     () => mapState.currentDate.value,
+    () => UNITS_FOUND.value.size,
   ],
   async (
     [log, logRevision, legendKey, timelineMode, currentDate],
     [oldLog, oldLogRevision, oldLegendKey, oldTimelineMode, oldCurrentDate]
   ) => {
-    if (!chartRef.value || isUpdatingChart.value) return;
+    if (!chartRef.value) return;
+    if (isUpdatingChart.value) {
+      pendingChartUpdate.value = true;
+      return;
+    }
 
-    // Мгновенно очищаем график при переключении режимов таймлайна, даты или легенды
-    if (
-      timelineMode !== oldTimelineMode ||
-      currentDate !== oldCurrentDate ||
-      legendKey !== oldLegendKey ||
-      logRevision !== oldLogRevision
-    ) {
+    // Wipe only when the day/period changes. Legend swaps keep the chart and draw new series.
+    if (timelineMode !== oldTimelineMode || currentDate !== oldCurrentDate) {
       clearChartInstantly();
-      if (timelineMode !== oldTimelineMode || logRevision !== oldLogRevision) {
-        seriesCache.clear();
-      }
+      if (timelineMode !== oldTimelineMode) seriesCache.clear();
+    } else if (legendKey !== oldLegendKey || logRevision !== oldLogRevision) {
+      seriesCache.clear();
     }
 
     if (!Array.isArray(log) || log.length === 0) return;
@@ -1430,7 +1470,11 @@ watch(
 watch(
   [() => safeLog.value.length, () => props.logRevision],
   async ([newLen, logRevision], [oldLen, oldLogRevision]) => {
-    if (!isRealtime.value || !chartRef.value || isUpdatingChart.value) return;
+    if (!isRealtime.value || !chartRef.value) return;
+    if (isUpdatingChart.value) {
+      pendingChartUpdate.value = true;
+      return;
+    }
     const lengthIncreased = newLen > oldLen;
     const revisionChanged = logRevision !== oldLogRevision;
     if (!lengthIncreased && !revisionChanged) return;
@@ -1440,32 +1484,21 @@ watch(
   }
 );
 
-// Watcher для принудительного обновления при изменении режима таймлайна
-watch(
-  () => mapState.timelineMode.value,
-  async (newMode, oldMode) => {
-    if (newMode !== oldMode && chartRef.value && safeLog.value.length > 0) {
-      // Очищаем кэш серий при смене режима таймлайна
-      seriesCache.clear();
-
-      // Принудительно обновляем график при смене режима таймлайна
-      await updateChart(safeLog.value, activeLegendKey.value);
-    }
-  }
-);
-
 // Обновление найденных единиц измерения и графика при изменении данных
 watch(
-  () => safeLog.value,
-  (newLog) => {
-    if (!newLog.length) {
-      UNITS_FOUND.value = new Set();
-      seriesCache.clear();
-      if (chartRef.value) clearChartInstantly();
+  () => [
+    safeLog.value,
+    String(props.point?.device_model || ""),
+    String(props.point?.idbSensorType || ""),
+  ],
+  ([newLog]) => {
+    if (!Array.isArray(newLog) || !newLog.length) {
+      // Keep the current legend while logs are in-flight (login decrypt / URL rewrite).
       return;
     }
 
     const newUnits = new Set();
+    if (isInsightChartPoint(props.point)) newUnits.add("co2");
     for (const point of newLog) {
       if (!point.data) continue;
       const hasGc = Object.keys(point.data).some((id) => id.toLowerCase() === "gc");
@@ -1478,10 +1511,6 @@ watch(
       });
     }
     UNITS_FOUND.value = newUnits;
-
-    if (!isRealtime.value) {
-      updateChart(newLog);
-    }
   },
   { immediate: true }
 );
@@ -1494,33 +1523,23 @@ watch(
     const ids = new Set(idsArr);
     const cur = mapState.currentUnit.value;
 
-    // Если есть данные и график еще не отрисован, принудительно обновляем
-    if (safeLog.value.length > 0 && chartRef.value && !isUpdatingChart.value) {
-      updateChart(safeLog.value);
+    const override = legendOverride.value;
+    if (override) {
+      const group = GROUPS[override];
+      if (group ? group.members.some((m) => ids.has(m)) : ids.has(override)) return;
     }
 
-    // Check if current unit is available
     const curAvailable = isMapUnitAvailableInData(cur, ids);
     if (curAvailable) return;
 
-    // Find first available parameter by checking groups in order
-    let next = null;
+    let nextGroup = null;
     for (const [groupKey, groupInfo] of Object.entries(GROUPS)) {
-      const firstAvailable = groupInfo.members.find((member) => ids.has(member));
-      if (firstAvailable) {
-        next = firstAvailable;
+      if (groupInfo.members.some((member) => ids.has(member))) {
+        nextGroup = groupKey;
         break;
       }
     }
-
-    // If no group member found, use the first available parameter
-    if (!next) {
-      next = idsArr[0];
-    }
-
-    if (next) {
-      mapState.setMapSettings(route, router, { type: next });
-    }
+    legendOverride.value = nextGroup || idsArr[0] || null;
   },
   { immediate: true }
 );

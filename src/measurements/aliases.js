@@ -1,6 +1,15 @@
 /** Log keys that are the same measurement under another name. */
 const MEASUREMENT_ID_ALIAS = {
   radiation: "gc",
+  dba: "noisemax",
+  dba_max: "noisemax",
+  dbamax: "noisemax",
+  noise_max: "noisemax",
+  noisemax_dba: "noisemax",
+  dba_avg: "noiseavg",
+  dbaavg: "noiseavg",
+  noise_avg: "noiseavg",
+  noiseavg_dba: "noiseavg",
 };
 
 /**

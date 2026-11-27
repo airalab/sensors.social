@@ -3,6 +3,13 @@ import { settings } from "@config";
 import { dayISO } from "@/utils/date";
 import { getDefaultMapView } from "@/utils/map/defaultView";
 import { canonicalMeasurementId } from "@/measurements/aliases";
+import { displayAddress } from "@/utils/ss58Display";
+
+function idForQuery(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  return displayAddress(raw) || raw;
+}
 
 const initialMapView = getDefaultMapView();
 
@@ -199,6 +206,9 @@ export function useMap() {
       }
     }
 
+    if (newQuery.sensor) newQuery.sensor = idForQuery(newQuery.sensor);
+    if (newQuery.owner) newQuery.owner = idForQuery(newQuery.owner);
+
     router.replace({ query: newQuery }).catch(() => {});
   };
 
@@ -253,6 +263,9 @@ export function useMap() {
       );
     }
 
+    const sensorForUrl = route.query.sensor ? idForQuery(route.query.sensor) : "";
+    const ownerForUrl = route.query.owner ? idForQuery(route.query.owner) : "";
+
     // Синхронизируем URL если нужно
     const urlNeedsUpdate =
       route.query.type !== currentUnitValue ||
@@ -260,7 +273,9 @@ export function useMap() {
       route.query.provider !== currentProviderValue ||
       route.query.lat !== String(safeMapPositionValue.lat) ||
       route.query.lng !== String(safeMapPositionValue.lng) ||
-      route.query.zoom !== String(safeMapPositionValue.zoom);
+      route.query.zoom !== String(safeMapPositionValue.zoom) ||
+      (sensorForUrl && route.query.sensor !== sensorForUrl) ||
+      (ownerForUrl && route.query.owner !== ownerForUrl);
 
     if (urlNeedsUpdate) {
       const newQuery = {
@@ -273,10 +288,8 @@ export function useMap() {
         zoom: safeMapPositionValue.zoom,
       };
 
-      // Сохраняем sensor если он есть в route.query
-      if (route.query.sensor) {
-        newQuery.sensor = route.query.sensor;
-      }
+      if (sensorForUrl) newQuery.sensor = sensorForUrl;
+      if (ownerForUrl) newQuery.owner = ownerForUrl;
 
       router.replace({ query: newQuery }).catch(() => {});
     }

@@ -66,6 +66,7 @@
 
 <script setup>
 import { sensorName } from "@/utils/addressNames";
+import { formatAddress } from "@/utils/ss58Display";
 import { sensorPin } from "@/utils/sensorPins";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -111,7 +112,10 @@ const rowTitle = (row) =>
   govPin(row) ? sensorTypeTitle("gov") : `Sensor (${sensorTypeTitle(row.type)})`;
 const rowMeta = (row) => {
   const pin = govPin(row);
-  return pin ? [pin.station, pin.network].filter(Boolean).join(" · ") : sensorName(row.sensorId);
+  if (pin) return [pin.station, pin.network].filter(Boolean).join(" · ");
+  const name = sensorName(row.sensorId);
+  const addr = formatAddress(row.sensorId);
+  return addr && addr !== name ? `${name} · ${addr}` : name || addr;
 };
 
 const onSelect = (row) => {

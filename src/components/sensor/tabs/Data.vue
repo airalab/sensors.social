@@ -140,11 +140,7 @@
           </div>
         </div>
 
-        <div
-          v-if="chartHasData"
-          class="chart-area"
-          :class="{ 'chart-area--locked': showEncryptedLoginNotice }"
-        >
+        <div v-if="chartHasData" class="chart-area">
           <ChartHealthWarning
             v-if="!isDemo"
             :log="log"
@@ -153,36 +149,35 @@
           />
           <Chart
             :log="log"
+            :point="point"
             :log-revision="chartLogRevision"
             :geo-addresses="chartGeoAddresses"
             :show-geo-in-tooltip="showChartGeoInTooltip"
             :address-for-timestamp="chartAddressForTimestamp"
             @active-legend-change="chartActiveLegendKey = $event"
-          />
-          <div
-            v-if="showEncryptedLoginNotice"
-            class="chart-encrypted-overlay"
-            role="status"
-            aria-live="polite"
           >
-            <div class="chart-encrypted-overlay__card">
-              <font-awesome-icon
-                icon="fa-solid fa-lock"
-                class="chart-encrypted-overlay__icon"
-                aria-hidden="true"
-              />
-              <p class="chart-encrypted-overlay__text">
-                {{
-                  encryptedNoticeIsLogin
-                    ? t("sensorpopup.encrypted_login_notice")
-                    : t("sensorpopup.encrypted_decrypt_pending")
-                }}
-              </p>
-              <router-link to="/login/" class="chart-encrypted-overlay__cta">
-                {{ t("Login") }}
-              </router-link>
-            </div>
-          </div>
+            <template v-if="showEncryptedLoginNotice" #locked>
+              <div class="chart-encrypted-overlay" role="status" aria-live="polite">
+                <div class="chart-encrypted-overlay__card">
+                  <font-awesome-icon
+                    icon="fa-solid fa-lock"
+                    class="chart-encrypted-overlay__icon"
+                    aria-hidden="true"
+                  />
+                  <p class="chart-encrypted-overlay__text">
+                    {{ encryptedOverlayText }}
+                  </p>
+                  <router-link
+                    v-if="encryptedNoticeIsLogin"
+                    to="/login/"
+                    class="chart-encrypted-overlay__cta"
+                  >
+                    {{ t("Login") }}
+                  </router-link>
+                </div>
+              </div>
+            </template>
+          </Chart>
         </div>
         <div v-else-if="showNoDataMessage" class="no-data-message">
           {{ $t("No data available") }}
@@ -286,7 +281,12 @@ import {
 } from "@/utils/calculations/sensor/logs_health.js";
 import measurements from "../../../measurements";
 import { MEASUREMENT_GROUP_LOOKUP, MEASUREMENT_GROUPS } from "@/measurements/groups";
-import { bagHasEncryptedForLegend, logHasEncryptedForLegend } from "@/utils/sensorValueCrypto";
+import {
+  bagHasEncryptedForLegend,
+  bagHasNumericForLegend,
+  logHasEncryptedForLegend,
+  logHasNumericForLegend,
+} from "@/utils/sensorValueCrypto";
 import { useDemoReadings, demoChartTypes } from "@/composables/useDemoReadings";
 
 import AQI from "../widgets/AQI.vue";
@@ -505,14 +505,32 @@ const activeLegendHasEncryptedValues = computed(() => {
   );
 });
 
+const activeLegendHasNumericValues = computed(() => {
+  const legend = activeChartLegend.value;
+  if (!legend) return false;
+  return (
+    logHasNumericForLegend(props.log, legend) ||
+    bagHasNumericForLegend(props.point?.data, legend)
+  );
+});
+
 const showEncryptedLoginNotice = computed(() => {
-  if (!Boolean(ownerKey.value) || !activeLegendHasEncryptedValues.value) return false;
+  if (!activeLegendHasEncryptedValues.value) return false;
+  // Partial decrypt (owner changed mid-day, some hours still sealed): show the chart.
+  if (activeLegendHasNumericValues.value) return false;
   return true;
 });
 
 const encryptedNoticeIsLogin = computed(
   () => showEncryptedLoginNotice.value && !isOwnerLoggedIn.value
 );
+
+const encryptedOverlayText = computed(() => {
+  if (encryptedNoticeIsLogin.value) return t("sensorpopup.encrypted_login_notice");
+  if (props.point?._decryptNoCiphertext) return t("sensorpopup.encrypted_decrypt_unavailable");
+  if (props.point?._decryptAttempted) return t("sensorpopup.encrypted_decrypt_mismatch");
+  return t("sensorpopup.encrypted_decrypt_pending");
+});
 
 const logsHealthSensorUserHide = computed(() =>
   Boolean(
@@ -1142,13 +1160,6 @@ watch(
   position: relative;
 }
 
-.chart-area--locked :deep(.chart-section-chart),
-.chart-area--locked :deep(.custom-legend) {
-  filter: blur(2px);
-  pointer-events: none;
-  user-select: none;
-}
-
 .chart-encrypted-overlay {
   position: absolute;
   inset: 0;
@@ -1159,6 +1170,7 @@ watch(
   padding: var(--gap);
   background: color-mix(in srgb, var(--color-light, #fff) 35%, transparent);
   backdrop-filter: blur(1px);
+  pointer-events: auto;
 }
 
 .chart-encrypted-overlay__card {

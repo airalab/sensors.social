@@ -5,9 +5,17 @@ import { hasValidCoordinates, fetchJson } from "../../utils";
 import { dayISO, dayBoundsUnix, timelineFetchBounds } from "../../date";
 import { mapLayerUnitIds, sortMapLayerUnits } from "../../../measurements/tools";
 import { settings, excluded_sensors } from "@config";
-import { decryptMeasurementBag } from "@/utils/sensorValueCrypto";
+import {
+  decryptMeasurementBag,
+  isEncryptedPlaceholderValue,
+  measurementBagHasEncryptedValues,
+} from "@/utils/sensorValueCrypto";
+import { decryptProtoPrivate } from "@/utils/proto/decodeEnvelope";
+import { normalizeMeasurementBag } from "@/utils/pressureMmHg";
 import { feedStation } from "@/utils/sensorPins";
 import { stationHistoryAsSensorPayload } from "../feeds";
+import { fetchRosemanV3SensorPoints, protoPointsToHistory } from "./rosemanV3";
+import { canonicalHexSensorId, sensorIdAliases, sensorIdsEqual } from "@/utils/sensorId";
 
 // Глобальные константы провайдеров
 const REMOTE_PROVIDER = new Provider(settings.REMOTE_PROVIDER);
@@ -22,10 +30,10 @@ const sensorV2Recent = new Map();
 const SENSOR_V2_RECENT_MS = 60_000;
 
 async function decryptSensorHistoryEntries(sensorId, entries, ownerAddress) {
-  const owner = normalizeOwnerKey({ owner: ownerAddress });
-  if (!owner || !Array.isArray(entries) || entries.length === 0) return entries;
+  if (!Array.isArray(entries) || entries.length === 0) return entries;
 
-  let ownerAccount = { address: owner };
+  const owner = normalizeOwnerKey({ owner: ownerAddress });
+  const accounts = [];
   try {
     const { useAccounts } = await import("@/composables/useAccounts");
     const list = useAccounts().accounts.value;
@@ -33,37 +41,183 @@ async function decryptSensorHistoryEntries(sensorId, entries, ownerAddress) {
       String(a?.phrase || "").trim() ||
       String(a?.seedHex || "").trim() ||
       (a?.seed instanceof Uint8Array && a.seed.length >= 32);
-    const byOwner = list.find(
-      (a) => String(a?.address || "").trim() === owner && hasSecret(a)
-    );
-    if (byOwner) ownerAccount = byOwner;
-    else {
-      const sid = String(sensorId || "").trim();
-      const bySensor = list.find(
-        (a) => String(a?.address || "").trim() === sid && hasSecret(a)
+    const sid = String(sensorId || "").trim();
+    const withSecret = (Array.isArray(list) ? list : []).filter(hasSecret);
+    const preferred =
+      withSecret.find((a) => owner && String(a?.address || "").trim() === owner) ||
+      withSecret.find((a) => sid && String(a?.address || "").trim() === sid) ||
+      withSecret.find(
+        (a) =>
+          sid &&
+          Array.isArray(a.devices) &&
+          a.devices.some((deviceId) => String(deviceId).trim() === sid)
       );
-      if (bySensor) ownerAccount = bySensor;
-      else {
-        const byDevice = list.find(
-          (a) =>
-            hasSecret(a) &&
-            Array.isArray(a.devices) &&
-            a.devices.some((deviceId) => String(deviceId).trim() === sid)
-        );
-        if (byDevice) ownerAccount = byDevice;
-      }
+    if (preferred) accounts.push(preferred);
+    for (const account of withSecret) {
+      if (account !== preferred) accounts.push(account);
     }
   } catch {
     // Fall back to address-only lookup inside decryptMeasurementBag.
   }
+  if (accounts.length === 0 && owner) accounts.push({ address: owner });
+  if (accounts.length === 0) return entries;
 
-  return Promise.all(
-    entries.map(async (entry) => {
-      if (!entry?.data || typeof entry.data !== "object") return entry;
-      const data = await decryptMeasurementBag(sensorId, entry.data, ownerAccount);
-      return data === entry.data ? entry : { ...entry, data };
-    })
-  );
+  const out = entries.slice();
+  for (let i = 0; i < out.length; i += 1) {
+    let row = out[i];
+    const hasProto = Array.isArray(row?.protoPrivate) && row.protoPrivate.length > 0;
+    const hasEnc = measurementBagHasEncryptedValues(row?.data);
+    if (!hasProto && !hasEnc) continue;
+
+    for (const ownerAccount of accounts) {
+      if (Array.isArray(row?.protoPrivate) && row.protoPrivate.length > 0) {
+        row = await decryptProtoPrivate({ ...row, sensor_id: sensorId }, ownerAccount);
+      }
+      if (!row?.data || typeof row.data !== "object") continue;
+      const data = await decryptMeasurementBag(sensorId, row.data, ownerAccount);
+      const normalized = normalizeMeasurementBag(data);
+      row = normalized === row.data ? row : { ...row, data: normalized };
+      const protoDone = !Array.isArray(row.protoPrivate) || row.protoPrivate.length === 0;
+      const jsonDone = !measurementBagHasEncryptedValues(row.data);
+      if (protoDone && jsonDone) break;
+    }
+    out[i] = row;
+    if (i % 24 === 23) {
+      await new Promise((resolve) => {
+        if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => resolve());
+        else setTimeout(resolve, 0);
+      });
+    }
+  }
+  return out;
+}
+
+function mergeMeasurementBags(jsonData, protoData) {
+  const out = { ...(jsonData || {}) };
+  for (const [key, value] of Object.entries(protoData || {})) {
+    if (value == null || value === "") continue;
+    const current = out[key];
+    if (current == null || current === "" || isEncryptedPlaceholderValue(current)) {
+      out[key] = value;
+      continue;
+    }
+    if (isEncryptedPlaceholderValue(value)) continue;
+    if (typeof value !== "string") out[key] = value;
+  }
+  return out;
+}
+
+function mergeProtoOntoLogs(jsonLogs, protoLogs) {
+  const proto = Array.isArray(protoLogs) ? protoLogs : [];
+  const json = Array.isArray(jsonLogs) ? jsonLogs : [];
+  if (proto.length === 0) return json;
+
+  const used = new Set();
+  const MATCH_SEC = 120;
+  const merged = json.map((row) => {
+    const ts = Number(row?.timestamp);
+    if (!Number.isFinite(ts)) return row;
+    let best = -1;
+    let bestDiff = Infinity;
+    for (let i = 0; i < proto.length; i += 1) {
+      if (used.has(i)) continue;
+      const protoTs = Number(proto[i]?.timestamp);
+      if (!Number.isFinite(protoTs)) continue;
+      const diff = Math.abs(protoTs - ts);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        best = i;
+      }
+    }
+    if (best < 0 || bestDiff > MATCH_SEC) return row;
+    used.add(best);
+    const protoRow = proto[best];
+    return {
+      ...row,
+      data: mergeMeasurementBags(row.data, protoRow.data),
+      protoPrivate: protoRow.protoPrivate || row.protoPrivate || null,
+      proto: row.proto === true || protoRow.proto === true,
+      device_model: row.device_model || protoRow.device_model,
+      geo: row.geo || protoRow.geo,
+    };
+  });
+
+  for (let i = 0; i < proto.length; i += 1) {
+    if (!used.has(i)) merged.push(proto[i]);
+  }
+  return merged.sort((a, b) => Number(a.timestamp) - Number(b.timestamp));
+}
+
+function logsAlreadyHaveJsonRecap(logs) {
+  if (!Array.isArray(logs) || logs.length === 0) return false;
+  let numeric = 0;
+  for (const row of logs) {
+    if (row?.proto || (Array.isArray(row?.protoPrivate) && row.protoPrivate.length > 0)) {
+      return false;
+    }
+    const data = row?.data;
+    if (!data || typeof data !== "object") continue;
+    for (const value of Object.values(data)) {
+      if (isEncryptedPlaceholderValue(value)) return false;
+      if (typeof value === "number" && Number.isFinite(value)) numeric += 1;
+    }
+  }
+  return numeric > 0;
+}
+
+async function hydrateProtoHistory(
+  sensorId,
+  logs,
+  startTimestamp,
+  endTimestamp,
+  signal = null
+) {
+  if (signal?.aborted) return Array.isArray(logs) ? logs : [];
+  const base = Array.isArray(logs) ? logs : [];
+  if (logsAlreadyHaveJsonRecap(base)) return base;
+  try {
+    const points = await fetchRosemanV3SensorPoints(
+      sensorId,
+      startTimestamp,
+      endTimestamp,
+      signal
+    );
+    if (!points.length) return base;
+    return mergeProtoOntoLogs(base, protoPointsToHistory(points));
+  } catch {
+    return base;
+  }
+}
+
+/** Merge Connectivity Protocol V3 onto already-shown V2 recap. Never throws. */
+export async function enrichSensorLogsWithV3(
+  sensorId,
+  logs,
+  startTimestamp,
+  endTimestamp,
+  signal = null,
+  owner = null,
+  meta = null
+) {
+  const base = Array.isArray(logs) ? logs : [];
+  if (feedStation(sensorId) || logsAlreadyHaveJsonRecap(base)) return base;
+  try {
+    const hydrated = await hydrateProtoHistory(
+      sensorId,
+      base,
+      startTimestamp,
+      endTimestamp,
+      signal
+    );
+    if (hydrated === base) return base;
+    let next = hydrated;
+    if (owner) {
+      next = await decryptSensorHistoryEntries(sensorId, next, owner);
+    }
+    return presentHistoryLogs(sensorId, next, meta);
+  } catch {
+    return base;
+  }
 }
 
 
@@ -75,16 +229,31 @@ export function sensorFetchBoundsForDate(isoDate) {
   return timelineFetchBounds(isoDate, "day");
 }
 
-async function fetchSensorV2Payload(sensorId, startTimestamp, endTimestamp, signal = null) {
-  const sid = String(sensorId || "");
-  if (!sid) return null;
+function v2SensorIds(sensorId) {
+  const original = String(sensorId || "").trim();
+  const ids = [];
+  const seen = new Set();
+  const push = (id) => {
+    const value = String(id || "").trim();
+    if (!value || seen.has(value)) return;
+    seen.add(value);
+    ids.push(value);
+  };
+  push(original);
+  for (const id of sensorIdAliases(original)) push(id);
+  return ids;
+}
 
+function v2PayloadHasHistory(payload) {
+  return Array.isArray(payload?.result) && payload.result.length > 0;
+}
+
+async function fetchOneSensorV2(sid, startTimestamp, endTimestamp, signal = null) {
   const key = `${sid}:${startTimestamp}:${endTimestamp}`;
   const recent = sensorV2Recent.get(key);
   if (recent && Date.now() - recent.ts < SENSOR_V2_RECENT_MS) {
     return recent.payload;
   }
-
   if (sensorV2Inflight.has(key)) {
     return sensorV2Inflight.get(key);
   }
@@ -107,6 +276,20 @@ async function fetchSensorV2Payload(sensorId, startTimestamp, endTimestamp, sign
 
   sensorV2Inflight.set(key, promise);
   return promise;
+}
+
+async function fetchSensorV2Payload(sensorId, startTimestamp, endTimestamp, signal = null) {
+  const ids = v2SensorIds(sensorId);
+  if (ids.length === 0) return null;
+
+  let fallback = null;
+  for (const sid of ids) {
+    if (signal?.aborted) return fallback;
+    const payload = await fetchOneSensorV2(sid, startTimestamp, endTimestamp, signal);
+    if (v2PayloadHasHistory(payload)) return payload;
+    if (payload != null && fallback == null) fallback = payload;
+  }
+  return fallback;
 }
 
 // Cache latest v2 meta for a sensor to drive UI (owner sensors dropdown, etc.)
@@ -188,7 +371,13 @@ export function inferDeviceTypeFromLog(log) {
 
   const hasCo2 = keys.has("co2");
   const hasPm = keys.has("pm25") || keys.has("pm10");
-  const hasNoise = keys.has("noiseavg") || keys.has("noisemax") || keys.has("noise");
+  const hasNoise =
+    keys.has("noiseavg") ||
+    keys.has("noisemax") ||
+    keys.has("noise") ||
+    keys.has("dba") ||
+    keys.has("dba_max") ||
+    keys.has("dba_avg");
 
   if (hasCo2 && !hasPm) return "insight";
   if (hasPm || hasNoise) return "urban";
@@ -1008,16 +1197,77 @@ function geoFromLogPoints(points) {
   return geo;
 }
 
+function historyPointsForSensorId(data, sensorId) {
+  if (!data || typeof data !== "object") return [];
+  const direct = data[sensorId];
+  if (Array.isArray(direct) && direct.length > 0) return direct;
+  for (const key of Object.keys(data)) {
+    if (sensorIdsEqual(key, sensorId) && Array.isArray(data[key]) && data[key].length > 0) {
+      return data[key];
+    }
+  }
+  return Array.isArray(direct) ? direct : [];
+}
+
 /** Cache v2 meta only for the requested device id. */
 function cacheSensorMetaForBundle(requestedId, meta) {
   if (!meta || typeof meta !== "object") return;
-  const req = requestedId ? String(requestedId) : "";
-  if (req) latestSensorMetaById.set(req, meta);
+  for (const id of sensorIdAliases(requestedId)) {
+    latestSensorMetaById.set(String(id), meta);
+  }
 }
 
 export function getCachedSensorMeta(sensorId) {
   if (!sensorId) return null;
-  return latestSensorMetaById.get(String(sensorId)) || null;
+  for (const id of sensorIdAliases(sensorId)) {
+    const hit = latestSensorMetaById.get(String(id));
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function historyDeviceKind(meta, sensorId) {
+  const sid = String(sensorId || "");
+  const fromList = listBundleSensorEntries(meta).find((entry) =>
+    sensorIdsEqual(entry.sensor_id, sid)
+  );
+  const fromThis = sensorTypeFromDeviceModel(fromList?.device_model);
+  if (fromThis) return fromThis;
+  const fromMeta = sensorTypeFromDeviceModel(meta?.device_model || meta?.type);
+  if (fromMeta) return fromMeta;
+  return null;
+}
+
+const PROTO_ENCRYPTED_PLACEHOLDER = "e.proto";
+
+/** Recap JSON often omits Insight CO₂; keep the CO₂ tab + login overlay. */
+function stampEncryptedPlaceholders(logs, meta, sensorId) {
+  if (!Array.isArray(logs) || logs.length === 0) return logs;
+  const kind = historyDeviceKind(meta, sensorId) || inferDeviceTypeFromLog(logs);
+  if (kind !== "insight") return logs;
+  const anyNumericCo2 = logs.some((row) => {
+    const co2 = row?.data?.co2;
+    return typeof co2 === "number" && Number.isFinite(co2);
+  });
+  return logs.map((row) => {
+    const data = row?.data && typeof row.data === "object" ? { ...row.data } : {};
+    const hasCo2 = data.co2 != null && data.co2 !== "";
+    if (hasCo2 && (row.device_model || kind === "insight")) {
+      return row.device_model ? row : { ...row, device_model: "insight" };
+    }
+    if (!hasCo2 && !anyNumericCo2) data.co2 = PROTO_ENCRYPTED_PLACEHOLDER;
+    return { ...row, data, device_model: row.device_model || "insight" };
+  });
+}
+
+function presentHistoryLogs(sensorId, logs, meta) {
+  if (!Array.isArray(logs)) return logs;
+  const normalized = logs.map((entry) => {
+    if (!entry?.data || typeof entry.data !== "object") return entry;
+    const data = normalizeMeasurementBag(entry.data);
+    return data === entry.data ? entry : { ...entry, data };
+  });
+  return stampEncryptedPlaceholders(normalized, meta, sensorId);
 }
 
 export function clearSensorMetaCache() {
@@ -1111,14 +1361,19 @@ export function filterOwnerBundleNearAnchor(items, anchorGeo, activeSensorId, ma
 export function collectOwnerDeviceIds(ownerKey, sensorsList) {
   const owner = String(ownerKey || "").trim();
   if (!owner) return [];
-  return [
-    ...new Set(
-      (Array.isArray(sensorsList) ? sensorsList : [])
-        .filter((s) => normalizeOwnerKey(s) === owner)
-        .map((s) => String(s?.sensor_id || ""))
-        .filter(Boolean)
-    ),
-  ];
+  const ids = [];
+  const push = (id) => {
+    const sid = String(id || "").trim();
+    if (sid && !ids.some((existing) => sensorIdsEqual(existing, sid))) ids.push(sid);
+  };
+  for (const row of Array.isArray(sensorsList) ? sensorsList : []) {
+    if (normalizeOwnerKey(row) !== owner) continue;
+    push(row?.sensor_id);
+    for (const entry of Array.isArray(row?.sensors) ? row.sensors : []) {
+      push(parseBundleSensorEntry(entry)?.sensor_id);
+    }
+  }
+  return ids;
 }
 
 export function getOwnerSensorsWithData(
@@ -1139,19 +1394,19 @@ export function getOwnerSensorsWithData(
 
   const anchorGeo =
     (anchorGeoOverride && hasValidCoordinates(anchorGeoOverride) ? anchorGeoOverride : null) ||
-    geoFromLogPoints(data?.[sid]) ||
+    geoFromLogPoints(historyPointsForSensorId(data, sid)) ||
     null;
 
   const mapped = listBundleSensorEntries(meta)
     .map(({ sensor_id, device_model }) => {
       const id = String(sensor_id);
-      const points = Array.isArray(data[id]) ? data[id] : [];
+      const points = historyPointsForSensorId(data, id);
       const hasData = points.length > 0;
-      const geo = geoFromLogPoints(points);
+      const geo = geoFromLogPoints(points) || (hasValidCoordinates(anchorGeo) ? anchorGeo : null);
       const inferredType = inferDeviceTypeFromLog(points);
       return {
         id,
-        hasData: hasData && hasValidCoordinates(geo),
+        hasData: hasData || hasValidCoordinates(geo),
         type:
           sensorTypeFromDeviceModel(device_model) ||
           inferredType ||
@@ -1230,7 +1485,8 @@ export async function getSensorData(
   endTimestamp,
   provider = "remote",
   onRealtimePoint = null,
-  signal = null
+  signal = null,
+  options = {}
 ) {
   try {
     // Проверяем, не был ли запрос отменен
@@ -1264,13 +1520,14 @@ export async function getSensorData(
         // v2 responded without owner meta — avoid duplicate owner workaround fetch this session.
         rosemanOwnerWorkaroundCache.set(String(sensorId), { owner: null, ts: Date.now() });
       }
-      let historyData = payload?.result;
+      let historyData = Array.isArray(payload?.result) ? payload.result : [];
       const owner = normalizeOwnerKey(payload?.sensor);
-      if (Array.isArray(historyData) && owner) {
+      if (historyData.length > 0 && owner) {
         historyData = await decryptSensorHistoryEntries(sensorId, historyData, owner);
       }
-      // Если данных нет, возвращаем [] (загружено, но пусто), если null/undefined - null (не загружено)
-      return Array.isArray(historyData) ? historyData : null;
+      historyData = presentHistoryLogs(sensorId, historyData, payload?.sensor);
+      if (!payload && historyData.length === 0) return null;
+      return historyData;
     }
   } catch (error) {
     // Если запрос был отменен, не логируем ошибку
@@ -1394,7 +1651,7 @@ function stripSensorCacheAddress(entry) {
 }
 
 function readSensorIdbEntry(sensorId) {
-  const sensorKey = String(sensorId || "");
+  const sensorKey = canonicalHexSensorId(sensorId) || String(sensorId || "");
   if (!sensorKey) return Promise.resolve(null);
 
   return new Promise((resolve) => {
@@ -1478,7 +1735,7 @@ async function getCachedData(sensorId, dates) {
  */
 async function saveToCache(sensorId, dataByDate, meta = {}) {
   try {
-    const sensorKey = sensorId;
+    const sensorKey = canonicalHexSensorId(sensorId) || String(sensorId || "");
     const now = Date.now();
     const { owner = null, type = null } = meta;
 
@@ -1727,7 +1984,7 @@ export async function getSensorDataWithCache(
     const isDayTab = neededDays.length === 1;
     const cacheAge = Date.now() - Number(cachedResult.lastUpdated || 0);
     const missingDays = neededDays.filter((day) => {
-      if (!cachedData[day]) return true;
+      if (!Array.isArray(cachedData[day]) || cachedData[day].length === 0) return true;
       if (isLikelyIncompleteDayCache(day)) return true;
       if (isDayTab) return cacheAge >= REMOTE_DAY_REFRESH_MS;
       if (day === today) return true;
@@ -1779,7 +2036,9 @@ export async function getSensorDataWithCache(
       for (const day of missingDays) {
         const { start: dayStart, end: dayEnd } = sensorFetchBoundsForDate(day);
 
-        const dayData = await getSensorData(sensorId, dayStart, dayEnd, provider, null, signal);
+        const dayData = await getSensorData(sensorId, dayStart, dayEnd, provider, null, signal, {
+          skipProtoHydrate: true,
+        });
         // Сохраняем только если это массив (успешно загружено, даже пустое)
         // null означает что запрос не выполнен - не сохраняем в newData
         if (Array.isArray(dayData)) {
@@ -1855,6 +2114,14 @@ export async function getSensorDataWithCache(
       result.length = 0;
       result.push(...decrypted);
     }
+
+    const presented = presentHistoryLogs(sensorId, result, {
+      ...(getCachedSensorMeta(sensorId) || {}),
+      device_model: cacheMeta?.type ?? cachedResult.type,
+      type: cacheMeta?.type ?? cachedResult.type,
+    });
+    result.length = 0;
+    result.push(...presented);
 
     emitProgress({ status: "done", loadedDays: totalDays, missingDays: 0, totalDays, cachedDays });
 

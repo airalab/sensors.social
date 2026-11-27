@@ -19,7 +19,7 @@
           <div>
             <div class="card-title">{{ $t("Signed in") }}</div>
             <div class="muted">
-              {{ accountsCount }} {{ $t("account") }}<span v-if="accountsCount !== 1">s</span>
+              {{ $t("login.accounts_count", accountsCount) }}
               {{ $t("on this device") }}
             </div>
           </div>
@@ -44,10 +44,17 @@
                   alt=""
                   aria-hidden="true"
                 />
-                <span class="account-pill-text" :title="acc.address">{{ ownerName(acc.address) }}</span>
+                <span class="account-pill-text" :title="displayAddress(acc.address)">
+                  <b>{{ ownerName(acc.address) }}</b>
+                  <span class="account-pill-addr">{{ formatAddress(acc.address) }}</span>
+                </span>
               </div>
               <div class="pill-actions">
-                <Copy :msg="acc.address" :title="'Copy address'" :notify="'Copied'" />
+                <Copy
+                  :msg="displayAddress(acc.address)"
+                  :title="'Copy address'"
+                  :notify="'Copied'"
+                />
                 <button
                   class="pill-delete"
                   type="button"
@@ -83,7 +90,9 @@
                     class="sensor-chip"
                     :to="getSensorLink(sensor)"
                   >
-                    {{ sensor }}
+                    <span :title="displayAddress(sensor)">
+                      {{ sensorName(sensor) }} · {{ formatAddress(sensor) }}
+                    </span>
                   </router-link>
                 </div>
               </div>
@@ -172,7 +181,9 @@
           </button>
 
           <div v-if="loginStatus === 'success' && lastAddress" class="success">
-            {{ $t("Signed in as") }} <b>{{ ownerName(lastAddress) }}</b>
+            {{ $t("Signed in as") }}
+            <b>{{ ownerName(lastAddress) }}</b>
+            · {{ formatAddress(lastAddress) }}
           </div>
 
           <div v-if="loginStatus === 'error'" class="error">
@@ -186,7 +197,8 @@
 </template>
 
 <script setup>
-import { ownerName } from "@/utils/addressNames";
+import { ownerName, sensorName } from "@/utils/addressNames";
+import { displayAddress, formatAddress } from "@/utils/ss58Display";
 import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -285,11 +297,6 @@ const account = computed(() => {
   }
 });
 
-function formatAddress(addr) {
-  if (!addr) return "";
-  if (addr.length <= 16) return addr;
-  return addr.slice(0, 6) + "..." + addr.slice(-6);
-}
 
 function getRobonomicsAddressByType(phrase, type) {
   const keyring = new Keyring({ type });
@@ -411,7 +418,7 @@ function getSensorLink(sensor) {
     query: {
       provider: "remote",
       type: config.MAP.measure,
-      sensor: sensor,
+      sensor: displayAddress(sensor) || sensor,
     },
   };
 }
@@ -543,6 +550,18 @@ async function onSensorsToggle(acc, event) {
   font-weight: 800;
   font-size: calc(var(--font-size) * 1.1);
   min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.account-pill-addr {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.72;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

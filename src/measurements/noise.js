@@ -10,7 +10,7 @@ export default {
     en: "Noise",
     ru: "Шум",
   },
-  unit: "dB",
+  unit: "dBA",
 
   zones: [
     {
