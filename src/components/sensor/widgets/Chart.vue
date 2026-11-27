@@ -3,6 +3,7 @@
     <div class="chart-section-chart">
       <div class="chart-wrapper">
         <Chart ref="chartRef" constructor-type="stockChart" :options="chartOptions" />
+        <slot name="locked" />
       </div>
       <!-- One panel under the chart: what is measured, and how it is shown when there is a choice. -->
       <div class="chart-controls">

@@ -140,11 +140,7 @@
           </div>
         </div>
 
-        <div
-          v-if="chartHasData"
-          class="chart-area"
-          :class="{ 'chart-area--locked': showEncryptedLoginNotice }"
-        >
+        <div v-if="chartHasData" class="chart-area">
           <ChartHealthWarning
             v-if="!isDemo"
             :log="log"
@@ -159,31 +155,29 @@
             :show-geo-in-tooltip="showChartGeoInTooltip"
             :address-for-timestamp="chartAddressForTimestamp"
             @active-legend-change="chartActiveLegendKey = $event"
-          />
-          <div
-            v-if="showEncryptedLoginNotice"
-            class="chart-encrypted-overlay"
-            role="status"
-            aria-live="polite"
           >
-            <div class="chart-encrypted-overlay__card">
-              <font-awesome-icon
-                icon="fa-solid fa-lock"
-                class="chart-encrypted-overlay__icon"
-                aria-hidden="true"
-              />
-              <p class="chart-encrypted-overlay__text">
-                {{ encryptedOverlayText }}
-              </p>
-              <router-link
-                v-if="encryptedNoticeIsLogin"
-                to="/login/"
-                class="chart-encrypted-overlay__cta"
-              >
-                {{ t("Login") }}
-              </router-link>
-            </div>
-          </div>
+            <template v-if="showEncryptedLoginNotice" #locked>
+              <div class="chart-encrypted-overlay" role="status" aria-live="polite">
+                <div class="chart-encrypted-overlay__card">
+                  <font-awesome-icon
+                    icon="fa-solid fa-lock"
+                    class="chart-encrypted-overlay__icon"
+                    aria-hidden="true"
+                  />
+                  <p class="chart-encrypted-overlay__text">
+                    {{ encryptedOverlayText }}
+                  </p>
+                  <router-link
+                    v-if="encryptedNoticeIsLogin"
+                    to="/login/"
+                    class="chart-encrypted-overlay__cta"
+                  >
+                    {{ t("Login") }}
+                  </router-link>
+                </div>
+              </div>
+            </template>
+          </Chart>
         </div>
         <div v-else-if="showNoDataMessage" class="no-data-message">
           {{ $t("No data available") }}
@@ -1166,13 +1160,6 @@ watch(
   position: relative;
 }
 
-.chart-area--locked :deep(.chart-section-chart),
-.chart-area--locked :deep(.custom-legend) {
-  filter: blur(2px);
-  pointer-events: none;
-  user-select: none;
-}
-
 .chart-encrypted-overlay {
   position: absolute;
   inset: 0;
@@ -1183,6 +1170,7 @@ watch(
   padding: var(--gap);
   background: color-mix(in srgb, var(--color-light, #fff) 35%, transparent);
   backdrop-filter: blur(1px);
+  pointer-events: auto;
 }
 
 .chart-encrypted-overlay__card {
