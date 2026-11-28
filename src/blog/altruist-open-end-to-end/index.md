@@ -95,13 +95,15 @@ The site you are reading this on is open too.
 
 ![The sensors.social repository, AGPL-3.0](./images/map_repo.webp)
 
-*[airalab/sensors.social](https://github.com/airalab/sensors.social), AGPL-3.0.*
+*[PinoutLimited/sensors.social](https://github.com/PinoutLimited/sensors.social), AGPL-3.0.*
 
 ## Why it matters
 
 A promise to keep data open can change with a new owner or a new price list. Here openness is built into the structure: the sensor signs, the ledger keeps, the indexer is open, and so is everything in between. If we disappeared tomorrow, the ledger would still hold the fingerprint of every batch, and anyone holding a copy of the batches in IPFS could run the indexer and bring the map back up.
 
 That is what we mean by open end to end: not one open part, but no closed part anywhere on the way from the sensor to the map. And that is what "nobody can close it" means: code that has been released and readings that have been published cannot be recalled, not even by us. Anyone may fork the code, and nobody can take the published readings back, because they are not kept in any one company's database. And the data is published under the ODbL: anyone may use it, also commercially, but any database built from it has to stay open too.
+
+Try the device: [Urban](https://cyberpunks.shop/altruist-urban) · [Insight](https://cyberpunks.shop/altruist-insight) · [Dual](https://cyberpunks.shop/altruist-dual)
 
 [See the map](https://sensors.social) · [All Airalab repositories](https://github.com/airalab)
 

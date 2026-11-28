@@ -26,7 +26,7 @@ export const organization = {
   name: "sensors.social",
   url: `${SITE_URL}/`,
   logo: `${SITE_URL}/app-icon-512.png`,
-  sameAs: ["https://x.com/SensorsSocial", "https://github.com/airalab/sensors.social"],
+  sameAs: ["https://x.com/SensorsSocial", "https://github.com/PinoutLimited/sensors.social"],
 };
 
 export const website = {
