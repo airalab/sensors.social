@@ -1,5 +1,5 @@
 import { settings } from "@config";
-import { fetchJson } from "@/utils/utils";
+import { fetchJson, fetchJsonRetrying } from "@/utils/utils";
 
 class Provider {
   constructor(url) {
@@ -35,7 +35,7 @@ class Provider {
 
   async lastValuesForPeriod(start, end, type) {
     try {
-      const result = await fetchJson(
+      const result = await fetchJsonRetrying(
         `${settings.REMOTE_PROVIDER}api/sensor/last/${start}/${end}/${type}`,
         { cache: "no-store" }
       );
@@ -47,7 +47,7 @@ class Provider {
 
   async maxValuesForPeriod(start, end, type) {
     try {
-      const result = await fetchJson(
+      const result = await fetchJsonRetrying(
         `${settings.REMOTE_PROVIDER}api/v2/sensor/maxdata/${type}/${start}/${end}`,
         { cache: "no-store" }
       );
@@ -94,7 +94,7 @@ class Provider {
 
   async getSensorsForPeriod(start, end) {
     try {
-      const result = await fetchJson(
+      const result = await fetchJsonRetrying(
         `${settings.REMOTE_PROVIDER}api/v2/sensor/markers/${start}/${end}`,
         { cache: "no-store" }
       );
